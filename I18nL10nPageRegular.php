@@ -40,7 +40,7 @@ class I18nL10nPageRegular extends PageRegular
 {
     //override_function
     function generate(Database_Result $objPage) {
-    
+        $this->fixupCurrentLanguage();
         //get language specific page properties
         //TODO: make this configurable
         $fields = 'title,language,pageTitle,description,cssClass,published';
@@ -56,6 +56,30 @@ class I18nL10nPageRegular extends PageRegular
          return parent::generate($objPage);
     }
 
+    /**
+     * Fix up current language depending on momentary user preference.
+     * Strangely $GLOBALS['TL_LANGUAGE'] is switched to the current user language if user is just
+     * authentitcating and has the language property set. 
+     * See system/libraries/User.php:202
+     * We override this behavior and let the user temporarily use the selected by him language.
+     * One workaround would be to not let the members have a language property.
+     * Then this method will not be needed any more.
+     */
+     private function fixupCurrentLanguage(){
+         $selected_language = $this->Input->post('language');
+         //TODO: allow GET request for language
+         if($selected_language ==''){
+            $selected_language = $this->Input->get('language');
+         }
+         if(
+            $selected_language != '' && 
+            array_key_exists($selected_language,
+                             deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']))
+         ){
+            $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selected_language;
+         }
+     }
+     
     /**
      * Generate an article and return it as string
      * @param integer

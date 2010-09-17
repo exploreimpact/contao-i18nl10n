@@ -85,7 +85,6 @@ class I18nL10nFrontend extends Controller
             }
         $c++;
         }
-        $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'];
         return $items;
     }//end i18nl10nNavItems
 }
