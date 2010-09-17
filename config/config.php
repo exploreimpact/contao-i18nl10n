@@ -224,6 +224,12 @@ $GLOBALS['FE_MOD']['navigationMenu']['i18nl10nnav'] = 'I18nL10nModuleLanguageNav
  * Use function array_insert() to modify an existing page types array.
  */
  $GLOBALS['TL_PTY']['regular'] =  'I18nL10nPageRegular';
-
+ 
+ if(!$GLOBALS['TL_CONFIG']['i18nl10n_languages']){
+     $GLOBALS['TL_CONFIG']['i18nl10n_languages'] = serialize(array('en'));
+ }
+ if(!$GLOBALS['TL_CONFIG']['i18nl10n_default_language']){
+     $GLOBALS['TL_CONFIG']['i18nl10n_default_language'] = 'en';
+ }
 
 ?>
