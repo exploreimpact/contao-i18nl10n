@@ -68,16 +68,17 @@ class I18nL10nPageRegular extends PageRegular
      private function fixupCurrentLanguage(){
          $selected_language = $this->Input->post('language');
          //TODO: allow GET request for language
-         if($selected_language ==''){
-            $selected_language = $this->Input->get('language');
-         }
+         //if($selected_language ==''){
+         //   $selected_language = $this->Input->get('language');
+         //}
          if(
             $selected_language != '' && 
             array_key_exists($selected_language,
                              deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']))
          ){
-            $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selected_language;
+            $GLOBALS['TL_LANGUAGE'] = $selected_language;
          }
+         $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'];
      }
      
     /**
