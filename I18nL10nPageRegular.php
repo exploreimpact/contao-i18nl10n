@@ -43,18 +43,24 @@ class I18nL10nPageRegular extends PageRegular
         $this->fixupCurrentLanguage();
         //get language specific page properties
         //TODO: make this configurable
-        $fields = 'title,language,pageTitle,description,cssClass,published';
-        
+        $fields = 'title,language,pageTitle,description,cssClass,'
+        .'dateFormat,timeFormat,datimFormat,published,start,stop';
+        $time = time();
         $l10n = $this->Database->prepare(
-         "SELECT $fields from tl_page_i18nl10n WHERE pid=? AND language=? AND published=1"
+         "SELECT $fields from tl_page_i18nl10n WHERE pid=? AND language=? "
+         . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<$time) AND (stop='' OR stop>$time) 
+         AND published=1" : "")
          )->limit(1)->execute($objPage->id,$GLOBALS['TL_LANGUAGE']);
          if($l10n->numRows){
-             foreach( explode(',',$fields) as $field ){
-                 $objPage->$field = $l10n->$field;
+             foreach( explode(',',$fields) as $field ) {
+                 if($l10n->$field) { 
+                     $objPage->$field = $l10n->$field;
+                 }
              }
          }
          return parent::generate($objPage);
     }
+
 
     /**
      * Fix up current language depending on momentary user preference.

@@ -63,12 +63,15 @@ class I18nL10nFrontend extends Controller
         foreach($items as $row){
             $item_ids[]= intval($row['id']);//just in case
         }
+        $time = time();
         $fields = 'pid,title,pageTitle,description';
         $localized_pages = $this->Database->prepare('
             SELECT '. $fields .' FROM tl_page_i18nl10n
             WHERE pid IN ( '.implode(', ',$item_ids).' )
-            AND language = ? and published=1
-        ')->limit(1000)->execute($GLOBALS['TL_LANGUAGE'])->fetchAllassoc();
+            AND language = ? '
+            .(!BE_USER_LOGGED_IN ? " AND (start='' OR start<$time) AND (stop='' OR stop>$time) 
+             AND published=1" : "")
+        )->limit(1000)->execute($GLOBALS['TL_LANGUAGE'])->fetchAllassoc();
         $c=0;
         foreach($items as $item){
             $d=0;

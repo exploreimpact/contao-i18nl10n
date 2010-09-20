@@ -137,9 +137,9 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n']['palettes'] = array
      //alias,
      .'language;'
             .'{meta_legend},pageTitle,description;'
-            //.'{time_legend:hide},dateFormat,timeFormat,datimFormat;'
+            .'{time_legend:hide},dateFormat,timeFormat,datimFormat;'
             .'{expert_legend:hide},cssClass;{publish_legend},published'
-            //',start,stop'
+            .',start,stop'
             ,
     );
 $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields'] = array
@@ -151,9 +151,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields'] = array
 	     //'alias'       => &$GLOBALS['TL_DCA']['tl_page']['fields']['alias'],
          'pageTitle'   => &$GLOBALS['TL_DCA']['tl_page']['fields']['pageTitle'],
          'description' => &$GLOBALS['TL_DCA']['tl_page']['fields']['description'],
-         //'cssClass'    => &$GLOBALS['TL_DCA']['tl_page']['fields']['cssClass'],
-         //TODO:add fields below also to table since this info is truly locale specific
-         // 'robots'      => &$GLOBALS['TL_DCA']['tl_page']['fields']['robots'],
+         'cssClass'    => &$GLOBALS['TL_DCA']['tl_page']['fields']['cssClass'],
          'dateFormat'  => &$GLOBALS['TL_DCA']['tl_page']['fields']['dateFormat'],
          'timeFormat'  => &$GLOBALS['TL_DCA']['tl_page']['fields']['timeFormat'],
          'datimFormat' => &$GLOBALS['TL_DCA']['tl_page']['fields']['datimFormat'],
@@ -181,7 +179,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['language'] = array_merge(
             'options'   => $i18nl10n_languages,
             'reference'  => &$GLOBALS['TL_LANG']['LNG'])
 );
-//var_export($GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['title']);
+
 /**
  * Class tl_page_i18nl10n
  *

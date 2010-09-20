@@ -93,8 +93,9 @@ class I18nL10nModuleLanguageNavigation extends Module
         $items = array();
         $fields = 'language';
         $sql = 'SELECT '. $fields .' FROM tl_page_i18nl10n
-            WHERE pid =? AND language  IN ( \''.implode("', '",$arrLanguages).'\' ) 
-            and published=1';
+            WHERE pid =? AND language  IN ( \''.implode("', '",$arrLanguages).'\' )'
+         .(!BE_USER_LOGGED_IN ? " AND (start='' OR start<$time) AND (stop='' OR stop>$time) 
+         AND published=1" : "");
         $res_items = $this->Database->prepare($sql)->limit(300
                                                            )->execute($objPage->id
                                                            )->fetchAllassoc();
