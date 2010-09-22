@@ -113,6 +113,8 @@ class I18nL10nModuleLanguageNavigation extends Module
                 }
                 foreach($res_items as $i =>$row){
                     if($row['language'] == $language){
+                        $items[$index]['id'] = $objPage->id;
+                        $items[$index]['alias'] = $objPage->alias;
                         $items[$index]['language'] = $language;
                         array_delete($res_items,$i);
                         break;

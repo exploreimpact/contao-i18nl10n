@@ -107,6 +107,7 @@ $GLOBALS['BE_MOD']['design']['i18nl10n'] = array(
  * Use function array_insert() to modify an existing CTE array.
  */
 $GLOBALS['FE_MOD']['navigationMenu']['i18nl10nnav'] = 'I18nL10nModuleLanguageNavigation';
+$GLOBALS['FE_MOD']['navigationMenu']['breadcrumb']  = 'I18nL10nModuleBreadcrumb';
 /**
  * -------------------------------------------------------------------------
  * CONTENT ELEMENTS
