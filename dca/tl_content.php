@@ -60,12 +60,13 @@ $GLOBALS['TL_DCA']['tl_content']['list']['sorting']['child_record_callback'] =
     array('tl_content_l10ns','addCteType');
 
 
-class tl_content_l10ns extends Backend {
-    //TODO: Just extend or ->import('tl_content') and wrap its function addCteType($arrRow).
+class tl_content_l10ns extends tl_content {
+    //Hm.. extended but again -> copy/paste/modify... A preg_replace on the
+    //return of parent::addCteType seems more ...elegant?!?!
     public function addCteType($arrRow) {
-		$key = $arrRow['invisible'] ? 'unpublished' : 'published';
-		$l10n_string = ($arrRow['language']?
-		                '<img style="vertical-align:middle"'
+        $key = $arrRow['invisible'] ? 'unpublished' : 'published';
+        $l10n_string = ($arrRow['language']?
+                        '<img style="vertical-align:middle"'
                 .' src="system/modules/i18nl10n/html/flag_icons/png/'
                 .$arrRow['language'].'.png" /> ['
                 .$GLOBALS['TL_LANG']['LNG'][$arrRow['language']].'] ':'
@@ -73,8 +74,8 @@ class tl_content_l10ns extends Backend {
                 .' src="system/modules/i18nl10n/html/icon.png" /> ['
                 .$GLOBALS['TL_LANG']['LNG'][$arrRow['language']].']
                 '
-		                );
-		return '
+                        );
+        return '
 <div class="cte_type ' . $key . '">' . $l10n_string
 . $GLOBALS['TL_LANG']['CTE'][$arrRow['type']][0] . (($arrRow['type'] == 'alias') ? ' ID ' . $arrRow['cteAlias'] : '') . ($arrRow['protected'] ? ' (' . $GLOBALS['TL_LANG']['MSC']['protected'] . ')' : ($arrRow['guests'] ? ' (' . $GLOBALS['TL_LANG']['MSC']['guests'] . ')' : '')) . '</div>
 <div class="limit_height' . (!$GLOBALS['TL_CONFIG']['doNotCollapse'] ? ' h64' : '') . ' block">

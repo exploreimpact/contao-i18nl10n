@@ -41,24 +41,21 @@
 class I18nL10nModuleBreadcrumb extends ModuleBreadcrumb
 {
     /**
-	 * Template
-	 * @var string
-	 */
-	protected $strTemplate = 'mod_i18nl10nbreadcrumb';
-	protected $time;
-	protected $default_lantuage;
-/*
-SELECT @start_id as _id, (select @start_id := pp.pid FROM tl_page pp WHERE pp.id=_id ) as pid
-FROM tl_page p, (SELECT @start_id :=8) as start
-where @start_id >0 
-*/	
-	protected function compile()
-	{
+     * Template
+     * @var string
+     */
+    protected $strTemplate = 'mod_i18nl10nbreadcrumb';
+    protected $time;
+    protected $default_lantuage;
+
+    protected function compile()
+    {
         global $objPage;
         $this->time = time();
-	    $this->default_lantuage = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
+        $this->default_lantuage = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
         $pages = array();
         $items = array();
+        $ids   = array();
         $pageId = $objPage->id;
         $type = null;
         //Get path to root in one go
@@ -69,9 +66,8 @@ where @start_id >0
         where @start_id >0 ")
         ->limit(20)//max levels up to root
         ->execute($pageId);
-        
-        $ids = array_map('I18nL10nModuleBreadcrumb::get_item_id',$objPages->fetchAllassoc());
-        
+        foreach($objPages->fetchAllassoc() as $row) { array_push($ids,$row['_id']); }
+
         //Now get pages L10Ns
         $with_l10n = ($GLOBALS['TL_LANGUAGE']!=$this->default_lantuage);
         $language_sql = ($with_l10n?
@@ -101,11 +97,8 @@ AND published=1" : "")
                                 )->fetchAllassoc();
        // Build breadcrumb menu
        $this->Template->items = $this->buildBreadcrumbMenu($pages); 
-	}
-    
-	private function get_item_id($item){
-	    return $item['_id'];
     }
+    
     
     private function buildBreadcrumbMenu(Array $pages) {
         $with_l10n = ($GLOBALS['TL_LANGUAGE']!=$this->default_lantuage);
@@ -134,23 +127,25 @@ AND published=1" : "")
             $objFirstPage = $this->Database->prepare($sql)->limit(1)
                                            ->execute($root_page['id']);
             $first_page = $objFirstPage->fetchAssoc();
-            $root_title = (strlen($first_page['pageTitle']) ? specialchars($first_page['pageTitle']) : specialchars($first_page['title']));
+            $root_title = (strlen($first_page['pageTitle']) ? 
+                specialchars($first_page['pageTitle']) : specialchars($first_page['title']));
             $items[] = array
             (
                 'isRoot' => true,
                 'isActive' => false,
-                'href' => (!empty($first_page) ? $this->generateFrontendUrl($first_page) : $this->Environment->base),
+                'href' => (!empty($first_page) ? 
+                    $this->generateFrontendUrl($first_page) : $this->Environment->base),
                 'title' => $root_title,
                 'link' => $root_title
             );
         }
         
         $c = count($pages)-1;
-		for($i=0; $i <$c; $i++){
-		    if (($pages[$i]['hide'] && !$this->showHidden) || (!$pages[$i]['published'] && !BE_USER_LOGGED_IN))
-			{
-				continue;
-			}
+        for($i=0; $i <$c; $i++){
+            if (($pages[$i]['hide'] && !$this->showHidden) || (!$pages[$i]['published'] && !BE_USER_LOGGED_IN))
+            {
+                continue;
+            }
                 // Get href
                 switch ($pages[$i]['type'])
                 {
@@ -245,7 +240,7 @@ AND published=1" : "")
                     'link' => $title
                 );
             }
-		return $items;
+        return $items;
     }//end buildBreadcrumbMenu
 }
 ?>
