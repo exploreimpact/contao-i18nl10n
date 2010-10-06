@@ -3,3 +3,23 @@
     width:2em 
 }
 #pal_page_i18nl10n .w50{height:8%;}
+#i18nl10n_localise_all_confirm {
+    text-align:left;
+    line-height:120%;
+    padding:0.5em;
+    color:#666966;
+    font-weight:bold;
+    background:#fea;
+    border:1px solid #D49822;
+}
+#i18nl10n_localise_all_confirm .tl_submit_container {
+    background:none;
+    border-top:1px solid #FFFFFF;
+    text-align:right;
+    margin-top:0.5em;
+    padding:0.5em;
+}
+#i18nl10n_localise_all_confirm a {
+    color:#FFFFDD;
+    font-weight:bold;
+}

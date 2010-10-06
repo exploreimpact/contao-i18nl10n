@@ -38,38 +38,83 @@ $GLOBALS['TL_DCA']['tl_page']['list']['operations']['page_i18nl10n'] = array(
 );
 $GLOBALS['TL_DCA']['tl_page']['config']['onload_callback'][] = 
     array('tl_page_l10ns', 'setDefaultLanguage');
+$GLOBALS['TL_DCA']['tl_page']['config']['onsubmit_callback'][] = 
+    array('tl_page_l10ns', 'generatePageL10n');
 
 class tl_page_l10ns extends Backend {
     public function editl10ns($row, $href, $label, $title, $icon) {
         $button ='';
         //TODO: think about a new page type: regular_localized
-        if($row['type'] == 'regular'){
+        //if($row['type'] == 'regular'){
             $title = sprintf($GLOBALS['TL_LANG']['MSC']['editl10ns'],"\"{$row['title']}\"");
             $button .='<a href="' . $this->addToUrl($href.'&amp;node='.$row['id']) . '" title="'.specialchars($title).'">'
             .'<img src="system/modules/i18nl10n/html/icon.png" /></a> ';
-        }
+        //}
         return $button;
     }
     /**
-	 * Apply the root page language to new pages
-	 */
-	public function setDefaultLanguage()
-	{
-		if ($this->Input->get('act') != 'create')
-		{
-			return;
-		}
+     * Apply the root page language to new pages
+     */
+    public function setDefaultLanguage()
+    {
+        if ($this->Input->get('act') != 'create')
+        {
+            return;
+        }
 
-		if ($this->Input->get('pid') == 0)
-		{
-			$GLOBALS['TL_DCA']['tl_page']['fields']['language']['default'] = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
-		}
-		else
-		{
-			$objPage = $this->getPageDetails($this->Input->get('pid'));
-			$GLOBALS['TL_DCA']['tl_page']['fields']['language']['default'] = $objPage->rootLanguage;
-		}
-	}
+        if ($this->Input->get('pid') == 0)
+        {
+            $GLOBALS['TL_DCA']['tl_page']['fields']['language']['default'] = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
+        }
+        else
+        {
+            $objPage = $this->getPageDetails($this->Input->get('pid'));
+            $GLOBALS['TL_DCA']['tl_page']['fields']['language']['default'] = $objPage->rootLanguage;
+        }
+    }
 
+    /**
+     * Automatically create a new localization 
+     * upon page creation - similar to tl_page::generateArticle()
+     *
+     */
+    public function generatePageL10n(DataContainer $dc) {
+        if (!$dc->activeRecord) return;
+        if ($dc->activeRecord->tstamp > 0) return;//existing page
+        $new_records = $this->Session->get('new_records');
+        // Not a new page - copy/paste is a great way to share code :P
+        if (
+            !$new_records || 
+            (is_array($new_records[$dc->table]) && 
+            !in_array($dc->id, $new_records[$dc->table]))
+        ) return;
+        #now make copies in each language.
+        $site_langs = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
+        $sorting = 0;
+        $fields = array (
+            'pid'     => $dc->id,
+            'sorting' => 0,
+            'tstamp'  => time(),
+            'title' => $dc->activeRecord->title,
+            'alias' => $dc->activeRecord->alias,
+            'type'  => $dc->activeRecord->type,
+            'pageTitle' => $dc->activeRecord->pageTitle,
+            'description' => $dc->activeRecord->description,
+            'cssClass' => $dc->activeRecord->cssClass,
+            'published' => $dc->activeRecord->published,
+            'start' => $dc->activeRecord->start,
+            'stop'  => $dc->activeRecord->stop,
+            'dateFormat' => $dc->activeRecord->dateFormat,
+            'timeFormat' => $dc->activeRecord->timeFormat,
+            'datimFormat' => $dc->activeRecord->datimFormat
+            );
+        foreach ($site_langs as $l) {
+            if($l==$GLOBALS['TL_CONFIG']['i18nl10n_default_language']) continue;
+            $fields['sorting'] +=128;
+            $fields['language'] = $l; 
+            $this->Database->prepare('INSERT INTO tl_page_i18nl10n %s
+            ')->set($fields)->execute();
+        }
+    }
 }//end class
-?>
+

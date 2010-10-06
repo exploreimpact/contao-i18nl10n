@@ -40,10 +40,10 @@ $GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= ';{page_i18nl10n:hid
  */
 $GLOBALS['page_i18nl10n']['languages'] = $this->getLanguages();
 $GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_languages'] = array(
-	'label'		=>	&$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_languages'],
-	'exclude'	=>	true,
-	'default'   => array('bg','en','de'),
-	'inputType' => 'listWizard',
+    'label'     => &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_languages'],
+    'exclude'   => true,
+    'default'   => array('bg','en','de'),
+    'inputType' => 'listWizard',
     'eval' => array('mandatory'=>true,
                     'style'=>'width:2em;','tl_class'=>'w50'
                     ),
@@ -54,10 +54,10 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_languages'] = array(
 );
 
 $GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_default_language'] = array(
-	'label'		=>	&$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_default_language'],
-	'exclude'	=>	true,
-	'inputType' => 'select',
-	'default'   => 'en',
+    'label'     => &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_default_language'],
+    'exclude'   => true,
+    'inputType' => 'select',
+    'default'   => 'en',
     'options'   => $GLOBALS['page_i18nl10n']['languages'],
     'eval' => array('mandatory'=>true,
                     'style'=>'width:15em;','tl_class'=>'w50','unique'=>true
@@ -82,10 +82,3 @@ class tl_settings_l10ns extends Backend
         return serialize( $array_language_exists );
     }
 }
-
-
-
-
-
-
-?>

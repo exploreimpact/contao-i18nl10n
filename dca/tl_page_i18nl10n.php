@@ -36,6 +36,7 @@ $this->loadLanguageFile('languages');
 $this->loadLanguageFile('tl_page');
 $this->loadDataContainer('tl_page');
 
+$_tl_page_i18nl10n = &$GLOBALS['TL_LANG']['tl_page_i18nl10n'];
 /**
  * Table tl_page_i18nl10n 
  */
@@ -50,10 +51,8 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         'ptable'                      => 'tl_page',
         'onload_callback' => array
         (
-         //TODO: implement tl_page_i18nl10n::checkPermission
-            //array('tl_page_i18nl10n', 'checkPermission'),
+            array('tl_page_i18nl10n','localize_all'),
             array('tl_page', 'addBreadcrumb'),
-            //array('tl_page', 'setDefaultLanguage')
         ),
     
     ),
@@ -89,32 +88,40 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         'href'                => 'act=select',
         'class'               => 'header_edit_all',
         'attributes'          => 'onclick="Backend.getScrollOffset();" accesskey="e"'
-    )
+    ),
+    'localize_all' => array
+    (
+        'label'               => 'localize_all',
+        'href'                => 'localize_all=1',
+        'class'               => 'header_edit_all',
+        'attributes'          => 'onclick="Backend.getScrollOffset();" accesskey="e"'
+    ),
+    
     ),
     'operations' => array
     (
         'edit' => array
         (
-            'label'               => &$GLOBALS['TL_LANG']['tl_page_i18nl10n']['edit'],
+            'label'               => &$_tl_page_i18nl10n['edit'],
             'href'                => 'act=edit',
             'icon'                => 'edit.gif'
         ),
         'copy' => array
         (
-            'label'               => &$GLOBALS['TL_LANG']['tl_page_i18nl10n']['copy'],
+            'label'               => &$_tl_page_i18nl10n['copy'],
             'href'                => 'act=copy',
             'icon'                => 'copy.gif'
         ),
         'delete' => array
         (
-            'label'               => &$GLOBALS['TL_LANG']['tl_page_i18nl10n']['delete'],
+            'label'               => &$_tl_page_i18nl10n['delete'],
             'href'                => 'act=delete',
             'icon'                => 'delete.gif',
             'attributes'          => 'onclick="if (!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['deleteConfirm'] . '\')) return false; Backend.getScrollOffset();"'
         ),
         'show' => array
         (
-            'label'               => &$GLOBALS['TL_LANG']['tl_page_i18nl10n']['show'],
+            'label'               => &$_tl_page_i18nl10n['show'],
             'href'                => 'act=show',
             'icon'                => 'show.gif'
         )
@@ -162,13 +169,14 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields'] = array
          );
 
 $i18nl10n_languages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
+$i18nl10n_default_language = &$GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
 foreach($i18nl10n_languages as $k=>$v){
-    if($v==$GLOBALS['TL_CONFIG']['i18nl10n_default_language']) {
+    if($v==$i18nl10n_default_language) {
         $i18nl10n_languages = array_delete($i18nl10n_languages,$k);
         break;
     }
 }
-
+$GLOBALS['i18nl10n_languages'] = $i18nl10n_languages;
 
 $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['language'] = array_merge(
         $GLOBALS['TL_DCA']['tl_page']['fields']['language'],
@@ -205,6 +213,57 @@ class tl_page_i18nl10n extends Backend
                 .$row['language'].'.png" /> '.specialchars($row['title']).' ['.$GLOBALS['TL_LANG']['LNG'][$row['language']].']</span>';
 	    return $label;
 	}
+	/**
+	 * Localize all pages with a twist.
+	 */
+	public function localize_all() {
+	    if($this->Input->get('localize_all')
+	       && !$this->Input->post('localize_all')
+	       ) {
+            $flag = '<img style="vertical-align:middle"'
+                .' src="system/modules/i18nl10n/html/flag_icons/png/'
+                .$GLOBALS['TL_CONFIG']['i18nl10n_default_language']
+                .'.png" /> ';
+            $GLOBALS['TL_DCA']['tl_page']['list']['sorting']['breadcrumb'] .=
+           
+            '<form method="post" action="'
+            . ampersand($this->Environment->request, true) . '"
+            ><div id="i18nl10n_localise_all_confirm">'
+            .sprintf($GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all'],
+                    $flag.$GLOBALS['TL_LANG']['LNG'][$GLOBALS['TL_CONFIG']['i18nl10n_default_language']]
+                    )
+            .'<div class="tl_submit_container"><input 
+            type="hidden" name="do" value="i18nl10n"/><input 
+            type="submit" value="'
+            .utf8_ucfirst($GLOBALS['TL_LANG']['MSC']['yes']).'" 
+            class="tl_submit" name="localize_all" /> <a
+            href="contao/main.php?do=i18nl10n">'
+            .utf8_ucfirst($GLOBALS['TL_LANG']['MSC']['no']).'</a>&nbsp;
+            </div></div></form>'
+            ;
+        }
+        //localise all pages 
+        elseif($this->Input->post('localize_all')){
 
+                 
+             foreach($GLOBALS['i18nl10n_languages'] as $l) {
+            $SQL="
+            INSERT INTO tl_page_i18nl10n (
+                 pid,sorting,tstamp,language,title,alias,type,
+                 pageTitle,description,cssClass,
+                 published,start,stop,dateFormat,timeFormat,datimFormat)
+            SELECT p.id AS pid, p.sorting, p.tstamp, '$l' AS language, 
+                 p.title, p.alias, p.type, p.pageTitle, p.description, p.cssClass, 
+                 p.published, p.start, p.stop, p.dateFormat, p.timeFormat, p.datimFormat
+                 FROM tl_page p LEFT JOIN tl_page_i18nl10n i 
+                 ON p.id = i.pid AND i.language='$l' 
+                 WHERE p.language='"
+                 .$GLOBALS['TL_CONFIG']['i18nl10n_default_language']
+                 ."' and p.type !='root' AND i.pid IS NULL";
+                 //echo $SQL;
+                 $this->Database->prepare($SQL)->execute();
+             }
+        }
+    }
+	
 }//end class tl_page_i18nl10n
-?>
