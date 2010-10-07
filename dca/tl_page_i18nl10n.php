@@ -91,9 +91,9 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
     ),
     'localize_all' => array
     (
-        'label'               => 'localize_all',
+        'label'               => &$_tl_page_i18nl10n['localize_all'],
         'href'                => 'localize_all=1',
-        'class'               => 'header_edit_all',
+        'class'               => 'header_localize_all',
         'attributes'          => 'onclick="Backend.getScrollOffset();" accesskey="e"'
     ),
     
@@ -226,34 +226,32 @@ class tl_page_i18nl10n extends Backend
                 .'.png" /> ';
             $GLOBALS['TL_DCA']['tl_page']['list']['sorting']['breadcrumb'] .=
            
-            '<form method="post" action="'
-            . ampersand($this->Environment->request, true) . '"
+            '<form method="post" action="contao/main.php?do=i18nl10n"
             ><div id="i18nl10n_localise_all_confirm">'
-            .sprintf($GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all'],
+            .sprintf($GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all_q'],
                     $flag.$GLOBALS['TL_LANG']['LNG'][$GLOBALS['TL_CONFIG']['i18nl10n_default_language']]
                     )
             .'<div class="tl_submit_container"><input 
-            type="hidden" name="do" value="i18nl10n"/><input 
             type="submit" value="'
             .utf8_ucfirst($GLOBALS['TL_LANG']['MSC']['yes']).'" 
-            class="tl_submit" name="localize_all" /> <a
+            class="tl_submit" name="localize_all_" /> <a
             href="contao/main.php?do=i18nl10n">'
             .utf8_ucfirst($GLOBALS['TL_LANG']['MSC']['no']).'</a>&nbsp;
             </div></div></form>'
             ;
         }
         //localise all pages 
-        elseif($this->Input->post('localize_all')){
+        elseif($this->Input->post('localize_all_')){
 
                  
              foreach($GLOBALS['i18nl10n_languages'] as $l) {
             $SQL="
             INSERT INTO tl_page_i18nl10n (
-                 pid,sorting,tstamp,language,title,alias,type,
+                 pid,sorting,tstamp,language,title,type,
                  pageTitle,description,cssClass,
                  published,start,stop,dateFormat,timeFormat,datimFormat)
             SELECT p.id AS pid, p.sorting, p.tstamp, '$l' AS language, 
-                 p.title, p.alias, p.type, p.pageTitle, p.description, p.cssClass, 
+                 p.title, p.type, p.pageTitle, p.description, p.cssClass, 
                  p.published, p.start, p.stop, p.dateFormat, p.timeFormat, p.datimFormat
                  FROM tl_page p LEFT JOIN tl_page_i18nl10n i 
                  ON p.id = i.pid AND i.language='$l' 

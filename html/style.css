@@ -23,3 +23,10 @@
     color:#FFFFDD;
     font-weight:bold;
 }
+#i18nl10n_localise_all_confirm a:hover {
+    color:#d00;
+}
+.header_localize_all {
+    background:url("localize_all.png") no-repeat scroll left center transparent;
+    padding:2px 0 3px 20px;
+}
