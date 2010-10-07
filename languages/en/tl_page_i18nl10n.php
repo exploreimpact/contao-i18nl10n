@@ -57,7 +57,9 @@ $GLOBALS['TL_LANG']['tl_page_i18nl10n']['edit']   = array('Edit', 'Edit meta-fie
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['copy']   = array('Copy', 'Copy meta-fields');
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['delete'] = array('Delete', 'Delete meta-fields');
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['show']   = array('Show', 'meta-fields');
+$GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all']   = 
+array('All', 'Localize all untranslated pages to available languages');
 
-$GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all'] =
-'Are you sure you want to create localizations for all unlocalized pages with the default language <span style="white-space:nowrap">[%s]</span>?'
-?>
+$GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all_q'] =
+'For all untranslated pages in <span style="white-space:nowrap">[%s]</span> will be created copies for each of the site languages.<br />'
+.'Are you sure you want to create localizations for all unlocalized pages?';
