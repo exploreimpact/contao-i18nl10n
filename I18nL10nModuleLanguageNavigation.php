@@ -29,7 +29,7 @@
  */
 
 /**
- * Class I18nL10nModuleArticle 
+ * Class I18nL10nModuleLanguageNavigation 
  *
  * @copyright  Krasimir Berov 2010 
  * @author     Krasimir Berov 
@@ -83,7 +83,7 @@ class I18nL10nModuleLanguageNavigation extends Module
 
         // Get all groups of the current front end user
         if (FE_USER_LOGGED_IN)
-        {
+       {
             $this->import('FrontendUser', 'User');
             $groups = $this->User->groups;
         }
@@ -136,4 +136,4 @@ class I18nL10nModuleLanguageNavigation extends Module
     }
 }//end I18nL10nModuleLanguageNavigation
 
-?>
+

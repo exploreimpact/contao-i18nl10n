@@ -39,7 +39,7 @@ $GLOBALS['TL_LANG']['tl_page_i18nl10n'][''] = array('', '');
  */
 //$GLOBALS['TL_LANG']['tl_page_i18nl10n'][''] = 'tl_page meta reference text here';
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['menu_legend'] = 'Локализирани полета, използвани в менюта и URL';
-$GLOBALS['TL_LANG']['tl_page_i18nl10n']['meta_legend'] = 'Локализирани полета за мета-таговете в &lt;head&gt;&lt;/head&gt; секциятас.';
+$GLOBALS['TL_LANG']['tl_page_i18nl10n']['meta_legend'] = 'Локализирани полета за мета-таговете в &lt;head&gt;&lt;/head&gt; секцията.';
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['time_legend'] = 'Локализирани формати за дата и време';
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['expert_legend'] = &$GLOBALS['TL_LANG']['tl_page']['expert_legend'];
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['publish_legend'] = &$GLOBALS['TL_LANG']['tl_page']['publish_legend'];
