@@ -26,4 +26,3 @@ $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_languages'] =
 $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_default_language'] = 
     array('Default Language', 'Enter a default language for your pages. '
           .'You should allways have a content element in this language.');
-?>

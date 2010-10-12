@@ -22,20 +22,24 @@
  *
  * PHP version 5
  * @copyright  Krasimir Berov 2010 
- * @author     Krasimir Berov 
- * @package    Language
+ * @author     Krasimir Berov
+ * @translated by nexflo
+ * @package    MultiLanguagePage 
  * @license    LGPL3 
  * @filesource
  */
 
 
 /**
- * Miscellaneous
+ * Fields
  */
-$GLOBALS['TL_LANG']['MSC']['i18nl10n_fields']['language']['label'] = 
-    array('Език','Моля изберте един от наличните езици');
-$GLOBALS['TL_LANG']['MSC']['editl10ns'] ='Редакция на преводите на страница %s';
 
-$GLOBALS['TL_LANG']['MSC']['language'] = 'език';
-//Allow unlocalized entries in tl_content so content elements can be shared among localized pages
-$GLOBALS['TL_LANG']['LNG'][''] = 'Всеки';
+
+/**
+ * Reference
+ */
+
+
+/**
+ * Buttons
+ */

@@ -22,20 +22,23 @@
  *
  * PHP version 5
  * @copyright  Krasimir Berov 2010 
- * @author     Krasimir Berov 
- * @package    Language
+ * @author     Krasimir Berov
+ * @translated by nexflo
+ * @package    MultiLanguagePage 
  * @license    LGPL3 
  * @filesource
  */
 
 
 /**
- * Miscellaneous
+ * Back end modules
  */
-$GLOBALS['TL_LANG']['MSC']['i18nl10n_fields']['language']['label'] = 
-    array('Език','Моля изберте един от наличните езици');
-$GLOBALS['TL_LANG']['MSC']['editl10ns'] ='Редакция на преводите на страница %s';
+$GLOBALS['TL_LANG']['MOD']['i18nl10n'] = array('Mehrsprachige Seiten', 
+     'Die einzelnen Sprachen werden anhand der Seiten-Struktur übersetzt.');
 
-$GLOBALS['TL_LANG']['MSC']['language'] = 'език';
-//Allow unlocalized entries in tl_content so content elements can be shared among localized pages
-$GLOBALS['TL_LANG']['LNG'][''] = 'Всеки';
+/**
+ * Front end modules
+ */
+//$GLOBALS['TL_LANG']['FMD'][''] = array('', '');
+$GLOBALS['TL_LANG']['FMD']['i18nl10nnav']     = array('Sprach menü', 'Erstellt ein Menü um zwischen Seiten und Sprachen zu wechseln.');
+

@@ -22,7 +22,8 @@
  *
  * PHP version 5
  * @copyright  Krasimir Berov 2010 
- * @author     Krasimir Berov 
+ * @author     Krasimir Berov
+ * @translated by nexflo 
  * @package    Language
  * @license    LGPL3 
  * @filesource
@@ -33,9 +34,10 @@
  * Miscellaneous
  */
 $GLOBALS['TL_LANG']['MSC']['i18nl10n_fields']['language']['label'] = 
-    array('Език','Моля изберте един от наличните езици');
-$GLOBALS['TL_LANG']['MSC']['editl10ns'] ='Редакция на преводите на страница %s';
+    array('Sprache','Bitte wählen sie eine Sprache');
+$GLOBALS['TL_LANG']['MSC']['editl10ns'] ='Sprache für Seite %s ändern';
 
-$GLOBALS['TL_LANG']['MSC']['language'] = 'език';
+$GLOBALS['TL_LANG']['MSC']['language'] = 'sprache';
 //Allow unlocalized entries in tl_content so content elements can be shared among localized pages
-$GLOBALS['TL_LANG']['LNG'][''] = 'Всеки';
+$GLOBALS['TL_LANG']['LNG'][''] = 'Alle';
+

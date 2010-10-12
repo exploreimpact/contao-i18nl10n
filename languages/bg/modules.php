@@ -43,5 +43,3 @@ $GLOBALS['TL_LANG']['MOD']['i18nl10n'] = array('Multilanguage Pages',
 $GLOBALS['TL_LANG']['FMD']['i18nl10nnav']     = array(
     'Меню с езици', 
     'Създава езиково меню за превключване към различни езици на страните.');
-
-?>

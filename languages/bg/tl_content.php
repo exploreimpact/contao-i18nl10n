@@ -42,5 +42,3 @@ $GLOBALS['TL_LANG']['tl_content']['l10n_legend'] = 'L10N Настройки';
 /**
  * Buttons
  */
-
-?>

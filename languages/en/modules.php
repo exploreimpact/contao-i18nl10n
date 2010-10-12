@@ -43,4 +43,3 @@ $GLOBALS['TL_LANG']['MOD']['i18nl10n'] = array('Multilanguage Pages',
 //$GLOBALS['TL_LANG']['FMD'][''] = array('', '');
 $GLOBALS['TL_LANG']['FMD']['i18nl10nnav']     = array('Languages menu', 'Generates flat menu to navigate between page and content languages.');
 
-?>

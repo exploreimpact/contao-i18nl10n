@@ -39,4 +39,4 @@ $GLOBALS['TL_LANG']['MSC']['editl10ns'] ='Edit localizations for page %s';
 $GLOBALS['TL_LANG']['MSC']['language'] = 'language';
 //Allow unlocalized entries in tl_content so content elements can be shared among localized pages
 $GLOBALS['TL_LANG']['LNG'][''] = 'Any';
-?>
+
