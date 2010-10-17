@@ -90,5 +90,4 @@ class I18nL10nFrontend extends Controller
         }
         return $items;
     }//end i18nl10nNavItems
-}
-?>
+}// end class I18nL10nFrontend

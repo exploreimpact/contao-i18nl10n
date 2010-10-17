@@ -55,7 +55,7 @@ $GLOBALS['TL_LANG']['tl_page_i18nl10n']['delete'] = array('Изтриване', 
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['show']   = array('Виж', 'Локализирани полета');
 
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all']   = 
-array('Всички', 'Локализиране на всички непреведени страници на достъпните езици');
+array('L10N за всички', 'Локализиране на всички непреведени страници на достъпните езици');
 
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all_q'] =
 'За всички непреведени страници на <span style="white-space:nowrap">[%s]</span> ще се създе копие за всеки от наличните езици за сайта.<br />'

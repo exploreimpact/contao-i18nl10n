@@ -59,7 +59,7 @@ $GLOBALS['TL_LANG']['tl_page_i18nl10n']['copy']   = array('Kopieren', 'Meta-Feld
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['delete'] = array('Löschen', 'Meta-Felder löschen');
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['show']   = array('Anzeigen', 'Meta-Felder');
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all']   = 
-array('Alle', 'Alle unübersetzten Seiten lokalisieren');
+array('L10N für Alle', 'Alle unübersetzten Seiten lokalisieren');
 
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all_q'] =
 'Für alle unlokalisierten Seiten in<span style="white-space:nowrap">[%s]</span> werden kopien in den entsprechenden Sprachen erstellt<br />'

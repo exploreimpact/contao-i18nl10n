@@ -76,6 +76,13 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
     ),
     'global_operations' => array
     (
+    'localize_all' => array
+    (
+        'label'               => &$_tl_page_i18nl10n['localize_all'],
+        'href'                => 'localize_all=1',
+        'class'               => 'header_localize_all',
+        'attributes'          => 'onclick="Backend.getScrollOffset();" accesskey="e"'
+    ),
     'toggleNodes' => array
     (
         'label'               => &$GLOBALS['TL_LANG']['MSC']['toggleNodes'],
@@ -89,13 +96,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         'class'               => 'header_edit_all',
         'attributes'          => 'onclick="Backend.getScrollOffset();" accesskey="e"'
     ),
-    'localize_all' => array
-    (
-        'label'               => &$_tl_page_i18nl10n['localize_all'],
-        'href'                => 'localize_all=1',
-        'class'               => 'header_localize_all',
-        'attributes'          => 'onclick="Backend.getScrollOffset();" accesskey="e"'
-    ),
+
     
     ),
     'operations' => array

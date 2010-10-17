@@ -1,6 +1,6 @@
 <?php
 /**
-    The ModuleNavigation inherits from Module where menu items a re actually generated
+    The ModuleNavigation inherits from Module where menu items are actually generated
     TTTOOO complex, so we modify the collected items here and propose to the 
     site developer to copy this template and style it.
  */
