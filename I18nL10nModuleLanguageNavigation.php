@@ -33,10 +33,7 @@
  *
  * @copyright  Krasimir Berov 2010 
  * @author     Krasimir Berov 
- * @package    Controller
- * The only thing changed here is the SQL Query.
- * We should keep an eye on how this part of the core is changing.
- * TODO: Ask Leo to make the query changeable from extensions.
+ * @package    MultiLanguagePage
  
  */
 class I18nL10nModuleLanguageNavigation extends Module
@@ -114,7 +111,9 @@ class I18nL10nModuleLanguageNavigation extends Module
                 foreach($res_items as $i =>$row){
                     if($row['language'] == $language){
                         $items[$index]['id'] = $objPage->id;
-                        $items[$index]['alias'] = $objPage->alias;
+                        $items[$index]['alias'] = $objPage->alias
+                        .($GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix']?
+                          ".$language":'');
                         $items[$index]['language'] = $language;
                         array_delete($res_items,$i);
                         break;

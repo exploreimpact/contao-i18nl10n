@@ -46,13 +46,14 @@ class I18nL10nModuleBreadcrumb extends ModuleBreadcrumb
      */
     protected $strTemplate = 'mod_i18nl10nbreadcrumb';
     protected $time;
-    protected $default_lantuage;
-
+    protected $default_language;
+    protected $i18nl10n_alias;
     protected function compile()
     {
         global $objPage;
         $this->time = time();
-        $this->default_lantuage = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
+        $this->default_language = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
+        $this->i18nl10n_alias = $GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix'];
         $pages = array();
         $items = array();
         $ids   = array();
@@ -69,12 +70,14 @@ class I18nL10nModuleBreadcrumb extends ModuleBreadcrumb
         foreach($objPages->fetchAllassoc() as $row) { array_push($ids,$row['_id']); }
 
         //Now get pages L10Ns
-        $with_l10n = ($GLOBALS['TL_LANGUAGE']!=$this->default_lantuage);
+        $with_l10n = ($GLOBALS['TL_LANGUAGE']!=$this->default_language);
         $language_sql = ($with_l10n?
         " AND (i.language = '".$GLOBALS['TL_LANGUAGE']."' OR i.language IS NULL) ":"");
         if($with_l10n) {
         $sql = "
-SELECT p.id, p.alias, p.type, p.published, i.language, 
+SELECT p.id,
+(CASE i.language WHEN NULL THEN p.alias ELSE CONCAT(p.alias,'.',i.language) END) as alias, 
+p.type, p.published, i.language, 
 (CASE i.title WHEN NULL THEN p.title ELSE i.title END) as title,
 (CASE i.pageTitle WHEN NULL THEN p.pageTitle ELSE i.pageTitle END) as pageTitle
 FROM tl_page p
@@ -86,11 +89,11 @@ AND p.published=1" : "");
         }
         else {
         $sql = "
-SELECT id, alias, title, type, pageTitle, published FROM tl_page
-WHERE id IN (".implode(',',array_reverse($ids)).") "
-.(!BE_USER_LOGGED_IN ? " AND (start='' OR start<$this->time) AND (stop='' OR stop>$this->time) 
-AND published=1" : "")
-;
+            SELECT id, alias, title, type, pageTitle, published FROM tl_page
+            WHERE id IN (".implode(',',array_reverse($ids)).") "
+            .(!BE_USER_LOGGED_IN ? 
+              " AND (start='' OR start<$this->time) AND (stop='' OR stop>$this->time) 
+              AND published=1" : "");
         }
 
         $pages = $this->Database->prepare($sql)->limit(20)->execute(
@@ -101,14 +104,16 @@ AND published=1" : "")
     
     
     private function buildBreadcrumbMenu(Array $pages) {
-        $with_l10n = ($GLOBALS['TL_LANGUAGE']!=$this->default_lantuage);
+        $with_l10n = ($GLOBALS['TL_LANGUAGE']!=$this->default_language);
 
         $items = array();
         $root_page = array_shift($pages);
         if($this->includeRoot) {
             // Get first page
             if($with_l10n):
-            $sql = "SELECT p.id, p.alias,
+            $sql = "SELECT p.id, 
+            (CASE i.language WHEN NULL THEN p.alias ELSE CONCAT(p.alias,'.',i.language) END) as alias, 
+
             (CASE i.title WHEN NULL THEN p.title ELSE i.title END) as title,
             (CASE i.pageTitle WHEN NULL THEN p.pageTitle ELSE i.pageTitle END) as pageTitle 
             FROM tl_page p

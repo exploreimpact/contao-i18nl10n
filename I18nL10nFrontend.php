@@ -77,6 +77,13 @@ class I18nL10nFrontend extends Controller
             $d=0;
             foreach($localized_pages as $row) {
                 if($row['pid']==$item['id']) {
+                    if($GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix']) {
+                         
+                         $items[$c]['href'] = preg_replace(
+                          "/{$items[$c]['alias']}/",
+                          "{$items[$c]['alias']}.{$GLOBALS['TL_LANGUAGE']}",
+                          $items[$c]['href']);
+                    }
                     $items[$c]['pageTitle'] = specialchars($row['pageTitle']);
                     $items[$c]['title'] = specialchars($row['title']);
                     $items[$c]['link'] = $row['title'];
@@ -90,4 +97,22 @@ class I18nL10nFrontend extends Controller
         }
         return $items;
     }//end i18nl10nNavItems
+    /**
+     * A Hook
+     */
+    public function getPageIdFromUrl(Array $fragments) {
+        $languages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
+        $ok = preg_match('/^(\w+)\.([A-z]{2})$/',$fragments[0],$matches);
+        if($ok) {
+            $matches[2] = strtolower($matches[2]); 
+        }
+        if($GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix'] &&
+            $ok &&  in_array($matches[2],$languages)){
+            $fragments[0] = $matches[1];
+            array_push($fragments,'language',$matches[2]);
+        }
+       // error_log( '---'.var_export($matches,true) );
+        return $fragments;
+    }
+    
 }// end class I18nL10nFrontend

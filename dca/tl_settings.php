@@ -33,7 +33,7 @@ $this->loadLanguageFile('languages');
 /**
  * Add to palette
  */
-$GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= ';{page_i18nl10n:hide},i18nl10n_languages,i18nl10n_default_language';
+$GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= ';{page_i18nl10n:hide},i18nl10n_languages,i18nl10n_default_language,i18nl10n_alias_suffix';
 
 /**
  * Add fields
@@ -63,7 +63,13 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_default_language'] = array
                     'style'=>'width:15em;','tl_class'=>'w50','unique'=>true
                     )
 );
-
+$GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_alias_suffix'] = array(
+    'label'     => &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffix'],
+    'exclude'   => true,
+    'inputType' => 'checkbox',
+    'default'   => false,
+    'eval' => array('tl_class'=>'w50')
+);
 
 class tl_settings_l10ns extends Backend 
 {

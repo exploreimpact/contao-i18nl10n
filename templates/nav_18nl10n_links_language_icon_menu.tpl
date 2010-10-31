@@ -5,10 +5,18 @@
  
 ?>
 
-<?php foreach ($this->items as $item): ?>
-<a href="<?php 
-    echo $this->generateFrontendUrl($item,'/language/'.$item['language']);
-    ?>"
+<?php 
+foreach ($this->items as $item): 
+    $url = '';
+    if($GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix']):
+        $url = $this->generateFrontendUrl($item);
+    else:
+        $url = $this->generateFrontendUrl($item,'/language/'.$item['language']);
+    endif;
+
+?>
+
+<a href="<?php echo $url; ?>"
     <?php if ($item['isActive']) {echo ' class="active"';} ?>
     title="<?php echo $this->languages[$item['language']];?>"
     ><img src="<?php 
@@ -16,5 +24,6 @@
         title="<?php echo $this->languages[$item['language']];?>"
         alt="<?php echo $this->languages[$item['language']];?>"
 /></a>
-<?php endforeach; ?>
+<?php 
+endforeach; ?>
 

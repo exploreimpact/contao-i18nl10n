@@ -204,11 +204,10 @@ $GLOBALS['FE_MOD']['navigationMenu']['breadcrumb']  = 'I18nL10nModuleBreadcrumb'
  
 /** Potential candidates for implementation **
 //$GLOBALS['TL_HOOKS']['getContentElement']
-//TODO: add alias localized support so
-//for example alias 'начало' links to 'home' with l10n enabled
-// may be use 
-//$GLOBALS['TL_HOOKS']['getPageIdFromUrl']
-**/
+ */
+
+$GLOBALS['TL_HOOKS']['getPageIdFromUrl'][] = array('I18nL10nFrontend', 'getPageIdFromUrl');
+
 /**
  * -------------------------------------------------------------------------
  * PAGE TYPES
