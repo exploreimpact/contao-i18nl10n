@@ -238,7 +238,7 @@ class tl_page_i18nl10n extends Backend
             class="tl_submit" name="localize_all_" /> <a
             href="contao/main.php?do=i18nl10n">'
             .utf8_ucfirst($GLOBALS['TL_LANG']['MSC']['no']).'</a>&nbsp;
-            </div></div><input type="hidden" name="REQUEST_TOKEN" value="{{request_token}}"></form>'
+            </div></div><input type="hidden" name="REQUEST_TOKEN" value="'.REQUEST_TOKEN.'"></form>'
             ;
         }
         //localise all pages 
