@@ -13,4 +13,4 @@
     } ?>><?php 
     echo $this->languages[$item['language']];
 ?></option>
-<?php endforeach; ?></select></form>
+<?php endforeach; ?></select><input type="hidden" name="REQUEST_TOKEN" value="{{request_token}}"></form>
