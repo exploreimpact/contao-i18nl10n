@@ -85,11 +85,15 @@ class I18nL10nFrontend extends Controller
             foreach($localized_pages as $row) {
                 if($row['pid']==$item['id']) {
                     if($GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix']) {
-                         
                          $items[$c]['href'] = preg_replace(
                           "/{$items[$c]['alias']}/",
                           "{$items[$c]['alias']}.{$GLOBALS['TL_LANGUAGE']}",
                           $items[$c]['href']);
+                    }else{
+                      $items[$c]['href'] = preg_replace(
+                      "/{$items[$c]['alias']}/",
+                      "{$items[$c]['alias']}/language/{$GLOBALS['TL_LANGUAGE']}",
+                      $items[$c]['href']);
                     }
                     $items[$c]['pageTitle'] = specialchars($row['pageTitle']);
                     $items[$c]['title'] = specialchars($row['title']);
@@ -103,11 +107,15 @@ class I18nL10nFrontend extends Controller
         }
         else {
             if($GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix']) {
-                     
-                     $items[$c]['href'] = preg_replace(
-                      "/{$items[$c]['alias']}/",
-                      "{$items[$c]['alias']}.{$GLOBALS['TL_LANGUAGE']}",
-                      $items[$c]['href']);
+                 $items[$c]['href'] = preg_replace(
+                  "/{$items[$c]['alias']}/",
+                  "{$items[$c]['alias']}.{$GLOBALS['TL_LANGUAGE']}",
+                  $items[$c]['href']);
+            }else{
+              $items[$c]['href'] = preg_replace(
+              "/{$items[$c]['alias']}/",
+              "{$items[$c]['alias']}/language/{$GLOBALS['TL_LANGUAGE']}",
+              $items[$c]['href']);
             }
             
         }
