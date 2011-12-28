@@ -37,9 +37,11 @@ $GLOBALS['TL_LANG']['tl_content']['language'] = &$GLOBALS['TL_LANG']['MSC']['lan
 /**
  * References
  */
-$GLOBALS['TL_LANG']['tl_content']['l10n_legend'] = 'L10N Eigenschaften'; 
+$GLOBALS['TL_LANG']['tl_content']['l10n_legend'] = 'L10N Einstellungen';
 
 
 /**
  * Buttons
  */
+
+?>

@@ -33,12 +33,12 @@
 /**
  * Back end modules
  */
-$GLOBALS['TL_LANG']['MOD']['i18nl10n'] = array('Mehrsprachige Seiten', 
-     'Die einzelnen Sprachen werden anhand der Seiten-Struktur übersetzt.');
+$GLOBALS['TL_LANG']['MOD']['i18nl10n'] = array('Mehrsprachige Seiten', 'Ermöglicht die Verwaltung mehrsprachiger Seiten in einem einzigen Seitenbaum. Bietet dazu auch sprachgebundene Inhaltselemente an.');
 
 /**
  * Front end modules
  */
 //$GLOBALS['TL_LANG']['FMD'][''] = array('', '');
-$GLOBALS['TL_LANG']['FMD']['i18nl10nnav']     = array('Sprach menü', 'Erstellt ein Menü um zwischen Seiten und Sprachen zu wechseln.');
+$GLOBALS['TL_LANG']['FMD']['i18nl10nnav'] = array('Sprachmenü', 'Erstellt ein Menü um zwischen Seiten und Sprachen zu wechseln.');
 
+?>

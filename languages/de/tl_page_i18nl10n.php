@@ -52,15 +52,13 @@ $GLOBALS['TL_LANG']['tl_page_i18nl10n']['publish_legend'] = &$GLOBALS['TL_LANG']
 /**
  * Buttons
  */
-$GLOBALS['TL_LANG']['tl_page_i18nl10n']['new']    = array('Neue L10N', 
-                                                      'Neue Übersetzung hinzufügen');
-$GLOBALS['TL_LANG']['tl_page_i18nl10n']['edit']   = array('Editieren', 'Meta-Felder der Seite %s editieren');
-$GLOBALS['TL_LANG']['tl_page_i18nl10n']['copy']   = array('Kopieren', 'Meta-Felder kopieren');
-$GLOBALS['TL_LANG']['tl_page_i18nl10n']['delete'] = array('Löschen', 'Meta-Felder löschen');
-$GLOBALS['TL_LANG']['tl_page_i18nl10n']['show']   = array('Anzeigen', 'Meta-Felder');
-$GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all']   = 
-array('L10N für Alle', 'Alle unübersetzten Seiten lokalisieren');
+$GLOBALS['TL_LANG']['tl_page_i18nl10n']['new']          = array('Neue L10N', 'Neue Lokalisierte Seite hinzufügen');
+$GLOBALS['TL_LANG']['tl_page_i18nl10n']['edit']         = array('Bearbeiten', 'Lokalisierte Seite %s bearbeiten');
+$GLOBALS['TL_LANG']['tl_page_i18nl10n']['copy']         = array('Duplizieren', 'Lokalisierte Seite %s duplizieren');
+$GLOBALS['TL_LANG']['tl_page_i18nl10n']['delete']       = array('Löschen', 'Lokalisierte Seite %s löschen');
+$GLOBALS['TL_LANG']['tl_page_i18nl10n']['show']         = array('Anzeigen', 'Details der lokalisierten Seite %s anzeigen');
+$GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all'] = array('L10N für Alle', 'Alle nicht lokalisierten Seiten mit vorhandenen Sprachen lokalisieren');
 
-$GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all_q'] =
-'Für alle unlokalisierten Seiten in<span style="white-space:nowrap">[%s]</span> werden kopien in den entsprechenden Sprachen erstellt<br />'
-.'Sind sie sicher das sie für alle nicht-lokalisierten Seiten, lokalisierungen erstellen wollen?';
+$GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all_q'] = 'Für alle nicht lokalisierten Seiten in <span style="white-space:nowrap">[%s]</span> werden lokalisierte Seiten in den vorhandenen Sprachen erstellt.<br />Sind Sie sicher, dass Sie für alle nicht lokalisierten Seiten, Lokalisierungen erstellen wollen?';
+
+?>

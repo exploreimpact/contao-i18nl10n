@@ -33,11 +33,11 @@
 /**
  * Miscellaneous
  */
-$GLOBALS['TL_LANG']['MSC']['i18nl10n_fields']['language']['label'] = 
-    array('Sprache','Bitte wählen sie eine Sprache');
+$GLOBALS['TL_LANG']['MSC']['i18nl10n_fields']['language']['label'] = array('Sprache', 'Bitte wählen Sie eine Sprache');
 $GLOBALS['TL_LANG']['MSC']['editl10ns'] ='Sprache für Seite %s ändern';
 
-$GLOBALS['TL_LANG']['MSC']['language'] = 'sprache';
+$GLOBALS['TL_LANG']['MSC']['language'] = 'Sprache';
 //Allow unlocalized entries in tl_content so content elements can be shared among localized pages
 $GLOBALS['TL_LANG']['LNG'][''] = 'Alle';
 
+?>
