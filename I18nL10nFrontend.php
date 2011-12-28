@@ -66,7 +66,7 @@ class I18nL10nFrontend extends Controller
         }
         $languages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
         $time = time();
-        $fields = 'pid,title,pageTitle,description';
+        $fields = 'pid,title,pageTitle,description,language';
         if($GLOBALS['TL_LANGUAGE'] != $languages[0]){
             $localized_pages = $this->Database->prepare('
                 SELECT '. $fields .' FROM tl_page_i18nl10n
@@ -85,15 +85,13 @@ class I18nL10nFrontend extends Controller
             foreach($localized_pages as $row) {
                 if($row['pid']==$item['id']) {
                     if($GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix']) {
-                         $items[$c]['href'] = preg_replace(
-                          "/{$items[$c]['alias']}/",
-                          "{$items[$c]['alias']}.{$GLOBALS['TL_LANGUAGE']}",
-                          $items[$c]['href']);
+                       $items[$c]['href'] = 
+                         $this->generateFrontendUrl(
+                             array(alias=>"{$item['alias']}.{$row['language']}")
+                             );
+                         
                     }else{
-                      $items[$c]['href'] = preg_replace(
-                      "/{$items[$c]['alias']}/",
-                      "{$items[$c]['alias']}/language/{$GLOBALS['TL_LANGUAGE']}",
-                      $items[$c]['href']);
+                      $items[$c]['href'] =   $this->generateFrontendUrl($item,'/language/'.$row['language']);
                     }
                     $items[$c]['pageTitle'] = specialchars($row['pageTitle']);
                     $items[$c]['title'] = specialchars($row['title']);
@@ -107,17 +105,13 @@ class I18nL10nFrontend extends Controller
         }
         else {
             if($GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix']) {
-                 $items[$c]['href'] = preg_replace(
-                  "/{$items[$c]['alias']}/",
-                  "{$items[$c]['alias']}.{$GLOBALS['TL_LANGUAGE']}",
-                  $items[$c]['href']);
+                 $items[$c]['href'] = 
+                         $this->generateFrontendUrl(
+                             array(alias=>"{$item['alias']}.{$row['language']}")
+                             );
             }else{
-              $items[$c]['href'] = preg_replace(
-              "/{$items[$c]['alias']}/",
-              "{$items[$c]['alias']}/language/{$GLOBALS['TL_LANGUAGE']}",
-              $items[$c]['href']);
+                $items[$c]['href'] =   $this->generateFrontendUrl($item,'/language/'.$row['language']);      
             }
-            
         }
         $c++;
         } // end foreach($items as $item)
