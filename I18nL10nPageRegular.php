@@ -21,7 +21,7 @@
  * Software Foundation website at <http://www.gnu.org/licenses/>.
  *
  * PHP version 5
- * @copyright  Krasimir Berov 2010 
+ * @copyright  Krasimir Berov 2010-2011 
  * @author     Krasimir Berov 
  * @package    MultiLanguagePage 
  * @license    LGPL3 
@@ -32,7 +32,7 @@
 /**
  * Class I18nPageRegular 
  *
- * @copyright  Krasimir Berov 2010 
+ * @copyright  Krasimir Berov 2010-2011
  * @author     Krasimir Berov 
  * @package    Controller
  */

@@ -49,7 +49,7 @@ class I18nL10nFrontend extends Controller
 		$this->import('Database');
 	}
     /**
-     * Replace title and pageTitle with trnslated equivalents 
+     * Replace title and pageTitle with translated equivalents 
      * just before display them as menu.
      *
      * @param Array $items The menu items on the current menu level
@@ -102,7 +102,7 @@ class I18nL10nFrontend extends Controller
      */
     public function getPageIdFromUrl(Array $fragments) {
         $languages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
-        $ok = preg_match('/^([\-\w]+)\.([A-z]{2})$/',$fragments[0],$matches);
+        $ok = preg_match('/^([\-\w\.]+)\.([A-z]{2})$/',$fragments[0],$matches);
         if($ok) {
             $matches[2] = strtolower($matches[2]); 
         }
