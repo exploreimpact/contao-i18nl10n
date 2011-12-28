@@ -51,6 +51,7 @@ class I18nL10nFrontend extends Controller
     /**
      * Replace title and pageTitle with translated equivalents 
      * just before display them as menu.
+     * TODO: Simplify this code mess!!!
      *
      * @param Array $items The menu items on the current menu level
      */	
@@ -63,18 +64,24 @@ class I18nL10nFrontend extends Controller
         foreach($items as $row){
             $item_ids[]= intval($row['id']);//just in case
         }
+        $languages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
         $time = time();
         $fields = 'pid,title,pageTitle,description';
-        $localized_pages = $this->Database->prepare('
-            SELECT '. $fields .' FROM tl_page_i18nl10n
-            WHERE pid IN ( '.implode(', ',$item_ids).' )
-            AND language = ? '
-            .(!BE_USER_LOGGED_IN ? " AND (start='' OR start<$time) AND (stop='' OR stop>$time) 
-             AND published=1" : "")
-        )->limit(1000)->execute($GLOBALS['TL_LANGUAGE'])->fetchAllassoc();
+        if($GLOBALS['TL_LANGUAGE'] != $languages[0]){
+            $localized_pages = $this->Database->prepare('
+                SELECT '. $fields .' FROM tl_page_i18nl10n
+                WHERE pid IN ( '.implode(', ',$item_ids).' )
+                AND language = ? '
+                .(!BE_USER_LOGGED_IN ? " AND (start='' OR start<$time) AND (stop='' OR stop>$time) 
+                 AND published=1" : "")
+            )->limit(1000)
+            ->execute($GLOBALS['TL_LANGUAGE'])
+            ->fetchAllassoc();
+        }
         $c=0;
         foreach($items as $item){
             $d=0;
+        if($GLOBALS['TL_LANGUAGE'] != $languages[0]){
             foreach($localized_pages as $row) {
                 if($row['pid']==$item['id']) {
                     if($GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix']) {
@@ -92,9 +99,20 @@ class I18nL10nFrontend extends Controller
                     break;
                 }
                 $d++;
-            }
-        $c++;
+            } //end foreach($localized_pages as $row)
         }
+        else {
+            if($GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix']) {
+                     
+                     $items[$c]['href'] = preg_replace(
+                      "/{$items[$c]['alias']}/",
+                      "{$items[$c]['alias']}.{$GLOBALS['TL_LANGUAGE']}",
+                      $items[$c]['href']);
+            }
+            
+        }
+        $c++;
+        } // end foreach($items as $item)
         return $items;
     }//end i18nl10nNavItems
     /**
