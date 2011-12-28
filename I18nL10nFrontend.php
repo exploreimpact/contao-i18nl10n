@@ -102,7 +102,7 @@ class I18nL10nFrontend extends Controller
      */
     public function getPageIdFromUrl(Array $fragments) {
         $languages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
-        $ok = preg_match('/^(\w+)\.([A-z]{2})$/',$fragments[0],$matches);
+        $ok = preg_match('/^([\-\w]+)\.([A-z]{2})$/',$fragments[0],$matches);
         if($ok) {
             $matches[2] = strtolower($matches[2]); 
         }
@@ -116,3 +116,4 @@ class I18nL10nFrontend extends Controller
     }
     
 }// end class I18nL10nFrontend
+
