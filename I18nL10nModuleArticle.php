@@ -49,6 +49,7 @@ class I18nL10nModuleArticle extends ModuleArticle
 	protected function compile()
 	{
 		global $objPage;
+		$this->import('String');
 
 		if ($this->blnNoMarkup)
 		{
@@ -75,8 +76,18 @@ class I18nL10nModuleArticle extends ModuleArticle
 
 		// Add modification date
 		$this->Template->timestamp = $this->tstamp;
-		$this->Template->date = $this->parseDate($GLOBALS['TL_CONFIG']['datimFormat'], $this->tstamp);
+		$this->Template->date = $this->parseDate($objPage->datimFormat, $this->tstamp);
 		$this->Template->author = $this->author;
+		
+		// Clean the RTE output
+		if ($objPage->outputFormat == 'xhtml')
+		{
+			$this->teaser = $this->String->toXhtml($this->teaser);
+		}
+		else
+		{
+			$this->teaser = $this->String->toHtml5($this->teaser);
+		}
 
 		// Show teaser only
 		if ($this->multiMode && $this->showTeaser)
@@ -97,13 +108,13 @@ class I18nL10nModuleArticle extends ModuleArticle
 				$this->cssID = $arrCss;
 			}
 
-			$article = (!$GLOBALS['TL_CONFIG']['disableAlias'] && strlen($this->alias)) ? $this->alias : $this->id;
+			$article = (!$GLOBALS['TL_CONFIG']['disableAlias'] && $this->alias != '') ? $this->alias : $this->id;
 			$href = 'articles=' . (($this->inColumn != 'main') ? $this->inColumn . ':' : '') . $article;
 
 			$this->Template->headline = $this->headline;
 			$this->Template->href = $this->addToUrl($href);
 			$this->Template->teaser = $this->teaser;
-			$this->Template->readMore = specialchars(sprintf($GLOBALS['TL_LANG']['MSC']['readMore'], $this->headline));
+			$this->Template->readMore = specialchars(sprintf($GLOBALS['TL_LANG']['MSC']['readMore'], $this->headline), true);
 			$this->Template->more = $GLOBALS['TL_LANG']['MSC']['more'];
 
 			return;
@@ -112,7 +123,7 @@ class I18nL10nModuleArticle extends ModuleArticle
 		// Get section and article alias
 		list($strSection, $strArticle) = explode(':', $this->Input->get('articles'));
 
-		if (is_null($strArticle))
+		if ($strArticle === null)
 		{
 			$strArticle = $strSection;
 		}
@@ -120,7 +131,7 @@ class I18nL10nModuleArticle extends ModuleArticle
 		// Overwrite the page title
 		if (!$this->blnNoMarkup && $strArticle != '' && ($strArticle == $this->id || $strArticle == $this->alias) && $this->title != '')
 		{
-			$objPage->pageTitle = $this->title;
+			$objPage->pageTitle = strip_insert_tags($this->title);
 		}
 
 		$this->Template->printable = false;
@@ -129,11 +140,20 @@ class I18nL10nModuleArticle extends ModuleArticle
 		// Back link
 		if (!$this->multiMode && $strArticle != '' && ($strArticle == $this->id || $strArticle == $this->alias))
 		{
-			$this->Template->backlink = 'javascript:history.go(-1)';
 			$this->Template->back = specialchars($GLOBALS['TL_LANG']['MSC']['goBack']);
+			
+			// Remove the "/articles/…" part from the URL
+			if ($GLOBALS['TL_CONFIG']['disableAlias'])
+			{
+				$this->Template->backlink = preg_replace('@&(amp;)?articles=[^&]+@', '', $this->Environment->request);
+			}
+			else
+			{
+				$this->Template->backlink = preg_replace('@/articles/[^/]+@', '', $this->Environment->request) . $GLOBALS['TL_CONFIG']['urlSuffix'];
+			}
 		}
 
-		$contentElements = '';
+		$arrElements = array();
 
 		// Get all visible content elements
 		$objCte = $this->Database->prepare(
@@ -144,11 +164,11 @@ class I18nL10nModuleArticle extends ModuleArticle
 
 		while ($objCte->next())
 		{
-			$contentElements .= $this->getContentElement($objCte->id);
+			$arrElements[] = $this->getContentElement($objCte->id);
 		}
 
 		$this->Template->teaser = $this->teaser;
-		$this->Template->contentElements = $contentElements;
+		$this->Template->elements = $arrElements;
 
 		if ($this->keywords != '')
 		{
@@ -167,7 +187,7 @@ class I18nL10nModuleArticle extends ModuleArticle
 		{
 			$options = deserialize($this->printable);
 
-			if (is_array($options) && count($options) > 0)
+			if (is_array($options) && !empty($options))
 			{
 				$this->Template->printable = true;
 				$this->Template->printButton = in_array('print', $options);

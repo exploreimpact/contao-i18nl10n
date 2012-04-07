@@ -112,52 +112,57 @@ class I18nL10nPageRegular extends PageRegular
         $this->import('Database');
 
         // Get article
-        $objArticle = $this->Database->prepare("SELECT *, author AS authorId, (SELECT name FROM tl_user WHERE id=author) AS author FROM tl_article WHERE (id=? OR alias=?)" . (!$blnIsInsertTag ? " AND pid=?" : ""))
+        $objRow = $this->Database->prepare("SELECT *, author AS authorId, (SELECT name FROM tl_user WHERE id=author) AS author FROM tl_article WHERE (id=? OR alias=?)" . (!$blnIsInsertTag ? " AND pid=?" : ""))
                                      ->limit(1)
                                      ->execute((is_numeric($varId) ? $varId : 0), $varId, $objPage->id);
+				
+		    if ($objRow->numRows < 1)
+				{
+					return false;
+				}
 
-        if ($objArticle->numRows < 1)
-        {
-            // Do not index the page
-            $objPage->noSearch = 1;
-            $objPage->cache = 0;
-
-            // Send 404 header
-            header('HTTP/1.1 404 Not Found');
-            return '<p class="error">' . sprintf($GLOBALS['TL_LANG']['MSC']['invalidPage'], $varId) . '</p>';
-        }
-
+				
         if (!file_exists(TL_ROOT . '/system/modules/frontend/ModuleArticle.php'))
         {
             $this->log('Class ModuleArticle does not exist', 'Controller getArticle()', TL_ERROR);
             return '';
         }
-
+        
         // Print article as PDF
-        if ($this->Input->get('pdf') == $objArticle->id)
+        if ($this->Input->get('pdf') == $objRow->id)
         {
             // Backwards compatibility
-            if ($objArticle->printable == 1)
+            if ($objRow->printable == 1)
             {
-                $this->printArticleAsPdf($objArticle);
+                $this->printArticleAsPdf($objRow);
             }
 
             // New structure
-            elseif ($objArticle->printable != '')
+            elseif ($objRow->printable != '')
             {
-                $options = deserialize($objArticle->printable);
+                $options = deserialize($objRow->printable);
 
                 if (is_array($options) && in_array('pdf', $options))
                 {
-                    $this->printArticleAsPdf($objArticle);
+                    $this->printArticleAsPdf($objRow);
                 }
             }
         }
 
-        $objArticle->headline = $objArticle->title;
-        $objArticle->multiMode = $blnMultiMode;
+        $objRow->headline = $objRow->title;
+        $objRow->multiMode = $blnMultiMode;
+        
+        // HOOK: add custom logic
+        if (isset($GLOBALS['TL_HOOKS']['getArticle']) && is_array($GLOBALS['TL_HOOKS']['getArticle']))
+        {
+        	foreach ($GLOBALS['TL_HOOKS']['getArticle'] as $callback)
+        	{
+        		$this->import($callback[0]);
+        		$this->$callback[0]->$callback[1]($objRow);
+        	}
+        }
 
-        $objArticle = new I18nL10nModuleArticle($objArticle, $strColumn);
+        $objArticle = new I18nL10nModuleArticle($objRow, $strColumn);
         return $objArticle->generate($blnIsInsertTag);
     }
 }//end class
