@@ -37,6 +37,8 @@
  * @package    MultiLanguagePage
  * 
  * Just replaces mod_bredcrumb template
+ * TODO: Remove this class and create a hook 
+ * See: $GLOBALS['TL_HOOKS']['generateBreadcrumb']
  */
 class I18nL10nModuleBreadcrumb extends ModuleBreadcrumb
 {
@@ -47,13 +49,11 @@ class I18nL10nModuleBreadcrumb extends ModuleBreadcrumb
     protected $strTemplate = 'mod_i18nl10nbreadcrumb';
     protected $time;
     protected $default_language;
-    protected $i18nl10n_alias;
     protected function compile()
     {
         global $objPage;
         $this->time = time();
         $this->default_language = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
-        $this->i18nl10n_alias = $GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix'];
         $pages = array();
         $items = array();
         $ids   = array();
@@ -132,8 +132,7 @@ AND p.published=1" : "");
             $first_page = $objFirstPage->fetchAssoc();
             $root_title = (strlen($first_page['pageTitle']) ? 
                 specialchars($first_page['pageTitle']) : specialchars($first_page['title']));
-            $items_href = $a_suffix?$this->generateFrontendUrl(array(alias =>"{$first_page['alias']}.$TL_LANGUAGE")):
-            $this->generateFrontendUrl($first_page,'/language/'.$TL_LANGUAGE);
+            $items_href =$this->generateFrontendUrl($first_page);
             $items[] = array
             (
                 'isRoot' => true,
@@ -165,25 +164,22 @@ AND p.published=1" : "");
                         break;
     
                     case 'forward':
-                        $objNext = $this->Database->prepare("SELECT id, alias FROM tl_page WHERE id=?")
-                                                  ->limit(1)
-                                                  ->execute($pages[$i]['jumpTo']);
+                        $objNext = $this->Database->prepare(
+                        "SELECT id, alias FROM tl_page WHERE id=?"
+                        )->limit(1)
+                        ->execute($pages[$i]['jumpTo']);
     
                         if ($objNext->numRows)
                         {
                             $item = $objNext->fetchAssoc();
-                            $href = 
-                            $a_suffix?$this->generateFrontendUrl(array(alias =>"{$item['alias']}.$TL_LANGUAGE")):
-                            $this->generateFrontendUrl($item,'/language/'.$TL_LANGUAGE);
+                            $item['language'] = $pages[$i]['language'];
+                            $href = $this->generateFrontendUrl($item);
                             break;
                         }
                         // DO NOT ADD A break; STATEMENT
     
                     default:
-                        $href = 
-                        $a_suffix?$this->generateFrontendUrl(array(alias =>"{$pages[$i]['alias']}.$TL_LANGUAGE")):
-                            $this->generateFrontendUrl($pages[$i],'/language/'.$TL_LANGUAGE);
-                            
+                        $href = $this->generateFrontendUrl($pages[$i]);                            
                         break;
                 }
                 $items[] = array
@@ -191,7 +187,7 @@ AND p.published=1" : "");
                     'isRoot' => false,
                     'isActive' => false,
                     'href' => $href,
-                    'title' => (strlen($pages[$i]['pageTitle']) ? specialchars($pages[$i]['pageTitle']) : specialchars($pages[$i]['title'])),
+                    'title' => ($pages[$i]['pageTitle']!='' ? specialchars($pages[$i]['pageTitle']) : specialchars($pages[$i]['title'])),
                     'link' => $pages[$i]['title']
                 );
             }//end foreach
@@ -204,8 +200,7 @@ AND p.published=1" : "");
                 (
                     'isRoot' => false,
                     'isActive' => false,
-                    'href' => $a_suffix?$this->generateFrontendUrl(array(alias =>"{$pages[$c]['alias']}.$TL_LANGUAGE")):
-                            $this->generateFrontendUrl($pages[$c],'/language/'.$TL_LANGUAGE),
+                    'href' => $this->generateFrontendUrl($pages[$c]),
                     'title' => (strlen($pageTitle) ? specialchars($pageTitle) : specialchars($title)),
                     'link' => $title
                 );
@@ -247,8 +242,7 @@ AND p.published=1" : "");
                 (
                     'isRoot' => false,
                     'isActive' => true,
-                    'href' => $a_suffix?$this->generateFrontendUrl(array(alias =>"{$pages[$c]['alias']}.$TL_LANGUAGE")):
-                            $this->generateFrontendUrl($pages[$c],'/language/'.$TL_LANGUAGE),
+                    'href' => $this->generateFrontendUrl($pages[$c]),
                     'title' => (strlen($pageTitle) ? specialchars($pageTitle) : specialchars($title)),
                     'link' => $title
                 );

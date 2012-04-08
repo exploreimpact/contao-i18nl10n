@@ -2,7 +2,7 @@
 
 /**
  * Contao Open Source CMS
- * Copyright (C) 2005-2010 Leo Feyer
+ * Copyright (C) 2005--2012 Leo Feyer
  *
  * Formerly known as TYPOlight Open Source CMS.
  *
@@ -21,7 +21,7 @@
  * Software Foundation website at <http://www.gnu.org/licenses/>.
  *
  * PHP version 5
- * @copyright  Krasimir Berov 2010 
+ * @copyright  Krasimir Berov 2010-2012 
  * @author     Krasimir Berov 
  * @package    MultiLanguagePage 
  * @license    LGPL3 
@@ -31,7 +31,7 @@
 /**
  * Class I18nL10nModuleLanguageNavigation 
  *
- * @copyright  Krasimir Berov 2010 
+ * @copyright  Krasimir Berov 2010-2012
  * @author     Krasimir Berov 
  * @package    MultiLanguagePage
  
@@ -87,8 +87,7 @@ class I18nL10nModuleLanguageNavigation extends Module
 
         $time = time();
         $arrLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
-        $items = array();
-        $fields = 'language';
+        $fields = 'language, title, pageTitle';
         $sql = 'SELECT '. $fields .' FROM tl_page_i18nl10n
             WHERE pid =? AND language  IN ( \''.implode("', '",$arrLanguages).'\' )'
          .(!BE_USER_LOGGED_IN ? " AND (start='' OR start<$time) AND (stop='' OR stop>$time) 
@@ -96,11 +95,13 @@ class I18nL10nModuleLanguageNavigation extends Module
         $res_items = $this->Database->prepare($sql)->limit(300
                                                            )->execute($objPage->id
                                                            )->fetchAllassoc();
+        $items = array();
         if(!empty($res_items)) {
             $this->loadLanguageFile('languages');
             array_unshift($res_items,array(
-               'language' => $GLOBALS['TL_CONFIG']['i18nl10n_default_language']
-                                       )
+               'language' => $GLOBALS['TL_CONFIG']['i18nl10n_default_language'],
+               'title' => $objPage->defaultTitle,
+               'pageTitle' => $objPage->defaultPageTitle)
             );
             //keep the order in $arrLanguages and assign to $items 
             //only if page translation is found in database
@@ -109,15 +110,21 @@ class I18nL10nModuleLanguageNavigation extends Module
                     $items[$index]['isActive'] = true;
                 }
                 foreach($res_items as $i =>$row){
-                    if($row['language'] == $language){
-                        $items[$index]['id'] = $objPage->id;
-                        $items[$index]['alias'] = $objPage->alias
-                        .($GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix']?
-                          ".$language":'');
-                        $items[$index]['language'] = $language;
-                        array_delete($res_items,$i);
-                        break;
-                    }
+                  if($row['language'] == $language){
+                    $items[$index]['id'] = $objPage->id;
+                    $items[$index]['alias'] = $objPage->alias;
+                    $items[$index]['title'] = 
+                      ($row['title']?
+                       $row['title']:
+                       $objPage->title);
+                    $items[$index]['pageTitle'] = 
+                      ($row['pageTitle']?
+                        $row['pageTitle']:
+                        $objPage->pageTitle);
+                    $items[$index]['language'] = $language;
+                    array_delete($res_items,$i);
+                    break;
+                  }
                 }
             }
             // Add classes first and last
@@ -130,8 +137,10 @@ class I18nL10nModuleLanguageNavigation extends Module
             $objTemplate->items = $items;
             $objTemplate->languages = $GLOBALS['TL_LANG']['LNG'];
 
-        }//
-        $this->Template->items = count($items) ? $objTemplate->parse() : '';
+        }//end if(!empty($res_items))
+        $this->Template->items = 
+          !empty($items) ? $objTemplate->parse() : '';
+        //error_log( __METHOD__.':'.var_export($items,true) );
     }
 }//end I18nL10nModuleLanguageNavigation
 

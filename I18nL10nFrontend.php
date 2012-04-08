@@ -62,12 +62,13 @@ class I18nL10nFrontend extends Controller
         //get item ids
         $item_ids = array();
         foreach($items as $row){
-            $item_ids[]= intval($row['id']);//just in case
+            $item_ids[]= $row['id'];
         }
         $languages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
         $time = time();
         $fields = 'pid,title,pageTitle,description,language';
-        if($GLOBALS['TL_LANGUAGE'] != $languages[0]){
+        if($GLOBALS['TL_LANGUAGE'] !=
+           $GLOBALS['TL_CONFIG']['i18nl10n_default_language']){
             $localized_pages = $this->Database->prepare('
                 SELECT '. $fields .' FROM tl_page_i18nl10n
                 WHERE pid IN ( '.implode(', ',$item_ids).' )
@@ -78,62 +79,37 @@ class I18nL10nFrontend extends Controller
             ->execute($GLOBALS['TL_LANGUAGE'])
             ->fetchAllassoc();
         }
-        $c=0;
+        
+        $c=0;//items index
         foreach($items as $item){
-            $d=0;
-        if($GLOBALS['TL_LANGUAGE'] != $languages[0]){
-            foreach($localized_pages as $row) {
-                if($row['pid']==$item['id']) {
-                    if($GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix']) {
-                       $items[$c]['href'] = 
-                         $this->generateFrontendUrl(
-                             array(alias=>"{$item['alias']}.{$row['language']}")
-                             );
-                         
-                    }else{
-                      $items[$c]['href'] =   $this->generateFrontendUrl($item,'/language/'.$row['language']);
-                    }
-                    $items[$c]['pageTitle'] = specialchars($row['pageTitle']);
-                    $items[$c]['title'] = specialchars($row['title']);
-                    $items[$c]['link'] = $row['title'];
-                    $items[$c]['description'] = $row['description'];
-                    array_delete($localized_pages,$d);
-                    break;
-                }
-                $d++;
-            } //end foreach($localized_pages as $row)
+        if($GLOBALS['TL_LANGUAGE'] !=
+           $GLOBALS['TL_CONFIG']['i18nl10n_default_language']){
+          $d=0;  
+          foreach($localized_pages as $row) {
+            if($row['pid']==$item['id']) {
+              $items[$c]['language'] = $row['language'];
+              $items[$c]['pageTitle'] =
+                specialchars($row['pageTitle']);
+              $items[$c]['title'] = specialchars($row['title']);
+              $items[$c]['link'] = $items[$c]['title'];
+              $items[$c]['description'] =
+                specialchars($row['description']);
+              $items[$c]['href'] =
+                $this->generateFrontendUrl($items[$c]);
+              //decrease iterations for each next items $items[$c] 
+              $localized_pages = array_delete($localized_pages,$d);
+              break;
+            }
+            $d++;
+          } //end foreach($localized_pages as $row)
         }
         else {
-            if($GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix']) {
-                 $items[$c]['href'] = 
-                         $this->generateFrontendUrl(
-                             array(alias=>"{$item['alias']}.{$row['language']}")
-                             );
-            }else{
-                $items[$c]['href'] =   $this->generateFrontendUrl($item,'/language/'.$row['language']);      
-            }
+          $items[$c]['href'] =   $this->generateFrontendUrl($item);
         }
         $c++;
         } // end foreach($items as $item)
         return $items;
     }//end i18nl10nNavItems
-    /**
-     * A Hook
-     */
-    public function getPageIdFromUrl(Array $fragments) {
-        $languages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
-        $ok = preg_match('/^([\-\w\.]+)\.([A-z]{2})$/',$fragments[0],$matches);
-        if($ok) {
-            $matches[2] = strtolower($matches[2]); 
-        }
-        if($GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix'] &&
-            $ok &&  in_array($matches[2],$languages)){
-            $fragments[0] = $matches[1];
-            array_push($fragments,'language',$matches[2]);
-        }
-       // error_log( '---'.var_export($matches,true) );
-        return $fragments;
-    }
     
 }// end class I18nL10nFrontend
 

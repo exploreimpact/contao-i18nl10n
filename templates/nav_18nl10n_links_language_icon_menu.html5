@@ -1,24 +1,19 @@
 <?php
 /**
- Menu for switching between languages of a page.
+ * Menu for switching between languages of a page.
+ * available fiealds in $this->items: language, title, pageTitle
  */
  
 ?>
 
 <?php 
+//error_log( __FILE__.':'.var_export($this->items,true) );
 foreach ($this->items as $item): 
-    $url = '';
-    if($GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix']):
-        $url = $this->generateFrontendUrl($item);
-    else:
-        $url = $this->generateFrontendUrl($item,'/language/'.$item['language']);
-    endif;
-
 ?>
 
-<a href="<?php echo $url; ?>"
+<a href="<?php echo $this->generateFrontendUrl($item); ?>"
     <?php if ($item['isActive']) {echo ' class="active"';} ?>
-    title="<?php echo $this->languages[$item['language']];?>"
+    title="<?php echo $item['title'];?>"
     ><?php 
      echo "<img src=\"system/modules/i18nl10n/html/flag_icons/png/{$item['language']}.png\""
      ." title=\"{$this->languages[$item['language']]}\""

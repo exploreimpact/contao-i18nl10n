@@ -2,7 +2,7 @@
 
 /**
  * Contao Open Source CMS
- * Copyright (C) 2005-2010 Leo Feyer
+ * Copyright (C) 2005-2012 Leo Feyer
  *
  * Formerly known as TYPOlight Open Source CMS.
  *
@@ -21,7 +21,7 @@
  * Software Foundation website at <http://www.gnu.org/licenses/>.
  *
  * PHP version 5
- * @copyright  Krasimir Berov 2010 
+ * @copyright  Krasimir Berov 2010-2012
  * @author     Krasimir Berov 
  * @package    MultiLanguagePage 
  * @license    LGPL3 
@@ -206,7 +206,10 @@ $GLOBALS['FE_MOD']['navigationMenu']['breadcrumb']  = 'I18nL10nModuleBreadcrumb'
 //$GLOBALS['TL_HOOKS']['getContentElement']
  */
 
-$GLOBALS['TL_HOOKS']['getPageIdFromUrl'][] = array('I18nL10nFrontend', 'getPageIdFromUrl');
+
+$GLOBALS['TL_HOOKS']['generateFrontendUrl'][] = array('I18nL10nHooks', 'generateFrontendUrl');
+
+$GLOBALS['TL_HOOKS']['getPageIdFromUrl'][] = array('I18nL10nHooks', 'getPageIdFromUrl');
 
 /**
  * -------------------------------------------------------------------------
@@ -225,7 +228,7 @@ $GLOBALS['TL_HOOKS']['getPageIdFromUrl'][] = array('I18nL10nFrontend', 'getPageI
  */
  $GLOBALS['TL_PTY']['regular'] =  'I18nL10nPageRegular';
  
- if(!$GLOBALS['TL_CONFIG']['i18nl10n_languages']){
+ if(!$GLOBALS['TL_CONFIG']['i18nl10n_languages']){ 
      $GLOBALS['TL_CONFIG']['i18nl10n_languages'] = serialize(array('en'));
  }
  if(!$GLOBALS['TL_CONFIG']['i18nl10n_default_language']){

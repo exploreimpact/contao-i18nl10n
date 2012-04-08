@@ -51,7 +51,10 @@ class I18nL10nPageRegular extends PageRegular
          . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<$time) AND (stop='' OR stop>$time) 
          AND published=1" : "")
          )->limit(1)->execute($objPage->id,$GLOBALS['TL_LANGUAGE']);
+         //error_log( __METHOD__.':'.var_export($objPage,true) );
          if($l10n->numRows){
+           $objPage->defaultPageTitle = $objPage->pageTitle;
+           $objPage->defaultTitle = $objPage->title;
              foreach( explode(',',$fields) as $field ) {
                  if($l10n->$field) { 
                      $objPage->$field = $l10n->$field;
