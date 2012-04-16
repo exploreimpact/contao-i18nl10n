@@ -6,11 +6,18 @@
  
 ?>
 
-<?php 
+<?php
+$strUrl ='';
+foreach($_GET as $k => $v){
+  if($k != 'language'){
+    $strUrl .='/'.$k.'/'.$v;
+  }
+}
+
 foreach ($this->items as $item): 
 ?>
 
-<a href="<?php echo $this->generateFrontendUrl($item); ?>"
+<a href="<?php echo $this->generateFrontendUrl($item,$strUrl); ?>"
     <?php if ($item['isActive']) {echo ' class="active"';} ?>
     title="<?php echo $this->languages[$item['language']];?>"
     ><?php 

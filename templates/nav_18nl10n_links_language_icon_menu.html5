@@ -8,10 +8,16 @@
 
 <?php 
 //error_log( __FILE__.':'.var_export($this->items,true) );
-foreach ($this->items as $item): 
+$strUrl ='';
+foreach($_GET as $k => $v){
+  if($k != 'language'){
+    $strUrl .='/'.$k.'/'.$v;
+  }
+}
+foreach ($this->items as $item):
 ?>
 
-<a href="<?php echo $this->generateFrontendUrl($item); ?>"
+<a href="<?php echo $this->generateFrontendUrl($item,$strUrl); ?>"
     <?php if ($item['isActive']) {echo ' class="active"';} ?>
     title="<?php echo $item['title'];?>"
     ><?php 

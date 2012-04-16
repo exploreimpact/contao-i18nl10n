@@ -4,7 +4,7 @@
  * Copyright (C) 2005-2010 Leo Feyer
  *
  * PHP version 5
- * @copyright  Krasimir Berov 2010 
+ * @copyright  Krasimir Berov 2010-2012
  * @author     Krasimir Berov 
  * @package    MultiLanguagePage 
  * @license    LGPL3 
@@ -38,3 +38,31 @@ $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffix'] =
         . 'Note! This will change dynamically generated links in menus, '
         .'but not your page aliases. You can always switch it off.'
     );
+$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_addLanguageToUrl'] 
+
+ = array('Add the language to the URL', 
+        'Add the language string as first URL parameter (e.g. <em>http://domain.tld/en/</em>).'
+        .'Works the same way as the core feature '
+        .'<em>"Add the language to the URL"</em>. '
+        .'Note!: If you enable this, the core feature and <em>"'
+        .$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffix'][0]
+        .'"</em> <em>must</em> be disabled!'
+        );
+$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_addLanguageToUrlError'] =
+"If you enable 
+<em>\"{$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_addLanguageToUrl'][0]}\"</em>, 
+the core feature with the same label and <em>\""
+        .$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffix'][0]
+        .'"</em> <em>must</em> be disabled!';
+$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffixError'] =
+"If you enable 
+<em>\"{$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffix'][0]}\"</em>, 
+ <em>\""
+        .$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_addLanguageToUrl'][0]
+        .'"</em> and the core feature with the same label <em>must</em> be disabled!';
+/*
+$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_default_page'] = array(
+  'Default Page',
+  'Select the page that will be loaded by default.'
+);
+*/

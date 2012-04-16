@@ -33,7 +33,9 @@ $this->loadLanguageFile('languages');
 /**
  * Add to palette
  */
-$GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= ';{page_i18nl10n:hide},i18nl10n_languages,i18nl10n_default_language,i18nl10n_alias_suffix';
+$GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .=
+  ';{page_i18nl10n:hide},i18nl10n_languages,i18nl10n_default_language,'
+  .'i18nl10n_alias_suffix,i18nl10n_addLanguageToUrl,i18nl10n_default_page';
 
 /**
  * Add fields
@@ -60,7 +62,7 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_default_language'] = array
     'default'   => 'en',
     'options'   => $GLOBALS['page_i18nl10n']['languages'],
     'eval' => array('mandatory'=>true,
-                    'style'=>'width:15em;','tl_class'=>'w50','unique'=>true
+                    'tl_class'=>'w50','unique'=>true
                     )
 );
 $GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_alias_suffix'] = array(
@@ -68,23 +70,84 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_alias_suffix'] = array(
     'exclude'   => true,
     'inputType' => 'checkbox',
     'default'   => false,
-    'eval' => array('tl_class'=>'w50')
+    'eval' => array('tl_class'=>'w50'),
+    'save_callback' => array(
+         array('tl_settings_l10ns','ensureOthersUnchecked'),
+       )
 );
+$GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_addLanguageToUrl'] = array(
+    'label'     => &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_addLanguageToUrl'],
+    'exclude'   => true,
+    'inputType' => 'checkbox',
+    'default'   => false,
+    'eval' => array(),
+    'save_callback' => array(
+         array('tl_settings_l10ns','ensureOthersUnchecked'),
+       )
+);
+
+/*
+$GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_default_page'] =
+  array(
+    'label'     => &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_default_page'],
+    'exclude'   => true,
+    'inputType' => 'pageTree',
+    'eval' => array('mandatory'=>true, 'unique'=>true,fieldType=>'radio')
+);
+*/
+
+
+
+
+
+
+
+
 
 class tl_settings_l10ns extends Backend 
 {
     function ensureUnique($languages, DataContainer $dc) {
         return serialize( array_unique( deserialize( $languages ) ) );
     }
+
     function ensureExists($languages, DataContainer $dc) {
+      
         $array_language_exists = array();
         $array_languages = deserialize( $languages );
-        
-        foreach( $array_languages as $i => $k ) {
+
+        if(!empty($array_languages))
+        foreach($array_languages as $k) {
             if( array_key_exists($k, $GLOBALS['TL_LANG']['LNG']) ){
                 array_push($array_language_exists,$k);
             }
         }
         return serialize( $array_language_exists );
+    }                                                    
+    
+    function ensureOthersUnchecked($value, DataContainer $dc){
+        //error_log($dc->field .':'.$value);
+      if($dc->field == 'i18nl10n_alias_suffix' && $value)
+        if($GLOBALS['TL_CONFIG']['addLanguageToUrl']
+           ||$GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl']){
+          $dc->addErrorMessage($GLOBALS['TL_LANG']['tl_settings']
+                               ['i18nl10n_alias_suffixError']);
+          $dc->log($GLOBALS['TL_LANG']['tl_settings']
+                   ['i18nl10n_alias_suffixlError'],
+                   __METHOD__, TL_CONFIGURATION);
+        return false;
+      }
+        
+      elseif($dc->field == 'i18nl10n_addLanguageToUrl' && $value)
+        if($GLOBALS['TL_CONFIG']['addLanguageToUrl']
+           ||$GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix']){
+          $dc->addErrorMessage($GLOBALS['TL_LANG']['tl_settings']
+                               ['i18nl10n_addLanguageToUrlError']);
+          $dc->log($GLOBALS['TL_LANG']['tl_settings']
+                   ['i18nl10n_addLanguageToUrlError'],
+                   __METHOD__, TL_CONFIGURATION);
+        return false;
+      }
+    
+    return $value;
     }
 }

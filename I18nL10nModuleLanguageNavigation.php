@@ -29,7 +29,7 @@
  */
 
 /**
- * Class I18nL10nModuleLanguageNavigation 
+ * Class I18nL10nModuleLanguageNavigation - generates a language menu.
  *
  * @copyright  Krasimir Berov 2010-2012
  * @author     Krasimir Berov 
@@ -122,7 +122,7 @@ class I18nL10nModuleLanguageNavigation extends Module
                         $row['pageTitle']:
                         $objPage->pageTitle);
                     $items[$index]['language'] = $language;
-                    array_delete($res_items,$i);
+                    $res_item = array_delete($res_items,$i);
                     break;
                   }
                 }
