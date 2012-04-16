@@ -52,10 +52,9 @@ class tl_article_l10ns extends tl_article
             $label .= ($lang['language']?
 		         '<img title="'.$title.'" style="vertical-align:middle"'
                 .' src="system/modules/i18nl10n/html/flag_icons/png/'
-                .$lang['language'].'.png" /> '.": $count".' ':'
+                .$lang['language'].'.png" /> ':'
                 <img title="'.$title.'" style="vertical-align:middle"'
-                .' src="system/modules/i18nl10n/html/icon.png" />'.": $count".'
-                ');
+                .' src="system/modules/i18nl10n/html/icon.png" />');
         }
         return $label;
     }
