@@ -51,6 +51,11 @@ class I18nL10nHooks extends System
    * 
    */
   public function generateFrontendUrl($arrRow, $strParams, $strUrl){
+    
+    if(!is_array($arrRow)){
+      //throw new Exception('not an array.');
+      $arrRow = $GLOBALS['objPage']->row();
+    }
     $language = (array_key_exists ('robots',$arrRow) ?
                  $GLOBALS['TL_LANGUAGE']:
                  $arrRow['language']);
