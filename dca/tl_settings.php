@@ -40,14 +40,14 @@ $GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .=
 /**
  * Add fields
  */
-$GLOBALS['page_i18nl10n']['languages'] = $this->getLanguages();
 $GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_languages'] = array(
     'label'     => &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_languages'],
     'exclude'   => true,
-    'default'   => array('bg','en','de'),
+    'default'   => array('en','de','bg'),
     'inputType' => 'listWizard',
     'eval' => array('mandatory'=>true,
-                    'style'=>'width:2em;','tl_class'=>'w50'
+                    'style'=>'width:2em;','tl_class'=>'w50',
+                    'nospace' => true
                     ),
     'save_callback' => array(
                              array('tl_settings_l10ns','ensureUnique'),
@@ -55,16 +55,25 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_languages'] = array(
                            ) 
 );
 
+$i18nl10n_default_language = $this->Database
+      ->prepare(
+                "SELECT language FROM tl_page WHERE
+                type='root' AND published=1
+                ORDER BY sorting"
+      )->limit(1)->execute()->language;
 $GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_default_language'] = array(
     'label'     => &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_default_language'],
     'exclude'   => true,
-    'inputType' => 'select',
-    'default'   => 'en',
-    'options'   => $GLOBALS['page_i18nl10n']['languages'],
-    'eval' => array('mandatory'=>true,
-                    'tl_class'=>'w50','unique'=>true
-                    )
+    'inputType' => 'text',
+    'input_field_callback'    => array('tl_settings_l10ns','showReadOnlyField'),
+    'options' => array(
+        $i18nl10n_default_language =>
+        $GLOBALS['TL_LANG']['LNG'][$i18nl10n_default_language]
+                       ), 
+    'default'   =>  $i18nl10n_default_language,
+    'eval' => array('mandatory'=>true, 'tl_class'=>'w50')
 );
+
 $GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_alias_suffix'] = array(
     'label'     => &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffix'],
     'exclude'   => true,
@@ -114,12 +123,23 @@ class tl_settings_l10ns extends Backend
       
         $array_language_exists = array();
         $array_languages = deserialize( $languages );
-
+        $default_language_present = false;
+        $i18nl10n_default_language = $this->Input->post('i18nl10n_default_language');
         if(!empty($array_languages))
         foreach($array_languages as $k) {
             if( array_key_exists($k, $GLOBALS['TL_LANG']['LNG']) ){
                 array_push($array_language_exists,$k);
             }
+            if($k == $i18nl10n_default_language){
+              $default_language_present = true;
+            }
+        }
+        //make sure default language is present
+        if(!$default_language_present){
+          $dc->addErrorMessage(
+            $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_defLangMissingError']
+          );
+          return false;
         }
         return serialize( $array_language_exists );
     }                                                    
@@ -150,4 +170,22 @@ class tl_settings_l10ns extends Backend
     
     return $value;
     }
+    
+  public function showReadOnlyField(DataContainer $dc) {
+    //log_message('$dc:'."$dc->id $dc->field $dc->value $dc->table");
+    if($dc->field == 'i18nl10n_default_language'){
+        return
+         '<h3><label for="ctrl_'.$dc->field.'">'
+        .$GLOBALS['TL_DCA'][$dc->table]['fields'][$dc->field]['label'][0]
+        .'</label></h3>'
+        .'<input type="hidden" readonly="readonly" name="'.
+        $dc->field.'" value="'.$dc->value.'" />'
+        .$GLOBALS['TL_LANG']['LNG'][$dc->value]
+        ." ($dc->value)"
+        .'<p class="tl_help tl_tip">'
+        .$GLOBALS['TL_DCA'][$dc->table]['fields'][$dc->field]['label'][1]
+        .'</p>';
+    }
+
+  }
 }
