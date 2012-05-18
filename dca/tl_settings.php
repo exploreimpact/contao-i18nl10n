@@ -58,7 +58,7 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_languages'] = array(
 $i18nl10n_default_language = $this->Database
       ->prepare(
                 "SELECT language FROM tl_page WHERE
-                type='root' AND published=1
+                type='root'
                 ORDER BY sorting"
       )->limit(1)->execute()->language;
 $GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_default_language'] = array(
