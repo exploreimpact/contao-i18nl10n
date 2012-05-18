@@ -56,9 +56,10 @@ class I18nL10nHooks extends System
       //throw new Exception('not an array.');
       $arrRow = $GLOBALS['objPage']->row();
     }
-    $language = (array_key_exists ('robots',$arrRow) ?
+    $language = (array_key_exists('robots',$arrRow) ?
                  $GLOBALS['TL_LANGUAGE']:
                  $arrRow['language']);
+    if(!$language) $language = $GLOBALS['TL_LANGUAGE'];
     $alias = ($arrRow['alias']?$arrRow['alias']:$GLOBALS['objPage']->alias);
     
     if($GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix']) {
