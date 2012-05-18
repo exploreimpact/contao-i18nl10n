@@ -77,11 +77,11 @@ class I18nL10nPageRegular extends PageRegular
      private function fixupCurrentLanguage(){
          $selected_language = $this->Input->post('language');
          //allow GET request for language
-         if($selected_language ==false||$selected_language ==''){
+         if(!$selected_language){
             $selected_language = $this->Input->get('language');
          }
          if(
-            ($selected_language !=false||$selected_language != '') && 
+            ($selected_language) && 
             in_array($selected_language,
                              deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']))
          ) {
