@@ -235,8 +235,6 @@ $GLOBALS['TL_HOOKS']['getPageIdFromUrl'][] =
  if(!$GLOBALS['TL_CONFIG']['i18nl10n_languages']){ 
      $GLOBALS['TL_CONFIG']['i18nl10n_languages'] = serialize(array('en'));
  }
- if(!$GLOBALS['TL_CONFIG']['i18nl10n_default_language']){
-     $GLOBALS['TL_CONFIG']['i18nl10n_default_language'] = 'en';
- }
+
 
 ?>
