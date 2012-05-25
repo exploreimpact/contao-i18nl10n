@@ -64,8 +64,7 @@ $i18nl10n_default_language = $this->Database
 $GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_default_language'] = array(
     'label'     => &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_default_language'],
     'exclude'   => true,
-    'inputType' => 'text',
-    'input_field_callback'    => array('tl_settings_l10ns','showReadOnlyField'),
+    'inputType' => 'select',
     'options' => array(
         $i18nl10n_default_language =>
         $GLOBALS['TL_LANG']['LNG'][$i18nl10n_default_language]
