@@ -1,8 +1,8 @@
-<?php if (!defined('TL_ROOT')) die('You can not access this file directly!');
+<?php if (!defined('TL_ROOT')) die('You cannot access this file directly!');
 
 /**
  * Contao Open Source CMS
- * Copyright (C) 2005-2010 Leo Feyer
+ * Copyright (C) 2005-2012 Leo Feyer
  *
  * Formerly known as TYPOlight Open Source CMS.
  *
@@ -21,9 +21,9 @@
  * Software Foundation website at <http://www.gnu.org/licenses/>.
  *
  * PHP version 5
- * @copyright  Krasimir Berov 2010 
+ * @copyright  Krasimir Berov 2010-2012
  * @author     Krasimir Berov 
- * @package    MultiLanguagePage 
+ * @package    MultiLanguagePages 
  * @license    LGPL3 
  * @filesource
  */
@@ -57,7 +57,7 @@ class I18nL10nModuleArticle extends ModuleArticle
 			$this->Template->setData($this->arrData);
 		}
 
-		$alias = strlen($this->alias) ? $this->alias : $this->title;
+		$alias = ($this->alias != '') ? $this->alias : $this->title;
 
 		if (in_array($alias, array('header', 'container', 'left', 'main', 'right', 'footer')))
 		{
@@ -67,7 +67,7 @@ class I18nL10nModuleArticle extends ModuleArticle
 		$alias = standardize($alias);
 
 		// Generate the cssID if it is not set
-		if (!strlen($this->cssID[0]))
+		if ($this->cssID[0] == '')
 		{
 			$this->cssID = array($alias, $this->cssID[1]);
 		}
@@ -78,7 +78,6 @@ class I18nL10nModuleArticle extends ModuleArticle
 		$this->Template->timestamp = $this->tstamp;
 		$this->Template->date = $this->parseDate($objPage->datimFormat, $this->tstamp);
 		$this->Template->author = $this->author;
-		
 		// Clean the RTE output
 		if ($objPage->outputFormat == 'xhtml')
 		{
@@ -95,9 +94,10 @@ class I18nL10nModuleArticle extends ModuleArticle
 			$this->Template = new FrontendTemplate('mod_article_teaser');
 			$this->Template->setData($this->arrData);
 
-			// Override CSS ID and class
+			$this->cssID = array($alias, '');
 			$arrCss = deserialize($this->teaserCssID);
 
+			// Override the CSS ID and class
 			if (is_array($arrCss) && count($arrCss) == 2)
 			{
 				if ($arrCss[0] == '')
@@ -141,7 +141,6 @@ class I18nL10nModuleArticle extends ModuleArticle
 		if (!$this->multiMode && $strArticle != '' && ($strArticle == $this->id || $strArticle == $this->alias))
 		{
 			$this->Template->back = specialchars($GLOBALS['TL_LANG']['MSC']['goBack']);
-			
 			// Remove the "/articles/…" part from the URL
 			if ($GLOBALS['TL_CONFIG']['disableAlias'])
 			{

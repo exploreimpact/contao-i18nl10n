@@ -210,10 +210,14 @@ $GLOBALS['FE_MOD']['navigationMenu']['breadcrumb']  = 'I18nL10nModuleBreadcrumb'
 $GLOBALS['TL_HOOKS']['generateFrontendUrl'][] =
 	array('I18nL10nHooks', 'generateFrontendUrl');
 
+$GLOBALS['TL_HOOKS']['replaceInsertTags'][] =
+	array('I18nL10nPageRegular', 'insertI18nL10nArticle');
+
 $GLOBALS['TL_HOOKS']['getPageIdFromUrl'][] =
 	array('I18nL10nHooks', 'getPageIdFromUrl');
 // $GLOBALS['TL_HOOKS']['getRootPageFromUrl'][] =
 //	array('I18nL10nHooks', 'getRootPageFromUrl');
+
 
 /**
  * -------------------------------------------------------------------------

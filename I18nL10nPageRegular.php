@@ -1,8 +1,8 @@
-<?php if (!defined('TL_ROOT')) die('You can not access this file directly!');
+<?php if (!defined('TL_ROOT')) die('You cannot access this file directly!');
 
 /**
  * Contao Open Source CMS
- * Copyright (C) 2005-2010 Leo Feyer
+ * Copyright (C) 2005-2012 Leo Feyer
  *
  * Formerly known as TYPOlight Open Source CMS.
  *
@@ -21,7 +21,7 @@
  * Software Foundation website at <http://www.gnu.org/licenses/>.
  *
  * PHP version 5
- * @copyright  Krasimir Berov 2010-2011 
+ * @copyright  Krasimir Berov 2010-2012
  * @author     Krasimir Berov 
  * @package    MultiLanguagePage 
  * @license    LGPL3 
@@ -32,7 +32,7 @@
 /**
  * Class I18nPageRegular 
  *
- * @copyright  Krasimir Berov 2010-2011
+ * @copyright  Krasimir Berov 2010-2012
  * @author     Krasimir Berov 
  * @package    Controller
  */
@@ -168,6 +168,31 @@ class I18nL10nPageRegular extends PageRegular
         $objArticle = new I18nL10nModuleArticle($objRow, $strColumn);
         return $objArticle->generate($blnIsInsertTag);
     }
+    
+  /**
+   * Generate content in the current language from articles
+   * using insert tags.
+   * A HOOK called in Controller::replaceInsertTags()!!
+   * @param string $insert_tag The insert tag with the alias or id
+   * @return string|boolean
+   */
+  public function insertI18nL10nArticle($insert_tag){
+    if(strpos($insert_tag, 'insert_i18nl10n_article')===false)
+      return;
+
+    $tag = explode('::', $insert_tag);
+    $this->import('I18nL10nPageRegular');
+    $pl = $this->I18nL10nPageRegular;
+    
+    if (($strOutput = $this->getArticle($tag[1], false, true)) !== false){
+        return $this->replaceInsertTags(ltrim($strOutput));
+    }
+    else {
+      return '<p class="error">'
+      . sprintf($GLOBALS['TL_LANG']['MSC']['invalidPage'], $tag[1])
+      . '</p>';
+      }
+  }
 }//end class
 
 ?>
