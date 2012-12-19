@@ -140,10 +140,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
 );
 $GLOBALS['TL_DCA']['tl_page_i18nl10n']['palettes'] = array
     (
-        'default' => '{menu_legend},title,' 
-     //TODO Implement commented fields
-     //alias,
-     .'language;'
+        'default' => '{menu_legend},title,alias,language;'
             .'{meta_legend},pageTitle,description;'
             .'{time_legend:hide},dateFormat,timeFormat,datimFormat;'
             .'{expert_legend:hide},cssClass;{publish_legend},published'
@@ -153,10 +150,10 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n']['palettes'] = array
 $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields'] = array
 	(
 	     'title'       => &$GLOBALS['TL_DCA']['tl_page']['fields']['title'],
-	     //TODO: add alias localized support so
+	     //add alias localized support so
 	     //for example alias 'начало' links to 'home' with l10n enabled
-	     // may be use $GLOBALS['TL_HOOKS']['getPageIdFromUrl']
-	     //'alias'       => &$GLOBALS['TL_DCA']['tl_page']['fields']['alias'],
+	     //use $GLOBALS['TL_HOOKS']['getPageIdFromUrl']
+	     'alias'       => &$GLOBALS['TL_DCA']['tl_page']['fields']['alias'],
          'pageTitle'   => &$GLOBALS['TL_DCA']['tl_page']['fields']['pageTitle'],
          'description' => &$GLOBALS['TL_DCA']['tl_page']['fields']['description'],
          'cssClass'    => &$GLOBALS['TL_DCA']['tl_page']['fields']['cssClass'],
@@ -193,9 +190,10 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['language'] = array_merge(
  * Class tl_page_i18nl10n
  *
  * Provide miscellaneous methods that are used by the data configuration array.
- * @copyright  Leo Feyer 2005-2010
- * @author     Leo Feyer <http://www.contao.org>
- * @package    Controller
+ * @copyright  Krasimir Berov 2010-2011
+ * @author     Krasimir Berov <http://i-can.eu>
+ * @package    MultiLanguagePage 
+ * @license    LGPLv3
  */
 class tl_page_i18nl10n extends Backend
 {
@@ -248,18 +246,21 @@ class tl_page_i18nl10n extends Backend
              foreach($GLOBALS['i18nl10n_languages'] as $l) {
             $SQL="
             INSERT INTO tl_page_i18nl10n (
-                 pid,sorting,tstamp,language,title,type,
-                 pageTitle,description,cssClass,alias,
-                 published,start,stop,dateFormat,timeFormat,datimFormat)
-            SELECT p.id AS pid, p.sorting, p.tstamp, '$l' AS language, 
-                 p.title, p.type, p.pageTitle, p.description, p.cssClass, p.alias,
-                 p.published, p.start, p.stop, p.dateFormat, p.timeFormat, p.datimFormat
-                 FROM tl_page p LEFT JOIN tl_page_i18nl10n i 
-                 ON p.id = i.pid AND i.language='$l' 
-                 WHERE (p.language='"
-                 .$GLOBALS['TL_CONFIG']['i18nl10n_default_language']
-                 ."' or p.language='')
-                 AND p.type !='root' AND i.pid IS NULL";
+pid,sorting,tstamp,language,title,type,
+pageTitle,description,cssClass,alias,
+published,start,stop,dateFormat,timeFormat,datimFormat)
+SELECT p.id AS pid, p.sorting, p.tstamp, '$l' AS language, 
+p.title, p.type, p.pageTitle, p.description,
+p.cssClass, p.alias, p.published, p.start, p.stop,
+p.dateFormat, p.timeFormat, p.datimFormat
+FROM tl_page p LEFT JOIN tl_page_i18nl10n i 
+ON p.id = i.pid AND i.language='$l' 
+WHERE (p.language='"
+.$GLOBALS['TL_CONFIG']['i18nl10n_default_language']
+."' or p.language='')
+AND p.type !='root' AND i.pid IS NULL";
+                 //TODO:use $objPage->rootLanguage
+                 //if a bug is reported 
                  //echo $SQL;
                  $this->Database->prepare($SQL)->execute();
              }

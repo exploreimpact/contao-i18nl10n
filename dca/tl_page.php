@@ -88,7 +88,7 @@ class tl_page_l10ns extends Backend {
             (is_array($new_records[$dc->table]) && 
             !in_array($dc->id, $new_records[$dc->table]))
         ) return;
-        #now make copies in each language.
+        //now make copies in each language.
         $site_langs = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
         $sorting = 0;
         $fields = array (
