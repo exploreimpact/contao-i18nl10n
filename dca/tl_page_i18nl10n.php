@@ -249,16 +249,17 @@ class tl_page_i18nl10n extends Backend
             $SQL="
             INSERT INTO tl_page_i18nl10n (
                  pid,sorting,tstamp,language,title,type,
-                 pageTitle,description,cssClass,
+                 pageTitle,description,cssClass,alias,
                  published,start,stop,dateFormat,timeFormat,datimFormat)
             SELECT p.id AS pid, p.sorting, p.tstamp, '$l' AS language, 
-                 p.title, p.type, p.pageTitle, p.description, p.cssClass, 
+                 p.title, p.type, p.pageTitle, p.description, p.cssClass, p.alias,
                  p.published, p.start, p.stop, p.dateFormat, p.timeFormat, p.datimFormat
                  FROM tl_page p LEFT JOIN tl_page_i18nl10n i 
                  ON p.id = i.pid AND i.language='$l' 
-                 WHERE p.language='"
+                 WHERE (p.language='"
                  .$GLOBALS['TL_CONFIG']['i18nl10n_default_language']
-                 ."' and p.type !='root' AND i.pid IS NULL";
+                 ."' or p.language='')
+                 AND p.type !='root' AND i.pid IS NULL";
                  //echo $SQL;
                  $this->Database->prepare($SQL)->execute();
              }
