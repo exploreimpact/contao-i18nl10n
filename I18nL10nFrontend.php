@@ -66,7 +66,7 @@ class I18nL10nFrontend extends Controller
         }
         $languages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
         $time = time();
-        $fields = 'pid,title,pageTitle,description,language';
+        $fields = 'alias,pid,title,pageTitle,description,language';
         if($GLOBALS['TL_LANGUAGE'] !=
            $GLOBALS['TL_CONFIG']['i18nl10n_default_language']){
             $localized_pages = $this->Database->prepare('
@@ -87,6 +87,9 @@ class I18nL10nFrontend extends Controller
           $d=0;  
           foreach($localized_pages as $row) {
             if($row['pid']==$item['id']) {
+              $items[$c]['alias'] =
+                $row['alias']?
+                $row['alias']:$items[$c]['alias'];
               $items[$c]['language'] = $row['language'];
               $items[$c]['pageTitle'] =
                 specialchars($row['pageTitle']);
