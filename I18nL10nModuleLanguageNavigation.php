@@ -34,7 +34,6 @@
  * @copyright  Krasimir Berov 2010-2012
  * @author     Krasimir Berov 
  * @package    MultiLanguagePage
- 
  */
 class I18nL10nModuleLanguageNavigation extends Module
 {
@@ -87,7 +86,7 @@ class I18nL10nModuleLanguageNavigation extends Module
 
         $time = time();
         $arrLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
-        $fields = 'language, title, pageTitle';
+        $fields = 'alias, language, title, pageTitle';
         $sql = 'SELECT '. $fields .' FROM tl_page_i18nl10n
             WHERE pid =? AND language  IN ( \''.implode("', '",$arrLanguages).'\' )'
          .(!BE_USER_LOGGED_IN ? " AND (start='' OR start<$time) AND (stop='' OR stop>$time) 
@@ -112,7 +111,9 @@ class I18nL10nModuleLanguageNavigation extends Module
                 foreach($res_items as $i =>$row){
                   if($row['language'] == $language){
                     $items[$index]['id'] = $objPage->id;
-                    $items[$index]['alias'] = $objPage->alias;
+                    $items[$index]['alias'] =
+                        $row['alias']?
+                        $row['alias']:$objPage->alias;
                     $items[$index]['title'] = 
                       ($row['title']?
                        $row['title']:
