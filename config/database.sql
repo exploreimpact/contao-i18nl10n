@@ -11,7 +11,7 @@
 -- --------------------------------------------------------
 
 -- 
--- Table `tl_page_properties`
+-- Table `tl_page_i18nl10n`
 -- 
 
 CREATE TABLE `tl_page_i18nl10n` (
@@ -34,7 +34,8 @@ CREATE TABLE `tl_page_i18nl10n` (
   `stop` varchar(10) NOT NULL default '',
   PRIMARY KEY  (`id`),
   KEY `pid` (`pid`),
-  KEY `language` (`language`)
+  KEY `language` (`language`),
+  KEY `alias` (`alias`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
