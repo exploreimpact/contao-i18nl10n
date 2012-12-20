@@ -75,7 +75,12 @@ class I18nL10nModuleBreadcrumb extends ModuleBreadcrumb
         " AND (i.language = '".$GLOBALS['TL_LANGUAGE']."' OR i.language IS NULL) ":"");
         if($with_l10n) {
         $sql = "
-SELECT p.id,p.alias, 
+SELECT p.id,
+(CASE i.alias
+    WHEN NULL THEN p.alias
+    WHEN ''   THEN p.alias
+    ELSE      i.alias
+ END) AS alias, 
 p.type, p.published, i.language, 
 (CASE i.title WHEN NULL THEN p.title ELSE i.title END) as title,
 (CASE i.pageTitle WHEN NULL THEN p.pageTitle ELSE i.pageTitle END) as pageTitle
@@ -111,7 +116,12 @@ AND p.published=1" : "");
         if($this->includeRoot) {
             // Get first page
             if($with_l10n):
-            $sql = "SELECT p.id, p.alias, 
+            $sql = "SELECT p.id, 
+            (CASE i.alias
+                WHEN NULL THEN p.alias
+                WHEN ''   THEN p.alias
+                ELSE      i.alias
+             END) AS alias, 
             (CASE i.title WHEN NULL THEN p.title ELSE i.title END) as title,
             (CASE i.pageTitle WHEN NULL THEN p.pageTitle ELSE i.pageTitle END) as pageTitle 
             FROM tl_page p
