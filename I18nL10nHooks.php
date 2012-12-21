@@ -32,8 +32,9 @@
 /**
  * Class I18nL10nHooks
  *
- * Provide Hooks to modify Contaobehabiour related to I18N and L10N.
- * @copyright  Krasimir Berov 2010 
+ * Provide Hooks to modify Contao
+ * behaviour related to I18N and L10N.
+ * @copyright  Krasimir Berov 2010-2012
  * @author     Krasimir Berov 
  * @package    MultiLanguagePage
  * 
@@ -73,7 +74,6 @@ class I18nL10nHooks extends System
       else 
       $mystrUrl = $alias.'.'.$language.$GLOBALS['TL_CONFIG']['urlSuffix'];
       //TODO: useAutoItem $GLOBALS['TL_CONFIG']['useAutoItem'] ?
-
     }
     elseif($GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl']){
       if($strUrl){
@@ -83,7 +83,6 @@ class I18nL10nHooks extends System
         $mystrUrl = $language.'/'
         .$alias
         .$GLOBALS['TL_CONFIG']['urlSuffix'];
-      
       }
     }
     else {
@@ -93,12 +92,13 @@ class I18nL10nHooks extends System
                    $strParams.'?language='.$language);
     }
     //error_log("generateFrontendUrl:\$strParams:$strParams, \$strUrl:$strUrl=>$mystrUrl");
-    
     return $mystrUrl;
   }
   
   public function getPageIdFromUrl(Array $fragments) {
     global $TL_CONFIG;
+    $this->import('Database');
+    $fragments = array_map('urldecode', $fragments);
     $languages = deserialize($TL_CONFIG['i18nl10n_languages']);
     $language = $TL_CONFIG['i18nl10n_default_language'];
     //error_log( __METHOD__.':'.var_export($fragments,true) );
@@ -110,7 +110,7 @@ class I18nL10nHooks extends System
       }
       $i = ($fragments[1] == 'auto_item'?2:1);
       $fragments[$i] =($fragments[$i]?$fragments[$i]:$TL_CONFIG['i18nl10n_default_page']);
-      if(preg_match('@^([\-\w\.]+)$@i',$fragments[$i],$matches)){
+      if(preg_match('@^([\-\p{L}\p{N}\.]+)$@iu',$fragments[$i],$matches)){
           $fragments[0] = $fragments[$i];
           
       }
@@ -127,7 +127,21 @@ class I18nL10nHooks extends System
           array_push($fragments,'language',$language);
       }
     }
-    //error_log( __METHOD__.':'.var_export($fragments,true) );
+    $time = time();
+    $objAlias = $this->Database->prepare("
+SELECT alias FROM tl_page WHERE
+(id=(SELECT pid FROM tl_page_i18nl10n WHERE id=? AND language=?)
+OR id=(SELECT pid FROM tl_page_i18nl10n WHERE alias=? AND language=?))"
+. (!BE_USER_LOGGED_IN ? " AND (start='' OR start<$time)
+   AND (stop='' OR stop>$time) AND published=1" : ""))
+->execute(
+  (is_numeric($fragments[0]) ? $fragments[0] : 0),
+  $language, $fragments[0],$language
+);
+    if($objAlias->numRows){
+      $fragments[0] = $objAlias->alias;
+    }
+    
     return $fragments;
 }
 
