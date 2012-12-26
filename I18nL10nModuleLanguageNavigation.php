@@ -29,7 +29,9 @@
  */
 
 /**
- * Class I18nL10nModuleLanguageNavigation - generates a language menu.
+ * Class I18nL10nModuleLanguageNavigation - generates a languages menu.
+ * The site visitor is able to swithch between languages
+ * of a page. 
  *
  * @copyright  Krasimir Berov 2010-2012
  * @author     Krasimir Berov 
@@ -89,8 +91,10 @@ class I18nL10nModuleLanguageNavigation extends Module
         $fields = 'alias, language, title, pageTitle';
         $sql = 'SELECT '. $fields .' FROM tl_page_i18nl10n
             WHERE pid =? AND language  IN ( \''.implode("', '",$arrLanguages).'\' )'
-         .(!BE_USER_LOGGED_IN ? " AND (start='' OR start<$time) AND (stop='' OR stop>$time) 
-         AND published=1" : "");
+         .(!BE_USER_LOGGED_IN ?
+        " AND (start='' OR start<$time)
+        AND (stop='' OR stop>$time) 
+        AND published=1" : "");
         $res_items = $this->Database->prepare($sql)->limit(300
                                                            )->execute($objPage->id
                                                            )->fetchAllassoc();
@@ -99,30 +103,22 @@ class I18nL10nModuleLanguageNavigation extends Module
             $this->loadLanguageFile('languages');
             array_unshift($res_items,array(
                'language' => $GLOBALS['TL_CONFIG']['i18nl10n_default_language'],
-               'title' => $objPage->defaultTitle,
-               'pageTitle' => $objPage->defaultPageTitle)
+               'title' => $objPage->title,
+               'pageTitle' => $objPage->pageTitle)
             );
+
             //keep the order in $arrLanguages and assign to $items 
             //only if page translation is found in database
             foreach($arrLanguages as $index =>$language) {
-                if($language == $GLOBALS['TL_LANGUAGE']){
-                    $items[$index]['isActive'] = true;
-                }
                 foreach($res_items as $i =>$row){
                   if($row['language'] == $language){
-                    $items[$index]['id'] = $objPage->id;
-                    $items[$index]['alias'] =
-                        $row['alias']?
-                        $row['alias']:$objPage->alias;
-                    $items[$index]['title'] = 
-                      ($row['title']?
-                       $row['title']:
-                       $objPage->title);
-                    $items[$index]['pageTitle'] = 
-                      ($row['pageTitle']?
-                        $row['pageTitle']:
-                        $objPage->pageTitle);
-                    $items[$index]['language'] = $language;
+                    array_push($items, array(
+                    'alias' => $row['alias']?$row['alias']:$objPage->alias,
+                    'title' => $row['title']?$row['title']:$objPage->title,
+                    'pageTitle' => $row['pageTitle']?$row['pageTitle']:$objPage->pageTitle,
+                    'language' => $language,
+                    'isActive' => ($language == $GLOBALS['TL_LANGUAGE'])?true:false
+                    ));
                     $res_item = array_delete($res_items,$i);
                     break;
                   }
@@ -130,7 +126,7 @@ class I18nL10nModuleLanguageNavigation extends Module
             }
             // Add classes first and last
             $items[0]['class'] = trim($items[0]['class'] . ' first');
-            $last = count($items) - 1;
+            $last = (count($items) - 1);
             $items[$last]['class'] = trim($items[$last]['class'] . ' last');
             $objTemplate = new BackendTemplate($this->navigationTpl);
     
@@ -141,7 +137,6 @@ class I18nL10nModuleLanguageNavigation extends Module
         }//end if(!empty($res_items))
         $this->Template->items = 
           !empty($items) ? $objTemplate->parse() : '';
-        //error_log( __METHOD__.':'.var_export($items,true) );
     }
 }//end I18nL10nModuleLanguageNavigation
 
