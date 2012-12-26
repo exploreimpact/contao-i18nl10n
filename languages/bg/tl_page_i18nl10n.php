@@ -52,6 +52,9 @@ $GLOBALS['TL_LANG']['tl_page_i18nl10n']['new']    = array('Нова L10N',
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['edit']   = array('Редакция', 'Редакция на локализираните полета за страница %s');
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['copy']   = array('Копиране', 'Копиране на локализираните полета');
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['delete'] = array('Изтриване', 'Изтриване на локализираните полета');
+$GLOBALS['TL_LANG']['tl_page']['toggle'] = array('Публикуване/скриване на превод на страница', 'Публикуване/скриване на превод на страница с ID %s');
+
+
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['show']   = array('Виж', 'Локализирани полета');
 
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all']   = 

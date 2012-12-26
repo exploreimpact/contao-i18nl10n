@@ -26,6 +26,8 @@ $GLOBALS['TL_LANG']['tl_page_i18nl10n']['copy']['0'] = "Duplizieren";
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['copy']['1'] = "Lokalisierte Seite %s duplizieren";
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['delete']['0'] = "Löschen";
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['delete']['1'] = "Lokalisierte Seite %s löschen";
+$GLOBALS['TL_LANG']['tl_page']['toggle']     = array('L10N veröffentlichen/unveröffentlichen', 'L10N ID %s veröffentlichen/unveröffentlichen');
+
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['show']['0'] = "Anzeigen";
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['show']['1'] = "Details der lokalisierten Seite %s anzeigen";
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all']['0'] = "L10N für Alle";

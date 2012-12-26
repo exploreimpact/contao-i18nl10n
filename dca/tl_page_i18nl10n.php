@@ -120,6 +120,13 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
             'icon'                => 'delete.gif',
             'attributes'          => 'onclick="if (!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['deleteConfirm'] . '\')) return false; Backend.getScrollOffset();"'
         ),
+        'toggle' => array
+      (
+        'label'               => &$GLOBALS['TL_LANG']['tl_page_i18nl10n']['toggle'],
+        'icon'                => 'visible.gif',
+        'attributes'          => 'onclick="Backend.getScrollOffset();return AjaxRequest.toggleVisibility(this,%s)"',
+        'button_callback'     => array('tl_page_i18nl10n', 'toggleIcon')
+      ),
         'show' => array
         (
             'label'               => &$_tl_page_i18nl10n['show'],
@@ -195,7 +202,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['language'] = array_merge(
  * @package    MultiLanguagePage 
  * @license    LGPLv3
  */
-class tl_page_i18nl10n extends Backend
+class tl_page_i18nl10n extends tl_page
 {
 /**
 	 * Generate a localization icon
@@ -203,7 +210,7 @@ class tl_page_i18nl10n extends Backend
 	 * @param string
 	 * @return string
 	 */
-	public function addIcon($row, $label, DataContainer $dc=null, $imageAttribute='')
+	public function addIcon($row, $label, DataContainer $dc=null, $imageAttribute='', $blnReturnImage=false, $blnProtected=false)
 	{
 	    //$image = $this->generateImage('iconPLAIN.gif', '', $folderAttribute);
 	    $label ='<span style="color:#b3b3b3; padding-left:3px;'
@@ -266,5 +273,84 @@ AND p.type !='root' AND i.pid IS NULL";
              }
         }
     }
-	
+  /**
+   * Easily publish/unpublish a page localization 
+   * @param integer
+   * @param boolean
+   */
+  public function toggleVisibility($intId, $blnVisible)
+  {
+    // Check permissions to edit
+    $this->Input->setGet('id', $intId);
+    $this->Input->setGet('act', 'toggle');
+    $this->checkPermission();
+
+    // Check permissions to publish
+    if (!$this->User->isAdmin && !$this->User->hasAccess('tl_page::published', 'alexf'))
+    {
+      $this->log('Not enough permissions to publish/unpublish L10N page ID "'.$intId.'"', 'tl_page_i18nl10n toggleVisibility', TL_ERROR);
+      $this->redirect('contao/main.php?act=error');
+    }
+    $this->createInitialVersion('tl_page_i18nl10n', $intId);
+
+    // Trigger the save_callback
+    if (is_array($GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['published']['save_callback']))
+    {
+      foreach ($GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['published']['save_callback'] as $callback)
+      {
+        $this->import($callback[0]);
+        $blnVisible = $this->$callback[0]->$callback[1]($blnVisible, $this);
+      }
+    }
+
+    // Update the database
+    $this->Database->prepare("UPDATE tl_page_i18nl10n SET tstamp=". time() .", published='" . ($blnVisible ? 1 : '') . "' WHERE id=?")
+             ->execute($intId);
+
+    $this->createNewVersion('tl_page_i18nl10n', $intId);
+  }
+  /**
+   * Return the "toggle visibility" button
+   * @param array
+   * @param string
+   * @param string
+   * @param string
+   * @param string
+   * @param string
+   * @return string
+   */
+  public function toggleIcon($row, $href, $label, $title, $icon, $attributes)
+  {
+    if (strlen($this->Input->get('tid')))
+    {
+      $this->toggleVisibility($this->Input->get('tid'), ($this->Input->get('state') == 1));
+      $this->redirect($this->getReferer());
+    }
+
+    // Check permissions AFTER checking the tid, so hacking attempts are logged
+    if (!$this->User->isAdmin && !$this->User->hasAccess('tl_page::published', 'alexf'))
+    {
+      return '';
+    }
+
+    $href .= '&amp;tid='.$row['id'].'&amp;state='.($row['published'] ? '' : 1);
+
+    if (!$row['published'])
+    {
+      $icon = 'invisible.gif';
+    }   
+
+    $objPage = $this->Database->prepare("SELECT * FROM tl_page WHERE id=(SELECT pid FROM tl_page_i18nl10n WHERE id=?)")
+                  ->limit(1)
+                  ->execute($row['id']);
+
+    if (!$this->User->isAdmin && !$this->User->isAllowed(2, $objPage->row()))
+    {
+      return $this->generateImage($icon) . ' ';
+    }
+
+    return '<a href="'.$this->addToUrl($href).'" title="'.specialchars($title).'"'.$attributes.'>'.$this->generateImage($icon, $label).'</a> ';
+  }
+
+
 }//end class tl_page_i18nl10n

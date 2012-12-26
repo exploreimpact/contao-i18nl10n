@@ -56,6 +56,8 @@ $GLOBALS['TL_LANG']['tl_page_i18nl10n']['new']    = array('New L10N',
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['edit']   = array('Edit', 'Edit meta-fields for page %s');
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['copy']   = array('Copy', 'Copy meta-fields');
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['delete'] = array('Delete', 'Delete meta-fields');
+$GLOBALS['TL_LANG']['tl_page']['toggle']     = array('Publish/unpublish L10N', 'Publish/unpublish L10N ID %s');
+
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['show']   = array('Show', 'meta-fields');
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all']   = 
 array('L10N for аll', 'Localize all untranslated pages to available languages');
