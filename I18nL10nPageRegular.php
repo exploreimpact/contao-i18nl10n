@@ -178,12 +178,9 @@ class I18nL10nPageRegular extends PageRegular
    */
   public function insertI18nL10nArticle($insert_tag){
     if(strpos($insert_tag, 'insert_i18nl10n_article')===false)
-      return;
+      return false;
 
     $tag = explode('::', $insert_tag);
-    $this->import('I18nL10nPageRegular');
-    $pl = $this->I18nL10nPageRegular;
-    
     if (($strOutput = $this->getArticle($tag[1], false, true)) !== false){
         return $this->replaceInsertTags(ltrim($strOutput));
     }
