@@ -41,6 +41,19 @@ $GLOBALS['TL_DCA']['tl_page']['config']['onload_callback'][] =
 $GLOBALS['TL_DCA']['tl_page']['config']['onsubmit_callback'][] = 
     array('tl_page_l10ns', 'generatePageL10n');
 
+foreach($GLOBALS['TL_DCA']['tl_page']['palettes'] as $k => $v){
+$GLOBALS['TL_DCA']['tl_page']['palettes'][$k] =
+    str_replace('published,', 'published,i18nl10n_hide,', $v);
+}
+if($this->Input->get('do')=='page' && $this->Input->get('act')=='edit'){
+    $GLOBALS['TL_DCA']['tl_page']['fields']['published']['eval']['tl_class'] = 'w50';
+    $GLOBALS['TL_DCA']['tl_page']['fields']['i18nl10n_hide'] = array(
+        'label'     => &$GLOBALS['TL_LANG']['tl_page']['i18nl10n_hide'],
+        'exclude'   => true,
+        'inputType' => 'checkbox',
+        'eval'      => array('doNotCopy'=>true,'tl_class'=>'w50')
+    );
+}
 class tl_page_l10ns extends Backend {
     public function editl10ns($row, $href, $label, $title, $icon) {
         $button ='';

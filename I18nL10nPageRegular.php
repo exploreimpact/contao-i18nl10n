@@ -41,6 +41,16 @@ class I18nL10nPageRegular extends PageRegular
     //override_function
     function generate(Database_Result $objPage) {
         $this->fixupCurrentLanguage();
+        if($GLOBALS['TL_LANGUAGE'] == $GLOBALS['TL_CONFIG']['i18nl10n_default_language']){
+            if($objPage->i18nl10n_hide != ''){
+                header('HTTP/1.1 404 Not Found');
+                $message = 'Page "'. $objPage->alias
+                 .'" is hidden for default language "'.$objPage->language.'". See "Publish settings/Hide default language" for Page ID '.$objPage->id;
+                $this->log($message, __METHOD__, TL_ERROR);
+                die($message);
+            }
+            return parent::generate($objPage);
+        }
         //get language specific page properties
         //TODO: make this configurable
         $fields = 'title,language,pageTitle,description,cssClass,'
@@ -51,7 +61,6 @@ class I18nL10nPageRegular extends PageRegular
          . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<$time) AND (stop='' OR stop>$time) 
          AND published=1" : "")
          )->limit(1)->execute($objPage->id,$GLOBALS['TL_LANGUAGE']);
-         //error_log( __METHOD__.':'.var_export($objPage,true) );
          if($l10n->numRows){
            $objPage->defaultPageTitle = $objPage->pageTitle;
            $objPage->defaultTitle = $objPage->title;

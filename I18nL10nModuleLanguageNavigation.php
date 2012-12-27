@@ -77,14 +77,6 @@ class I18nL10nModuleLanguageNavigation extends Module
         global $objPage;
 
         $items = array();
-        $groups = array();
-
-        // Get all groups of the current front end user
-        if (FE_USER_LOGGED_IN)
-       {
-            $this->import('FrontendUser', 'User');
-            $groups = $this->User->groups;
-        }
 
         $time = time();
         $arrLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
@@ -95,18 +87,21 @@ class I18nL10nModuleLanguageNavigation extends Module
         " AND (start='' OR start<$time)
         AND (stop='' OR stop>$time) 
         AND published=1" : "");
-        $res_items = $this->Database->prepare($sql)->limit(300
-                                                           )->execute($objPage->id
-                                                           )->fetchAllassoc();
+
+        $res_items = $this->Database->prepare($sql)
+            ->execute($objPage->id)->fetchAllassoc();
         $items = array();
+        
         if(!empty($res_items)) {
             $this->loadLanguageFile('languages');
-            array_unshift($res_items,array(
-               'language' => $GLOBALS['TL_CONFIG']['i18nl10n_default_language'],
-               'title' => $objPage->title,
-               'pageTitle' => $objPage->pageTitle)
-            );
-
+            if($objPage->i18nl10n_hide == ''){
+                array_unshift($res_items,array(
+                   'language' => $GLOBALS['TL_CONFIG']['i18nl10n_default_language'],
+                   'title' => $objPage->title,
+                   'pageTitle' => $objPage->pageTitle,
+                   'alias' =>$objPage->alias,)
+                );
+            }
             //keep the order in $arrLanguages and assign to $items 
             //only if page translation is found in database
             foreach($arrLanguages as $index =>$language) {
@@ -129,14 +124,12 @@ class I18nL10nModuleLanguageNavigation extends Module
             $last = (count($items) - 1);
             $items[$last]['class'] = trim($items[$last]['class'] . ' last');
             $objTemplate = new BackendTemplate($this->navigationTpl);
-    
+
             $objTemplate->type = get_class($this);
             $objTemplate->items = $items;
             $objTemplate->languages = $GLOBALS['TL_LANG']['LNG'];
-
         }//end if(!empty($res_items))
-        $this->Template->items = 
-          !empty($items) ? $objTemplate->parse() : '';
+        $this->Template->items = !empty($items) ? $objTemplate->parse() : '';
     }
 }//end I18nL10nModuleLanguageNavigation
 

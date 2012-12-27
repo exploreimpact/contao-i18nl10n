@@ -79,26 +79,21 @@ class I18nL10nFrontend extends Controller
             ->execute($GLOBALS['TL_LANGUAGE'])
             ->fetchAllassoc();
         }
-        
-        $c=0;//items index
-        foreach($items as $item){
+      $i18n_items = array();
+      foreach($items as $item){
         if($GLOBALS['TL_LANGUAGE'] !=
            $GLOBALS['TL_CONFIG']['i18nl10n_default_language']){
           $d=0;  
           foreach($localized_pages as $row) {
             if($row['pid']==$item['id']) {
-              $items[$c]['alias'] =
-                $row['alias']?
-                $row['alias']:$items[$c]['alias'];
-              $items[$c]['language'] = $row['language'];
-              $items[$c]['pageTitle'] =
-                specialchars($row['pageTitle']);
-              $items[$c]['title'] = specialchars($row['title']);
-              $items[$c]['link'] = $items[$c]['title'];
-              $items[$c]['description'] =
-                specialchars($row['description']);
-              $items[$c]['href'] =
-                $this->generateFrontendUrl($items[$c]);
+              $item['alias'] = $row['alias'] ? $row['alias']:$item['alias'];
+              $item['language'] = $row['language'];
+              $item['pageTitle'] = specialchars($row['pageTitle']);
+              $item['title'] = specialchars($row['title']);
+              $item['link'] = $item['title'];
+              $item['description'] = specialchars($row['description']);
+              $item['href'] = $this->generateFrontendUrl($item);
+              array_push($i18n_items,$item);
               //decrease iterations for each next items $items[$c] 
               $localized_pages = array_delete($localized_pages,$d);
               break;
@@ -107,11 +102,12 @@ class I18nL10nFrontend extends Controller
           } //end foreach($localized_pages as $row)
         }
         else {
-          $items[$c]['href'] =   $this->generateFrontendUrl($item);
+          if($item['i18nl10n_hide'] != '') continue;
+          $item['href'] =   $this->generateFrontendUrl($item);
+          array_push($i18n_items,$item);
         }
-        $c++;
-        } // end foreach($items as $item)
-        return $items;
+      } // end foreach($items as $item)
+      return $i18n_items;
     }//end i18nl10nNavItems
     
 }// end class I18nL10nFrontend
