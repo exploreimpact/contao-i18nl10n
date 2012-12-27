@@ -104,7 +104,7 @@ class I18nL10nHooks extends System
     //error_log( __METHOD__.':'.var_export($fragments,true) );
     
     if($TL_CONFIG['i18nl10n_addLanguageToUrl']){
-      if(preg_match('@^([a-z]{2})$@i',$fragments[0],$matches)){
+      if(preg_match('@^([A-z]{2})$@i',$fragments[0],$matches)){
         $language = strtolower($matches[1]);
         array_push($fragments,'language',$language);
       }
@@ -118,7 +118,7 @@ class I18nL10nHooks extends System
       $fragments = array_delete($fragments,$i);
     }
     elseif($TL_CONFIG['i18nl10n_alias_suffix']){
-      $ok = preg_match('/^([\-\w\.]+)\.([A-z]{2})$/',$fragments[0],$matches);
+      $ok = preg_match('/^([\-\p{L}\p{N}\.]+)\.([A-z]{2})$/u',$fragments[0],$matches);
       if($ok) {
           $language = strtolower($matches[2]); 
       }
