@@ -77,7 +77,11 @@ class I18nL10nHooks extends System
     }
     elseif($GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl']){
       if($strUrl){
-        $mystrUrl = $language.'/'.$strUrl;
+        //issue #56 remove language parameter from request path
+        $mystrUrl = preg_replace(
+          "@\/language\/{$language}@", '', $strUrl
+        );
+        $mystrUrl = $language.'/'.$mystrUrl;
       }
       else {
         $mystrUrl = $language.'/'
@@ -86,12 +90,10 @@ class I18nL10nHooks extends System
       }
     }
     else {
-
       $mystrUrl = $strUrl.($strParams=='?language='.$language?
                    $strParams:
                    $strParams.'?language='.$language);
     }
-    //error_log("generateFrontendUrl:\$strParams:$strParams, \$strUrl:$strUrl=>$mystrUrl");
     return $mystrUrl;
   }
   
