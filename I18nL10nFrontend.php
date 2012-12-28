@@ -41,20 +41,20 @@
 class I18nL10nFrontend extends Controller
 {
     /**
-	 * Load database object
-	 */
-	protected function __construct()
-	{
-		parent::__construct();
-		$this->import('Database');
-	}
+   * Load database object
+   */
+  protected function __construct()
+  {
+    parent::__construct();
+    $this->import('Database');
+  }
     /**
      * Replace title and pageTitle with translated equivalents 
      * just before display them as menu.
      * TODO: Simplify this code mess!!!
      *
      * @param Array $items The menu items on the current menu level
-     */	
+     */ 
     public function i18nl10nNavItems(Array $items){
         if(empty($items)) {
             return $items;
@@ -83,27 +83,50 @@ class I18nL10nFrontend extends Controller
       foreach($items as $item){
         if($GLOBALS['TL_LANGUAGE'] !=
            $GLOBALS['TL_CONFIG']['i18nl10n_default_language']){
-          $d=0;  
           foreach($localized_pages as $row) {
             if($row['pid']==$item['id']) {
+              if($item['type']=='forward'){
+                if($item['jumpTo']){
+                  $forward_row = $this->Database->prepare(
+                    'SELECT * FROM tl_page_i18nl10n WHERE pid=? AND language=?'
+                  )->limit(1)->execute(
+                    $item['jumpTo'],$row['language']
+                  )->fetchAssoc();
+                }
+                else {
+                  $time = time();
+                  $forward_row = $this->Database->prepare(
+                    "SELECT * FROM tl_page_i18nl10n WHERE pid=(
+                      SELECT id FROM tl_page where pid=? AND type='regular' "
+                      . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<$time)
+                         AND (stop='' OR stop>$time) AND published=1" : "")
+                      . " ORDER BY sorting"." LIMIT 0,1)
+                      AND language=?"
+                  )->limit(1)->execute(
+                    $item[id],$row['language']
+                  )->fetchAssoc();
+                }
+                $item['href'] = $this->generateFrontendUrl($forward_row);
+              }
+              else{
+                $item['href'] = $this->generateFrontendUrl($row);
+              }
               $item['alias'] = $row['alias'] ? $row['alias']:$item['alias'];
               $item['language'] = $row['language'];
-              $item['pageTitle'] = specialchars($row['pageTitle']);
-              $item['title'] = specialchars($row['title']);
+              $item['pageTitle'] = specialchars($row['pageTitle'], true);
+              $item['title'] = specialchars($row['title'], true);
               $item['link'] = $item['title'];
-              $item['description'] = specialchars($row['description']);
-              $item['href'] = $this->generateFrontendUrl($item);
+              $item['description'] = str_replace(array("\n", "\r"), array(' ' , ''),specialchars($row['description']));
+
               array_push($i18n_items,$item);
               //decrease iterations for each next items $items[$c] 
               $localized_pages = array_delete($localized_pages,$d);
               break;
             }
-            $d++;
           } //end foreach($localized_pages as $row)
         }
         else {
           if($item['i18nl10n_hide'] != '') continue;
-          $item['href'] =   $this->generateFrontendUrl($item);
           array_push($i18n_items,$item);
         }
       } // end foreach($items as $item)
