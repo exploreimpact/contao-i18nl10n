@@ -85,6 +85,9 @@ class I18nL10nFrontend extends Controller
            $GLOBALS['TL_CONFIG']['i18nl10n_default_language']){
           foreach($localized_pages as $row) {
             if($row['pid']==$item['id']) {
+              $item['alias'] = $row['alias'] = $row['alias'] ? $row['alias']:$item['alias'];
+              $item['language'] = $row['language'];
+
               if($item['type']=='forward'){
                 if($item['jumpTo']){
                   $forward_row = $this->Database->prepare(
@@ -106,13 +109,12 @@ class I18nL10nFrontend extends Controller
                     $item[id],$row['language']
                   )->fetchAssoc();
                 }
+              $forward_row['alias'] = $item['alias'] = $forward_row['alias'] ? $forward_row['alias']:$item['alias'];
                 $item['href'] = $this->generateFrontendUrl($forward_row);
               }
               else{
-                $item['href'] = $this->generateFrontendUrl($row);
+                $item['href'] = $this->generateFrontendUrl($item);
               }
-              $item['alias'] = $row['alias'] ? $row['alias']:$item['alias'];
-              $item['language'] = $row['language'];
               $item['pageTitle'] = specialchars($row['pageTitle'], true);
               $item['title'] = specialchars($row['title'], true);
               $item['link'] = $item['title'];
