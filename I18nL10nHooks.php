@@ -52,16 +52,15 @@ class I18nL10nHooks extends System
    * 
    */
   public function generateFrontendUrl($arrRow, $strParams, $strUrl){
-    
+
     if(!is_array($arrRow)){
-      //throw new Exception('not an array.');
-      $arrRow = $GLOBALS['objPage']->row();
+      throw new Exception('not an associative array.');
     }
     $language = (array_key_exists('robots',$arrRow) ?
                  $GLOBALS['TL_LANGUAGE']:
                  $arrRow['language']);
     if(!$language) $language = $GLOBALS['TL_LANGUAGE'];
-    $alias = ($arrRow['alias']?$arrRow['alias']:$GLOBALS['objPage']->alias);
+    $alias = $arrRow['alias'];
     
     if($GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix']) {
       if($strUrl)
