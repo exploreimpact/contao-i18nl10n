@@ -105,13 +105,13 @@ class I18nL10nHooks extends System
     //error_log( __METHOD__.':'.var_export($fragments,true) );
     
     if($TL_CONFIG['i18nl10n_addLanguageToUrl']){
-      if(preg_match('@^([A-z]{2})$@i',$fragments[0],$matches)){
+      if(preg_match('@^([A-z]{2})$@',$fragments[0],$matches)){
         $language = strtolower($matches[1]);
         array_push($fragments,'language',$language);
       }
       $i = ($fragments[1] == 'auto_item'?2:1);
       $fragments[$i] =($fragments[$i]?$fragments[$i]:$TL_CONFIG['i18nl10n_default_page']);
-      if(preg_match('@^([\-\p{L}\p{N}\.]+)$@iu',$fragments[$i],$matches)){
+      if(preg_match('@^([_\-\pL\pN\.]+)$@iu',$fragments[$i],$matches)){
           $fragments[0] = $fragments[$i];
           
       }
@@ -119,7 +119,7 @@ class I18nL10nHooks extends System
       $fragments = array_delete($fragments,$i);
     }
     elseif($TL_CONFIG['i18nl10n_alias_suffix']){
-      $ok = preg_match('/^([\-\p{L}\p{N}\.]+)\.([A-z]{2})$/u',$fragments[0],$matches);
+      $ok = preg_match('/^([_\-\pL\pN\.]+)\.([A-z]{2})$/u',$fragments[0],$matches);
       if($ok) {
           $language = strtolower($matches[2]); 
       }
@@ -131,8 +131,10 @@ class I18nL10nHooks extends System
     $time = time();
     $objAlias = $this->Database->prepare("
 SELECT alias FROM tl_page WHERE
-(id=(SELECT pid FROM tl_page_i18nl10n WHERE id=? AND language=?)
-OR id=(SELECT pid FROM tl_page_i18nl10n WHERE alias=? AND language=?))"
+(
+  id=(SELECT pid FROM tl_page_i18nl10n WHERE id=? AND language=?)
+  OR id=(SELECT pid FROM tl_page_i18nl10n WHERE alias=? AND language=?)
+)"
 . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<$time)
    AND (stop='' OR stop>$time) AND published=1" : ""))
 ->execute(
