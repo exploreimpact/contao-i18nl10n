@@ -78,7 +78,7 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_alias_suffix'] = array(
     'exclude'   => true,
     'inputType' => 'checkbox',
     'default'   => false,
-    'eval' => array('tl_class'=>'w50'),
+    'eval' => array('tl_class'=>'w50 clr'),
     'save_callback' => array(
          array('tl_settings_l10ns','ensureOthersUnchecked'),
        )
@@ -88,7 +88,7 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_addLanguageToUrl'] = array
     'exclude'   => true,
     'inputType' => 'checkbox',
     'default'   => false,
-    'eval' => array(),
+    'eval' => array('tl_class'=>'w50'),
     'save_callback' => array(
          array('tl_settings_l10ns','ensureOthersUnchecked'),
        )
@@ -103,13 +103,6 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_default_page'] =
     'eval' => array('mandatory'=>true, 'unique'=>true,fieldType=>'radio')
 );
 */
-
-
-
-
-
-
-
 
 
 class tl_settings_l10ns extends Backend 

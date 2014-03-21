@@ -76,11 +76,9 @@ class I18nL10nModuleLanguageNavigation extends Module
     {
         global $objPage;
 
-        $items = array();
-
         $time = time();
         $arrLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
-        $fields = 'alias, language, title, pageTitle';
+        $fields = 'id, pid, alias, language, title, pageTitle';
         $sql = 'SELECT '. $fields .' FROM tl_page_i18nl10n
             WHERE pid =? AND language  IN ( \''.implode("', '",$arrLanguages).'\' )'
          .(!BE_USER_LOGGED_IN ?
@@ -90,12 +88,14 @@ class I18nL10nModuleLanguageNavigation extends Module
 
         $res_items = $this->Database->prepare($sql)
             ->execute($objPage->id)->fetchAllassoc();
+
         $items = array();
-        
+
         if(!empty($res_items)) {
             $this->loadLanguageFile('languages');
             if($objPage->i18nl10n_hide == ''){
                 array_unshift($res_items,array(
+                   'id' => $objPage->id,
                    'language' => $GLOBALS['TL_CONFIG']['i18nl10n_default_language'],
                    'title' => $objPage->title,
                    'pageTitle' => $objPage->pageTitle,
@@ -104,10 +104,11 @@ class I18nL10nModuleLanguageNavigation extends Module
             }
             //keep the order in $arrLanguages and assign to $items 
             //only if page translation is found in database
-            foreach($arrLanguages as $index =>$language) {
+            foreach($arrLanguages as $index => $language) {
                 foreach($res_items as $i =>$row){
                   if($row['language'] == $language){
                     array_push($items, array(
+                    'id' => $row['pid']?$row['pid']:$objPage->id,
                     'alias' => $row['alias']?$row['alias']:$objPage->alias,
                     'title' => $row['title']?$row['title']:$objPage->title,
                     'pageTitle' => $row['pageTitle']?$row['pageTitle']:$objPage->pageTitle,
@@ -128,7 +129,8 @@ class I18nL10nModuleLanguageNavigation extends Module
             $objTemplate->type = get_class($this);
             $objTemplate->items = $items;
             $objTemplate->languages = $GLOBALS['TL_LANG']['LNG'];
-        }//end if(!empty($res_items))
+        }
+
         $this->Template->items = !empty($items) ? $objTemplate->parse() : '';
     }
 }//end I18nL10nModuleLanguageNavigation

@@ -41,6 +41,7 @@ class I18nL10nPageRegular extends PageRegular
     //override_function
     function generate(Database_Result $objPage) {
         $this->fixupCurrentLanguage();
+
         if($GLOBALS['TL_LANGUAGE'] == $GLOBALS['TL_CONFIG']['i18nl10n_default_language']){
             if($objPage->i18nl10n_hide != ''){
                 header('HTTP/1.1 404 Not Found');
@@ -84,18 +85,45 @@ class I18nL10nPageRegular extends PageRegular
      * Then this method will not be needed any more.
      */
      private function fixupCurrentLanguage(){
+         // if language is added to url, get it from there
+         if($GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl']) {
+             $this->import('Environment');
+             $environment = $this->Environment;
+             $scriptName = preg_quote($environment->scriptName);
+             $strUrl = $environment->requestUri;
+
+             // TODO: Compare against settings??
+
+             // if scriptName is part of url
+             if($GLOBALS['TL_CONFIG']['rewriteURL']) {
+                 $regex = "@^/([A-z]{2}(?=/)){1}(/.*)@";
+             } else {
+                 $regex = "@^$scriptName/([A-z]{2}(?=/)){1}(/.*)@";
+             }
+
+             $urlLanguage = preg_replace(
+                 $regex, '$1', $strUrl
+             );
+
+             $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $urlLanguage;
+
+             return;
+         }
+
          $selected_language = $this->Input->post('language');
-         //allow GET request for language
+
+         // allow GET request for language
          if(!$selected_language){
             $selected_language = $this->Input->get('language');
          }
-         if(
-            ($selected_language) && 
-            in_array($selected_language,
-                             deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']))
-         ) {
+
+         if($selected_language
+             && in_array($selected_language,
+                 deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages'])))
+         {
             $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selected_language;
-         }elseif(isset($_SESSION['TL_LANGUAGE'])) {
+         }
+         elseif(isset($_SESSION['TL_LANGUAGE'])) {
              $GLOBALS['TL_LANGUAGE'] = $_SESSION['TL_LANGUAGE'];
          }
      }
@@ -199,6 +227,4 @@ class I18nL10nPageRegular extends PageRegular
       . '</p>';
       }
   }
-}//end class
-
-?>
+}

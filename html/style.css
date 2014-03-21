@@ -30,3 +30,14 @@
     background:url("localize_all.png") no-repeat scroll left center transparent;
     padding:2px 0 3px 20px;
 }
+
+#i18nl10n_message {
+    text-align: left;
+    line-height: 120%;
+    padding: 0.5em;
+    color: #666966;
+    font-weight: bold;
+    background: #fea;
+    border: 1px solid #D49822;
+    margin-bottom: 20px;
+}

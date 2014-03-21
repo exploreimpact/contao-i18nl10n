@@ -65,3 +65,5 @@ array('L10N for аll', 'Localize all untranslated pages to available languages')
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all_q'] =
 'For all untranslated pages in <span style="white-space:nowrap">[%s]</span> will be created copies for each of the site languages.<br />'
 .'Are you sure you want to create localizations for all unlocalized pages?';
+
+$GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_add_language_to_url'] = 'i18nl10n is not compatible with the "Add language to URL" function of Contao. Please use the i18nl10n alternative from the settings page.';

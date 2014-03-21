@@ -51,6 +51,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         'ptable'                      => 'tl_page',
         'onload_callback' => array
         (
+            array('tl_page_i18nl10n','displayAddLanguageToUrlMessage'),
             array('tl_page_i18nl10n','localize_all'),
             array('tl_page', 'addBreadcrumb'),
         ),
@@ -351,6 +352,16 @@ AND p.type !='root' AND i.pid IS NULL";
 
     return '<a href="'.$this->addToUrl($href).'" title="'.specialchars($title).'"'.$attributes.'>'.$this->generateImage($icon, $label).'</a> ';
   }
+
+    public function displayAddLanguageToUrlMessage() {
+        if($GLOBALS['TL_CONFIG']['addLanguageToUrl']) {
+
+            $message = $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_add_language_to_url'];
+
+            $GLOBALS['TL_DCA']['tl_page']['list']['sorting']['breadcrumb'] .=
+                '<div id="i18nl10n_message">' . $message . '</div>';
+        };
+}
 
 
 }//end class tl_page_i18nl10n
