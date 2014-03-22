@@ -33,5 +33,7 @@ $GLOBALS['TL_LANG']['tl_page_i18nl10n']['show']['1'] = "Details der lokalisierte
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all']['0'] = "L10N für Alle";
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all']['1'] = "Alle nicht lokalisierten Seiten mit vorhandenen Sprachen lokalisieren";
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all_q'] = "Für alle nicht lokalisierten Seiten in <span style=\"white-space:nowrap\">[%s]</span> werden lokalisierte Seiten in den vorhandenen Sprachen erstellt.<br />Sind Sie sicher, dass Sie für alle nicht lokalisierten Seiten, Lokalisierungen erstellen wollen?";
+
+$GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_add_language_to_url'] = 'i18nl10n ist nicht mit der Contao Funktion "Sprache zur URL hinzufügen" kompatibel. Bitte verwenden Sie die i18nl10n Alternative aus den Einstellungen.';
  
 ?>

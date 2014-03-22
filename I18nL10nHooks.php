@@ -76,28 +76,31 @@ class I18nL10nHooks extends System
         }
         elseif ($GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl']) {
             if ($strUrl) {
-                // get script name and prepare for regex
-                $environment = $this->Environment;
-                if(strpos($environment->scriptName, '\/') == 0) {
-                    $environment = substr($environment->scriptName, 1);
-                }
-                $environment = preg_quote($environment);
-
-                // add language to url
+                // if rewrite is on just add language
                 if($GLOBALS['TL_CONFIG']['rewriteURL']) {
                     $mystrUrl = $language . '/' . $strUrl;
-                }
+                } // if rewrite is off, place language after environment
                 else {
-                    // if environment is part of url
-                    if(strpos($strUrl, $environment) !== false) {
-                        $regex = "@(^$environment\/){1}(.*)$@";
-                        $mystrUrl = preg_replace(
-                            $regex, '$1' . $language . '/$2', $strUrl
-                        );
-                    } // else just prepend language
-                    else {
-                        $mystrUrl = $language . '/' . $strUrl;
+                    // get script name and prepare for regex
+                    $environment = $this->Environment;
+                    if(strpos($environment->scriptName, '/') == 0) {
+                        $environment = substr($environment->scriptName, 1);
                     }
+                    $environment = preg_quote($environment);
+
+                    // search for
+                    // index.php(/lang)?id=20
+                    // index.php(/lang)/title.html
+                    $regex = "@(^$environment|^$environment(?=\?)){1}/?(.*)$@";
+
+                    $mystrUrl = preg_replace(
+                        $regex, '$1/' . $language. '/$2', $strUrl
+                    );
+                }
+
+                // if alias is missing (f.ex. index.html), add it
+                if(!$GLOBALS['TL_CONFIG']['disableAlias'] && strpos($mystrUrl, $arrRow['alias'] . $GLOBALS['TL_CONFIG']['urlSuffix']) === false){
+                    $mystrUrl .= $alias . $GLOBALS['TL_CONFIG']['urlSuffix'];
                 }
 
             } else {
