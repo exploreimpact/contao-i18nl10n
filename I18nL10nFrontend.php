@@ -13,7 +13,7 @@
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @author      Krasimir Berov
  * @package     i18nl10n
- * @license     http://www.gnu.org/licenses/lgpl-3.0.html LGPLv3
+ * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
 
@@ -38,7 +38,8 @@ class I18nL10nFrontend extends Controller
      * just before display them as menu.
      * TODO: Simplify this code mess!!!
      *
-     * @param Array $items The menu items on the current menu level
+     * @param   Array $items The menu items on the current menu level
+     * @return  Array $i18n_items
      */ 
     public function i18nl10nNavItems(Array $items){
         if(empty($items)) {

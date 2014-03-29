@@ -13,7 +13,7 @@
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @author      Krasimir Berov
  * @package     i18nl10n
- * @license     http://www.gnu.org/licenses/lgpl-3.0.html LGPLv3
+ * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
 
