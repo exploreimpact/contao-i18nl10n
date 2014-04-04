@@ -3,20 +3,11 @@
  * Menu for switching between languages of a page.
  * available fiealds in $this->items: language, title, pageTitle
  */
- 
+
+
 ?>
 
-<?php
-$strUrl ='';
-foreach($_GET as $k => $v){
-  if($GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl'] && $k == 'language'){
-    continue;
-  }
-  $strUrl .='/'.$k.'/'.$v;
-}
-
-foreach ($this->items as $item): 
-?>
+<?php foreach ($this->items as $item): ?>
 
 <a href="<?php echo $this->generateFrontendUrl($item,$strUrl); ?>"
     <?php if ($item['isActive']) {echo ' class="active"';} ?>

@@ -47,15 +47,27 @@ class I18nL10nHooks extends System
         $alias = $arrRow['alias'];
 
         if ($GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix'] && !$GLOBALS['TL_CONFIG']['disableAlias']) {
-            if ($strUrl)
-                $mystrUrl = preg_replace(
-                    "/$alias(\.{$language})?/u",
-                    $alias . '.' . $language,
-                    $strUrl,
-                    1 //limit to one match
-                );
-            else
+            if ($strUrl){
+                if($strParams) {
+                    // if params are given, keep them and add language to the end of url
+                    $mystrUrl = preg_replace(
+                        "@$alias" . "$strParams@u",
+                        $alias . $strParams . '/' . $language,
+                        $strUrl,
+                        1 //limit to one match
+                    );
+                } else {
+                    $mystrUrl = preg_replace(
+                        "/$alias(\.{$language})?/u",
+                        $alias . '.' . $language,
+                        $strUrl,
+                        1 //limit to one match
+                    );
+                }
+            }
+            else {
                 $mystrUrl = $alias . '.' . $language . $GLOBALS['TL_CONFIG']['urlSuffix'];
+            }
             //TODO: useAutoItem $GLOBALS['TL_CONFIG']['useAutoItem'] ?
         }
         elseif ($GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl']) {
@@ -83,6 +95,9 @@ class I18nL10nHooks extends System
                 }
 
                 // if alias is missing (f.ex. index.html), add it (exclude news!)
+                // search for
+                // www.domain.com/
+                // www.domain.com/foo/
                 if(!$GLOBALS['TL_CONFIG']['disableAlias'] && preg_match('@' . $arrRow['alias'] . '(?=\\' . $GLOBALS['TL_CONFIG']['urlSuffix'] . '|/)@', $mystrUrl) === false){
                     $mystrUrl .= $alias . $GLOBALS['TL_CONFIG']['urlSuffix'];
                 }

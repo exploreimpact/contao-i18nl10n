@@ -3,7 +3,7 @@
  * Menu for switching between languages of a page.
  * available fiealds in $this->items: language, title, pageTitle
  */
- 
+
 ?>
 
 <?php foreach ($this->items as $item): ?>
