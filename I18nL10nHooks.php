@@ -82,8 +82,8 @@ class I18nL10nHooks extends System
                     );
                 }
 
-                // if alias is missing (f.ex. index.html), add it
-                if(!$GLOBALS['TL_CONFIG']['disableAlias'] && strpos($mystrUrl, $arrRow['alias'] . $GLOBALS['TL_CONFIG']['urlSuffix']) === false){
+                // if alias is missing (f.ex. index.html), add it (exclude news!)
+                if(!$GLOBALS['TL_CONFIG']['disableAlias'] && preg_match('@' . $arrRow['alias'] . '(?=\\' . $GLOBALS['TL_CONFIG']['urlSuffix'] . '|/)@', $mystrUrl) === false){
                     $mystrUrl .= $alias . $GLOBALS['TL_CONFIG']['urlSuffix'];
                 }
 
