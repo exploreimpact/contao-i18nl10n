@@ -132,9 +132,6 @@ class I18nL10nHooks extends System
 
     public function getPageIdFromUrl(Array $arrFragments)
     {
-
-        FB::log($arrFragments);
-
         global $TL_CONFIG;
         $this->import('Database');
         $arrFragments = array_map('urldecode', $arrFragments);
@@ -179,8 +176,6 @@ class I18nL10nHooks extends System
                         else {
                             $arrFragments[$i] = $alias;
                         }
-
-                        FB::log($matches);
 
                         array_push($arrFragments, 'language', $language);
 
