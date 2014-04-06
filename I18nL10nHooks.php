@@ -156,33 +156,25 @@ class I18nL10nHooks extends System
             $arrFragments = array_delete($arrFragments, $i);
         } // try to get language by suffix
         elseif ($TL_CONFIG['i18nl10n_alias_suffix'] && !$GLOBALS['TL_CONFIG']['disableAlias']) {
+            // last element should contain language info
+            if(preg_match('@^([_\-\pL\pN\.]*(?=\.))?\.?([A-z]{2})$@u', $arrFragments[count($arrFragments) - 1], $matches)) {
 
-            $i = 0;
+                // define language and alias value
+                $language = strtolower($matches[2]);
+                $alias = $matches[1] != '' ? $matches[1] : $arrFragments[count($arrFragments) - 1];
 
-            // loop through url fragments and search for language
-            foreach($arrFragments as $fragment) {
-                if(preg_match('@^([_\-\pL\pN\.]*(?=\.))?\.?([A-z]{2})$@u', $fragment, $matches)) {
+                if(in_array($language, $languages)) {
 
-                    // define language and alias value
-                    $language = strtolower($matches[2]);
-                    $alias = $matches[1] != '' ? $matches[1] : $arrFragments[$i - 1];
-
-                    if(in_array($language, $languages)) {
-
-                        // if only language was found, pop it from array
-                        if($matches[1] == '') {
-                            array_pop($arrFragments);
-                        } // else set alias
-                        else {
-                            $arrFragments[$i] = $alias;
-                        }
-
-                        array_push($arrFragments, 'language', $language);
-
-                        exit;
+                    // if only language was found, pop it from array
+                    if($matches[1] == '') {
+                        array_pop($arrFragments);
+                    } // else set alias
+                    else {
+                        $arrFragments[count($arrFragments) - 1] = $alias;
                     }
+
+                    array_push($arrFragments, 'language', $language);
                 }
-                $i++;
             }
         } // try to get language by query
         elseif ($this->Input->get('language')) {
