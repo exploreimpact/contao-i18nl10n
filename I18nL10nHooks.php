@@ -130,36 +130,64 @@ class I18nL10nHooks extends System
         return $mystrUrl;
     }
 
-    public function getPageIdFromUrl(Array $fragments)
+    public function getPageIdFromUrl(Array $arrFragments)
     {
+
+        FB::log($arrFragments);
+
         global $TL_CONFIG;
         $this->import('Database');
-        $fragments = array_map('urldecode', $fragments);
+        $arrFragments = array_map('urldecode', $arrFragments);
         $languages = deserialize($TL_CONFIG['i18nl10n_languages']);
         $language = $TL_CONFIG['i18nl10n_default_language'];
 
         // try to get language by i18nl10n URL
         if ($TL_CONFIG['i18nl10n_addLanguageToUrl']) {
-            if (preg_match('@^([A-z]{2})$@', $fragments[0], $matches)) {
+            if (preg_match('@^([A-z]{2})$@', $arrFragments[0], $matches)) {
                 $language = strtolower($matches[1]);
-                array_push($fragments, 'language', $language);
+                array_push($arrFragments, 'language', $language);
             }
-            $i = ($fragments[1] == 'auto_item' ? 2 : 1);
-            $fragments[$i] = ($fragments[$i] ? $fragments[$i] : $TL_CONFIG['i18nl10n_default_page']);
-            if (preg_match('@^([_\-\pL\pN\.]+)$@iu', $fragments[$i], $matches)) {
-                $fragments[0] = $fragments[$i];
+
+            $i = ($arrFragments[1] == 'auto_item' ? 2 : 1);
+            $arrFragments[$i] = ($arrFragments[$i] ? $arrFragments[$i] : $TL_CONFIG['i18nl10n_default_page']);
+
+            if (preg_match('@^([_\-\pL\pN\.]+)$@iu', $arrFragments[$i], $matches)) {
+                $arrFragments[0] = $arrFragments[$i];
             }
+
             //TODO: solve "auto_item" issue
-            $fragments = array_delete($fragments, $i);
+            $arrFragments = array_delete($arrFragments, $i);
         } // try to get language by suffix
         elseif ($TL_CONFIG['i18nl10n_alias_suffix'] && !$GLOBALS['TL_CONFIG']['disableAlias']) {
-            $ok = preg_match('/^([_\-\pL\pN\.]+)\.([A-z]{2})$/u', $fragments[0], $matches);
-            if ($ok) {
-                $language = strtolower($matches[2]);
-            }
-            if ($ok && in_array($language, $languages)) {
-                $fragments[0] = $matches[1];
-                array_push($fragments, 'language', $language);
+
+            $i = 0;
+
+            // loop through url fragments and search for language
+            foreach($arrFragments as $fragment) {
+                if(preg_match('@^([_\-\pL\pN\.]*(?=\.))?\.?([A-z]{2})$@u', $fragment, $matches)) {
+
+                    // define language and alias value
+                    $language = strtolower($matches[2]);
+                    $alias = $matches[1] != '' ? $matches[1] : $arrFragments[$i - 1];
+
+                    if(in_array($language, $languages)) {
+
+                        // if only language was found, pop it from array
+                        if($matches[1] == '') {
+                            array_pop($arrFragments);
+                        } // else set alias
+                        else {
+                            $arrFragments[$i] = $alias;
+                        }
+
+                        FB::log($matches);
+
+                        array_push($arrFragments, 'language', $language);
+
+                        exit;
+                    }
+                }
+                $i++;
             }
         } // try to get language by query
         elseif ($this->Input->get('language')) {
@@ -182,13 +210,19 @@ class I18nL10nHooks extends System
             AND published=1" : "");
 
         $objAlias = $this->Database->prepare($sql)
-            ->execute(is_numeric($fragments[0] ? $fragments[0] : 0), $language, $fragments[0], $language);
+            ->execute(is_numeric($arrFragments[0] ? $arrFragments[0] : 0), $language, $arrFragments[0], $language);
 
         if ($objAlias->numRows) {
-            $fragments[0] = $objAlias->alias;
+            $arrFragments[0] = $objAlias->alias;
         }
 
-        return $fragments;
+        // Add the second fragment as auto_item if the number of fragments is even
+        if ($GLOBALS['TL_CONFIG']['useAutoItem'] && count($arrFragments) % 2 == 0)
+        {
+            array_insert($arrFragments, 1, array('auto_item'));
+        }
+
+        return $arrFragments;
     }
 
 /**
