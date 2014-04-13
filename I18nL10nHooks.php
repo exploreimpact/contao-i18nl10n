@@ -35,78 +35,67 @@ class I18nL10nHooks extends System
      *
      *
      */
-    public function generateFrontendUrl($arrRow, $strParams, $strUrl)
+    public function generateFrontendUrl($arrRow, $strParams='', $strUrl='')
     {
+
+        FB::log($strParams);
+        FB::log($strUrl);
+
         if (!is_array($arrRow)) {
             throw new Exception('not an associative array.');
         }
+
         $language = (array_key_exists('robots', $arrRow) ?
             $GLOBALS['TL_LANGUAGE'] :
             $arrRow['language']);
+
         if (!$language) $language = $GLOBALS['TL_LANGUAGE'];
+
         $alias = $arrRow['alias'];
 
+        // remove auto_item and language
+        $strParams = preg_replace('@/auto_item|/language/[A-z]{2}@', '', $strParams);
+        $strUrl = preg_replace('@/auto_item|/language/[A-z]{2}@', '', $strUrl);
+
+        // get script name and prepare for regex
+        $environment = $this->Environment->scriptName;
+        if(strpos($environment, '/') == 0) {
+            $environment = substr($environment, 1);
+        }
+        $environmentReg = preg_quote($environment);
+
+        if ($GLOBALS['TL_CONFIG']['disableAlias']) {
+            if ($GLOBALS['TL_CONFIG']['useAutoItem']) {
+                // TODO: Fails with alias off and auto_item
+            }
+
+            return $strUrl . '&language=' . $language;
+        }
+
         if ($GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix'] && !$GLOBALS['TL_CONFIG']['disableAlias']) {
-            if ($strUrl){
-                if($strParams) {
-                    // if params are given, keep them and add language to the end of url
-                    $mystrUrl = preg_replace(
-                        "@$alias" . "$strParams@u",
-                        $alias . $strParams . '/' . $language,
-                        $strUrl,
-                        1 //limit to one match
-                    );
-                } else {
-                    $mystrUrl = preg_replace(
-                        "/$alias(\.{$language})?/u",
-                        $alias . '.' . $language,
-                        $strUrl,
-                        1 //limit to one match
-                    );
-                }
+            $mystrUrl = $alias . $strParams . '.' . $language . $GLOBALS['TL_CONFIG']['urlSuffix'];
+
+            // if rewrite is off, add environment
+            if (!$GLOBALS['TL_CONFIG']['rewriteURL']) {
+                $mystrUrl = $environment . '/' . $mystrUrl;
             }
-            else {
-                $mystrUrl = $alias . '.' . $language . $GLOBALS['TL_CONFIG']['urlSuffix'];
-            }
-            //TODO: useAutoItem $GLOBALS['TL_CONFIG']['useAutoItem'] ?
         }
         elseif ($GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl']) {
-            if ($strUrl) {
-                // if rewrite is on just add language
-                if($GLOBALS['TL_CONFIG']['rewriteURL']) {
-                    $mystrUrl = $language . '/' . $strUrl;
-                } // if rewrite is off, place language after environment
-                else {
-                    // get script name and prepare for regex
-                    $environment = $this->Environment;
-                    if(strpos($environment->scriptName, '/') == 0) {
-                        $environment = substr($environment->scriptName, 1);
-                    }
-                    $environment = preg_quote($environment);
+            $mystrUrl = $language . '/' . $alias . $strParams . $GLOBALS['TL_CONFIG']['urlSuffix'];
 
-                    // search for
-                    // index.php(/lang)?id=20
-                    // index.php(/lang)/title.html
-                    $regex = "@(^$environment|^$environment(?=\?)){1}/?(.*)$@";
-
-                    $mystrUrl = preg_replace(
-                        $regex, '$1/' . $language. '/$2', $strUrl
-                    );
-                }
-
-                // if alias is missing (f.ex. index.html), add it (exclude news!)
-                // search for
-                // www.domain.com/
-                // www.domain.com/foo/
-                if(!$GLOBALS['TL_CONFIG']['disableAlias'] && preg_match('@' . $arrRow['alias'] . '(?=\\' . $GLOBALS['TL_CONFIG']['urlSuffix'] . '|/)@', $mystrUrl) === false){
-                    $mystrUrl .= $alias . $GLOBALS['TL_CONFIG']['urlSuffix'];
-                }
-
-            } else {
-                $mystrUrl = $language . '/'
-                    . $alias
-                    . $GLOBALS['TL_CONFIG']['urlSuffix'];
+            // if rewrite is off, add environment
+            if(!$GLOBALS['TL_CONFIG']['rewriteURL']) {
+                $mystrUrl = $environment . '/' . $mystrUrl;
             }
+
+            // if alias is missing (f.ex. index.html), add it (exclude news!)
+            // search for
+            // www.domain.com/
+            // www.domain.com/foo/
+            if(!$GLOBALS['TL_CONFIG']['disableAlias'] && preg_match('@' . $arrRow['alias'] . '(?=\\' . $GLOBALS['TL_CONFIG']['urlSuffix'] . '|/)@', $mystrUrl) === false){
+                $mystrUrl .= $alias . $GLOBALS['TL_CONFIG']['urlSuffix'];
+            }
+
         }
         else {
             // if get variables
@@ -130,6 +119,13 @@ class I18nL10nHooks extends System
         return $mystrUrl;
     }
 
+
+    /**
+     * Correct page id based on language
+     *
+     * @param array $arrFragments
+     * @return array
+     */
     public function getPageIdFromUrl(Array $arrFragments)
     {
         global $TL_CONFIG;
@@ -138,22 +134,22 @@ class I18nL10nHooks extends System
         $languages = deserialize($TL_CONFIG['i18nl10n_languages']);
         $language = $TL_CONFIG['i18nl10n_default_language'];
 
+        // strip auto_item
+        if ($GLOBALS['TL_CONFIG']['useAutoItem'] && $arrFragments[1] == 'auto_item') {
+            $arrFragments = array_delete($arrFragments, 1);
+        }
+
         // try to get language by i18nl10n URL
         if ($TL_CONFIG['i18nl10n_addLanguageToUrl']) {
             if (preg_match('@^([A-z]{2})$@', $arrFragments[0], $matches)) {
                 $language = strtolower($matches[1]);
+
+                // remove old language entry
+                $arrFragments = array_delete($arrFragments, 0);
+
+                // append new language entry
                 array_push($arrFragments, 'language', $language);
             }
-
-            $i = ($arrFragments[1] == 'auto_item' ? 2 : 1);
-            $arrFragments[$i] = ($arrFragments[$i] ? $arrFragments[$i] : $TL_CONFIG['i18nl10n_default_page']);
-
-            if (preg_match('@^([_\-\pL\pN\.]+)$@iu', $arrFragments[$i], $matches)) {
-                $arrFragments[0] = $arrFragments[$i];
-            }
-
-            //TODO: solve "auto_item" issue
-            $arrFragments = array_delete($arrFragments, $i);
         } // try to get language by suffix
         elseif ($TL_CONFIG['i18nl10n_alias_suffix'] && !$GLOBALS['TL_CONFIG']['disableAlias']) {
             // last element should contain language info
@@ -202,6 +198,7 @@ class I18nL10nHooks extends System
         if ($objAlias->numRows) {
             $arrFragments[0] = $objAlias->alias;
         }
+
 
         // Add the second fragment as auto_item if the number of fragments is even
         if ($GLOBALS['TL_CONFIG']['useAutoItem'] && count($arrFragments) % 2 == 0)

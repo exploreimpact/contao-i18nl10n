@@ -24,7 +24,7 @@ $this->loadLanguageFile('languages');
  */
 $GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .=
   ';{page_i18nl10n:hide},i18nl10n_languages,i18nl10n_default_language,'
-  .'i18nl10n_alias_suffix,i18nl10n_addLanguageToUrl,i18nl10n_default_page';
+  .'i18nl10n_alias_suffix,i18nl10n_addLanguageToUrl';
 
 /**
  * Add fields
@@ -82,16 +82,6 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_addLanguageToUrl'] = array
          array('tl_settings_l10ns','ensureOthersUnchecked'),
        )
 );
-
-/*
-$GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_default_page'] =
-  array(
-    'label'     => &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_default_page'],
-    'exclude'   => true,
-    'inputType' => 'pageTree',
-    'eval' => array('mandatory'=>true, 'unique'=>true,fieldType=>'radio')
-);
-*/
 
 
 class tl_settings_l10ns extends Backend 
