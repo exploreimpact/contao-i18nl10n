@@ -40,21 +40,6 @@ if (TL_MODE == 'BE')
     {
         $GLOBALS['TL_CSS'] = array($cssStyle);
     }
-
-
-    /**
-     * JavaScript files
-     */
-    $jsN10l = 'system/modules/i18nl10n/assets/js/l10n.js';
-
-    if (is_array($GLOBALS['TL_JAVASCRIPT']))
-    {
-        $GLOBALS['TL_JAVASCRIPT'][] = $jsN10l;
-    }
-    else
-    {
-        $GLOBALS['TL_JAVASCRIPT'] = array($jsN10l);
-    }
 }
 
 
@@ -63,7 +48,7 @@ if (TL_MODE == 'BE')
  */
 $GLOBALS['BE_MOD']['design']['i18nl10n'] = array(
     'tables' => array('tl_page_i18nl10n'),
-    'icon'   => 'system/modules/i18nl10n/assets/img/icon.png'
+    'icon'   => 'system/modules/i18nl10n/assets/img/i18nl10n.png'
 );
 
 

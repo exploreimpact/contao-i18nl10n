@@ -54,7 +54,7 @@ class tl_article_l10ns extends tl_article
             foreach($items as $lang) {
                 $count = $lang['items'];
                 $title = $GLOBALS['TL_LANG']['LNG'][$lang['language']].": $count elements";
-                $langIcon = 'system/modules/i18nl10n/assets/img/icon.png';
+                $langIcon = 'system/modules/i18nl10n/assets/img/i18nl10n.png';
 
                 if($lang['language']) {
                     $langIcon = 'system/modules/i18nl10n/assets/img/flag_icons/png/' . $lang['language'] . '.png';
