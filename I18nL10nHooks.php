@@ -38,16 +38,11 @@ class I18nL10nHooks extends System
     public function generateFrontendUrl($arrRow, $strParams='', $strUrl='')
     {
 
-        FB::log($strParams);
-        FB::log($strUrl);
-
         if (!is_array($arrRow)) {
             throw new Exception('not an associative array.');
         }
 
-        $language = (array_key_exists('robots', $arrRow) ?
-            $GLOBALS['TL_LANGUAGE'] :
-            $arrRow['language']);
+        $language = (array_key_exists('robots', $arrRow) ? $GLOBALS['TL_LANGUAGE'] : $arrRow['language']);
 
         if (!$language) $language = $GLOBALS['TL_LANGUAGE'];
 
@@ -62,11 +57,14 @@ class I18nL10nHooks extends System
         if(strpos($environment, '/') == 0) {
             $environment = substr($environment, 1);
         }
-        $environmentReg = preg_quote($environment);
 
+        // if alias is disabled add language to get param end return
         if ($GLOBALS['TL_CONFIG']['disableAlias']) {
-            if ($GLOBALS['TL_CONFIG']['useAutoItem']) {
-                // TODO: Fails with alias off and auto_item
+
+            $missingValueRegex = '@(.*\?.*)(?<=&)(.*)=(?=$|&)(&.*)?@';
+
+            if ($GLOBALS['TL_CONFIG']['useAutoItem'] && preg_match($missingValueRegex, $strUrl) == 1) {
+                $strUrl = preg_replace($missingValueRegex, '${1}auto_item=${2}${3}' , $strUrl);
             }
 
             return $strUrl . '&language=' . $language;
@@ -141,7 +139,7 @@ class I18nL10nHooks extends System
 
         // try to get language by i18nl10n URL
         if ($TL_CONFIG['i18nl10n_addLanguageToUrl']) {
-            if (preg_match('@^([A-z]{2})$@', $arrFragments[0], $matches)) {
+                if (preg_match('@^([A-z]{2})$@', $arrFragments[0], $matches)) {
                 $language = strtolower($matches[1]);
 
                 // remove old language entry
