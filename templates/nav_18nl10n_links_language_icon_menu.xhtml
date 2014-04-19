@@ -4,12 +4,20 @@
  * available fiealds in $this->items: language, title, pageTitle
  */
 
+$strParams ='';
 
+// get url parameters
+foreach($_GET as $k => $v){
+    if($GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl'] && $k == 'language'){
+        continue;
+    }
+    $strParams .='/'.$k.'/'.$v;
+}
+
+foreach ($this->items as $item):
 ?>
 
-<?php foreach ($this->items as $item): ?>
-
-<a href="<?php echo $this->generateFrontendUrl($item,$strUrl); ?>"
+<a href="<?php echo $this->generateFrontendUrl($item,$strParams); ?>"
     <?php if ($item['isActive']) {echo ' class="active"';} ?>
     title="<?php echo $this->languages[$item['language']];?>"
     ><?php 
