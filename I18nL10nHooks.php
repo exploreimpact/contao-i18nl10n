@@ -61,7 +61,7 @@ class I18nL10nHooks extends System
         // if alias is disabled add language to get param end return
         if ($GLOBALS['TL_CONFIG']['disableAlias']) {
 
-            $missingValueRegex = '@(.*\?.*)(?<=&)(.*)=(?=$|&)(&.*)?@';
+            $missingValueRegex = '@(.*\?[^&]*&)([^&]*)=(?=$|&)(&.*)?@';
 
             if ($GLOBALS['TL_CONFIG']['useAutoItem'] && preg_match($missingValueRegex, $strUrl) == 1) {
                 $strUrl = preg_replace($missingValueRegex, '${1}auto_item=${2}${3}' , $strUrl);
