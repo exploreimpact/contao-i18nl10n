@@ -115,6 +115,9 @@ class I18nL10nHooks extends \Contao\System
 
     public function getPageIdFromUrl(Array $fragments)
     {
+
+        FB::log('getPageID');
+
         global $TL_CONFIG;
         $this->import('Database');
         $fragments = array_map('urldecode', $fragments);

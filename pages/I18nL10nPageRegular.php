@@ -17,6 +17,8 @@
  */
 
 
+namespace Verstaerker\I18nl10n\Pages;
+
 /**
  * Class I18nPageRegular
  *
@@ -24,7 +26,7 @@
  * @author     Krasimir Berov
  * @package    Controller
  */
-class I18nL10nPageRegular extends PageRegular
+class I18nL10nPageRegular extends \PageRegular
 {
     //override_function
     function generate($objPage, $blnCheckRequest = false)

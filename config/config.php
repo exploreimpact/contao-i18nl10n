@@ -16,6 +16,9 @@
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
+
+namespace Verstaerker\I18nl10n;
+
 /**
  * -------------------------------------------------------------------------
  * BACK END MODULES
@@ -66,14 +69,22 @@ $GLOBALS['FE_MOD']['navigationMenu']['breadcrumb']  = 'I18nL10nModuleBreadcrumb'
  * HOOKS
  * -------------------------------------------------------------------------
  */
-$GLOBALS['TL_HOOKS']['generateFrontendUrl'][] =
-    array('I18nL10nHooks', 'generateFrontendUrl');
 
-$GLOBALS['TL_HOOKS']['replaceInsertTags'][] =
-    array('I18nL10nPageRegular', 'insertI18nL10nArticle');
-
-$GLOBALS['TL_HOOKS']['getPageIdFromUrl'][] =
-    array('I18nL10nHooks', 'getPageIdFromUrl');
+$GLOBALS['TL_HOOKS'] = array
+(
+    'generateFrontendUrl' => array
+    (
+        array('I18nL10nHooks', 'generateFrontendUrl')
+    ),
+    'getPageIdFromUrl' => array
+    (
+        array('I18nL10nHooks', 'getPageIdFromUrl')
+    ),
+    'replaceInsertTags' => array
+    (
+        array('PageRegular', 'insertI18nL10nArticle')
+    )
+);
 
 
 /**
@@ -81,7 +92,7 @@ $GLOBALS['TL_HOOKS']['getPageIdFromUrl'][] =
  * PAGE TYPES
  * -------------------------------------------------------------------------
  */
-$GLOBALS['TL_PTY']['regular'] =  'I18nL10nPageRegular';
+$GLOBALS['TL_PTY']['regular'] =  'Verstaerker\I18nl10n\PageRegular';
 
 if(!$GLOBALS['TL_CONFIG']['i18nl10n_languages']){
     $GLOBALS['TL_CONFIG']['i18nl10n_languages'] = serialize(array('en'));

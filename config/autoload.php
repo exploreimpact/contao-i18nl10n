@@ -12,13 +12,23 @@
 
 
 /**
+ * Register the namespaces
+ */
+ClassLoader::addNamespaces(array
+(
+	'Verstaerker',
+));
+
+
+/**
  * Register the classes
  */
 ClassLoader::addClasses(array
 (
 	// Classes
-	'I18nL10nHooks'       => 'system/modules/i18nl10n/classes/I18nL10nHooks.php',
+	'I18nL10nHooks'                                    => 'system/modules/i18nl10n/classes/I18nL10nHooks.php',
 
 	// Pages
-	'I18nL10nPageRegular' => 'system/modules/i18nl10n/pages/I18nL10nPageRegular.php',
+	'Verstaerker\I18nl10n\Pages\I18nL10nModuleArticle' => 'system/modules/i18nl10n/Pages/I18nL10nModuleArticle.php',
+	'Verstaerker\I18nl10n\Pages\I18nL10nPageRegular'   => 'system/modules/i18nl10n/Pages/I18nL10nPageRegular.php',
 ));
