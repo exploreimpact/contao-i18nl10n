@@ -33,30 +33,60 @@ class I18nL10nPageRegular extends \PageRegular
     {
         $this->fixupCurrentLanguage();
 
-        if ($GLOBALS['TL_LANGUAGE'] == $GLOBALS['TL_CONFIG']['i18nl10n_default_language']) {
-            if ($objPage->i18nl10n_hide != '') {
+        if ($GLOBALS['TL_LANGUAGE'] == $GLOBALS['TL_CONFIG']['i18nl10n_default_language'])
+        {
+            if ($objPage->i18nl10n_hide != '')
+            {
                 header('HTTP/1.1 404 Not Found');
-                $message = 'Page "' . $objPage->alias
-                    . '" is hidden for default language "' . $objPage->language . '". See "Publish settings/Hide default language" for Page ID ' . $objPage->id;
+                $message = 'Page "'
+                    . $objPage->alias
+                    . '" is hidden for default language "'
+                    . $objPage->language
+                    . '". See "Publish settings/Hide default language" for Page ID '
+                    . $objPage->id;
                 $this->log($message, __METHOD__, TL_ERROR);
                 die($message);
             }
             return parent::generate($objPage);
         }
+
         //get language specific page properties
-        //TODO: make this configurable
         $fields = 'title,language,pageTitle,description,cssClass,dateFormat,timeFormat,datimFormat,published,start,stop';
-        $time = time();
-        $l10n = $this->Database->prepare(
-            "SELECT $fields from tl_page_i18nl10n WHERE pid=? AND language=? "
-            . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<$time) AND (stop='' OR stop>$time)
-         AND published=1" : "")
-        )->limit(1)->execute($objPage->id, $GLOBALS['TL_LANGUAGE']);
-        if ($l10n->numRows) {
+
+        $sql = "
+            SELECT
+              $fields
+            FROM
+              tl_page_i18nl10n
+            WHERE
+              pid = ?
+              AND language = ?
+        ";
+
+        if(!BE_USER_LOGGED_IN)
+        {
+            $time = time();
+            $sql .= "
+                AND (start = '' OR start < $time)
+                AND (stop = '' OR stop > $time)
+                AND published = 1
+            ";
+        }
+
+        $l10n = $this->Database->prepare($sql)
+            ->limit(1)
+            ->execute($objPage->id, $GLOBALS['TL_LANGUAGE']);
+
+        // if translated page, replace given fields in page object
+        if ($l10n->numRows)
+        {
             $objPage->defaultPageTitle = $objPage->pageTitle;
             $objPage->defaultTitle = $objPage->title;
-            foreach (explode(',', $fields) as $field) {
-                if ($l10n->$field) {
+
+            foreach (explode(',', $fields) as $field)
+            {
+                if ($l10n->$field)
+                {
                     $objPage->$field = $l10n->$field;
                 }
             }
@@ -78,7 +108,8 @@ class I18nL10nPageRegular extends \PageRegular
     private function fixupCurrentLanguage()
     {
         // if language is added to url, get it from there
-        if ($GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl']) {
+        if ($GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl'])
+        {
             $this->import('Environment');
             $environment = $this->Environment;
             $scriptName = preg_quote($environment->scriptName);
@@ -87,9 +118,12 @@ class I18nL10nPageRegular extends \PageRegular
             // TODO: Compare against settings??
 
             // if scriptName is part of url
-            if ($GLOBALS['TL_CONFIG']['rewriteURL']) {
+            if ($GLOBALS['TL_CONFIG']['rewriteURL'])
+            {
                 $regex = "@^/([A-z]{2}(?=/)){1}(/.*)@";
-            } else {
+            }
+            else
+            {
                 $regex = "@^$scriptName/([A-z]{2}(?=/)){1}(/.*)@";
             }
 
@@ -102,19 +136,16 @@ class I18nL10nPageRegular extends \PageRegular
             return;
         }
 
-        $selected_language = $this->Input->post('language');
+        $selectedLanguage = \Input::post('language') ?: \Input::get('language');
 
-        // allow GET request for language
-        if (!$selected_language) {
-            $selected_language = $this->Input->get('language');
+        if ($selectedLanguage
+            && in_array($selectedLanguage,
+                deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages'])))
+        {
+            $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selectedLanguage;
         }
-
-        if ($selected_language
-            && in_array($selected_language,
-                deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']))
-        ) {
-            $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selected_language;
-        } elseif (isset($_SESSION['TL_LANGUAGE'])) {
+        elseif (isset($_SESSION['TL_LANGUAGE']))
+        {
             $GLOBALS['TL_LANGUAGE'] = $_SESSION['TL_LANGUAGE'];
         }
     }
@@ -135,7 +166,7 @@ class I18nL10nPageRegular extends \PageRegular
      *
      * @return string|boolean The article HTML markup or false
      */
-    protected function getArticle($varId, $blnMultiMode = false, $blnIsInsertTag = false, $strColumn = 'main')
+    /*protected function getArticle($varId, $blnMultiMode = false, $blnIsInsertTag = false, $strColumn = 'main')
     {
         if (!$varId) {
             return '';
@@ -189,7 +220,7 @@ class I18nL10nPageRegular extends \PageRegular
 
         $objArticle = new I18nL10nModuleArticle($objRow, $strColumn);
         return $objArticle->generate($blnIsInsertTag);
-    }
+    }*/
 
     /**
      * Generate content in the current language from articles

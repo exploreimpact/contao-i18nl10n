@@ -26,7 +26,7 @@ ClassLoader::addNamespaces(array
 ClassLoader::addClasses(array
 (
 	// Classes
-	'I18nL10nHooks'                                    => 'system/modules/i18nl10n/classes/I18nL10nHooks.php',
+	'Verstaerker\I18nl10n\Classes\I18nL10nHooks'       => 'system/modules/i18nl10n/Classes/I18nL10nHooks.php',
 
 	// Pages
 	'Verstaerker\I18nl10n\Pages\I18nL10nModuleArticle' => 'system/modules/i18nl10n/Pages/I18nL10nModuleArticle.php',

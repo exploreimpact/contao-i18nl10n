@@ -16,6 +16,8 @@
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
+namespace Verstaerker\I18nl10n\Classes;
+
 
 /**
  * Class I18nL10nHooks
@@ -23,7 +25,7 @@
  * Provide Hooks to modify Contao
  * behaviour related to I18N and L10N.
  */
-class I18nL10nHooks extends \Contao\System
+class I18nL10nHooks extends \System
 {
     /**
      * Generates url for the site according to settings from the backend.
@@ -40,62 +42,65 @@ class I18nL10nHooks extends \Contao\System
         if (!is_array($arrRow)) {
             throw new Exception('not an associative array.');
         }
-        $language = (array_key_exists('robots', $arrRow) ?
-            $GLOBALS['TL_LANGUAGE'] :
-            $arrRow['language']);
+
+        $language = (array_key_exists('robots', $arrRow) ? $GLOBALS['TL_LANGUAGE'] : $arrRow['language']);
+
         if (!$language) $language = $GLOBALS['TL_LANGUAGE'];
+
         $alias = $arrRow['alias'];
 
-        if ($GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix'] && !$GLOBALS['TL_CONFIG']['disableAlias']) {
-            if ($strUrl)
-                $mystrUrl = preg_replace(
-                    "/$alias(\.{$language})?/u",
-                    $alias . '.' . $language,
-                    $strUrl,
-                    1 //limit to one match
-                );
-            else
-                $mystrUrl = $alias . '.' . $language . $GLOBALS['TL_CONFIG']['urlSuffix'];
-            //TODO: useAutoItem $GLOBALS['TL_CONFIG']['useAutoItem'] ?
-        } elseif ($GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl']) {
-            if ($strUrl) {
-                // if rewrite is on just add language
-                if ($GLOBALS['TL_CONFIG']['rewriteURL']) {
-                    $mystrUrl = $language . '/' . $strUrl;
-                } // if rewrite is off, place language after environment
-                else {
-                    // get script name and prepare for regex
-                    $environment = $this->Environment;
-                    if (strpos($environment->scriptName, '/') == 0) {
-                        $environment = substr($environment->scriptName, 1);
-                    }
-                    $environment = preg_quote($environment);
+        // remove auto_item and language
+        $strParams = preg_replace('@/auto_item|/language/[A-z]{2}@', '', $strParams);
+        $strUrl = preg_replace('@/auto_item|/language/[A-z]{2}@', '', $strUrl);
 
-                    // search for
-                    // index.php(/lang)?id=20
-                    // index.php(/lang)/title.html
-                    $regex = "@(^$environment|^$environment(?=\?)){1}/?(.*)$@";
+        // get script name and prepare for regex
+        $environment = $this->Environment->scriptName;
+        if(strpos($environment, '/') == 0) {
+            $environment = substr($environment, 1);
+        }
 
-                    $mystrUrl = preg_replace(
-                        $regex, '$1/' . $language . '/$2', $strUrl
-                    );
-                }
+        // if alias is disabled add language to get param end return
+        if ($GLOBALS['TL_CONFIG']['disableAlias']) {
 
-                // if alias is missing (f.ex. index.html), add it
-                if (!$GLOBALS['TL_CONFIG']['disableAlias'] && strpos($mystrUrl, $arrRow['alias'] . $GLOBALS['TL_CONFIG']['urlSuffix']) === false) {
-                    $mystrUrl .= $alias . $GLOBALS['TL_CONFIG']['urlSuffix'];
-                }
+            $missingValueRegex = '@(.*\?[^&]*&)([^&]*)=(?=$|&)(&.*)?@';
 
-            } else {
-                $mystrUrl = $language . '/'
-                    . $alias
-                    . $GLOBALS['TL_CONFIG']['urlSuffix'];
+            if ($GLOBALS['TL_CONFIG']['useAutoItem'] && preg_match($missingValueRegex, $strUrl) == 1) {
+                $strUrl = preg_replace($missingValueRegex, '${1}auto_item=${2}${3}' , $strUrl);
             }
-        } else {
+
+            return $strUrl . '&language=' . $language;
+        }
+
+        if ($GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix'] && !$GLOBALS['TL_CONFIG']['disableAlias']) {
+            $mystrUrl = $alias . $strParams . '.' . $language . $GLOBALS['TL_CONFIG']['urlSuffix'];
+
+            // if rewrite is off, add environment
+            if (!$GLOBALS['TL_CONFIG']['rewriteURL']) {
+                $mystrUrl = $environment . '/' . $mystrUrl;
+            }
+        }
+        elseif ($GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl']) {
+            $mystrUrl = $language . '/' . $alias . $strParams . $GLOBALS['TL_CONFIG']['urlSuffix'];
+
+            // if rewrite is off, add environment
+            if(!$GLOBALS['TL_CONFIG']['rewriteURL']) {
+                $mystrUrl = $environment . '/' . $mystrUrl;
+            }
+
+            // if alias is missing (f.ex. index.html), add it (exclude news!)
+            // search for
+            // www.domain.com/
+            // www.domain.com/foo/
+            if(!$GLOBALS['TL_CONFIG']['disableAlias'] && preg_match('@' . $arrRow['alias'] . '(?=\\' . $GLOBALS['TL_CONFIG']['urlSuffix'] . '|/)@', $mystrUrl) === false){
+                $mystrUrl .= $alias . $GLOBALS['TL_CONFIG']['urlSuffix'];
+            }
+
+        }
+        else {
             // if get variables
-            if (strpos($strUrl, '?') !== false) {
+            if(strpos($strUrl, '?') !== false) {
                 // if variable 'language' replace it
-                if (strpos($strUrl, 'language=') !== false) {
+                if(strpos($strUrl, 'language=') !== false) {
                     $regex = "@language=[A-z]{2}@";
                     $mystrUrl = preg_replace(
                         $regex, 'language=' . $language, $strUrl
@@ -115,9 +120,6 @@ class I18nL10nHooks extends \Contao\System
 
     public function getPageIdFromUrl(Array $fragments)
     {
-
-        FB::log('getPageID');
-
         global $TL_CONFIG;
         $this->import('Database');
         $fragments = array_map('urldecode', $fragments);
@@ -170,12 +172,28 @@ class I18nL10nHooks extends \Contao\System
         $objAlias = $this->Database->prepare($sql)
             ->execute(is_numeric($fragments[0] ? $fragments[0] : 0), $language, $fragments[0], $language);
 
-        if ($objAlias->numRows) {
+        if ($objAlias->numRows)
+        {
             $fragments[0] = $objAlias->alias;
         }
 
         return $fragments;
     }
+
+    /**
+     * Filter content elements by language
+     *
+     * @param ContentModel $objRow
+     * @param String $strBuffer html string
+     * @param Object $objElement content element object
+     * @return string
+     */
+    public function getContentElement(\ContentModel $objRow, $strBuffer, $objElement) {
+        $elemLanguage = $objRow->language;
+
+        return ($elemLanguage == $GLOBALS['TL_LANGUAGE'] || $elemLanguage == '') ? $strBuffer : '';
+    }
+
 
     /**
      *TODO if needed
