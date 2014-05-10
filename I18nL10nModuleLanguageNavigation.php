@@ -60,6 +60,8 @@ class I18nL10nModuleLanguageNavigation extends Module
 
     /**
      * Generate the module
+     *
+     * @hooks i18nl10nLanguageNavigation manipulate translation options
      */
      protected function compile()
     {
@@ -67,23 +69,43 @@ class I18nL10nModuleLanguageNavigation extends Module
 
         $time = time();
         $arrLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
-        $fields = 'id, pid, alias, language, title, pageTitle';
-        $sql = 'SELECT '. $fields .' FROM tl_page_i18nl10n
-            WHERE pid =? AND language  IN ( \''.implode("', '",$arrLanguages).'\' )'
-         .(!BE_USER_LOGGED_IN ?
-        " AND (start='' OR start<$time)
-        AND (stop='' OR stop>$time) 
-        AND published=1" : "");
+        $sql = "
+            SELECT
+                *
+            FROM
+                tl_page_i18nl10n
+            WHERE
+                pid =?
+                AND language IN ( '" . implode("', '",$arrLanguages) . "' )
+        ";
 
-        $res_items = $this->Database->prepare($sql)
+        if(!BE_USER_LOGGED_IN) {
+            $sql .= "
+                AND (start='' OR start<$time)
+                AND (stop='' OR stop>$time)
+                AND published=1
+            ";
+        }
+
+        $arrTranslations = $this->Database->prepare($sql)
             ->execute($objPage->id)->fetchAllassoc();
+
+        // HOOK: add custom logic
+        if (isset($GLOBALS['TL_HOOKS']['i18nl10nLanguageNavigation']) && is_array($GLOBALS['TL_HOOKS']['i18nl10nLanguageNavigation']))
+        {
+            foreach ($GLOBALS['TL_HOOKS']['i18nl10nLanguageNavigation'] as $callback)
+            {
+                $this->import($callback[0]);
+                $arrTranslations = $this->$callback[0]->$callback[1]($arrTranslations);
+            }
+        }
 
         $items = array();
 
-        if(!empty($res_items)) {
+        if(!empty($arrTranslations)) {
             $this->loadLanguageFile('languages');
             if($objPage->i18nl10n_hide == ''){
-                array_unshift($res_items,array(
+                array_unshift($arrTranslations,array(
                    'id' => $objPage->id,
                    'language' => $GLOBALS['TL_CONFIG']['i18nl10n_default_language'],
                    'title' => $objPage->title,
@@ -94,7 +116,7 @@ class I18nL10nModuleLanguageNavigation extends Module
             //keep the order in $arrLanguages and assign to $items 
             //only if page translation is found in database
             foreach($arrLanguages as $index => $language) {
-                foreach($res_items as $i =>$row){
+                foreach($arrTranslations as $i =>$row){
                   if($row['language'] == $language){
                     array_push($items, array(
                     'id' => $row['pid']?$row['pid']:$objPage->id,
@@ -104,7 +126,7 @@ class I18nL10nModuleLanguageNavigation extends Module
                     'language' => $language,
                     'isActive' => ($language == $GLOBALS['TL_LANGUAGE'])?true:false
                     ));
-                    $res_item = array_delete($res_items,$i);
+                    $res_item = array_delete($arrTranslations,$i);
                     break;
                   }
                 }
