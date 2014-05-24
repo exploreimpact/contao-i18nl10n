@@ -15,22 +15,28 @@
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
-$GLOBALS['TL_LANG']['tl_module']['i18nl10nLanguageTpl'] = array
+$GLOBALS['TL_LANG']['tl_module']['i18nl10nLangTpl'] = array
 (
     'Tempalte',
     'Choose a template for the language menu.'
 );
 
-$GLOBALS['TL_LANG']['tl_module']['i18nl10nLanguageStyle'] = array
+$GLOBALS['TL_LANG']['tl_module']['i18nl10nLangStyle'] = array
 (
     'Use style',
     'Use one of the delivered CSS styles.'
 );
 
-$GLOBALS['TL_LANG']['tl_module']['i18nl10nLanguageStyleLabels'] = array
+$GLOBALS['TL_LANG']['tl_module']['i18nl10nLangStyleLabels'] = array
 (
     'full'      => 'Icon & label',
     'text'      => 'Label only',
     'image'     => 'Icon only',
     'disable'   => 'Disable style'
+);
+
+$GLOBALS['TL_LANG']['tl_module']['i18nl10nLangHide'] = array
+(
+    'Hide active language',
+    'Don\'t show current language in options'
 );

@@ -20,16 +20,16 @@
 // Palettes
 $GLOBALS['TL_DCA']['tl_module']['palettes']['i18nl10nLanguageNavigation'] = '
     {title_legend},name,headline,type;
-    {template_legend:hide},i18nl10nLanguageTpl,i18nl10nLanguageStyle;
+    {template_legend:hide},i18nl10nLangTpl,i18nl10nLangStyle,i18nl10nLangHide;
     {protected_legend:hide},protected;
     {expert_legend:hide},guests,cssID,space
 ';
 
 $i18nl10nLanguageNavigation = array
 (
-    'i18nl10nLanguageTpl' => array
+    'i18nl10nLangTpl' => array
     (
-        'label'             => &$GLOBALS['TL_LANG']['tl_module']['i18nl10nLanguageTpl'],
+        'label'             => &$GLOBALS['TL_LANG']['tl_module']['i18nl10nLangTpl'],
         'exclude'           => true,
         'inputType'         => 'select',
         'options_callback'  => array('tl_module_l10n', 'getLanguageTemplates'),
@@ -40,19 +40,30 @@ $i18nl10nLanguageNavigation = array
         ),
         'sql'               => "varchar(64) NOT NULL default ''"
     ),
-    'i18nl10nLanguageStyle' => array
+    'i18nl10nLangStyle' => array
     (
-        'label'             => &$GLOBALS['TL_LANG']['tl_module']['i18nl10nLanguageStyle'],
+        'label'             => &$GLOBALS['TL_LANG']['tl_module']['i18nl10nLangStyle'],
         'exclude'           => true,
         'inputType'         => 'radio',
         'default'           => 'full',
         'options'           => array('full', 'text', 'image', 'disable'),
-        'reference'         => &$GLOBALS['TL_LANG']['tl_module']['i18nl10nLanguageStyleLabels'],
+        'reference'         => &$GLOBALS['TL_LANG']['tl_module']['i18nl10nLangStyleLabels'],
         'eval'              => array
         (
             'tl_class'  => 'w50 autoheight'
         ),
         'sql'               => "varchar(64) NOT NULL default ''"
+    ),
+    'i18nl10nLangHide' => array
+    (
+        'label'             => &$GLOBALS['TL_LANG']['tl_module']['i18nl10nLangHide'],
+        'exclude'           => true,
+        'inputType'         => 'checkbox',
+        'eval'              => array
+        (
+            'tl_class'  => 'clr'
+        ),
+        'sql'               => "varchar(1) NOT NULL default ''"
     )
 
 );

@@ -125,45 +125,47 @@ class ModuleI18nL10nLanguageNavigation extends Module
             // keep the order in $arrLanguages and assign to $items
             // only if page translation is found in database
             foreach($arrLanguages as $language) {
-                foreach($arrTranslations as $i =>$row){
-                  if($row['language'] == $language){
-                    array_push($items, array(
-                        'id' => $row['pid']?$row['pid']:$objPage->id,
-                        'alias' => $row['alias'] ?: $objPage->alias,
-                        'title' => $row['title'] ?: $objPage->title,
-                        'pageTitle' => $row['pageTitle']?: $objPage->pageTitle,
-                        'language' => $language,
-                        'isActive' => ($language == $GLOBALS['TL_LANGUAGE']) ? true : false
-                    ));
-                    $res_item = array_delete($arrTranslations,$i);
-                    break;
-                  }
+
+                // check if current language has not to be shown
+                if($language == $GLOBALS['TL_LANGUAGE'] && $this->i18nl10nLangHide == 1) continue;
+
+                // loop translations
+                foreach($arrTranslations as $i => $row){
+
+                    // check if language is needed
+                    if($row['language'] == $language){
+                        array_push($items, array(
+                            'id' => $row['pid']?$row['pid']:$objPage->id,
+                            'alias' => $row['alias'] ?: $objPage->alias,
+                            'title' => $row['title'] ?: $objPage->title,
+                            'pageTitle' => $row['pageTitle']?: $objPage->pageTitle,
+                            'language' => $language,
+                            'isActive' => ($language == $GLOBALS['TL_LANGUAGE']) ? true : false
+                        ));
+                        break;
+                    }
                 }
             }
 
             // Add classes first and last
-            $items[0]['class'] = trim($items[0]['class'] . ' first');
             $last = (count($items) - 1);
+            $items[0]['class'] = trim($items[0]['class'] . ' first');
             $items[$last]['class'] = trim($items[$last]['class'] . ' last');
-            $objTemplate = new BackendTemplate($this->i18nl10nLanguageTpl);
 
-
+            $objTemplate = new BackendTemplate($this->i18nl10nLangTpl);
             $objTemplate->type = get_class($this);
             $objTemplate->items = $items;
             $objTemplate->languages = $GLOBALS['TL_LANG']['LNG'];
         }
 
         // add stylesheets
-        if($this->i18nl10nLanguageStyle != 'disable') {
+        if($this->i18nl10nLangStyle != 'disable') {
             $assetsUrl = 'system/modules/i18nl10n/assets/';
 
             // global style
             $GLOBALS['TL_CSS'][] = $assetsUrl . 'css/i18nl10n_lang.css';
 
-            switch($this->i18nl10nLanguageStyle) {
-                case 'full':
-                    $GLOBALS['TL_CSS'][] = $assetsUrl . 'css/i18nl10n_lang_full.css';
-                    break;
+            switch($this->i18nl10nLangStyle) {
                 case 'text':
                     $GLOBALS['TL_CSS'][] = $assetsUrl . 'css/i18nl10n_lang_text.css';
                     break;

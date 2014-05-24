@@ -1,6 +1,6 @@
 <?php
 ?><!-- indexer::stop -->
-<div class="<?php echo $this->class . ($this->i18nl10nLanguageStyle ? ' i18nl10n_lang_style_' . $this->i18nl10nLanguageStyle : ''); ?> block"<?php
+<div class="<?php echo $this->class . ($this->i18nl10nLangStyle ? ' i18nl10n_lang_style_' . $this->i18nl10nLangStyle : ''); ?> block"<?php
 echo $this->cssID;
 if ($this->style){echo "style=\"$this->style\"";}
 ?>>
