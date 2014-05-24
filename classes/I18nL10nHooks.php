@@ -1,5 +1,4 @@
 <?php
-
 /**
  * i18nl10n Contao Module
  *
@@ -20,12 +19,12 @@ namespace Verstaerker\I18nl10n\Classes;
 
 
 /**
- * Class I18nL10nHooks
+ * Class I18nl10nHooks
  *
  * Provide Hooks to modify Contao
  * behaviour related to I18N and L10N.
  */
-class I18nL10nHooks extends \System
+class I18nl10nHooks extends \System
 {
     /**
      * Generates url for the site according to settings from the backend.

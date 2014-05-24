@@ -26,7 +26,7 @@ namespace Verstaerker\I18nl10n\Pages;
  * @author     Krasimir Berov
  * @package    Controller
  */
-class I18nL10nPageRegular extends \PageRegular
+class PageI18nL10nRegular extends \PageRegular
 {
     //override_function
     function generate($objPage, $blnCheckRequest = false)
@@ -80,6 +80,7 @@ class I18nL10nPageRegular extends \PageRegular
         // if translated page, replace given fields in page object
         if ($l10n->numRows)
         {
+
             $objPage->defaultPageTitle = $objPage->pageTitle;
             $objPage->defaultTitle = $objPage->title;
 

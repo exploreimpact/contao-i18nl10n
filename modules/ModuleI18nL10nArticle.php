@@ -31,13 +31,13 @@ namespace Verstaerker\I18nl10n\Pages;
  * TODO: Ask Leo to make the query changeable from extensions.
  
  */
-class I18nL10nModuleArticle extends \ModuleArticle
+/*class ModuleI18nL10nArticle extends \ModuleArticle
 {
 
 	/**
 	 * Generate the module
 	 */
-	protected function compile()
+	/*protected function compile()
 	{
 
         \FB::log('module article i18n');
@@ -206,6 +206,6 @@ class I18nL10nModuleArticle extends \ModuleArticle
 			$this->Template->twitterTitle = specialchars($GLOBALS['TL_LANG']['MSC']['twitterShare']);
 		}
 	}
-}//end class
+}*/
 
 ?>

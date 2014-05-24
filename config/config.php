@@ -60,8 +60,8 @@ $GLOBALS['BE_MOD']['design']['i18nl10n'] = array(
  * FRONT END MODULES
  * -------------------------------------------------------------------------
  */
-$GLOBALS['FE_MOD']['navigationMenu']['i18nl10nnav'] = 'I18nL10nModuleLanguageNavigation';
-$GLOBALS['FE_MOD']['navigationMenu']['breadcrumb']  = 'I18nL10nModuleBreadcrumb';
+$GLOBALS['FE_MOD']['navigationMenu']['i18nl10nLanguageNavigation'] = 'ModuleI18nL10nLanguageNavigation';
+$GLOBALS['FE_MOD']['navigationMenu']['breadcrumb']  = 'ModuleI18nL10nBreadcrumb';
 
 
 /**
@@ -73,19 +73,19 @@ $i18nl10nHooks = array
 (
     'generateFrontendUrl' => array
     (
-        array('\I18nl10n\Classes\I18nL10nHooks', 'generateFrontendUrl')
+        array('\I18nl10n\Classes\I18nl10nHooks', 'generateFrontendUrl')
     ),
     'getPageIdFromUrl' => array
     (
-        array('\I18nl10n\Classes\I18nL10nHooks', 'getPageIdFromUrl')
+        array('\I18nl10n\Classes\I18nl10nHooks', 'getPageIdFromUrl')
+    ),
+    'getContentElement' => array
+    (
+        array('\I18nl10n\Classes\I18nl10nHooks', 'getContentElement')
     ),
     'replaceInsertTags' => array
     (
         array('PageRegular', 'insertI18nL10nArticle')
-    ),
-    'getContentElement' => array
-    (
-        array('\I18nl10n\Classes\I18nL10nHooks', 'getContentElement')
     )
 );
 
@@ -101,7 +101,7 @@ array_insert(
  * PAGE TYPES
  * -------------------------------------------------------------------------
  */
-$GLOBALS['TL_PTY']['regular'] =  '\I18nl10n\Pages\I18nL10nPageRegular';
+$GLOBALS['TL_PTY']['regular'] =  '\I18nl10n\Pages\PageI18nL10nRegular';
 
 if(!$GLOBALS['TL_CONFIG']['i18nl10n_languages']){
     $GLOBALS['TL_CONFIG']['i18nl10n_languages'] = serialize(array('en'));

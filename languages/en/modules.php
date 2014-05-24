@@ -19,12 +19,12 @@
 /**
  * Back end modules
  */
-$GLOBALS['TL_LANG']['MOD']['i18nl10n'][0] = 'Multilanguage Pages';
+$GLOBALS['TL_LANG']['MOD']['i18nl10n'][0] = 'Multilanguage pages';
 $GLOBALS['TL_LANG']['MOD']['i18nl10n'][1] = 'Create a one-pagetree multi-language site by adding multiple languages to pages and localizing content elements.';
 
 
 /**
  * Front end modules
  */
-$GLOBALS['TL_LANG']['FMD']['i18nl10nnav'][0] = 'Languages menu';
-$GLOBALS['TL_LANG']['FMD']['i18nl10nnav'][1] = 'Generates flat menu to navigate between page and content languages.';
+$GLOBALS['TL_LANG']['FMD']['i18nl10nLanguageNavigation'][0] = 'Language menu';
+$GLOBALS['TL_LANG']['FMD']['i18nl10nLanguageNavigation'][1] = 'Generates a flat menu to navigate between page and content languages.';
