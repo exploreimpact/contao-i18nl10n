@@ -135,6 +135,7 @@ class I18nL10nModuleLanguageNavigation extends Module
             $items[0]['class'] = trim($items[0]['class'] . ' first');
             $last = (count($items) - 1);
             $items[$last]['class'] = trim($items[$last]['class'] . ' last');
+
             $objTemplate = new BackendTemplate($this->navigationTpl);
 
             $objTemplate->type = get_class($this);
