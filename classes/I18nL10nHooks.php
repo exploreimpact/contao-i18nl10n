@@ -179,12 +179,13 @@ class I18nl10nHooks extends \System
         return $fragments;
     }
 
+
     /**
      * Filter content elements by language
      *
-     * @param ContentModel $objRow
-     * @param String $strBuffer html string
-     * @param Object $objElement content element object
+     * @param $objRow \ContentModel
+     * @param $strBuffer String
+     * @param $objElement Object
      * @return string
      */
     public function getContentElement(\ContentModel $objRow, $strBuffer, $objElement) {
@@ -195,11 +196,68 @@ class I18nl10nHooks extends \System
 
 
     /**
-     *TODO if needed
-     * function getRootPageFromUrl(){
-     *   error_log( __METHOD__.':'.var_export($_GET,true) );
-     *   return;
-     * }
+     * Breadcrumb hook to translate elements
+     *
+     * @param $arrItems Array
+     * @param $objModule \Module
+     * @return Array
      */
+    public function generateBreadcrumb($arrItems, \Module $objModule) {
+        $arrPages = array();
 
-}//end class
+        foreach($arrItems as $item)
+        {
+            $arrPages[] = $item['isRoot'] ? $item['data']['pid'] : $item['data']['id'];
+        }
+
+        $sql = "
+            SELECT
+              *
+            FROM
+              tl_page_i18nl10n
+            WHERE
+              pid IN (" . implode(',', $arrPages) . ")
+              AND language = ?
+        ";
+
+        if(!BE_USER_LOGGED_IN)
+        {
+            $time = time();
+            $sql .= "
+                AND (start = '' OR start < $time)
+                AND (stop = '' OR stop > $time)
+                AND published = 1
+            ";
+        }
+
+        $this->import('Database');
+        $arrL10n = $this->Database
+            ->prepare($sql)
+            ->execute($GLOBALS['TL_LANGUAGE'])
+            ->fetchAllassoc();
+
+        // if translated page, replace given fields in element array
+        if (count($arrL10n) > 0)
+        {
+            // each breadcrumb element
+            for($i = 0; count($arrItems) > $i; $i++)
+            {
+                // each translation
+                foreach($arrL10n as $l10n)
+                {
+                    // if translation for actual breadcrumb element
+                    if($arrItems[$i]['isRoot'] && $arrItems[$i]['data']['pid'] == $l10n['pid']
+                        || !$arrItems[$i]['isRoot'] && $arrItems[$i]['data']['id'] == $l10n['pid'])
+                    {
+                        if($l10n['pageTitle']) $arrItems[$i]['title'] = $l10n['pageTitle'];
+                        if($l10n['title']) $arrItems[$i]['link'] = $l10n['title'];
+                        break;
+                    }
+                }
+            }
+        }
+
+        return $arrItems;
+    }
+
+}

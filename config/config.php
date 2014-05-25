@@ -49,7 +49,8 @@ if (TL_MODE == 'BE')
 /**
  * Append module to sidebar
  */
-$GLOBALS['BE_MOD']['design']['i18nl10n'] = array(
+$GLOBALS['BE_MOD']['design']['i18nl10n'] = array
+(
     'tables' => array('tl_page_i18nl10n'),
     'icon'   => 'system/modules/i18nl10n/assets/img/i18nl10n.png'
 );
@@ -60,8 +61,8 @@ $GLOBALS['BE_MOD']['design']['i18nl10n'] = array(
  * FRONT END MODULES
  * -------------------------------------------------------------------------
  */
-$GLOBALS['FE_MOD']['navigationMenu']['i18nl10nLanguageNavigation'] = 'ModuleI18nL10nLanguageNavigation';
-$GLOBALS['FE_MOD']['navigationMenu']['breadcrumb']  = 'ModuleI18nL10nBreadcrumb';
+$GLOBALS['FE_MOD']['navigationMenu']['i18nl10nLanguageNavigation'] = '\I18nl10n\Modules\ModuleI18nL10nLanguageNavigation';
+//$GLOBALS['FE_MOD']['navigationMenu']['breadcrumb']  = 'ModuleI18nL10nBreadcrumb';
 
 
 /**
@@ -69,25 +70,11 @@ $GLOBALS['FE_MOD']['navigationMenu']['breadcrumb']  = 'ModuleI18nL10nBreadcrumb'
  * HOOKS
  * -------------------------------------------------------------------------
  */
-$i18nl10nHooks = array
-(
-    'generateFrontendUrl' => array
-    (
-        array('\I18nl10n\Classes\I18nl10nHooks', 'generateFrontendUrl')
-    ),
-    'getPageIdFromUrl' => array
-    (
-        array('\I18nl10n\Classes\I18nl10nHooks', 'getPageIdFromUrl')
-    ),
-    'getContentElement' => array
-    (
-        array('\I18nl10n\Classes\I18nl10nHooks', 'getContentElement')
-    ),
-    'replaceInsertTags' => array
-    (
-        array('PageRegular', 'insertI18nL10nArticle')
-    )
-);
+$GLOBALS['TL_HOOKS']['generateFrontendUrl'][] = array('\I18nl10n\Classes\I18nl10nHooks', 'generateFrontendUrl');
+$GLOBALS['TL_HOOKS']['getPageIdFromUrl'][] = array('\I18nl10n\Classes\I18nl10nHooks', 'getPageIdFromUrl');
+$GLOBALS['TL_HOOKS']['getContentElement'][] = array('\I18nl10n\Classes\I18nl10nHooks', 'getContentElement');
+$GLOBALS['TL_HOOKS']['generateBreadcrumb'][] = array('\I18nl10n\Classes\I18nl10nHooks', 'generateBreadcrumb');
+$GLOBALS['TL_HOOKS']['replaceInsertTags'][] = array('\I18nl10n\Pages\PageI18nL10nRegular', 'insertI18nL10nArticle');
 
 array_insert(
     $GLOBALS['TL_HOOKS'],

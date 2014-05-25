@@ -1,4 +1,4 @@
-<?php if (!defined('TL_ROOT')) die('You can not access this file directly!');
+<?php
 
 /**
  * i18nl10n Contao Module
@@ -16,17 +16,19 @@
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
+namespace Verstaerker\I18nl10n\Modules;
 
 /**
- * Class I18nL10nModuleLanguageNavigation - generates a languages menu.
- * The site visitor is able to swithch between languages
- * of a page. 
+ * ModuleI18nL10nLanguageNavigation
  *
- * @copyright  Krasimir Berov 2010-2013
- * @author     Krasimir Berov 
+ * Generates a languages menu.
+ * The site visitor is able to switch between available languages.
+ *
+ * @copyright  Verstärker, Patric Eberle 2014; Krasimir Berov 2010-2013
+ * @author     Patric Eberle <line-in@derverstaerker.ch>; Krasimir Berov
  * @package    MultiLanguagePage
  */
-class ModuleI18nL10nLanguageNavigation extends Module
+class ModuleI18nL10nLanguageNavigation extends \Module
 {
     /**
      * Template
@@ -43,7 +45,7 @@ class ModuleI18nL10nLanguageNavigation extends Module
     {
         if (TL_MODE == 'BE')
         {
-            $objTemplate = new BackendTemplate('be_wildcard');
+            $objTemplate = new \BackendTemplate('be_wildcard');
 
             $objTemplate->wildcard = '### ' . utf8_strtoupper($GLOBALS['TL_LANG']['FMD']['i18nl10nLanguageNavigation'][0]) . ' ###';
             $objTemplate->title = $this->headline;
@@ -57,7 +59,6 @@ class ModuleI18nL10nLanguageNavigation extends Module
         $strBuffer = parent::generate();
 
         return strlen($this->Template->items) ? $strBuffer : '';
-
     }
 
 
@@ -68,7 +69,6 @@ class ModuleI18nL10nLanguageNavigation extends Module
      */
      protected function compile()
     {
-
         global $objPage;
 
         $time = time();
@@ -79,15 +79,15 @@ class ModuleI18nL10nLanguageNavigation extends Module
             FROM
                 tl_page_i18nl10n
             WHERE
-                pid =?
+                pid = ?
                 AND language IN ( '" . implode("', '",$arrLanguages) . "' )
         ";
 
         if(!BE_USER_LOGGED_IN) {
             $sql .= "
-                AND (start='' OR start<$time)
-                AND (stop='' OR stop>$time)
-                AND published=1
+                AND (start = '' OR start < $time)
+                AND (stop = '' OR stop > $time)
+                AND published = 1
             ";
         }
 
@@ -130,7 +130,7 @@ class ModuleI18nL10nLanguageNavigation extends Module
                 if($language == $GLOBALS['TL_LANGUAGE'] && $this->i18nl10nLangHide == 1) continue;
 
                 // loop translations
-                foreach($arrTranslations as $i => $row){
+                foreach($arrTranslations as $row){
 
                     // check if language is needed
                     if($row['language'] == $language){
@@ -152,7 +152,7 @@ class ModuleI18nL10nLanguageNavigation extends Module
             $items[0]['class'] = trim($items[0]['class'] . ' first');
             $items[$last]['class'] = trim($items[$last]['class'] . ' last');
 
-            $objTemplate = new BackendTemplate($this->i18nl10nLangTpl);
+            $objTemplate = new \BackendTemplate($this->i18nl10nLangTpl);
             $objTemplate->type = get_class($this);
             $objTemplate->items = $items;
             $objTemplate->languages = $GLOBALS['TL_LANG']['LNG'];
@@ -178,5 +178,3 @@ class ModuleI18nL10nLanguageNavigation extends Module
         $this->Template->items = !empty($items) ? $objTemplate->parse() : '';
     }
 }
-
-
