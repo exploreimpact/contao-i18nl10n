@@ -54,8 +54,13 @@ class I18nL10nHooks extends System
 
         // get script name and prepare for regex
         $environment = $this->Environment->scriptName;
-        if(strpos($environment, '/') == 0) {
-            $environment = substr($environment, 1);
+
+        if(strpos($environment, $GLOBALS['TL_CONFIG']['websitePath']) == 0) {
+            $regWebsitePath = preg_quote($GLOBALS['TL_CONFIG']['websitePath']);
+            $regex = "@(?<=$regWebsitePath/)(.*)@";
+
+            // remove website path
+            $environment = preg_replace($regex, '$1' , $environment);
         }
 
         // if alias is disabled add language to get param end return

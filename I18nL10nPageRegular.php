@@ -77,39 +77,31 @@ class I18nL10nPageRegular extends PageRegular
          if($GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl']) {
              $this->import('Environment');
              $environment = $this->Environment;
-             $scriptName = preg_quote($environment->scriptName);
-             $strUrl = $environment->requestUri;
+             $basePath = preg_quote($GLOBALS['TL_CONFIG']['rewriteURL'] ? $GLOBALS['TL_CONFIG']['websitePath'] : $environment->scriptName);
 
-             // TODO: Compare against settings??
+             $regex = "@^($basePath/)?([A-z]{2}(?=/)){1}(/.*)@";
 
-             // if scriptName is part of url
-             if($GLOBALS['TL_CONFIG']['rewriteURL']) {
-                 $regex = "@^/([A-z]{2}(?=/)){1}(/.*)@";
-             } else {
-                 $regex = "@^$scriptName/([A-z]{2}(?=/)){1}(/.*)@";
+             // only set language if found in url
+             if(preg_match($regex, $environment->requestUri))
+             {
+                 $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = preg_replace($regex, '$2', $environment->requestUri);
              }
-
-             $urlLanguage = preg_replace(
-                 $regex, '$1', $strUrl
-             );
-
-             $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $urlLanguage;
 
              return;
          }
 
-         $selected_language = $this->Input->post('language');
+         $selectedLanguage = $this->Input->post('language');
 
          // allow GET request for language
-         if(!$selected_language){
-            $selected_language = $this->Input->get('language');
+         if(!$selectedLanguage){
+            $selectedLanguage = $this->Input->get('language');
          }
 
-         if($selected_language
-             && in_array($selected_language,
+         if($selectedLanguage
+             && in_array($selectedLanguage,
                  deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages'])))
          {
-            $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selected_language;
+            $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selectedLanguage;
          }
          elseif(isset($_SESSION['TL_LANGUAGE'])) {
              $GLOBALS['TL_LANGUAGE'] = $_SESSION['TL_LANGUAGE'];
