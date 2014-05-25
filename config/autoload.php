@@ -44,5 +44,7 @@ ClassLoader::addClasses(array
 TemplateLoader::addFiles(array
 (
 	'lang_default'     => 'system/modules/i18nl10n/templates',
+	'lang_select'      => 'system/modules/i18nl10n/templates',
 	'mod_i18nl10n_nav' => 'system/modules/i18nl10n/templates',
+	'nav_i18nl10n'     => 'system/modules/i18nl10n/templates',
 ));

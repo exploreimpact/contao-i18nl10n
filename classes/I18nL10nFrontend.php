@@ -34,18 +34,19 @@ class I18nl10nFrontend extends \Controller
         parent::__construct();
         $this->import('Database');
     }
+
+
     /**
      * Replace title and pageTitle with translated equivalents
      * just before display them as menu.
-     * TODO: Simplify this code mess!!!
      *
      * @param   Array $items The menu items on the current menu level
      * @return  Array $i18n_items
      */
-    public function i18nl10nNavItems(Array $items){
+    public function i18nl10nNavItems(Array $items)
+    {
 
-        \FB::log($items);
-
+        // TODO: Simplify this code mess!!!
         if(empty($items)) {
             return false;
         }
@@ -84,8 +85,6 @@ class I18nl10nFrontend extends \Controller
                 ->execute($GLOBALS['TL_LANGUAGE'])
                 ->fetchAllassoc();
         }
-
-        \FB::log($arrLocalizedPages);
 
         $i18n_items = array();
         foreach($items as $item){
@@ -143,5 +142,5 @@ class I18nl10nFrontend extends \Controller
         return $i18n_items;
     }//end i18nl10nNavItems
 
-}// end class I18nL10nFrontend
+}
 

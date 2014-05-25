@@ -185,10 +185,6 @@ class I18nl10nHooks extends \System
                 }
             }
         }
-        elseif(\Input::post('language'))
-        {
-            $language = \Input::post('language');
-        }
         elseif (\Input::get('language'))
         {
             $language = \Input::get('language');
@@ -201,8 +197,8 @@ class I18nl10nHooks extends \System
                 tl_page
             WHERE
                 (
-                    id=(SELECT pid FROM tl_page_i18nl10n WHERE id=? AND language=?)
-                    OR id=(SELECT pid FROM tl_page_i18nl10n WHERE alias=? AND language=?)
+                    id = (SELECT pid FROM tl_page_i18nl10n WHERE id = ? AND language = ?)
+                    OR id = (SELECT pid FROM tl_page_i18nl10n WHERE alias = ? AND language = ?)
                 )
         ";
 
@@ -218,10 +214,11 @@ class I18nl10nHooks extends \System
 
         $objDatabase = \Database::getInstance();
 
-        $objAlias = $objDatabase->prepare($sql)
-            ->execute(is_numeric($arrFragments[0] ? $arrFragments[0] : 0), $language, $arrFragments[0], $language);
+        $arrAlias = $objDatabase->prepare($sql)
+            ->execute(is_numeric($arrFragments[0] ? $arrFragments[0] : 0), $language, $arrFragments[0], $language)
+            ->fetchAssoc();
 
-        if ($objAlias->numRows) $arrFragments[0] = $objAlias->alias;
+        if(is_array($arrAlias) && !empty($arrAlias)) $arrFragments[0] = $arrAlias['alias'];
 
         // Add the second fragment as auto_item if the number of fragments is even
         if ($GLOBALS['TL_CONFIG']['useAutoItem'] && count($arrFragments) % 2 == 0)

@@ -43,7 +43,7 @@ foreach($GLOBALS['TL_DCA']['tl_page']['palettes'] as $k => $v){
     $GLOBALS['TL_DCA']['tl_page']['palettes'][$k] = str_replace('published,', 'published,i18nl10n_hide,', $v);
 }
 
-if($this->Input->get('do') == 'page' && $this->Input->get('act') == 'edit'){
+if(\Input::get('do') == 'page' && \Input::get('act') == 'edit'){
     $GLOBALS['TL_DCA']['tl_page']['fields']['published']['eval']['tl_class'] = 'w50';
     $GLOBALS['TL_DCA']['tl_page']['fields']['i18nl10n_hide'] = array
     (
