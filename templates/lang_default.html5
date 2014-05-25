@@ -10,12 +10,16 @@
 <ul>
 <?php foreach ($this->items as $item): ?>
     <li class="<?php echo ($item['class'] ? $item['class'] . ' ' : '') . 'i18nl10n_lang_' . $item['language'] . ($item['isActive'] ? ' active' : ''); ?>">
+        <?php if(!$item['isActive']): ?>
         <a href="<?php echo $this->generateFrontendUrl($item, $strParams); ?>" title="<?php echo $item['title'];?>">
+        <?php endif; ?>
             <i class="i18nl10n_flag">&nbsp;</i>
             <span class="i18nl10n_label">
                 <?php echo $this->languages[$item['language']];?>
             </span>
+        <?php if(!$item['isActive']): ?>
         </a>
+        <?php endif; ?>
     </li>
 <?php endforeach; ?>
 </ul>

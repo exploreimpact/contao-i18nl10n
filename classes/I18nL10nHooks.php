@@ -39,12 +39,10 @@ class I18nl10nHooks extends \System
     public function generateFrontendUrl($arrRow, $strParams, $strUrl)
     {
         if (!is_array($arrRow)) {
-            throw new Exception('not an associative array.');
+            throw new \Exception('not an associative array.');
         }
 
         $language = (array_key_exists('robots', $arrRow) ? $GLOBALS['TL_LANGUAGE'] : $arrRow['language']);
-
-        if (!$language) $language = $GLOBALS['TL_LANGUAGE'];
 
         $alias = $arrRow['alias'];
 
@@ -54,44 +52,59 @@ class I18nl10nHooks extends \System
 
         // get script name and prepare for regex
         $environment = $this->Environment->scriptName;
-        if(strpos($environment, '/') == 0) {
-            $environment = substr($environment, 1);
+
+        if($GLOBALS['TL_CONFIG']['websitePath'] &&
+            strpos($environment, $GLOBALS['TL_CONFIG']['websitePath']) == 0)
+        {
+            $regWebsitePath = preg_quote($GLOBALS['TL_CONFIG']['websitePath']);
+            $regex = "@(?<=$regWebsitePath/)(.*)@";
+
+            // remove website path
+            $environment = preg_replace($regex, '$1' , $environment);
         }
 
         // if alias is disabled add language to get param end return
-        if ($GLOBALS['TL_CONFIG']['disableAlias']) {
+        if ($GLOBALS['TL_CONFIG']['disableAlias'])
+        {
 
             $missingValueRegex = '@(.*\?[^&]*&)([^&]*)=(?=$|&)(&.*)?@';
 
-            if ($GLOBALS['TL_CONFIG']['useAutoItem'] && preg_match($missingValueRegex, $strUrl) == 1) {
+            if ($GLOBALS['TL_CONFIG']['useAutoItem'] && preg_match($missingValueRegex, $strUrl) == 1)
+            {
                 $strUrl = preg_replace($missingValueRegex, '${1}auto_item=${2}${3}' , $strUrl);
             }
 
             return $strUrl . '&language=' . $language;
         }
 
-        if ($GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix'] && !$GLOBALS['TL_CONFIG']['disableAlias']) {
-            $mystrUrl = $alias . $strParams . '.' . $language . $GLOBALS['TL_CONFIG']['urlSuffix'];
+        if ($GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix'] && !$GLOBALS['TL_CONFIG']['disableAlias'])
+        {
+            $strL10nUrl = $alias . $strParams . '.' . $language . $GLOBALS['TL_CONFIG']['urlSuffix'];
 
             // if rewrite is off, add environment
-            if (!$GLOBALS['TL_CONFIG']['rewriteURL']) {
-                $mystrUrl = $environment . '/' . $mystrUrl;
+            if (!$GLOBALS['TL_CONFIG']['rewriteURL'])
+            {
+                $strL10nUrl = $environment . '/' . $strL10nUrl;
             }
         }
-        elseif ($GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl']) {
-            $mystrUrl = $language . '/' . $alias . $strParams . $GLOBALS['TL_CONFIG']['urlSuffix'];
+        elseif ($GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl'])
+        {
+
+            $strL10nUrl = $language . '/' . $alias . $strParams . $GLOBALS['TL_CONFIG']['urlSuffix'];
 
             // if rewrite is off, add environment
             if(!$GLOBALS['TL_CONFIG']['rewriteURL']) {
-                $mystrUrl = $environment . '/' . $mystrUrl;
+                $strL10nUrl = $environment . '/' . $strL10nUrl;
             }
 
             // if alias is missing (f.ex. index.html), add it (exclude news!)
             // search for
             // www.domain.com/
             // www.domain.com/foo/
-            if(!$GLOBALS['TL_CONFIG']['disableAlias'] && preg_match('@' . $arrRow['alias'] . '(?=\\' . $GLOBALS['TL_CONFIG']['urlSuffix'] . '|/)@', $mystrUrl) === false){
-                $mystrUrl .= $alias . $GLOBALS['TL_CONFIG']['urlSuffix'];
+            if(!$GLOBALS['TL_CONFIG']['disableAlias']
+                && preg_match('@' . $arrRow['alias'] . '(?=\\' . $GLOBALS['TL_CONFIG']['urlSuffix'] . '|/)@', $strL10nUrl) === false)
+            {
+                $strL10nUrl .= $alias . $GLOBALS['TL_CONFIG']['urlSuffix'];
             }
 
         }
@@ -101,82 +114,122 @@ class I18nl10nHooks extends \System
                 // if variable 'language' replace it
                 if(strpos($strUrl, 'language=') !== false) {
                     $regex = "@language=[A-z]{2}@";
-                    $mystrUrl = preg_replace(
+                    $strL10nUrl = preg_replace(
                         $regex, 'language=' . $language, $strUrl
                     );
                 } // if no variable 'language' add it
                 else {
-                    $mystrUrl = $strUrl . '&language=' . $language;
+                    $strL10nUrl = $strUrl . '&language=' . $language;
                 }
             } // if no variables define variable 'language'
             else {
-                $mystrUrl = $strUrl . '?language=' . $language;
+                $strL10nUrl = $strUrl . '?language=' . $language;
             }
         }
 
-        return $mystrUrl;
+        return $strL10nUrl;
     }
 
-    public function getPageIdFromUrl(Array $fragments)
+    public function getPageIdFromUrl(Array $arrFragments)
     {
         global $TL_CONFIG;
-        $this->import('Database');
-        $fragments = array_map('urldecode', $fragments);
+
+        $arrFragments = array_map('urldecode', $arrFragments);
         $languages = deserialize($TL_CONFIG['i18nl10n_languages']);
         $language = $TL_CONFIG['i18nl10n_default_language'];
 
-        // try to get language by i18nl10n URL
-        if ($TL_CONFIG['i18nl10n_addLanguageToUrl']) {
-            if (preg_match('@^([A-z]{2})$@', $fragments[0], $matches)) {
-                $language = strtolower($matches[1]);
-                array_push($fragments, 'language', $language);
-            }
-            $i = ($fragments[1] == 'auto_item' ? 2 : 1);
-            $fragments[$i] = ($fragments[$i] ? $fragments[$i] : $TL_CONFIG['i18nl10n_default_page']);
-            if (preg_match('@^([_\-\pL\pN\.]+)$@iu', $fragments[$i], $matches)) {
-                $fragments[0] = $fragments[$i];
-            }
-            //TODO: solve "auto_item" issue
-            $fragments = array_delete($fragments, $i);
-        } // try to get language by suffix
-        elseif ($TL_CONFIG['i18nl10n_alias_suffix'] && !$GLOBALS['TL_CONFIG']['disableAlias']) {
-            $ok = preg_match('/^([_\-\pL\pN\.]+)\.([A-z]{2})$/u', $fragments[0], $matches);
-            if ($ok) {
-                $language = strtolower($matches[2]);
-            }
-            if ($ok && in_array($language, $languages)) {
-                $fragments[0] = $matches[1];
-                array_push($fragments, 'language', $language);
-            }
-        } // try to get language by query
-        elseif ($this->Input->get('language')) {
-            $language = $this->Input->get('language');
-        }
-
-        $time = time();
-        $sql = "
-        SELECT
-            alias
-        FROM
-            tl_page
-        WHERE
-            (
-                id=(SELECT pid FROM tl_page_i18nl10n WHERE id=? AND language=?)
-                OR id=(SELECT pid FROM tl_page_i18nl10n WHERE alias=? AND language=?)
-            )" . (!BE_USER_LOGGED_IN ? "
-            AND (start='' OR start < $time)
-            AND (stop='' OR stop > $time)
-            AND published=1" : "");
-
-        $objAlias = $this->Database->prepare($sql)
-            ->execute(is_numeric($fragments[0] ? $fragments[0] : 0), $language, $fragments[0], $language);
-
-        if ($objAlias->numRows)
+        // strip auto_item
+        if ($GLOBALS['TL_CONFIG']['useAutoItem'] && $arrFragments[1] == 'auto_item')
         {
-            $fragments[0] = $objAlias->alias;
+            $arrFragments = array_delete($arrFragments, 1);
         }
 
-        return $fragments;
+        // try to get language by i18nl10n URL
+        if ($TL_CONFIG['i18nl10n_addLanguageToUrl'])
+        {
+            if (preg_match('@^([A-z]{2})$@', $arrFragments[0], $matches))
+            {
+                $language = strtolower($matches[1]);
+
+                // remove old language entry
+                $arrFragments = array_delete($arrFragments, 0);
+
+                // append new language entry
+                array_push($arrFragments, 'language', $language);
+            }
+        } // try to get language by suffix
+        elseif ($TL_CONFIG['i18nl10n_alias_suffix'] && !$GLOBALS['TL_CONFIG']['disableAlias'])
+        {
+            // last element should contain language info
+            if(preg_match('@^([_\-\pL\pN\.]*(?=\.))?\.?([A-z]{2})$@u', $arrFragments[count($arrFragments) - 1], $matches))
+            {
+
+                // define language and alias value
+                $language = strtolower($matches[2]);
+                $alias = $matches[1] != '' ? $matches[1] : $arrFragments[count($arrFragments) - 1];
+
+                if(in_array($language, $languages))
+                {
+
+                    // if only language was found, pop it from array
+                    if($matches[1] == '')
+                    {
+                        array_pop($arrFragments);
+                    } // else set alias
+                    else
+                    {
+                        $arrFragments[count($arrFragments) - 1] = $alias;
+                    }
+
+                    array_push($arrFragments, 'language', $language);
+                }
+            }
+        }
+        elseif(\Input::post('language'))
+        {
+            $language = \Input::post('language');
+        }
+        elseif (\Input::get('language'))
+        {
+            $language = \Input::get('language');
+        }
+
+        $sql = "
+            SELECT
+                alias
+            FROM
+                tl_page
+            WHERE
+                (
+                    id=(SELECT pid FROM tl_page_i18nl10n WHERE id=? AND language=?)
+                    OR id=(SELECT pid FROM tl_page_i18nl10n WHERE alias=? AND language=?)
+                )
+        ";
+
+        if(!BE_USER_LOGGED_IN)
+        {
+            $time = time();
+            $sql .= "
+                AND (start = '' OR start < $time)
+                AND (stop = '' OR stop > $time)
+                AND published = 1
+            ";
+        }
+
+        $objDatabase = \Database::getInstance();
+
+        $objAlias = $objDatabase->prepare($sql)
+            ->execute(is_numeric($arrFragments[0] ? $arrFragments[0] : 0), $language, $arrFragments[0], $language);
+
+        if ($objAlias->numRows) $arrFragments[0] = $objAlias->alias;
+
+        // Add the second fragment as auto_item if the number of fragments is even
+        if ($GLOBALS['TL_CONFIG']['useAutoItem'] && count($arrFragments) % 2 == 0)
+        {
+            array_insert($arrFragments, 1, array('auto_item'));
+        }
+
+        return $arrFragments;
     }
 
 
@@ -230,9 +283,9 @@ class I18nl10nHooks extends \System
             ";
         }
 
-        $this->import('Database');
-        $arrL10n = $this->Database
-            ->prepare($sql)
+        $objDatabase = \Database::getInstance();
+
+        $arrL10n = $objDatabase->prepare($sql)
             ->execute($GLOBALS['TL_LANGUAGE'])
             ->fetchAllassoc();
 

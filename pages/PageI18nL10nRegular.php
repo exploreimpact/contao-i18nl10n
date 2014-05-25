@@ -113,35 +113,28 @@ class PageI18nL10nRegular extends \PageRegular
         {
             $this->import('Environment');
             $environment = $this->Environment;
-            $scriptName = preg_quote($environment->scriptName);
-            $strUrl = $environment->requestUri;
+             $basePath = preg_quote($GLOBALS['TL_CONFIG']['rewriteURL'] ? $GLOBALS['TL_CONFIG']['websitePath'] : $environment->scriptName);
 
-            // TODO: Compare against settings??
+             $regex = "@^($basePath/)?([A-z]{2}(?=/)){1}(/.*)@";
 
-            // if scriptName is part of url
-            if ($GLOBALS['TL_CONFIG']['rewriteURL'])
+             // only set language if found in url
+             if(preg_match($regex, $environment->requestUri))
             {
-                $regex = "@^/([A-z]{2}(?=/)){1}(/.*)@";
-            }
-            else
-            {
-                $regex = "@^$scriptName/([A-z]{2}(?=/)){1}(/.*)@";
+                 $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = preg_replace($regex, '$2', $environment->requestUri);
             }
 
-            $urlLanguage = preg_replace(
-                $regex, '$1', $strUrl
-            );
+             return;
+            }
 
-            $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $urlLanguage;
+         $selectedLanguage = \Input::post('language');
 
-            return;
+         // allow GET request for language
+         if(!$selectedLanguage){
+            $selectedLanguage = \Input::get('language');
         }
 
-        $selectedLanguage = \Input::post('language') ?: \Input::get('language');
-
         if ($selectedLanguage
-            && in_array($selectedLanguage,
-                deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages'])))
+            && in_array($selectedLanguage, deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages'])))
         {
             $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selectedLanguage;
         }
