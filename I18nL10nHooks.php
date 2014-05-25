@@ -55,7 +55,9 @@ class I18nL10nHooks extends System
         // get script name and prepare for regex
         $environment = $this->Environment->scriptName;
 
-        if(strpos($environment, $GLOBALS['TL_CONFIG']['websitePath']) == 0) {
+        if($GLOBALS['TL_CONFIG']['websitePath']
+            && strpos($environment, $GLOBALS['TL_CONFIG']['websitePath']) == 0)
+        {
             $regWebsitePath = preg_quote($GLOBALS['TL_CONFIG']['websitePath']);
             $regex = "@(?<=$regWebsitePath/)(.*)@";
 
