@@ -66,7 +66,7 @@ class tl_page_l10ns extends Backend {
         $title = sprintf($GLOBALS['TL_LANG']['MSC']['editl10ns'],"\"{$row['title']}\"");
         $buttonURL = $this->addToUrl($href.'&amp;node='.$row['id']) ;
 
-        $button = '<a href="' . $buttonURL . '" title="' . specialchars($title) . '"><img src="system/modules/i18nl10n/assets/img/i18nl10n.png" /></a>';
+        $button = '<a href="' . $buttonURL . '" title="' . specialchars($title) . '"><img src="system/modules/core_i18nl10n/assets/img/i18nl10n.png" /></a>';
         //}
 
         return $button;

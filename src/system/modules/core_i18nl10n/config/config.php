@@ -33,7 +33,7 @@ if (TL_MODE == 'BE')
     /**
      * CSS files
      */
-    $cssStyle = 'system/modules/i18nl10n/assets/css/style.css';
+    $cssStyle = 'system/modules/core_i18nl10n/assets/css/style.css';
 
     if (is_array($GLOBALS['TL_CSS']))
     {
@@ -52,7 +52,7 @@ if (TL_MODE == 'BE')
 $GLOBALS['BE_MOD']['design']['i18nl10n'] = array
 (
     'tables' => array('tl_page_i18nl10n'),
-    'icon'   => 'system/modules/i18nl10n/assets/img/i18nl10n.png'
+    'icon'   => 'system/modules/core_i18nl10n/assets/img/i18nl10n.png'
 );
 
 
