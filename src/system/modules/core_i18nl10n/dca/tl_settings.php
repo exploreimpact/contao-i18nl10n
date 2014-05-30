@@ -46,10 +46,19 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_languages'] = array
 );
 
 
-// import database class
-$this->import('Database');
+$sql = "
+    SELECT
+      language
+    FROM
+      tl_page
+    WHERE
+      type = 'root'
+    ORDER BY
+      sorting
+";
 
-$i18nl10n_default_language = $this->Database->prepare("SELECT language FROM tl_page WHERE type='root' ORDER BY sorting")
+$i18nl10n_default_language = \Database::getInstance()
+    ->prepare($sql)
     ->limit(1)
     ->execute()
     ->language;

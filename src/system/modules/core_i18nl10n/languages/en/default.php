@@ -26,7 +26,7 @@ $GLOBALS['TL_LANG']['MSC']['i18nl10n_fields']['language']['label'] = array
     'Please select one of the available languages'
 );
 
-$GLOBALS['TL_LANG']['MSC']['editl10ns'] ='Edit localizations for page %s';
+$GLOBALS['TL_LANG']['MSC']['editL10n'] ='Edit localizations for page %s';
 
 $GLOBALS['TL_LANG']['MSC']['language'] = 'language';
 

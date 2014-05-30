@@ -32,7 +32,6 @@ class I18nl10nFrontend extends \Controller
     protected function __construct()
     {
         parent::__construct();
-        $this->import('Database');
     }
 
 
@@ -79,7 +78,7 @@ class I18nl10nFrontend extends \Controller
                 ";
             }
 
-            $arrLocalizedPages = $this->Database
+            $arrLocalizedPages = \Database::getInstance()
                 ->prepare($sql)
                 ->limit(1000)
                 ->execute($GLOBALS['TL_LANGUAGE'])
@@ -97,7 +96,7 @@ class I18nl10nFrontend extends \Controller
 
                         if($item['type']=='forward'){
                             if($item['jumpTo']){
-                                $forward_row = $this->Database->prepare(
+                                $forward_row = \Database::getInstance()->prepare(
                                     'SELECT * FROM tl_page_i18nl10n WHERE pid=? AND language=?'
                                 )->limit(1)->execute(
                                         $item['jumpTo'],$row['language']
@@ -105,7 +104,7 @@ class I18nl10nFrontend extends \Controller
                             }
                             else {
                                 $time = time();
-                                $forward_row = $this->Database->prepare(
+                                $forward_row = \Database::getInstance()->prepare(
                                     "SELECT * FROM tl_page_i18nl10n WHERE pid=(
                                       SELECT id FROM tl_page where pid=? AND type='regular' "
                                     . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<$time)

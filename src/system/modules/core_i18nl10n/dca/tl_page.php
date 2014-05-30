@@ -24,18 +24,18 @@ $GLOBALS['TL_DCA']['tl_page']['list']['operations']['page_i18nl10n'] = array
 (
     'label'               => 'L10Ns',
     'href'                => 'do=i18nl10n',
-    'button_callback'     => array('tl_page_l10ns', 'editl10ns')
+    'button_callback'     => array('tl_page_l10n', 'editL10n')
 );
 
 $GLOBALS['TL_DCA']['tl_page']['config']['onload_callback'][] = array
 (
-    'tl_page_l10ns',
+    'tl_page_l10n',
     'setDefaultLanguage'
 );
 
 $GLOBALS['TL_DCA']['tl_page']['config']['onsubmit_callback'][] = array
 (
-    'tl_page_l10ns',
+    'tl_page_l10n',
     'generatePageL10n'
 );
 
@@ -58,16 +58,13 @@ if(\Input::get('do') == 'page' && \Input::get('act') == 'edit'){
 }
 
 
-class tl_page_l10ns extends Backend {
-    public function editl10ns($row, $href, $label, $title, $icon)
+class tl_page_l10n extends \Backend {
+    public function editL10n($row, $href, $label, $title, $icon)
     {
         //TODO: think about a new page type: regular_localized
-        //if($row['type'] == 'regular'){
-        $title = sprintf($GLOBALS['TL_LANG']['MSC']['editl10ns'],"\"{$row['title']}\"");
+        $title = sprintf($GLOBALS['TL_LANG']['MSC']['editL10n'],"\"{$row['title']}\"");
         $buttonURL = $this->addToUrl($href.'&amp;node='.$row['id']) ;
-
         $button = '<a href="' . $buttonURL . '" title="' . specialchars($title) . '"><img src="system/modules/core_i18nl10n/assets/img/i18nl10n.png" /></a>';
-        //}
 
         return $button;
     }
@@ -136,14 +133,18 @@ class tl_page_l10ns extends Backend {
         );
 
         foreach ($site_langs as $lang) {
-            if($lang == $GLOBALS['TL_CONFIG']['i18nl10n_default_language'])
-            {
-                continue;
-            }
+            if($lang == $GLOBALS['TL_CONFIG']['i18nl10n_default_language']) continue;
+
             $fields['sorting'] +=128;
             $fields['language'] = $lang;
 
-            $this->Database->prepare('INSERT INTO tl_page_i18nl10n %s')
+            $sql = "
+              INSERT INTO
+                tl_page_i18nl10n %s
+            ";
+
+            \Database::getInstance()
+                ->prepare($sql)
                 ->set($fields)
                 ->execute();
         }

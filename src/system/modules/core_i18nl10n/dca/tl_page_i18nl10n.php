@@ -337,26 +337,37 @@ class tl_page_i18nl10n extends tl_page
             $defaultLanguage = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
             foreach($GLOBALS['i18nl10n_languages'] as $lang) {
 
-                //TODO:use $objPage->rootLanguage
-                $this->Database->prepare
+                $sql = "
+                  INSERT INTO
+                    tl_page_i18nl10n
                     (
-                        "INSERT INTO tl_page_i18nl10n
-                        (
-                            pid,sorting,tstamp,language,title,type,
-                            pageTitle,description,cssClass,alias,
-                            published,start,stop,dateFormat,timeFormat,datimFormat
-                        )
-                        SELECT p.id AS pid, p.sorting, p.tstamp, '$lang' AS language,
-                            p.title, p.type, p.pageTitle, p.description,
-                            p.cssClass, p.alias, p.published, p.start, p.stop,
-                            p.dateFormat, p.timeFormat, p.datimFormat
-                        FROM tl_page p
-                            LEFT JOIN tl_page_i18nl10n i
-                            ON p.id = i.pid AND i.language='$lang'
-                        WHERE (p.language='$defaultLanguage'
-                            OR p.language='')
-                        AND p.type !='root' AND i.pid IS NULL"
+                        pid,sorting,tstamp,language,title,type,
+                        pageTitle,description,cssClass,alias,
+                        published,start,stop,dateFormat,timeFormat,datimFormat
                     )
+                  SELECT
+                    p.id AS pid, p.sorting, p.tstamp, '$lang' AS language,
+                    p.title, p.type, p.pageTitle, p.description,
+                    p.cssClass, p.alias, p.published, p.start, p.stop,
+                    p.dateFormat, p.timeFormat, p.datimFormat
+                  FROM
+                    tl_page p
+                  LEFT JOIN
+                    tl_page_i18nl10n i
+                      ON p.id = i.pid
+                      AND i.language='$lang'
+                  WHERE
+                    (
+                      p.language='$defaultLanguage'
+                      OR p.language=''
+                    )
+                    AND p.type !='root'
+                    AND i.pid IS NULL
+                ";
+
+                //TODO:use $objPage->rootLanguage
+                \Database::getInstance()
+                    ->prepare($sql)
                     ->execute();
             }
         }
@@ -417,8 +428,18 @@ class tl_page_i18nl10n extends tl_page
             }
         }
 
+        $sql = "
+            UPDATE
+                tl_page_i18nl10n
+            SET
+                tstamp = " . time() . ", published='" . ($blnVisible ? 1 : '') . "'
+            WHERE
+                id=?
+        ";
+
         // Update the database
-        $this->Database->prepare("UPDATE tl_page_i18nl10n SET tstamp=" . time() . ", published='" . ($blnVisible ? 1 : '') . "' WHERE id=?")
+        \Database::getInstance()
+            ->prepare($sql)
             ->execute($intId);
 
         $objVersions->initialize('tl_page_i18nl10n', $intId);
@@ -457,7 +478,25 @@ class tl_page_i18nl10n extends tl_page
             $icon = 'invisible.gif';
         }
 
-        $objPage = $this->Database->prepare("SELECT * FROM tl_page WHERE id=(SELECT pid FROM tl_page_i18nl10n WHERE id=?)")
+        $sql = "
+            SELECT
+              *
+            FROM
+              tl_page
+            WHERE
+              id =
+              (
+                SELECT
+                  pid
+                FROM
+                  tl_page_i18nl10n
+                WHERE
+                  id = ?
+              )
+        ";
+
+        $objPage = \Database::getInstance()
+            ->prepare($sql)
             ->limit(1)
             ->execute($row['id']);
 

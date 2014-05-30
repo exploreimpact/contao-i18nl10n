@@ -73,7 +73,8 @@ class PageI18nl10nRegular extends \PageRegular
             ";
         }
 
-        $l10n = $this->Database->prepare($sql)
+        $l10n = \Database::getInstance()
+            ->prepare($sql)
             ->limit(1)
             ->execute($objPage->id, $GLOBALS['TL_LANGUAGE']);
 
@@ -144,77 +145,6 @@ class PageI18nl10nRegular extends \PageRegular
         }
     }
 
-    /**
-     * Generate an article and return it as string
-     * The only thing I changed here is:
-     * $objArticle = new I18nl10nModuleArticle($objArticle, $strColumn);
-     *
-     * TODO: Ask leo to allow something similar to
-     * $GLOBALS['FE_MOD']['navigationMenu']['navigation'] for articles
-     * (e.g. $GLOBALS['FE_MOD']['content]['article']='ModuleArticle'; )
-     *
-     * @param mixed   $varId          The article ID or a Model object
-     * @param boolean $blnMultiMode   If true, only teasers will be shown
-     * @param boolean $blnIsInsertTag If true, there will be no page relation
-     * @param string  $strColumn      The name of the column
-     *
-     * @return string|boolean The article HTML markup or false
-     */
-    /*protected function getArticle($varId, $blnMultiMode = false, $blnIsInsertTag = false, $strColumn = 'main')
-    {
-        if (!$varId) {
-            return '';
-        }
-
-        global $objPage;
-        $this->import('Database');
-
-        // Get article
-        $objRow = $this->Database->prepare("SELECT *, author AS authorId, (SELECT name FROM tl_user WHERE id=author) AS author FROM tl_article WHERE (id=? OR alias=?)" . (!$blnIsInsertTag ? " AND pid=?" : ""))
-            ->limit(1)
-            ->execute((is_numeric($varId) ? $varId : 0), $varId, $objPage->id);
-
-        if ($objRow->numRows < 1) {
-            return false;
-        }
-
-
-        if (!file_exists(TL_ROOT . '/system/modules/frontend/ModuleArticle.php')) {
-            $this->log('Class ModuleArticle does not exist', 'Controller getArticle()', TL_ERROR);
-            return '';
-        }
-
-        // Print article as PDF
-        if ($this->Input->get('pdf') == $objRow->id) {
-            $objArticle = new \ModuleArticle($objArticle);
-
-            // Backwards compatibility
-            if ($objRow->printable == 1) {
-                $objArticle->generatePdf();
-            } // New structure
-            elseif ($objRow->printable != '') {
-                $options = deserialize($objRow->printable);
-
-                if (is_array($options) && in_array('pdf', $options)) {
-                    $objArticle->generatePdf();
-                }
-            }
-        }
-
-        $objRow->headline = $objRow->title;
-        $objRow->multiMode = $blnMultiMode;
-
-        // HOOK: add custom logic
-        if (isset($GLOBALS['TL_HOOKS']['getArticle']) && is_array($GLOBALS['TL_HOOKS']['getArticle'])) {
-            foreach ($GLOBALS['TL_HOOKS']['getArticle'] as $callback) {
-                $this->import($callback[0]);
-                $this->$callback[0]->$callback[1]($objRow);
-            }
-        }
-
-        $objArticle = new I18nl10nModuleArticle($objRow, $strColumn);
-        return $objArticle->generate($blnIsInsertTag);
-    }*/
 
     /**
      * Generate content in the current language from articles

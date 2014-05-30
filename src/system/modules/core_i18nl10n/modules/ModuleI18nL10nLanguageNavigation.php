@@ -91,7 +91,7 @@ class ModuleI18nl10nLanguageNavigation extends \Module
             ";
         }
 
-        $arrTranslations = $this->Database
+        $arrTranslations = \Database::getInstance()
             ->prepare($sql)
             ->execute($objPage->id)
             ->fetchAllassoc();
