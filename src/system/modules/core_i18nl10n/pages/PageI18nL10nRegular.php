@@ -26,7 +26,7 @@ namespace Verstaerker\I18nl10n\Pages;
  * @author     Krasimir Berov
  * @package    Controller
  */
-class PageI18nL10nRegular extends \PageRegular
+class PageI18nl10nRegular extends \PageRegular
 {
     //override_function
     function generate($objPage, $blnCheckRequest = false)
@@ -147,7 +147,7 @@ class PageI18nL10nRegular extends \PageRegular
     /**
      * Generate an article and return it as string
      * The only thing I changed here is:
-     * $objArticle = new I18nL10nModuleArticle($objArticle, $strColumn);
+     * $objArticle = new I18nl10nModuleArticle($objArticle, $strColumn);
      *
      * TODO: Ask leo to allow something similar to
      * $GLOBALS['FE_MOD']['navigationMenu']['navigation'] for articles
@@ -212,7 +212,7 @@ class PageI18nL10nRegular extends \PageRegular
             }
         }
 
-        $objArticle = new I18nL10nModuleArticle($objRow, $strColumn);
+        $objArticle = new I18nl10nModuleArticle($objRow, $strColumn);
         return $objArticle->generate($blnIsInsertTag);
     }*/
 
@@ -223,7 +223,7 @@ class PageI18nL10nRegular extends \PageRegular
      * @param string $insert_tag The insert tag with the alias or id
      * @return string|boolean
      */
-    public function insertI18nL10nArticle($insert_tag)
+    public function insertI18nl10nArticle($insert_tag)
     {
         if (strpos($insert_tag, 'insert_i18nl10n_article') === false)
             return false;

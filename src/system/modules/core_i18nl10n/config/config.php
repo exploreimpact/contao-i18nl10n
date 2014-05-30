@@ -61,8 +61,8 @@ $GLOBALS['BE_MOD']['design']['i18nl10n'] = array
  * FRONT END MODULES
  * -------------------------------------------------------------------------
  */
-$GLOBALS['FE_MOD']['navigationMenu']['i18nl10nLanguageNavigation'] = '\I18nl10n\Modules\ModuleI18nL10nLanguageNavigation';
-//$GLOBALS['FE_MOD']['navigationMenu']['breadcrumb']  = 'ModuleI18nL10nBreadcrumb';
+$GLOBALS['FE_MOD']['navigationMenu']['i18nl10nLanguageNavigation'] = '\I18nl10n\Modules\ModuleI18nl10nLanguageNavigation';
+//$GLOBALS['FE_MOD']['navigationMenu']['breadcrumb']  = 'ModuleI18nl10nBreadcrumb';
 
 
 /**
@@ -74,7 +74,7 @@ $GLOBALS['TL_HOOKS']['generateFrontendUrl'][] = array('\I18nl10n\Classes\I18nl10
 $GLOBALS['TL_HOOKS']['getPageIdFromUrl'][] = array('\I18nl10n\Classes\I18nl10nHooks', 'getPageIdFromUrl');
 $GLOBALS['TL_HOOKS']['getContentElement'][] = array('\I18nl10n\Classes\I18nl10nHooks', 'getContentElement');
 $GLOBALS['TL_HOOKS']['generateBreadcrumb'][] = array('\I18nl10n\Classes\I18nl10nHooks', 'generateBreadcrumb');
-$GLOBALS['TL_HOOKS']['replaceInsertTags'][] = array('\I18nl10n\Pages\PageI18nL10nRegular', 'insertI18nL10nArticle');
+$GLOBALS['TL_HOOKS']['replaceInsertTags'][] = array('\I18nl10n\Pages\PageI18nl10nRegular', 'insertI18nl10nArticle');
 
 array_insert(
     $GLOBALS['TL_HOOKS'],
@@ -88,7 +88,7 @@ array_insert(
  * PAGE TYPES
  * -------------------------------------------------------------------------
  */
-$GLOBALS['TL_PTY']['regular'] =  '\I18nl10n\Pages\PageI18nL10nRegular';
+$GLOBALS['TL_PTY']['regular'] =  '\I18nl10n\Pages\PageI18nl10nRegular';
 
 if(!$GLOBALS['TL_CONFIG']['i18nl10n_languages']){
     $GLOBALS['TL_CONFIG']['i18nl10n_languages'] = serialize(array('en'));

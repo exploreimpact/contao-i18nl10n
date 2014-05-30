@@ -19,7 +19,7 @@
 namespace Verstaerker\I18nl10n\Modules;
 
 /**
- * ModuleI18nL10nLanguageNavigation
+ * ModuleI18nl10nLanguageNavigation
  *
  * Generates a languages menu.
  * The site visitor is able to switch between available languages.
@@ -28,7 +28,7 @@ namespace Verstaerker\I18nl10n\Modules;
  * @author     Patric Eberle <line-in@derverstaerker.ch>; Krasimir Berov
  * @package    MultiLanguagePage
  */
-class ModuleI18nL10nLanguageNavigation extends \Module
+class ModuleI18nl10nLanguageNavigation extends \Module
 {
     /**
      * Template
@@ -65,7 +65,7 @@ class ModuleI18nL10nLanguageNavigation extends \Module
     /**
      * Generate the module
      *
-     * @hooks ModuleI18nL10nLanguageNavigation manipulate translation options
+     * @hooks ModuleI18nl10nLanguageNavigation manipulate translation options
      */
      protected function compile()
     {
