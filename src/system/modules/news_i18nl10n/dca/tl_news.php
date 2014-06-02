@@ -14,12 +14,15 @@
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
-/*$GLOBALS['TL_DCA']['tl_news']['list']['operations']['i18nl10n'] = array
+/**
+ * Table tl_page
+ */
+$GLOBALS['TL_DCA']['tl_news']['list']['operations']['news_i18nl10n'] = array
 (
     'label'               => 'L10N',
-    'href'                => 'do=i18nl10n',
+    'href'                => 'do=news_i18nl10n',
     'button_callback'     => array('tl_news_l10n', 'editL10n')
-);*/
+);
 
 $GLOBALS['TL_DCA']['tl_news']['config']['onload_callback'] = array
 (
@@ -36,21 +39,18 @@ $GLOBALS['TL_DCA']['tl_news']['list']['sorting']['child_record_callback'] = arra
 class tl_news_l10n extends tl_news
 {
 
-    /*public function editL10n($row, $href, $label, $title, $icon)
+    public function editL10n($row, $href, $label, $title, $icon)
     {
         $title = sprintf($GLOBALS['TL_LANG']['MSC']['editL10n'],"\"{$row['title']}\"");
-        $buttonURL = $this->addToUrl($href . '&amp;node=' . $row['id']) ;
+        $buttonURL = $this->addToUrl($href . '&amp;id=' . $row['id'] . '&amp;table=tl_news_i18nl10n') ;
 
         $button = '
-            <a  href="' . $buttonURL . '"
-                title="' . specialchars($title) . '"
-                onclick="Backend.getScrollOffset();Backend.openModalSelector({\'width\':765,\'title\':\'Dateien auswählen\',\'url\':this.href,\'id\':\'singleSRC\'});return false"
-                >
+            <a href="' . $buttonURL . '" title="' . specialchars($title) . '">
                 <img src="system/modules/core_i18nl10n/assets/img/i18nl10n.png" />
             </a>';
 
         return $button;
-    }*/
+    }
 
     /**
      * TODO: Give description

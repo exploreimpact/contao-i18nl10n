@@ -15,7 +15,7 @@
  */
 
 // load tl_news class and translation
-$this->loadLanguageFile('tl_page');
+$this->loadLanguageFile('tl_news');
 $this->loadDataContainer('tl_news');
 
 
@@ -56,13 +56,13 @@ $GLOBALS['TL_DCA']['tl_news_i18nl10n'] = array
     (
         'sorting' => array
         (
-            'mode'        => 4,
+            'mode'        => 0,
             'fields'      => array('language DESC')
         ),
 
         'label' => array
         (
-            'fields'            => array('title', 'language', 'language'),
+            'fields'            => array('headline', 'language'),
 //            'label_callback'    => array('tl_page_i18nl10n', 'addIcon')
         ),
 

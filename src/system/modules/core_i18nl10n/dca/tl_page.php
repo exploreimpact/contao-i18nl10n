@@ -23,7 +23,7 @@
 $GLOBALS['TL_DCA']['tl_page']['list']['operations']['page_i18nl10n'] = array
 (
     'label'               => 'L10N',
-    'href'                => 'do=i18nl10n',
+    'href'                => 'do=core_i18nl10n',
     'button_callback'     => array('tl_page_l10n', 'editL10n')
 );
 
@@ -63,7 +63,7 @@ class tl_page_l10n extends \Backend {
     {
         //TODO: think about a new page type: regular_localized
         $title = sprintf($GLOBALS['TL_LANG']['MSC']['editL10n'],"\"{$row['title']}\"");
-        $buttonURL = $this->addToUrl($href.'&amp;node='.$row['id']) ;
+        $buttonURL = $this->addToUrl($href.'&amp;node='.$row['id']);
         $button = '<a href="' . $buttonURL . '" title="' . specialchars($title) . '"><img src="system/modules/core_i18nl10n/assets/img/i18nl10n.png" /></a>';
 
         return $button;
