@@ -50,10 +50,10 @@ foreach($GLOBALS['TL_DCA']['tl_content']['palettes'] as $k => $v){
 
 // define callback to add language icons
 $GLOBALS['TL_DCA']['tl_content']['list']['sorting']['child_record_callback'] =
-    array('tl_content_l10ns','addCteType');
+    array('tl_content_l10n','addCteType');
 
 
-class tl_content_l10ns extends tl_content {
+class tl_content_l10n extends tl_content {
     //Hm.. extended but again -> copy/paste/modify... A preg_replace on the
     //return of parent::addCteType seems more ...elegant?!?!
     public function addCteType($arrRow) {

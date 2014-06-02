@@ -16,21 +16,18 @@
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
+
 /**
- * Back end modules
+ * Buttons
  */
-$GLOBALS['TL_LANG']['MOD']['core_i18nl10n'] = array
+$GLOBALS['TL_LANG']['tl_news_i18nl10n']['new']    = array
 (
-    'Multilingual pages',
-    'Create a one-pagetree multi-language site by adding multiple languages to pages and localizing content elements.'
+    'New L10N',
+    'Add new localization for news item'
 );
 
-
-/**
- * Front end modules
- */
-$GLOBALS['TL_LANG']['FMD']['i18nl10nLanguageNavigation'] = array
+$GLOBALS['TL_LANG']['tl_news_i18nl10n']['define_language'] = array
 (
-    'Language menu',
-    'Generates a flat menu to navigate between page and content languages.'
+    'Languages',
+    'Define languages on settings page'
 );

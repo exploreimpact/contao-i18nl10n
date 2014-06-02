@@ -22,7 +22,7 @@
  */
 $GLOBALS['TL_DCA']['tl_page']['list']['operations']['page_i18nl10n'] = array
 (
-    'label'               => 'L10Ns',
+    'label'               => 'L10N',
     'href'                => 'do=i18nl10n',
     'button_callback'     => array('tl_page_l10n', 'editL10n')
 );

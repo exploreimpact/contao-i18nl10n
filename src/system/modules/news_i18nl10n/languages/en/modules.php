@@ -19,18 +19,8 @@
 /**
  * Back end modules
  */
-$GLOBALS['TL_LANG']['MOD']['core_i18nl10n'] = array
+$GLOBALS['TL_LANG']['MOD']['news_i18nl10n'] = array
 (
-    'Multilingual pages',
-    'Create a one-pagetree multi-language site by adding multiple languages to pages and localizing content elements.'
-);
-
-
-/**
- * Front end modules
- */
-$GLOBALS['TL_LANG']['FMD']['i18nl10nLanguageNavigation'] = array
-(
-    'Language menu',
-    'Generates a flat menu to navigate between page and content languages.'
+    'Multilingual news',
+    'Create language alternatives for existing news items.'
 );

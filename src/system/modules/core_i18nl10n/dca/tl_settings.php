@@ -40,8 +40,8 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_languages'] = array
         'nospace' => true
     ),
     'save_callback' => array(
-        array('tl_settings_l10ns','ensureUnique'),
-        array('tl_settings_l10ns','ensureExists')
+        array('tl_settings_l10n','ensureUnique'),
+        array('tl_settings_l10n','ensureExists')
     )
 );
 
@@ -87,7 +87,7 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_alias_suffix'] = array
     'default'   => false,
     'eval' => array('tl_class'=>'w50 clr'),
     'save_callback' => array(
-        array('tl_settings_l10ns','ensureOthersUnchecked'),
+        array('tl_settings_l10n','ensureOthersUnchecked'),
     )
 );
 
@@ -99,11 +99,11 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_addLanguageToUrl'] = array
     'default'   => false,
     'eval' => array('tl_class'=>'w50'),
     'save_callback' => array(
-        array('tl_settings_l10ns','ensureOthersUnchecked'),
+        array('tl_settings_l10n','ensureOthersUnchecked'),
     )
 );
 
-class tl_settings_l10ns extends Backend
+class tl_settings_l10n extends Backend
 {
     function ensureUnique($languages, DataContainer $dc) {
         return serialize( array_unique( deserialize( $languages ) ) );

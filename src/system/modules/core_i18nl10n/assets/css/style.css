@@ -72,3 +72,25 @@
     /* modify with to prevent linebreak because of to many icons */
     width: 400px;
 }
+
+.i18nl10n_languages {
+    display: none;
+    margin: 5px 0;
+}
+
+.i18nl10n_languages img {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.tl_content:hover .i18nl10n_languages {
+    display: block;
+}
+
+.i18nl10n_language_functions {
+    display: none;
+}
+
+.i18nl10n_language_item:hover .i18nl10n_language_functions {
+    display: inline;
+}

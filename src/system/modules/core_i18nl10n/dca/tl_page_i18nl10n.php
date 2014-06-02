@@ -19,9 +19,7 @@
 
 $this->loadLanguageFile('languages');
 
-/**
- * Load class tl_page and its labels
- */
+// load tl_page class and translation
 $this->loadLanguageFile('tl_page');
 $this->loadDataContainer('tl_page');
 
@@ -47,10 +45,10 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
     'config' => array
     (
         'dataContainer'     => 'Table',
-        'ptable'    => 'tl_page',
+        'ptable'            => 'tl_page',
         'enableVersioning'  => true,
-        'closed'                      => $disableCreate,
-        'onload_callback' => array
+        'closed'            => $disableCreate,
+        'onload_callback'   => array
         (
             array('tl_page_i18nl10n', 'displayLanguageMessage'),
             array('tl_page_i18nl10n', 'localizeAll'),
@@ -79,10 +77,11 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
 
         'label' => array
         (
-            'fields' => array('title', 'language', 'language'),
-            'label_callback' => array('tl_page_i18nl10n', 'addIcon')
+            'fields'            => array('title', 'language'),
+            'label_callback'    => array('tl_page_i18nl10n', 'addIcon')
         ),
 
+        // Global operations
         'global_operations' => array
         (
             'define_language' => array
@@ -108,6 +107,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
             ),
         ),
 
+        // Item operations
         'operations' => array
         (
             'edit' => array
@@ -185,32 +185,21 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         ),
 
         // copy settings from tl_page dca
-        'sorting'     => &$GLOBALS['TL_DCA']['tl_page']['fields']['sorting'],
-
-        'tstamp' => array
-        (
-            'sql' => "int(10) unsigned NOT NULL default '0'"
-        ),
-
-        'type' => array
-        (
-            'sql' => "varchar(32) NOT NULL default ''"
-        ),
-
-        // copy settings from tl_page dca
-        'title'       => &$GLOBALS['TL_DCA']['tl_page']['fields']['title'],
-        'language' => $GLOBALS['TL_DCA']['tl_page']['fields']['language'],
-        'alias'       => &$GLOBALS['TL_DCA']['tl_page']['fields']['alias'],
-        'pageTitle'   => &$GLOBALS['TL_DCA']['tl_page']['fields']['pageTitle'],
-        'description' => &$GLOBALS['TL_DCA']['tl_page']['fields']['description'],
-        'cssClass'    => &$GLOBALS['TL_DCA']['tl_page']['fields']['cssClass'],
-        'dateFormat'  => &$GLOBALS['TL_DCA']['tl_page']['fields']['dateFormat'],
-        'timeFormat'  => &$GLOBALS['TL_DCA']['tl_page']['fields']['timeFormat'],
-        'datimFormat' => &$GLOBALS['TL_DCA']['tl_page']['fields']['datimFormat'],
-//        'sitemapName' => &$GLOBALS['TL_DCA']['tl_page']['fields']['sitemapName'],
-        'published'   => &$GLOBALS['TL_DCA']['tl_page']['fields']['published'],
-        'start'       => &$GLOBALS['TL_DCA']['tl_page']['fields']['start'],
-        'stop'        => &$GLOBALS['TL_DCA']['tl_page']['fields']['stop'],
+        'sorting'     => $GLOBALS['TL_DCA']['tl_page']['fields']['sorting'],
+        'tstamp'      => $GLOBALS['TL_DCA']['tl_page']['fields']['tstamp'],
+        'type'        => $GLOBALS['TL_DCA']['tl_page']['fields']['type'],
+        'title'       => $GLOBALS['TL_DCA']['tl_page']['fields']['title'],
+        'language'    => $GLOBALS['TL_DCA']['tl_page']['fields']['language'],
+        'alias'       => $GLOBALS['TL_DCA']['tl_page']['fields']['alias'],
+        'pageTitle'   => $GLOBALS['TL_DCA']['tl_page']['fields']['pageTitle'],
+        'description' => $GLOBALS['TL_DCA']['tl_page']['fields']['description'],
+        'cssClass'    => $GLOBALS['TL_DCA']['tl_page']['fields']['cssClass'],
+        'dateFormat'  => $GLOBALS['TL_DCA']['tl_page']['fields']['dateFormat'],
+        'timeFormat'  => $GLOBALS['TL_DCA']['tl_page']['fields']['timeFormat'],
+        'datimFormat' => $GLOBALS['TL_DCA']['tl_page']['fields']['datimFormat'],
+        'published'   => $GLOBALS['TL_DCA']['tl_page']['fields']['published'],
+        'start'       => $GLOBALS['TL_DCA']['tl_page']['fields']['start'],
+        'stop'        => $GLOBALS['TL_DCA']['tl_page']['fields']['stop'],
     )
 );
 
@@ -229,7 +218,12 @@ if(is_array($i18nl10n_languages) && count($i18nl10n_languages) > 1) {
         )
     );
 
-    array_splice($GLOBALS['TL_DCA']['tl_page_i18nl10n']['list']['global_operations'], 0, 0, $additionalFunctions);
+    array_splice(
+        $GLOBALS['TL_DCA']['tl_page_i18nl10n']['list']['global_operations'],
+        0,
+        0,
+        $additionalFunctions
+    );
 };
 
 

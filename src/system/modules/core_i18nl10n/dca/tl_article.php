@@ -20,16 +20,14 @@
 /**
  * Table tl_article
  */
-$this->loadLanguageFile('languages');
-
 $GLOBALS['TL_DCA']['tl_article']['list']['label']['label_callback'] = array
 (
-    'tl_article_l10ns',
+    'tl_article_l10n',
     'addIcon'
 );
 
 
-class tl_article_l10ns extends tl_article
+class tl_article_l10n extends tl_article
 {
     /**
      * Add summary of elements by language.
@@ -58,7 +56,7 @@ class tl_article_l10ns extends tl_article
         if(!empty($items)) {
             foreach($items as $lang) {
                 $count = $lang['items'];
-                $title = $GLOBALS['TL_LANG']['LNG'][$lang['language']].": $count elements";
+                $title = $GLOBALS['TL_LANG']['LNG'][$lang['language']] . ": $count " . $GLOBALS['TL_LANG']['tl_article']['elements'];
                 $langIcon = 'system/modules/core_i18nl10n/assets/img/i18nl10n.png';
 
                 if($lang['language']) {

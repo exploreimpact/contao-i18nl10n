@@ -47,12 +47,19 @@ if (TL_MODE == 'BE')
 
 
 /**
- * Append module to sidebar
+ * Append be module to sidebar
  */
-$GLOBALS['BE_MOD']['design']['i18nl10n'] = array
-(
-    'tables' => array('tl_page_i18nl10n'),
-    'icon'   => 'system/modules/core_i18nl10n/assets/img/i18nl10n.png'
+array_insert(
+    $GLOBALS['BE_MOD']['design'],
+    array_search("page", array_keys($GLOBALS['BE_MOD']['design'])) + 1,
+    array
+    (
+        'core_i18nl10n' => array
+        (
+            'tables' => array('tl_page_i18nl10n'),
+            'icon'   => 'system/modules/core_i18nl10n/assets/img/i18nl10n.png'
+        )
+    )
 );
 
 
