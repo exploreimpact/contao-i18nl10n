@@ -47,6 +47,12 @@ $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_addLanguageToUrl'][1] =
     . $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffix'][0]
     . '"</em> <em>must</em> be disabled!';
 
+$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alwaysShowL10n'] = array
+(
+    'Show l10n\'s by default',
+    'Always show translation icons and functions for every element in list views'
+);
+
 $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_addLanguageToUrlError'] =
     'If you enable <em>\"'
     . $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_addLanguageToUrl'][0]

@@ -60,7 +60,7 @@ class tl_article_l10n extends tl_article
                 $langIcon = 'system/modules/core_i18nl10n/assets/img/i18nl10n.png';
 
                 if($lang['language']) {
-                    $langIcon = 'system/modules/core_i18nl10n/assets/img/flag_icons/png/' . $lang['language'] . '.png';
+                    $langIcon = 'system/modules/core_i18nl10n/assets/img/flag_icons/' . $lang['language'] . '.png';
                 }
 
                 $label .= '<img class="i18nl10n_article_flag" title="' . $title . '" src="' . $langIcon . '" />';

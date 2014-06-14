@@ -83,6 +83,7 @@
     vertical-align: middle;
 }
 
+.i18nl10n_languages.open,
 .tl_content:hover .i18nl10n_languages {
     display: block;
 }

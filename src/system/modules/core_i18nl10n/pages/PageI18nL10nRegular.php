@@ -35,7 +35,7 @@ class PageI18nl10nRegular extends \PageRegular
 
         if ($GLOBALS['TL_LANGUAGE'] == $GLOBALS['TL_CONFIG']['i18nl10n_default_language'])
         {
-            if ($objPage->i18nl10n_hide != '')
+            if ($objPage->i18nl10n_published == '')
             {
                 header('HTTP/1.1 404 Not Found');
                 $message = 'Page "'

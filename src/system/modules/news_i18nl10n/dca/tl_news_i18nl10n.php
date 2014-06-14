@@ -86,7 +86,22 @@ $GLOBALS['TL_DCA']['tl_news_i18nl10n'] = array
         ),
 
         // Item operations
-        'operations' => $GLOBALS['TL_DCA']['tl_news']['list']['operations']
+        'operations' => array
+        (
+            'edit' => array
+            (
+                'label'               => &$GLOBALS['TL_LANG']['tl_news']['edit'],
+                'href'                => 'table=tl_news_i18nl10n',
+                'icon'                => 'edit.gif'
+            ),
+            'editheader' => $GLOBALS['TL_DCA']['tl_news']['list']['operations']['editheader'],
+            'copy' => $GLOBALS['TL_DCA']['tl_news']['list']['operations']['copy'],
+            'cut' => $GLOBALS['TL_DCA']['tl_news']['list']['operations']['cut'],
+            'delete' => $GLOBALS['TL_DCA']['tl_news']['list']['operations']['delete'],
+            'toggle' => $GLOBALS['TL_DCA']['tl_news']['list']['operations']['toggle'],
+            'feature' => $GLOBALS['TL_DCA']['tl_news']['list']['operations']['feature'],
+            'show' => $GLOBALS['TL_DCA']['tl_news']['list']['operations']['show']
+        )
     ),
 
     // Palettes
@@ -99,7 +114,8 @@ $GLOBALS['TL_DCA']['tl_news_i18nl10n'] = array
             . '{image_legend},addImage;'
             . '{enclosure_legend:hide},addEnclosure;'
             . '{source_legend:hide},source;'
-            . '{publish_legend},published'
+            . '{i18nl10n_legend},language;'
+            . '{publish_legend},i18nl10n_published'
     ),
 
     // Subpalettes
@@ -120,30 +136,46 @@ $GLOBALS['TL_DCA']['tl_news_i18nl10n'] = array
             )
         ),
 
-        'sorting'      => $GLOBALS['TL_DCA']['tl_news']['fields']['sorting'],
-        'tstamp'       => $GLOBALS['TL_DCA']['tl_news']['fields']['tstamp'],
-        'headline'     => $GLOBALS['TL_DCA']['tl_news']['fields']['headline'],
-        'alias'        => $GLOBALS['TL_DCA']['tl_news']['fields']['alias'],
-        'author'       => $GLOBALS['TL_DCA']['tl_news']['fields']['author'],
-        'subheadline'  => $GLOBALS['TL_DCA']['tl_news']['fields']['subheadline'],
-        'teaser'       => $GLOBALS['TL_DCA']['tl_news']['fields']['teaser'],
-        'addImage'     => $GLOBALS['TL_DCA']['tl_news']['fields']['addImage'],
-        'singleSRC'    => $GLOBALS['TL_DCA']['tl_news']['fields']['singleSRC'],
-        'alt'          => $GLOBALS['TL_DCA']['tl_news']['fields']['alt'],
-        'size'         => $GLOBALS['TL_DCA']['tl_news']['fields']['size'],
-        'imagemargin'  => $GLOBALS['TL_DCA']['tl_news']['fields']['imagemargin'],
-        'imageUrl'     => $GLOBALS['TL_DCA']['tl_news']['fields']['imageUrl'],
-        'fullsize'     => $GLOBALS['TL_DCA']['tl_news']['fields']['fullsize'],
-        'caption'      => $GLOBALS['TL_DCA']['tl_news']['fields']['caption'],
-        'floating'     => $GLOBALS['TL_DCA']['tl_news']['fields']['floating'],
-        'addEnclosure' => $GLOBALS['TL_DCA']['tl_news']['fields']['addEnclosure'],
-        'enclosure'    => $GLOBALS['TL_DCA']['tl_news']['fields']['enclosure'],
-        'source'       => $GLOBALS['TL_DCA']['tl_news']['fields']['source'],
-        'jumpTo'       => $GLOBALS['TL_DCA']['tl_news']['fields']['jumpTo'],
-        'articleId'    => $GLOBALS['TL_DCA']['tl_news']['fields']['articleId'],
-        'url'          => $GLOBALS['TL_DCA']['tl_news']['fields']['url'],
-        'target'       => $GLOBALS['TL_DCA']['tl_news']['fields']['target'],
-        'published'    => $GLOBALS['TL_DCA']['tl_news']['fields']['published'],
-        'language'     => $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['language'],
+        'sorting'            => $GLOBALS['TL_DCA']['tl_news']['fields']['sorting'],
+        'tstamp'             => $GLOBALS['TL_DCA']['tl_news']['fields']['tstamp'],
+        'headline'           => $GLOBALS['TL_DCA']['tl_news']['fields']['headline'],
+        'alias'              => $GLOBALS['TL_DCA']['tl_news']['fields']['alias'],
+        'author'             => $GLOBALS['TL_DCA']['tl_news']['fields']['author'],
+        'subheadline'        => $GLOBALS['TL_DCA']['tl_news']['fields']['subheadline'],
+        'teaser'             => $GLOBALS['TL_DCA']['tl_news']['fields']['teaser'],
+        'addImage'           => $GLOBALS['TL_DCA']['tl_news']['fields']['addImage'],
+        'singleSRC'          => $GLOBALS['TL_DCA']['tl_news']['fields']['singleSRC'],
+        'alt'                => $GLOBALS['TL_DCA']['tl_news']['fields']['alt'],
+        'size'               => $GLOBALS['TL_DCA']['tl_news']['fields']['size'],
+        'imagemargin'        => $GLOBALS['TL_DCA']['tl_news']['fields']['imagemargin'],
+        'imageUrl'           => $GLOBALS['TL_DCA']['tl_news']['fields']['imageUrl'],
+        'fullsize'           => $GLOBALS['TL_DCA']['tl_news']['fields']['fullsize'],
+        'caption'            => $GLOBALS['TL_DCA']['tl_news']['fields']['caption'],
+        'floating'           => $GLOBALS['TL_DCA']['tl_news']['fields']['floating'],
+        'addEnclosure'       => $GLOBALS['TL_DCA']['tl_news']['fields']['addEnclosure'],
+        'enclosure'          => $GLOBALS['TL_DCA']['tl_news']['fields']['enclosure'],
+        'source'             => $GLOBALS['TL_DCA']['tl_news']['fields']['source'],
+        'jumpTo'             => $GLOBALS['TL_DCA']['tl_news']['fields']['jumpTo'],
+        'articleId'          => $GLOBALS['TL_DCA']['tl_news']['fields']['articleId'],
+        'url'                => $GLOBALS['TL_DCA']['tl_news']['fields']['url'],
+        'target'             => $GLOBALS['TL_DCA']['tl_news']['fields']['target'],
+        'i18nl10n_published' => $GLOBALS['TL_DCA']['tl_news']['fields']['i18nl10n_published'],
+        'language'           => array(
+            'label'     => &$GLOBALS['TL_LANG']['MSC']['i18nl10n_fields']['language']['label'],
+            'filter'    => true,
+            'inputType' => 'select',
+            'options'   => $i18nl10n_languages,
+            'reference' => &$GLOBALS['TL_LANG']['LNG'],
+            'eval'      => array
+            (
+                'mandatory'          => true,
+                'rgxp'               => 'language',
+                'maxlength'          => 5,
+                'nospace'            => true,
+                'tl_class'           => 'w50 clr',
+                'includeBlankOption' => true
+            ),
+            'sql'       => "varchar(5) NOT NULL default ''"
+        )
     )
 );

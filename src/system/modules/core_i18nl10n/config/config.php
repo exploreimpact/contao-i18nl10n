@@ -30,18 +30,28 @@ namespace Verstaerker\I18nl10n;
  */
 if (TL_MODE == 'BE')
 {
-    /**
-     * CSS files
-     */
-    $cssStyle = 'system/modules/core_i18nl10n/assets/css/style.css';
+    // CSS files
+    $strCss = 'system/modules/core_i18nl10n/assets/css/style.css';
 
     if (is_array($GLOBALS['TL_CSS']))
     {
-        $GLOBALS['TL_CSS'][] = $cssStyle;
+        $GLOBALS['TL_CSS'][] = $strCss;
     }
     else
     {
-        $GLOBALS['TL_CSS'] = array($cssStyle);
+        $GLOBALS['TL_CSS'] = array($strCss);
+    }
+
+    // JS files
+    $strJs = 'system/modules/core_i18nl10n/assets/js/i18nl10n.js';
+
+    if (is_array($GLOBALS['TL_JAVASCRIPT']))
+    {
+        $GLOBALS['TL_JAVASCRIPT'][] = $strJs;
+    }
+    else
+    {
+        $GLOBALS['TL_JAVASCRIPT'] = array($strJs);
     }
 }
 
@@ -82,12 +92,6 @@ $GLOBALS['TL_HOOKS']['getPageIdFromUrl'][] = array('\I18nl10n\Classes\I18nl10nHo
 $GLOBALS['TL_HOOKS']['getContentElement'][] = array('\I18nl10n\Classes\I18nl10nHooks', 'getContentElement');
 $GLOBALS['TL_HOOKS']['generateBreadcrumb'][] = array('\I18nl10n\Classes\I18nl10nHooks', 'generateBreadcrumb');
 $GLOBALS['TL_HOOKS']['replaceInsertTags'][] = array('\I18nl10n\Pages\PageI18nl10nRegular', 'insertI18nl10nArticle');
-
-array_insert(
-    $GLOBALS['TL_HOOKS'],
-    count($GLOBALS['TL_HOOKS']),
-    $i18nl10nHooks
-);
 
 
 /**

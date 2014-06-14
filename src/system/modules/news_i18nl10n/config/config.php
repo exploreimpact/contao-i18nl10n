@@ -19,3 +19,6 @@ if(array_search("news", array_keys($GLOBALS['BE_MOD']['content']))) {
 }
 
 $GLOBALS['BE_MOD']['content']['news']['i18nl10n_create'] = array('tl_news_l10n', 'create');
+
+// config.php
+$GLOBALS['TL_HOOKS']['executePostActions'][] = array('tl_news_l10n', 'executePostActions');

@@ -40,22 +40,22 @@ $GLOBALS['TL_DCA']['tl_page']['config']['onsubmit_callback'][] = array
 );
 
 foreach($GLOBALS['TL_DCA']['tl_page']['palettes'] as $k => $v){
-    $GLOBALS['TL_DCA']['tl_page']['palettes'][$k] = str_replace('published,', 'published,i18nl10n_hide,', $v);
+    $GLOBALS['TL_DCA']['tl_page']['palettes'][$k] = str_replace('published,', 'published,i18nl10n_published,', $v);
 }
 
-if(\Input::get('do') == 'page' && \Input::get('act') == 'edit'){
-    $GLOBALS['TL_DCA']['tl_page']['fields']['published']['eval']['tl_class'] = 'w50';
-    $GLOBALS['TL_DCA']['tl_page']['fields']['i18nl10n_hide'] = array
-    (
-        'label'     => &$GLOBALS['TL_LANG']['tl_page']['i18nl10n_hide'],
-        'exclude'   => true,
-        'inputType' => 'checkbox',
-        'eval'      => array(
-            'doNotCopy'=>true,
-            'tl_class'=>'w50'
-        )
-    );
-}
+$GLOBALS['TL_DCA']['tl_page']['fields']['published']['eval']['tl_class'] = 'w50';
+$GLOBALS['TL_DCA']['tl_page']['fields']['i18nl10n_published'] = array
+(
+    'label'     => &$GLOBALS['TL_LANG']['tl_page']['i18nl10n_published'],
+    'default'   => true,
+    'exclude'   => true,
+    'inputType' => 'checkbox',
+    'eval'      => array(
+        'doNotCopy'=>true,
+        'tl_class'=>'w50'
+    ),
+    'sql' => "char(1) NOT NULL default '1'"
+);
 
 
 class tl_page_l10n extends \Backend {

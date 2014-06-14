@@ -20,7 +20,7 @@
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_page']['i18nl10n_hide'] = array
+$GLOBALS['TL_LANG']['tl_page']['i18nl10n_published'] = array
 (
     'Hide default language',
     'The page is not present in default language only. Page localizations are shown if published.'

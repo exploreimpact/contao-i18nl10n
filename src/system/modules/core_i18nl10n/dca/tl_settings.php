@@ -22,7 +22,7 @@ $this->loadLanguageFile('languages');
 /**
  * Extend palettes
  */
-$GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= ';{page_i18nl10n:hide},i18nl10n_languages,i18nl10n_default_language,i18nl10n_alias_suffix,i18nl10n_addLanguageToUrl,i18nl10n_default_page';
+$GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= ';{page_i18nl10n:hide},i18nl10n_languages,i18nl10n_default_language,i18nl10n_alwaysShowL10n,i18nl10n_alias_suffix,i18nl10n_addLanguageToUrl';
 
 
 /**
@@ -68,11 +68,13 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_default_language'] = array
     'label'     => &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_default_language'],
     'exclude'   => true,
     'inputType' => 'select',
-    'options' => array(
+    'options' => array
+    (
         $i18nl10n_default_language => $GLOBALS['TL_LANG']['LNG'][$i18nl10n_default_language]
     ),
     'default'   =>  $i18nl10n_default_language,
-    'eval' => array(
+    'eval' => array
+    (
         'includeBlankOption' => true,
         'mandatory' => true,
         'tl_class' => 'w50'
@@ -85,8 +87,12 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_alias_suffix'] = array
     'exclude'   => true,
     'inputType' => 'checkbox',
     'default'   => false,
-    'eval' => array('tl_class'=>'w50 clr'),
-    'save_callback' => array(
+    'eval' => array
+    (
+        'tl_class'=>'w50 clr'
+    ),
+    'save_callback' => array
+    (
         array('tl_settings_l10n','ensureOthersUnchecked'),
     )
 );
@@ -97,11 +103,28 @@ $GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_addLanguageToUrl'] = array
     'exclude'   => true,
     'inputType' => 'checkbox',
     'default'   => false,
-    'eval' => array('tl_class'=>'w50'),
-    'save_callback' => array(
+    'eval' => array
+    (
+        'tl_class'=>'w50'
+    ),
+    'save_callback' => array
+    (
         array('tl_settings_l10n','ensureOthersUnchecked'),
     )
 );
+
+$GLOBALS['TL_DCA']['tl_settings']['fields']['i18nl10n_alwaysShowL10n'] = array
+(
+    'label'     => &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alwaysShowL10n'],
+    'exclude'   => true,
+    'inputType' => 'checkbox',
+    'default'   => false,
+    'eval' => array
+    (
+        'tl_class' => 'w50 clr'
+    ),
+);
+
 
 class tl_settings_l10n extends Backend
 {

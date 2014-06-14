@@ -281,7 +281,7 @@ class tl_page_i18nl10n extends tl_page
      */
     public function addIcon($row, $label, DataContainer $dc=null, $imageAttribute='', $blnReturnImage=false, $blnProtected=false)
     {
-        $src ='system/modules/core_i18nl10n/assets/img/flag_icons/png/' . $row['language'] . '.png';
+        $src ='system/modules/core_i18nl10n/assets/img/flag_icons/' . $row['language'] . '.png';
 
         $label = '<span style="color:#b3b3b3; padding-left:3px;">'
             . '<img style="vertical-align:middle" src="' . $src . '" /> '
@@ -299,7 +299,7 @@ class tl_page_i18nl10n extends tl_page
     {
         if($this->Input->get('localize_all') && !$this->Input->post('localize_all')) {
             $flag = '<img class="i18nl10n_flag"'
-                . ' src="system/modules/core_i18nl10n/assets/img/flag_icons/png/'
+                . ' src="system/modules/core_i18nl10n/assets/img/flag_icons/'
                 . $GLOBALS['TL_CONFIG']['i18nl10n_default_language']
                 . '.png" />&nbsp;';
 
@@ -309,7 +309,7 @@ class tl_page_i18nl10n extends tl_page
 
             foreach(deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']) as $language) {
                 if($language != $GLOBALS['TL_CONFIG']['i18nl10n_default_language']) {
-                    $newLanguages .= '<li><img class="i18nl10n_flag" src="system/modules/core_i18nl10n/assets/img/flag_icons/png/' . $language . '.png" /> ' . $GLOBALS['TL_LANG']['LNG'][$language] . '</li>';
+                    $newLanguages .= '<li><img class="i18nl10n_flag" src="system/modules/core_i18nl10n/assets/img/flag_icons/' . $language . '.png" /> ' . $GLOBALS['TL_LANG']['LNG'][$language] . '</li>';
                 }
             }
 
