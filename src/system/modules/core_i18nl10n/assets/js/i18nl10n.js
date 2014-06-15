@@ -2,7 +2,7 @@
  * Created by atreju on 13.06.14.
  */
 
-var i18nl10n =
+var I18nl10n =
 {
     /**
      * Toggle the visibility of an l1on translation
@@ -34,5 +34,10 @@ var i18nl10n =
         }
 
         return false;
+    },
+
+    toggleFunctions: function() {
+        var containers = $$('.i18nl10n_languages');
+        containers.toggleClass('open');
     }
 };

@@ -91,15 +91,15 @@ $GLOBALS['TL_DCA']['tl_news_i18nl10n'] = array
             'edit' => array
             (
                 'label'               => &$GLOBALS['TL_LANG']['tl_news']['edit'],
-                'href'                => 'table=tl_news_i18nl10n',
+                'href'                => 'act=edit',
                 'icon'                => 'edit.gif'
             ),
-            'editheader' => $GLOBALS['TL_DCA']['tl_news']['list']['operations']['editheader'],
-            'copy' => $GLOBALS['TL_DCA']['tl_news']['list']['operations']['copy'],
-            'cut' => $GLOBALS['TL_DCA']['tl_news']['list']['operations']['cut'],
+//            'editheader' => $GLOBALS['TL_DCA']['tl_news']['list']['operations']['editheader'],
+//            'copy' => $GLOBALS['TL_DCA']['tl_news']['list']['operations']['copy'],
+//            'cut' => $GLOBALS['TL_DCA']['tl_news']['list']['operations']['cut'],
             'delete' => $GLOBALS['TL_DCA']['tl_news']['list']['operations']['delete'],
-            'toggle' => $GLOBALS['TL_DCA']['tl_news']['list']['operations']['toggle'],
-            'feature' => $GLOBALS['TL_DCA']['tl_news']['list']['operations']['feature'],
+//            'toggle' => $GLOBALS['TL_DCA']['tl_news']['list']['operations']['toggle'],
+//            'feature' => $GLOBALS['TL_DCA']['tl_news']['list']['operations']['feature'],
             'show' => $GLOBALS['TL_DCA']['tl_news']['list']['operations']['show']
         )
     ),

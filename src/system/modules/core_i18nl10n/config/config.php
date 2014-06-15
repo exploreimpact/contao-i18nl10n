@@ -43,7 +43,7 @@ if (TL_MODE == 'BE')
     }
 
     // JS files
-    $strJs = 'system/modules/core_i18nl10n/assets/js/i18nl10n.js';
+    $strJs = 'system/modules/core_i18nl10n/assets/js/I18nl10n.js';
 
     if (is_array($GLOBALS['TL_JAVASCRIPT']))
     {

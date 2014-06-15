@@ -19,12 +19,12 @@ use Verstaerker\I18nl10n\Classes\I18nl10n as I18nl10n;
 /**
  * Table tl_page
  */
-$GLOBALS['TL_DCA']['tl_news']['list']['operations']['news_i18nl10n'] = array
+/*$GLOBALS['TL_DCA']['tl_news']['list']['operations']['news_i18nl10n'] = array
 (
     'label'               => 'L10N',
     'href'                => 'do=news_i18nl10n&table=tl_news_i18nl10n',
     'button_callback'     => array('tl_news_l10n', 'editL10n')
-);
+);*/
 
 $GLOBALS['TL_DCA']['tl_news']['config']['onload_callback'] = array
 (
@@ -67,9 +67,29 @@ $GLOBALS['TL_DCA']['tl_news']['palettes']['default'] = str_replace(
 (
     'label'               => &$GLOBALS['TL_LANG']['tl_news']['toggle'],
     'icon'                => 'visible.gif',
-    'attributes'          => 'onclick="Backend.getScrollOffset();return i18nl10n.toggleL10n(this,%s,\'tl_news\')"',
+    'attributes'          => 'onclick="Backend.getScrollOffset();return I18nl10n.toggleL10n(this,%s,\'tl_news\')"',
     'button_callback'     => array('tl_news_l10n', 'toggleL10nIcon')
 );*/
+
+/**
+ * Splice in i18nl10n functions to global operations
+ */
+$i18nl10nFunctions = array(
+    'localize_all' => array
+    (
+        'label'      => &$GLOBALS['TL_LANG']['tl_news']['i18nl10nToggleTools'],
+        'href'       => 'localize_all=1',
+        'class'      => 'i18nl10n_header_toggle_functions',
+        'attributes' => 'onclick="Backend.getScrollOffset();I18nl10n.toggleFunctions();return false;"'
+    )
+);
+
+array_splice(
+    $GLOBALS['TL_DCA']['tl_news']['list']['global_operations'],
+    0,
+    0,
+    $i18nl10nFunctions
+);
 
 
 class tl_news_l10n extends tl_news
@@ -99,12 +119,11 @@ class tl_news_l10n extends tl_news
 
         $strArticle = parent::listNewsArticles($arrRow);
 
-        \FB::log($strArticle);
-
-        $strNewsI18nl10nParam = 'do=news_i18nl10n&table=tl_news_i18nl10n&mode=2';
+        $strNewsI18nl10nParam = 'do=news&table=tl_news_i18nl10n&mode=2';
         $strDefaultLang = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
         $strL10nItems = '';
 
+        // define main values
         $templateValues = array
         (
             'newsToggleIcon' => self::toggleL10nIcon(
@@ -113,23 +132,25 @@ class tl_news_l10n extends tl_news
                     $strDefaultLang,
                     sprintf($GLOBALS['TL_LANG']['MSC']['i18nl10n']['listNewsArticlesL10n']['publish'], $strDefaultLang),
                     'system/themes/default/images/visible.gif',
-                    ' class="toggle_i10n" onclick="Backend.getScrollOffset();return i18nl10n.toggleL10n(this,\''.$arrRow['id'].'\',\'tl_news\')"'
+                    ' class="toggle_i10n" onclick="Backend.getScrollOffset();return I18nl10n.toggleL10n(this,\''.$arrRow['id'].'\',\'tl_news\')"'
                 ),
             'newsDate' => Date::parse($GLOBALS['TL_CONFIG']['datimFormat'], $arrRow['date']),
             'newsHeadline' => $arrRow['headline'],
             'newsEditTitle' =>  sprintf($GLOBALS['TL_LANG']['MSC']['i18nl10n']['listNewsArticlesL10n']['edit'], $strDefaultLang),
             'newsEditIcon' =>  $arrRow['i18nl10n_published'] ? $strDefaultLang : $strDefaultLang . '_invisible',
             'newsEditUrl' => $this->addToUrl('do=news&table=tl_news&act=edit&id=' . $arrRow['id']),
-            'newsLanguage' => $strDefaultLang,
+            'newsLanguage' => $arrRow['i18nl10n_published'] ? $strDefaultLang : $strDefaultLang . '_invisible',
             'createL10nUrl' => $this->addToUrl($strNewsI18nl10nParam . '&pid=' . $arrRow['id'] . '&act=create'),
             'createL10nAlt' => $GLOBALS['TL_LANG']['MSC']['i18nl10n']['listNewsArticlesL10n']['create'],
             'l10nToolsClass' => $GLOBALS['TL_CONFIG']['i18nl10n_alwaysShowL10n'] ? 'i18nl10n_languages open' : 'i18nl10n_languages'
         );
 
+        // get related translations
         $arrL10n = $this->getRelatedL10n($arrRow['id']);
 
         foreach($arrL10n as $l10n) {
 
+            // define item values
             $templateValues['l10nItem' . $l10n['id'] . 'EditUrl'] = $this->addToUrl($strNewsI18nl10nParam . '&id=' . $l10n['id'] . '&act=edit');
             $templateValues['l10nItem' . $l10n['id'] . 'EditTitle'] = sprintf($GLOBALS['TL_LANG']['MSC']['i18nl10n']['listNewsArticlesL10n']['edit'], $l10n['language']);
             $templateValues['l10nItem' . $l10n['id'] . 'EditIcon'] = $l10n['i18nl10n_published'] ? $l10n['language'] : $l10n['language'] . '_invisible';
@@ -144,9 +165,10 @@ class tl_news_l10n extends tl_news
                 $l10n['language'],
                 sprintf($GLOBALS['TL_LANG']['MSC']['i18nl10n']['listNewsArticlesL10n']['publish'], $l10n['language']),
                 'system/themes/default/images/visible.gif',
-                ' class="toggle_i10n" onclick="Backend.getScrollOffset();return i18nl10n.toggleL10n(this,\''.$l10n['id'].'\',\'tl_news_i18nl10n\')"'
+                ' class="toggle_i10n" onclick="Backend.getScrollOffset();return I18nl10n.toggleL10n(this,\''.$l10n['id'].'\',\'tl_news_i18nl10n\')"'
             );
 
+            // create template
             $strL10nItems .= '
                 <span class="i18nl10n_language_item">
                     <a href="%l10nItem'.$l10n['id'].'EditUrl$s" title="%l10nItem'.$l10n['id'].'EditTitle$s">
@@ -163,6 +185,7 @@ class tl_news_l10n extends tl_news
             ';
         }
 
+        // create main template and combine with l10n items
         $strArticleL10n = '
             <div class="%l10nToolsClass$s">
                 <span class="i18nl10n_language_item">
@@ -189,9 +212,12 @@ class tl_news_l10n extends tl_news
 
     public function checkPermission() {
 //        \FB::log(\Input::get('key'));
+        \FB::log('checkPermission');
     }
 
     public function create() {
+        // TODO: Needed?
+        \FB::log('tl_news_l10n::create');
         $this->redirect('contao/main.php?do=news&table=tl_news&id=1&act=create&mode=2&pid=1&rt=' . REQUEST_TOKEN . '&ref=' . \Input::get('ref'));
     }
 
@@ -218,9 +244,6 @@ class tl_news_l10n extends tl_news
 
     public function toggleL10nIcon($row, $href, $label, $title, $icon, $attributes)
     {
-//        \FB::log($label);
-//        \FB::log($attributes);
-
         $this->import('BackendUser', 'User');
 
         if (strlen($this->Input->get('tid')))

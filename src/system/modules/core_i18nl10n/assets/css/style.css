@@ -75,7 +75,7 @@
 
 .i18nl10n_languages {
     display: none;
-    margin: 5px 0;
+    margin: 0 0 8px 0;
 }
 
 .i18nl10n_languages img {
@@ -94,4 +94,10 @@
 
 .i18nl10n_language_item:hover .i18nl10n_language_functions {
     display: inline;
+}
+
+.i18nl10n_header_toggle_functions {
+    background: url("../img/folPlus.gif") no-repeat scroll left center transparent;
+    padding: 2px 0 3px 20px;
+    margin-left: 15px;
 }
