@@ -22,8 +22,8 @@
  */
 $GLOBALS['TL_LANG']['tl_page']['l10n_published'] = array
 (
-    'Hide default language',
-    'The page is not present in default language only. Page localizations are shown if published.'
+    'Publish L10N',
+    'Publish this translation.'
 );
 
 $GLOBALS['TL_LANG']['tl_page']['toggleL10n'] = array

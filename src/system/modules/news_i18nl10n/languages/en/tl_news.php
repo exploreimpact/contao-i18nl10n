@@ -33,10 +33,18 @@ $GLOBALS['TL_LANG']['tl_news']['localize_all'] = array
     'Localize all untranslated news to available languages'
 );
 
-
-
 $GLOBALS['TL_LANG']['tl_news']['define_language'] = array
 (
     'L10N Languages',
     'Define languages on settings page'
+);
+
+
+/**
+ * Fields
+ */
+$GLOBALS['TL_LANG']['tl_news']['l10n_published'] = array
+(
+    'Publish L10N',
+    'Publish this translation.'
 );

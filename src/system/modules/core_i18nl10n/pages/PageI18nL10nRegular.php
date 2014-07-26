@@ -51,7 +51,7 @@ class PageI18nl10nRegular extends \PageRegular
         }
 
         //get language specific page properties
-        $fields = 'title,language,pageTitle,description,cssClass,dateFormat,timeFormat,datimFormat,published,start,stop';
+        $fields = 'title,language,pageTitle,description,cssClass,dateFormat,timeFormat,datimFormat,l10n_published,start,stop';
 
         $sql = "
             SELECT
@@ -69,7 +69,7 @@ class PageI18nl10nRegular extends \PageRegular
             $sql .= "
                 AND (start = '' OR start < $time)
                 AND (stop = '' OR stop > $time)
-                AND published = 1
+                AND l10n_published = 1
             ";
         }
 

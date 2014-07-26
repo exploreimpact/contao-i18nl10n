@@ -186,20 +186,20 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         ),
 
         // copy settings from tl_page dca
-        'sorting'            => $GLOBALS['TL_DCA']['tl_page']['fields']['sorting'],
-        'tstamp'             => $GLOBALS['TL_DCA']['tl_page']['fields']['tstamp'],
-        'type'               => $GLOBALS['TL_DCA']['tl_page']['fields']['type'],
-        'title'              => $GLOBALS['TL_DCA']['tl_page']['fields']['title'],
-        'language'           => $GLOBALS['TL_DCA']['tl_page']['fields']['language'],
-        'alias'              => $GLOBALS['TL_DCA']['tl_page']['fields']['alias'],
-        'pageTitle'          => $GLOBALS['TL_DCA']['tl_page']['fields']['pageTitle'],
-        'description'        => $GLOBALS['TL_DCA']['tl_page']['fields']['description'],
-        'cssClass'           => $GLOBALS['TL_DCA']['tl_page']['fields']['cssClass'],
-        'dateFormat'         => $GLOBALS['TL_DCA']['tl_page']['fields']['dateFormat'],
-        'timeFormat'         => $GLOBALS['TL_DCA']['tl_page']['fields']['timeFormat'],
-        'datimFormat'        => $GLOBALS['TL_DCA']['tl_page']['fields']['datimFormat'],
-        'start'              => $GLOBALS['TL_DCA']['tl_page']['fields']['start'],
-        'stop'               => $GLOBALS['TL_DCA']['tl_page']['fields']['stop'],
+        'sorting'        => $GLOBALS['TL_DCA']['tl_page']['fields']['sorting'],
+        'tstamp'         => $GLOBALS['TL_DCA']['tl_page']['fields']['tstamp'],
+        'type'           => $GLOBALS['TL_DCA']['tl_page']['fields']['type'],
+        'title'          => $GLOBALS['TL_DCA']['tl_page']['fields']['title'],
+        'language'       => $GLOBALS['TL_DCA']['tl_page']['fields']['language'],
+        'alias'          => $GLOBALS['TL_DCA']['tl_page']['fields']['alias'],
+        'pageTitle'      => $GLOBALS['TL_DCA']['tl_page']['fields']['pageTitle'],
+        'description'    => $GLOBALS['TL_DCA']['tl_page']['fields']['description'],
+        'cssClass'       => $GLOBALS['TL_DCA']['tl_page']['fields']['cssClass'],
+        'dateFormat'     => $GLOBALS['TL_DCA']['tl_page']['fields']['dateFormat'],
+        'timeFormat'     => $GLOBALS['TL_DCA']['tl_page']['fields']['timeFormat'],
+        'datimFormat'    => $GLOBALS['TL_DCA']['tl_page']['fields']['datimFormat'],
+        'start'          => $GLOBALS['TL_DCA']['tl_page']['fields']['start'],
+        'stop'           => $GLOBALS['TL_DCA']['tl_page']['fields']['stop'],
         'l10n_published' => $GLOBALS['TL_DCA']['tl_page']['fields']['l10n_published']
     )
 );
@@ -413,9 +413,9 @@ class tl_page_i18nl10n extends tl_page
         $objVersions->initialize();
 
 // Trigger the save_callback
-        if (is_array($GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['published']['save_callback']))
+        if (is_array($GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['l10n_published']['save_callback']))
         {
-            foreach ($GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['published']['save_callback'] as $callback)
+            foreach ($GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['l10n_published']['save_callback'] as $callback)
             {
                 $this->import($callback[0]);
                 $blnVisible = $this->$callback[0]->$callback[1]($blnVisible, $this);
@@ -426,7 +426,7 @@ class tl_page_i18nl10n extends tl_page
             UPDATE
                 tl_page_i18nl10n
             SET
-                tstamp = " . time() . ", published='" . ($blnVisible ? 1 : '') . "'
+                tstamp = " . time() . ", l10n_published='" . ($blnVisible ? 1 : '') . "'
             WHERE
                 id=?
         ";

@@ -74,7 +74,7 @@ class I18nl10nFrontend extends \Controller
                 $sql .= "
                     AND (start='' OR start < $time)
                     AND (stop='' OR stop > $time)
-                    AND published = 1
+                    AND l10n_published = 1
                 ";
             }
 
@@ -104,16 +104,40 @@ class I18nl10nFrontend extends \Controller
                             }
                             else {
                                 $time = time();
-                                $forward_row = \Database::getInstance()->prepare(
-                                    "SELECT * FROM tl_page_i18nl10n WHERE pid=(
-                                      SELECT id FROM tl_page where pid=? AND type='regular' "
-                                    . (!BE_USER_LOGGED_IN ? " AND (start='' OR start<$time)
-                         AND (stop='' OR stop>$time) AND published=1" : "")
-                                    . " ORDER BY sorting"." LIMIT 0,1)
-                      AND language=?"
-                                )->limit(1)->execute(
-                                        $item[id],$row['language']
-                                    )->fetchAssoc();
+                                $sql = "
+                                    SELECT
+                                      *
+                                    FROM
+                                      tl_page_i18nl10n
+                                    WHERE
+                                      pid = (
+                                        SELECT
+                                          id
+                                        FROM
+                                          tl_page
+                                        WHERE
+                                          pid = ?
+                                          AND type = 'regular'";
+
+                                if(!BE_USER_LOGGED_IN) {
+                                    $sql .= "
+                                        AND (start='' OR start<$time)
+                                        AND (stop='' OR stop>$time)
+                                        AND published=1";
+                                }
+
+                                $sql .= "
+                                        ORDER BY
+                                            sorting
+                                        LIMIT 0,1
+                                    )
+                                    AND
+                                        language = ?";
+
+                                $forward_row = \Database::getInstance()->prepare($sql)
+                                    ->limit(1)
+                                    ->execute($item[id],$row['language'])
+                                    ->fetchAssoc();
                             }
                             $forward_row['alias'] = $item['alias'] = $forward_row['alias'] ? $forward_row['alias']:$item['alias'];
                             $item['href'] = $this->generateFrontendUrl($forward_row);

@@ -276,7 +276,7 @@ class I18nl10nHooks extends \System
             $sql .= "
                 AND (start = '' OR start < $time)
                 AND (stop = '' OR stop > $time)
-                AND published = 1
+                AND l10n_published = 1
             ";
         }
 
