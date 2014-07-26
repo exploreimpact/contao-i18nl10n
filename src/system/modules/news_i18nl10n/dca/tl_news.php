@@ -356,7 +356,7 @@ class tl_news_l10n extends tl_news
      */
     public function localizeAll()
     {
-        \Verstaerker\I18nl10n\Classes\I18nl10n::localizeAll($this);
+        \Verstaerker\I18nl10n\Classes\I18nl10n::localizeAll();
     }
 
 

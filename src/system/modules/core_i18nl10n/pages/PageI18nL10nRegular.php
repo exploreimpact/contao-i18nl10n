@@ -155,6 +155,7 @@ class PageI18nl10nRegular extends \PageRegular
      */
     public function insertI18nl10nArticle($insert_tag)
     {
+
         if (strpos($insert_tag, 'insert_i18nl10n_article') === false)
             return false;
 

@@ -54,12 +54,21 @@ class I18nl10n extends \Controller
     /**
      * Create localization for all pages
      */
-    public static function localizeAll($modObj)
+    public static function localizeAll()
     {
-        if($modObj->Input->get('localize_all') && !$modObj->Input->post('localize_all')) {
 
-            \FB::log('localize all step 1');
+        $table = '';
 
+        switch(\Input::get('do')) {
+            case 'page':
+                $table = 'tl_page';
+                break;
+            case 'news':
+                $table = 'tl_news';
+                break;
+        }
+
+        if(\Input::get('localize_all') && !\Input::post('localize_all')) {
             $flag = '<img class="i18nl10n_flag"'
                 . ' src="system/modules/core_i18nl10n/assets/img/flag_icons/'
                 . $GLOBALS['TL_CONFIG']['i18nl10n_default_language']
@@ -77,13 +86,11 @@ class I18nl10n extends \Controller
 
             $newLanguages .= '</ul>';
 
-            \FB::log($GLOBALS['TL_DCA'][$modObj->Input->get('table')]);
-
-            $GLOBALS['TL_DCA'][$modObj->Input->get('table')]['list']['sorting']['breadcrumb'] .=
-                '<form method="post" action="contao/main.php?do=' . $modObj->Input->get('do') . '">'
+            $GLOBALS['TL_DCA'][$table]['list']['sorting']['breadcrumb'] .=
+                '<form method="post" action="contao/main.php?do=' . \Input::get('do') . '">'
                 . '<div class="i18nl10n_page_message">' . $message . $newLanguages
                 . '<div class="tl_submit_container">'
-                . '<a href="contao/main.php?do=' . $modObj->Input->get('do') . '">'
+                . '<a href="contao/main.php?do=' . \Input::get('do') . '">'
                 . utf8_ucfirst($GLOBALS['TL_LANG']['MSC']['no'])
                 . '</a>'
                 . '<input type="submit" value="' . utf8_ucfirst($GLOBALS['TL_LANG']['MSC']['yes']) . '" class="tl_submit" name="localize_all_" />'
@@ -91,7 +98,7 @@ class I18nl10n extends \Controller
                 . '<input type="hidden" name="REQUEST_TOKEN" value="'.REQUEST_TOKEN.'"></form>';
         }
         //localise all pages
-        elseif($modObj->Input->post('localize_all_')) {
+        elseif(\Input::post('localize_all_')) {
 
             \FB::log('localize all step 2');
 

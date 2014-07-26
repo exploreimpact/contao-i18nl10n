@@ -53,11 +53,13 @@ $GLOBALS['TL_DCA']['tl_page']['config']['onsubmit_callback'][] = array
     'generatePageL10n'
 );
 
-$GLOBALS['TL_DCA']['tl_page']['list']['label']['label_callback'] = array
-(
-    'tl_page_l10n',
-    'listPagesL10n'
-);
+if (Input::get('do') == 'page') {
+    $GLOBALS['TL_DCA']['tl_page']['list']['label']['label_callback'] = array
+    (
+        'tl_page_l10n',
+        'listPagesL10n'
+    );
+}
 
 foreach($GLOBALS['TL_DCA']['tl_page']['palettes'] as $k => $v){
     $GLOBALS['TL_DCA']['tl_page']['palettes'][$k] = str_replace('published,', 'published,l10n_published,', $v);
@@ -352,7 +354,7 @@ class tl_page_l10n extends tl_page {
      */
     public function localizeAll()
     {
-        \Verstaerker\I18nl10n\Classes\I18nl10n::localizeAll($this);
+        \Verstaerker\I18nl10n\Classes\I18nl10n::localizeAll();
     }
 
 
