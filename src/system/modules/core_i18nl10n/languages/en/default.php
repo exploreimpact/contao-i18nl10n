@@ -32,3 +32,11 @@ $GLOBALS['TL_LANG']['MSC']['language'] = 'language';
 
 // Allow unlocalized entries in tl_content so content elements can be shared among localized pages
 $GLOBALS['TL_LANG']['LNG'][''] = 'Any';
+
+
+// tl_page_i18nl10n
+$GLOBALS['TL_LANG']['MSC']['i18nl10n']['listPagesL10n']['create'] = 'Create L10n';
+$GLOBALS['TL_LANG']['MSC']['i18nl10n']['listPagesL10n']['edit'] = 'Edit %s L10n';
+$GLOBALS['TL_LANG']['MSC']['i18nl10n']['listPagesL10n']['publish'] = 'Show/hide %s L10n';
+$GLOBALS['TL_LANG']['MSC']['i18nl10n']['listPagesL10n']['delete'] = 'Delete %s L10n';
+$GLOBALS['TL_LANG']['MSC']['i18nl10n']['listPagesL10n']['deleteConfirm'] = 'Are you sure you want to delete the %s translation for this article?';

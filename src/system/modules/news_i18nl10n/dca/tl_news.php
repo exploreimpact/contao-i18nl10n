@@ -17,8 +17,10 @@
 use Verstaerker\I18nl10n\Classes\I18nl10n as I18nl10n;
 
 /**
- * Table tl_page
+ * Table tl_news
  */
+//$GLOBALS['BE_MOD']['content']['news']['i18nl10n_create'] = array('tl_news_l10n', 'create');
+
 /*$GLOBALS['TL_DCA']['tl_news']['list']['operations']['news_i18nl10n'] = array
 (
     'label'               => 'L10N',
@@ -38,7 +40,7 @@ $GLOBALS['TL_DCA']['tl_news']['list']['sorting']['child_record_callback'] = arra
 );
 
 // adjust published css class
-$GLOBALS['TL_DCA']['tl_news']['fields']['published']['eval']['tl_class'] = 'w50';
+//$GLOBALS['TL_DCA']['tl_news']['fields']['published']['eval']['tl_class'] = 'w50';
 
 // insert i18nl10n_published
 $GLOBALS['TL_DCA']['tl_news']['fields']['i18nl10n_published'] = array
@@ -55,11 +57,7 @@ $GLOBALS['TL_DCA']['tl_news']['fields']['i18nl10n_published'] = array
 );
 
 // insert i18nl10n_publish into palette
-$GLOBALS['TL_DCA']['tl_news']['palettes']['default'] = str_replace(
-    ',published,',
-    ',published,i18nl10n_published,',
-    $GLOBALS['TL_DCA']['tl_news']['palettes']['default']
-);
+$GLOBALS['TL_DCA']['tl_news']['palettes']['default'] = $GLOBALS['TL_DCA']['tl_news']['palettes']['default'] . ';{i18nl10n_legend},i18nl10n_published,';
 
 // add language toggle to operations
 // TODO: remove this in final version
@@ -78,7 +76,6 @@ $i18nl10nFunctions = array(
     'localize_all' => array
     (
         'label'      => &$GLOBALS['TL_LANG']['tl_news']['i18nl10nToggleTools'],
-        'href'       => 'localize_all=1',
         'class'      => 'i18nl10n_header_toggle_functions',
         'attributes' => 'onclick="Backend.getScrollOffset();I18nl10n.toggleFunctions();return false;"'
     )
@@ -119,7 +116,7 @@ class tl_news_l10n extends tl_news
 
         $strArticle = parent::listNewsArticles($arrRow);
 
-        $strNewsI18nl10nParam = 'do=news&table=tl_news_i18nl10n&mode=2';
+        $strNewsI18nl10nParam = 'do=news&table=tl_news_i18nl10n';
         $strDefaultLang = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
         $strL10nItems = '';
 
@@ -130,7 +127,10 @@ class tl_news_l10n extends tl_news
                     $arrRow,
                     null,
                     $strDefaultLang,
-                    sprintf($GLOBALS['TL_LANG']['MSC']['i18nl10n']['listNewsArticlesL10n']['publish'], $strDefaultLang),
+                    sprintf(
+                        $GLOBALS['TL_LANG']['MSC']['i18nl10n']['listNewsArticlesL10n']['publish'],
+                        $strDefaultLang
+                    ),
                     'system/themes/default/images/visible.gif',
                     ' class="toggle_i10n" onclick="Backend.getScrollOffset();return I18nl10n.toggleL10n(this,\''.$arrRow['id'].'\',\'tl_news\')"'
                 ),
@@ -140,13 +140,13 @@ class tl_news_l10n extends tl_news
             'newsEditIcon' =>  $arrRow['i18nl10n_published'] ? $strDefaultLang : $strDefaultLang . '_invisible',
             'newsEditUrl' => $this->addToUrl('do=news&table=tl_news&act=edit&id=' . $arrRow['id']),
             'newsLanguage' => $arrRow['i18nl10n_published'] ? $strDefaultLang : $strDefaultLang . '_invisible',
-            'createL10nUrl' => $this->addToUrl($strNewsI18nl10nParam . '&pid=' . $arrRow['id'] . '&act=create'),
+            'createL10nUrl' => $this->addToUrl($strNewsI18nl10nParam . '&pid=' . $arrRow['id'] . '&act=create&mode=2'),
             'createL10nAlt' => $GLOBALS['TL_LANG']['MSC']['i18nl10n']['listNewsArticlesL10n']['create'],
             'l10nToolsClass' => $GLOBALS['TL_CONFIG']['i18nl10n_alwaysShowL10n'] ? 'i18nl10n_languages open' : 'i18nl10n_languages'
         );
 
         // get related translations
-        $arrL10n = $this->getRelatedL10n($arrRow['id']);
+        $arrL10n = self::getRelatedL10n($arrRow['id']);
 
         foreach($arrL10n as $l10n) {
 
@@ -205,7 +205,7 @@ class tl_news_l10n extends tl_news
         ';
 
         // insert l10n functions into article label
-        $strArticle = preg_replace('@(?=</div>$)@', I18nl10n::vnsprintf($strArticleL10n, $templateValues), $strArticle);
+        $strArticle = preg_replace('@^(.*)(</div>|</a>)$@', '$1' . I18nl10n::vnsprintf($strArticleL10n, $templateValues) . '$2', $strArticle);
 
         return $strArticle;
     }
@@ -215,12 +215,6 @@ class tl_news_l10n extends tl_news
         \FB::log('checkPermission');
     }
 
-    public function create() {
-        // TODO: Needed?
-        \FB::log('tl_news_l10n::create');
-        $this->redirect('contao/main.php?do=news&table=tl_news&id=1&act=create&mode=2&pid=1&rt=' . REQUEST_TOKEN . '&ref=' . \Input::get('ref'));
-    }
-
     private function getRelatedL10n($pid) {
         $arrL10n = \Database::getInstance()
             ->prepare('SELECT * FROM tl_news_i18nl10n WHERE pid = ?')
@@ -228,18 +222,6 @@ class tl_news_l10n extends tl_news
             ->fetchAllassoc();
 
         return $arrL10n;
-    }
-
-    public function createNewsTranslation() {
-
-    }
-
-    public function editTranslation() {
-
-    }
-
-    public function deleteTranslation() {
-
     }
 
     public function toggleL10nIcon($row, $href, $label, $title, $icon, $attributes)
@@ -279,7 +261,7 @@ class tl_news_l10n extends tl_news
         }
 
         // prepare versions
-        $objVersions = new \Versions('tl_news', $intId);
+        $objVersions = new \Versions($strTable, $intId);
         $objVersions->initialize();
 
         // Trigger the save_callback
@@ -307,7 +289,11 @@ class tl_news_l10n extends tl_news
             case 'tl_news_i18nl10n':
                 switch($strAction) {
                     case 'toggleL10n':
-                        tl_news_l10n::toggleL10n(\Input::post('id'), \Input::post('state') == 1, \Input::post('table'));
+                        tl_news_l10n::toggleL10n(
+                            \Input::post('id'),
+                            \Input::post('state') == 1,
+                            \Input::post('table')
+                        );
                         break;
                 }
                 break;

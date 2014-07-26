@@ -16,6 +16,10 @@
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
+use Verstaerker\I18nl10n\Classes\I18nl10n as I18nl10n;
+
+$this->loadDataContainer('tl_page');
+
 
 /**
  * Table tl_page
@@ -39,6 +43,12 @@ $GLOBALS['TL_DCA']['tl_page']['config']['onsubmit_callback'][] = array
     'generatePageL10n'
 );
 
+$GLOBALS['TL_DCA']['tl_page']['list']['label']['label_callback'] = array
+(
+    'tl_page_l10n',
+    'listPagesL10n'
+);
+
 foreach($GLOBALS['TL_DCA']['tl_page']['palettes'] as $k => $v){
     $GLOBALS['TL_DCA']['tl_page']['palettes'][$k] = str_replace('published,', 'published,i18nl10n_published,', $v);
 }
@@ -58,7 +68,27 @@ $GLOBALS['TL_DCA']['tl_page']['fields']['i18nl10n_published'] = array
 );
 
 
-class tl_page_l10n extends \Backend {
+/**
+ * Splice in i18nl10n functions to global operations
+ */
+$i18nl10nFunctions = array(
+    'localize_all' => array
+    (
+        'label'      => &$GLOBALS['TL_LANG']['tl_page']['i18nl10nToggleTools'],
+        'class'      => 'i18nl10n_header_toggle_functions',
+        'attributes' => 'onclick="Backend.getScrollOffset();I18nl10n.toggleFunctions();return false;"'
+    )
+);
+
+array_splice(
+    $GLOBALS['TL_DCA']['tl_page']['list']['global_operations'],
+    0,
+    0,
+    $i18nl10nFunctions
+);
+
+
+class tl_page_l10n extends tl_page {
     public function editL10n($row, $href, $label, $title, $icon)
     {
         //TODO: think about a new page type: regular_localized
@@ -68,6 +98,7 @@ class tl_page_l10n extends \Backend {
 
         return $button;
     }
+
 
     /**
      * Apply the root page language to new pages
@@ -89,6 +120,209 @@ class tl_page_l10n extends \Backend {
             $GLOBALS['TL_DCA']['tl_page']['fields']['language']['default'] = $objPage->rootLanguage;
         }
     }
+
+
+    public function listPagesL10n($arrRow, $strLabel, DataContainer $dc=null, $imageAttribute='', $blnReturnImage=false, $blnProtected=false) {
+
+        $strLabel = parent::addIcon($arrRow, $strLabel, $dc, $imageAttribute, $blnReturnImage, $blnProtected);
+
+        $strNewsI18nl10nParam = 'do=core_i18nl10n&table=tl_page_i18nl10n';
+        $strDefaultLang = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
+        $strL10nItems = '';
+
+        // define main values
+        $templateValues = array
+        (
+            'pageToggleIcon' => self::toggleL10nIcon(
+                    $arrRow,
+                    null,
+                    $strDefaultLang,
+                    sprintf(
+                        $GLOBALS['TL_LANG']['MSC']['i18nl10n']['listNewsArticlesL10n']['publish'],
+                        $strDefaultLang
+                    ),
+                    'system/themes/default/images/visible.gif',
+                    ' class="toggle_i10n" onclick="Backend.getScrollOffset();return I18nl10n.toggleL10n(this,\''.$arrRow['id'].'\',\'tl_page\')"'
+                ),
+//            'pageDate' => Date::parse($GLOBALS['TL_CONFIG']['datimFormat'], $arrRow['date']),
+//            'newsHeadline' => $arrRow['headline'],
+            'pageEditTitle' =>  sprintf($GLOBALS['TL_LANG']['MSC']['i18nl10n']['listNewsArticlesL10n']['edit'], $strDefaultLang),
+//            'pageEditIcon' =>  $arrRow['i18nl10n_published'] ? $strDefaultLang : $strDefaultLang . '_invisible',
+            'pageEditUrl' => $this->addToUrl('do=page&table=tl_page&act=edit&id=' . $arrRow['id']),
+            'newsLanguage' => $arrRow['i18nl10n_published'] ? $strDefaultLang : $strDefaultLang . '_invisible',
+            'createL10nUrl' => $this->addToUrl($strNewsI18nl10nParam . '&pid=' . $arrRow['id'] . '&act=create&mode=2'),
+            'createL10nAlt' => $GLOBALS['TL_LANG']['MSC']['i18nl10n']['listNewsArticlesL10n']['create'],
+            'l10nToolsClass' => $GLOBALS['TL_CONFIG']['i18nl10n_alwaysShowL10n'] ? 'i18nl10n_languages open' : 'i18nl10n_languages'
+        );
+
+        // get related translations
+        $arrL10n = self::getRelatedL10n($arrRow['id']);
+
+        foreach($arrL10n as $l10n) {
+
+            // define item values
+            $templateValues['l10nItem' . $l10n['id'] . 'EditUrl'] = $this->addToUrl($strNewsI18nl10nParam . '&id=' . $l10n['id'] . '&act=edit');
+            $templateValues['l10nItem' . $l10n['id'] . 'EditTitle'] = sprintf($GLOBALS['TL_LANG']['MSC']['i18nl10n']['listNewsArticlesL10n']['edit'], $l10n['language']);
+            $templateValues['l10nItem' . $l10n['id'] . 'EditIcon'] = $l10n['i18nl10n_published'] ? $l10n['language'] : $l10n['language'] . '_invisible';
+            $templateValues['l10nItem' . $l10n['id'] . 'DeleteUrl'] = $this->addToUrl($strNewsI18nl10nParam . '&id=' . $l10n['id'] . '&act=delete');
+            $templateValues['l10nItem' . $l10n['id'] . 'Language'] = $l10n['language'];
+            $templateValues['l10nItem' . $l10n['id'] . 'PublishTitle'] = sprintf($GLOBALS['TL_LANG']['MSC']['i18nl10n']['listNewsArticlesL10n']['publish'], $l10n['language']);
+            $templateValues['l10nItem' . $l10n['id'] . 'DeleteTitle'] = sprintf($GLOBALS['TL_LANG']['MSC']['i18nl10n']['listNewsArticlesL10n']['delete'], $l10n['language']);
+            $templateValues['l10nItem' . $l10n['id'] . 'DeleteConfirm'] = sprintf($GLOBALS['TL_LANG']['MSC']['i18nl10n']['listNewsArticlesL10n']['deleteConfirm'], $GLOBALS['TL_LANG']['LNG'][$l10n['language']]);
+            $templateValues['l10nItem' . $l10n['id'] . 'ToggleIcon'] = self::toggleL10nIcon(
+                $l10n,
+                null,
+                $l10n['language'],
+                sprintf($GLOBALS['TL_LANG']['MSC']['i18nl10n']['listNewsArticlesL10n']['publish'], $l10n['language']),
+                'system/themes/default/images/visible.gif',
+                ' class="toggle_i10n" onclick="Backend.getScrollOffset();return I18nl10n.toggleL10n(this,\''.$l10n['id'].'\',\'tl_page_i18nl10n\')"'
+            );
+
+            // create template
+            $strL10nItems .= '
+                <span class="i18nl10n_language_item">
+                    <a href="%l10nItem'.$l10n['id'].'EditUrl$s" title="%l10nItem'.$l10n['id'].'EditTitle$s">
+                        <img src="system/modules/core_i18nl10n/assets/img/flag_icons/%l10nItem'.$l10n['id'].'EditIcon$s.png" alt="%l10nItem'.$l10n['id'].'Language$s" class="i18nl10n_flag">
+                    </a>
+                    <span class="i18nl10n_language_functions">
+                        %l10nItem'.$l10n['id'].'ToggleIcon$s
+                        <a href="%l10nItem'.$l10n['id'].'DeleteUrl$s" title="%l10nItem'.$l10n['id'].'DeleteTitle$s" onclick="if(!confirm(\'%l10nItem'.$l10n['id'].'DeleteConfirm$s\'))return false;Backend.getScrollOffset()">
+                            <img src="system/themes/default/images/delete.gif" alt="%l10nItem'.$l10n['id'].'Language$s" class="i18nl10n_language_delete">
+                        </a>
+                    </span>
+                    |
+                </span>
+            ';
+        }
+
+        // create main template and combine with l10n items
+        $strLabelL10n = '
+            <div class="%l10nToolsClass$s">
+                <span class="i18nl10n_language_item">
+                    <a href="%pageEditUrl$s" title="%pageEditTitle$s">
+                        <img src="system/modules/core_i18nl10n/assets/img/flag_icons/%newsLanguage$s.png"
+                             alt="%newsLanguage$s"
+                             class="i18nl10n_flag">
+                    </a>
+                    <span class="i18nl10n_language_functions">%pageToggleIcon$s</span>
+                    ::
+                </span>
+                ' . $strL10nItems . '
+                <a href="%createL10nUrl$s" alt="%createL10nAlt$s">
+                    <img src="system/themes/default/images/new.gif">
+                </a>
+            </div>
+        ';
+
+        // insert l10n functions into article label
+        $strLabel = preg_replace('@^(.*)(</div>|</a>)$@', I18nl10n::vnsprintf('$1' . $strLabelL10n . '$2', $templateValues), $strLabel);
+
+
+        return $strLabel;
+    }
+
+
+    public function toggleL10nIcon($row, $href, $label, $title, $icon, $attributes)
+    {
+        $this->import('BackendUser', 'User');
+
+        if (strlen($this->Input->get('tid')))
+        {
+            self::toggleL10n($this->Input->get('tid'), ($this->Input->get('state') == 0), 'tl_page');
+            $this->redirect($this->getReferer());
+        }
+
+        // Check permissions AFTER checking the tid, so hacking attempts are logged
+        if (!$this->User->isAdmin && !$this->User->hasAccess('tl_page::i18nl10n_published', 'alexf'))
+        {
+            return '';
+        }
+
+        $href .= '&amp;id='.$this->Input->get('id').'&amp;tid='.$row['id'].'&amp;state='.$row[''];
+
+        if (!$row['i18nl10n_published'])
+        {
+            $icon = 'invisible.gif';
+        }
+
+        return '<a href="'.$this->addToUrl($href).'" title="'.specialchars($title).'"'.$attributes.'>'.\Image::getHtml($icon, $label).'</a> ';
+    }
+
+
+    public function toggleL10n($intId, $blnPublished, $strTable)
+    {
+
+        // Check permissions to publish
+        if (!$this->User->isAdmin && !$this->User->hasAccess($strTable . '::i18nl10n_published', 'alexf'))
+        {
+            $this->log('Not enough permissions to show/hide record ID "'.$intId.'"', $strTable . ' toggleVisibility', TL_ERROR);
+            $this->redirect('contao/main.php?act=error');
+        }
+
+        // prepare versions
+        $objVersions = new \Versions($strTable, $intId);
+        $objVersions->initialize();
+
+        // Trigger the save_callback
+        if (is_array($GLOBALS['TL_DCA'][$strTable]['fields']['i18nl10n_published']['save_callback']))
+        {
+            foreach ($GLOBALS['TL_DCA'][$strTable]['fields']['i18nl10n_published']['save_callback'] as $callback)
+            {
+                $this->import($callback[0]);
+                $blnPublished = $this->$callback[0]->$callback[1]($blnPublished, $this);
+            }
+        }
+
+        // TODO: Inject protection!! (also on news)
+        $sql = "
+            UPDATE "
+                . $strTable .
+            " SET
+                tstamp=". time() .",
+                i18nl10n_published='" . ($blnPublished ? '' : '1') .
+            "' WHERE id=?";
+
+        // Update the database
+        $this->Database
+            ->prepare($sql)
+            ->execute($intId);
+
+        // create new version
+        $objVersions->create();
+    }
+
+
+    private function getRelatedL10n($pid) {
+        $arrL10n = \Database::getInstance()
+            ->prepare('SELECT * FROM tl_page_i18nl10n WHERE pid = ?')
+            ->execute($pid)
+            ->fetchAllassoc();
+
+        return $arrL10n;
+    }
+
+
+    public function executePostActions($strAction)
+    {
+        switch(\Input::post('table')) {
+            case 'tl_page':
+            case 'tl_page_i18nl10n':
+                switch($strAction) {
+                    case 'toggleL10n':
+                        tl_page_l10n::toggleL10n(
+                            \Input::post('id'),
+                            \Input::post('state') == 1,
+                            \Input::post('table')
+                        );
+                        break;
+                }
+                break;
+
+            default:
+                return false;
+        }
+    }
+
 
     /**
      * Automatically create a new localization

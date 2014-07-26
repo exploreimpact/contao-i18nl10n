@@ -14,6 +14,9 @@
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
+// load language translations
+$this->loadLanguageFile('languages');
+
 // load tl_news class and translation
 $this->loadLanguageFile('tl_news');
 $this->loadDataContainer('tl_news');
@@ -23,6 +26,7 @@ $this->loadDataContainer('tl_news');
 $i18nl10n_languages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
 $i18nl10n_default_language = &$GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
 
+// remove default language
 foreach($i18nl10n_languages as $k => $v) {
     if($v == $i18nl10n_default_language) {
         $i18nl10n_languages = array_delete($i18nl10n_languages,$k);
@@ -114,8 +118,8 @@ $GLOBALS['TL_DCA']['tl_news_i18nl10n'] = array
             . '{image_legend},addImage;'
             . '{enclosure_legend:hide},addEnclosure;'
             . '{source_legend:hide},source;'
-            . '{i18nl10n_legend},language;'
-            . '{publish_legend},i18nl10n_published'
+            . '{publish_legend:hide},start,stop;'
+            . '{i18nl10n_legend},language,i18nl10n_published;'
     ),
 
     // Subpalettes
@@ -159,6 +163,8 @@ $GLOBALS['TL_DCA']['tl_news_i18nl10n'] = array
         'articleId'          => $GLOBALS['TL_DCA']['tl_news']['fields']['articleId'],
         'url'                => $GLOBALS['TL_DCA']['tl_news']['fields']['url'],
         'target'             => $GLOBALS['TL_DCA']['tl_news']['fields']['target'],
+        'start'              => $GLOBALS['TL_DCA']['tl_news']['fields']['start'],
+        'stop'               => $GLOBALS['TL_DCA']['tl_news']['fields']['stop'],
         'i18nl10n_published' => $GLOBALS['TL_DCA']['tl_news']['fields']['i18nl10n_published'],
         'language'           => array(
             'label'     => &$GLOBALS['TL_LANG']['MSC']['i18nl10n_fields']['language']['label'],

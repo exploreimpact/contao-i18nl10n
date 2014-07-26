@@ -75,7 +75,30 @@
 
 .i18nl10n_languages {
     display: none;
-    margin: 0 0 8px 0;
+}
+
+.tree_view [style*="padding-left"] .i18nl10n_languages {
+    margin-left: 22px;
+}
+
+.tree_view [style="padding-left:20px"] .i18nl10n_languages {
+    margin-left: 42px;
+}
+
+.tree_view .level_1 [style="padding-left:40px"] .i18nl10n_languages {
+    margin-left: 42px;
+}
+
+.tree_view .level_2 [style="padding-left:40px"] .i18nl10n_languages {
+    margin-left: 62px;
+}
+
+.tree_view .level_3 [style="padding-left:40px"] .i18nl10n_languages {
+    margin-left: 82px;
+}
+
+.tree_view .level_4 [style="padding-left:40px"] .i18nl10n_languages {
+    margin-left: 102px;
 }
 
 .i18nl10n_languages img {

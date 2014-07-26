@@ -16,7 +16,7 @@
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
-
+// load language translations
 $this->loadLanguageFile('languages');
 
 // load tl_page class and translation
@@ -153,11 +153,12 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
     'palettes' => array
     (
         'default' =>
-            '{menu_legend},title,alias,language;'
+            '{menu_legend},title,alias;'
             . '{meta_legend},pageTitle,description;'
             . '{time_legend:hide},dateFormat,timeFormat,datimFormat;'
             . '{expert_legend:hide},cssClass;'
-            . '{publish_legend},published,start,stop'
+            . '{publish_legend},start,stop;'
+            . '{i18nl10n_legend},language,i18nl10n_published'
     ),
 
     // Fields
@@ -185,21 +186,21 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         ),
 
         // copy settings from tl_page dca
-        'sorting'     => $GLOBALS['TL_DCA']['tl_page']['fields']['sorting'],
-        'tstamp'      => $GLOBALS['TL_DCA']['tl_page']['fields']['tstamp'],
-        'type'        => $GLOBALS['TL_DCA']['tl_page']['fields']['type'],
-        'title'       => $GLOBALS['TL_DCA']['tl_page']['fields']['title'],
-        'language'    => $GLOBALS['TL_DCA']['tl_page']['fields']['language'],
-        'alias'       => $GLOBALS['TL_DCA']['tl_page']['fields']['alias'],
-        'pageTitle'   => $GLOBALS['TL_DCA']['tl_page']['fields']['pageTitle'],
-        'description' => $GLOBALS['TL_DCA']['tl_page']['fields']['description'],
-        'cssClass'    => $GLOBALS['TL_DCA']['tl_page']['fields']['cssClass'],
-        'dateFormat'  => $GLOBALS['TL_DCA']['tl_page']['fields']['dateFormat'],
-        'timeFormat'  => $GLOBALS['TL_DCA']['tl_page']['fields']['timeFormat'],
-        'datimFormat' => $GLOBALS['TL_DCA']['tl_page']['fields']['datimFormat'],
-        'published'   => $GLOBALS['TL_DCA']['tl_page']['fields']['published'],
-        'start'       => $GLOBALS['TL_DCA']['tl_page']['fields']['start'],
-        'stop'        => $GLOBALS['TL_DCA']['tl_page']['fields']['stop'],
+        'sorting'            => $GLOBALS['TL_DCA']['tl_page']['fields']['sorting'],
+        'tstamp'             => $GLOBALS['TL_DCA']['tl_page']['fields']['tstamp'],
+        'type'               => $GLOBALS['TL_DCA']['tl_page']['fields']['type'],
+        'title'              => $GLOBALS['TL_DCA']['tl_page']['fields']['title'],
+        'language'           => $GLOBALS['TL_DCA']['tl_page']['fields']['language'],
+        'alias'              => $GLOBALS['TL_DCA']['tl_page']['fields']['alias'],
+        'pageTitle'          => $GLOBALS['TL_DCA']['tl_page']['fields']['pageTitle'],
+        'description'        => $GLOBALS['TL_DCA']['tl_page']['fields']['description'],
+        'cssClass'           => $GLOBALS['TL_DCA']['tl_page']['fields']['cssClass'],
+        'dateFormat'         => $GLOBALS['TL_DCA']['tl_page']['fields']['dateFormat'],
+        'timeFormat'         => $GLOBALS['TL_DCA']['tl_page']['fields']['timeFormat'],
+        'datimFormat'        => $GLOBALS['TL_DCA']['tl_page']['fields']['datimFormat'],
+        'start'              => $GLOBALS['TL_DCA']['tl_page']['fields']['start'],
+        'stop'               => $GLOBALS['TL_DCA']['tl_page']['fields']['stop'],
+        'i18nl10n_published' => $GLOBALS['TL_DCA']['tl_page']['fields']['i18nl10n_published']
     )
 );
 
@@ -232,6 +233,7 @@ if(is_array($i18nl10n_languages) && count($i18nl10n_languages) > 1) {
  */
 $i18nl10n_default_language = &$GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
 
+// remove default language
 foreach($i18nl10n_languages as $k => $v) {
     if($v == $i18nl10n_default_language) {
         $i18nl10n_languages = array_delete($i18nl10n_languages,$k);

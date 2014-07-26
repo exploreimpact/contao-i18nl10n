@@ -92,6 +92,7 @@ $GLOBALS['TL_HOOKS']['getPageIdFromUrl'][] = array('\I18nl10n\Classes\I18nl10nHo
 $GLOBALS['TL_HOOKS']['getContentElement'][] = array('\I18nl10n\Classes\I18nl10nHooks', 'getContentElement');
 $GLOBALS['TL_HOOKS']['generateBreadcrumb'][] = array('\I18nl10n\Classes\I18nl10nHooks', 'generateBreadcrumb');
 $GLOBALS['TL_HOOKS']['replaceInsertTags'][] = array('\I18nl10n\Pages\PageI18nl10nRegular', 'insertI18nl10nArticle');
+$GLOBALS['TL_HOOKS']['executePostActions'][] = array('tl_page_l10n', 'executePostActions');
 
 
 /**
