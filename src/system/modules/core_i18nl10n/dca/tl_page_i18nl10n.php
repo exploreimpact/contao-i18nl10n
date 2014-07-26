@@ -51,7 +51,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         'onload_callback'   => array
         (
             array('tl_page_i18nl10n', 'displayLanguageMessage'),
-            array('tl_page_i18nl10n', 'localizeAll'),
+            array('tl_page_l10n', 'localizeAll'),
             array('tl_page', 'addBreadcrumb'),
         ),
         'sql' => array
@@ -88,7 +88,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
             (
                 'label'      => &$GLOBALS['TL_LANG']['tl_page_i18nl10n']['define_language'],
                 'href'       => 'do=settings',
-                'class'      => 'header_define_language',
+                'class'      => 'header_l10n_define_language',
             ),
 
             'toggleNodes' => array
@@ -158,7 +158,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
             . '{time_legend:hide},dateFormat,timeFormat,datimFormat;'
             . '{expert_legend:hide},cssClass;'
             . '{publish_legend},start,stop;'
-            . '{i18nl10n_legend},language,i18nl10n_published'
+            . '{i18nl10n_legend},language,l10n_published'
     ),
 
     // Fields
@@ -200,7 +200,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         'datimFormat'        => $GLOBALS['TL_DCA']['tl_page']['fields']['datimFormat'],
         'start'              => $GLOBALS['TL_DCA']['tl_page']['fields']['start'],
         'stop'               => $GLOBALS['TL_DCA']['tl_page']['fields']['stop'],
-        'i18nl10n_published' => $GLOBALS['TL_DCA']['tl_page']['fields']['i18nl10n_published']
+        'l10n_published' => $GLOBALS['TL_DCA']['tl_page']['fields']['l10n_published']
     )
 );
 
@@ -208,13 +208,13 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
 /**
  * Splice in localize all in case languages are available
  */
-if(is_array($i18nl10n_languages) && count($i18nl10n_languages) > 1) {
+/*if(is_array($i18nl10n_languages) && count($i18nl10n_languages) > 1) {
     $additionalFunctions = array(
         'localize_all' => array
         (
             'label'      => &$GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all'],
             'href'       => 'localize_all=1',
-            'class'      => 'header_localize_all',
+            'class'      => 'header_l10n_localize_all',
             'attributes' => 'onclick="Backend.getScrollOffset();" accesskey="e"'
         )
     );
@@ -225,17 +225,15 @@ if(is_array($i18nl10n_languages) && count($i18nl10n_languages) > 1) {
         0,
         $additionalFunctions
     );
-};
+};*/
 
 
 /**
  * TODO: Merge this with above definition
  */
-$i18nl10n_default_language = &$GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
-
 // remove default language
 foreach($i18nl10n_languages as $k => $v) {
-    if($v == $i18nl10n_default_language) {
+    if($v == $GLOBALS['TL_CONFIG']['i18nl10n_default_language']) {
         $i18nl10n_languages = array_delete($i18nl10n_languages,$k);
         break;
     }
@@ -295,9 +293,9 @@ class tl_page_i18nl10n extends tl_page
 
 
     /**
-     * Localize all pages with a twist.
+     * Create localization for all pages
      */
-    public function localizeAll()
+    /*public function localizeAll()
     {
         if($this->Input->get('localize_all') && !$this->Input->post('localize_all')) {
             $flag = '<img class="i18nl10n_flag"'
@@ -318,10 +316,10 @@ class tl_page_i18nl10n extends tl_page
             $newLanguages .= '</ul>';
 
             $GLOBALS['TL_DCA']['tl_page']['list']['sorting']['breadcrumb'] .=
-                '<form method="post" action="contao/main.php?do=i18nl10n">'
+                '<form method="post" action="contao/main.php?do=' . $this->Input->get('do') . '">'
                 . '<div class="i18nl10n_page_message">' . $message . $newLanguages
                 . '<div class="tl_submit_container">'
-                . '<a href="contao/main.php?do=i18nl10n">'
+                . '<a href="contao/main.php?do=' . $this->Input->get('do') . '">'
                 . utf8_ucfirst($GLOBALS['TL_LANG']['MSC']['no'])
                 . '</a>'
                 . '<input type="submit" value="' . utf8_ucfirst($GLOBALS['TL_LANG']['MSC']['yes']) . '" class="tl_submit" name="localize_all_" />'
@@ -339,7 +337,7 @@ class tl_page_i18nl10n extends tl_page
                     (
                         pid,sorting,tstamp,language,title,type,
                         pageTitle,description,cssClass,alias,
-                        published,start,stop,dateFormat,timeFormat,datimFormat
+                        l10n_published,start,stop,dateFormat,timeFormat,datimFormat
                     )
                   SELECT
                     p.id AS pid, p.sorting, p.tstamp, '$lang' AS language,
@@ -367,7 +365,7 @@ class tl_page_i18nl10n extends tl_page
                     ->execute();
             }
         }
-    }
+    }*/
 
 
     /**

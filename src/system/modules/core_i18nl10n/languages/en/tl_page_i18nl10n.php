@@ -88,20 +88,20 @@ $GLOBALS['TL_LANG']['tl_page_i18nl10n']['show']   = array
     'meta-fields'
 );
 
-$GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all']   = array
+/*$GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all']   = array
 (
     'L10N for аll',
     'Localize all untranslated pages to available languages'
-);
+);*/
 
 
 /**
  * Messages
  */
-$GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_no_languages'] =
+/*$GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_no_languages'] =
     'No alternative languages have been defined yet. Please do so on the '
     . '<a href="%s">settings</a> page.';
 
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_localize_all'] =
     'For all untranslated pages in <span style="white-space:nowrap">[%s]</span> '
-    . 'I will create localizations. Are you sure you want to create the following localizations for all unlocalized pages?';
+    . 'I will create localizations. Are you sure you want to create the following localizations for all unlocalized pages?';*/

@@ -74,7 +74,7 @@ class I18nl10nFrontend extends \Controller
                 $sql .= "
                     AND (start='' OR start < $time)
                     AND (stop='' OR stop > $time)
-                    AND published=1
+                    AND published = 1
                 ";
             }
 
@@ -134,7 +134,7 @@ class I18nl10nFrontend extends \Controller
                 } //end foreach($arrLocalizedPages as $row)
             }
             else {
-                if($item['i18nl10n_published'] == '') continue;
+                if($item['l10n_published'] == '') continue;
                 array_push($i18n_items,$item);
             }
         } // end foreach($items as $item)

@@ -56,13 +56,13 @@
     margin-left: 5px;
 }
 
-.header_localize_all {
+.header_l10n_localize_all {
     background: url("../img/localize_all.png") no-repeat scroll left center transparent;
     padding: 2px 0 3px 20px;
     margin-left: 15px;
 }
 
-.header_define_language {
+.header_l10n_define_language {
     background: url("../img/i18nl10n.png") no-repeat scroll left center transparent;
     padding: 2px 0 3px 20px;
     margin-left: 15px;
@@ -119,7 +119,7 @@
     display: inline;
 }
 
-.i18nl10n_header_toggle_functions {
+.header_l10n_toggle {
     background: url("../img/folPlus.gif") no-repeat scroll left center transparent;
     padding: 2px 0 3px 20px;
     margin-left: 15px;

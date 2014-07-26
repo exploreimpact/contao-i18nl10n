@@ -50,4 +50,112 @@ class I18nl10n extends \Controller
         }
         return vsprintf( $format, $data);
     }
+
+    /**
+     * Create localization for all pages
+     */
+    public static function localizeAll($modObj)
+    {
+        if($modObj->Input->get('localize_all') && !$modObj->Input->post('localize_all')) {
+
+            \FB::log('localize all step 1');
+
+            $flag = '<img class="i18nl10n_flag"'
+                . ' src="system/modules/core_i18nl10n/assets/img/flag_icons/'
+                . $GLOBALS['TL_CONFIG']['i18nl10n_default_language']
+                . '.png" />&nbsp;';
+
+            $message = sprintf($GLOBALS['TL_LANG']['tl_page']['msg_localize_all'], $flag . $GLOBALS['TL_LANG']['LNG'][$GLOBALS['TL_CONFIG']['i18nl10n_default_language']]);
+
+            $newLanguages = '<ul class="i18nl10n_page_language_listing">';
+
+            foreach(deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']) as $language) {
+                if($language != $GLOBALS['TL_CONFIG']['i18nl10n_default_language']) {
+                    $newLanguages .= '<li><img class="i18nl10n_flag" src="system/modules/core_i18nl10n/assets/img/flag_icons/' . $language . '.png" /> ' . $GLOBALS['TL_LANG']['LNG'][$language] . '</li>';
+                }
+            }
+
+            $newLanguages .= '</ul>';
+
+            \FB::log($GLOBALS['TL_DCA'][$modObj->Input->get('table')]);
+
+            $GLOBALS['TL_DCA'][$modObj->Input->get('table')]['list']['sorting']['breadcrumb'] .=
+                '<form method="post" action="contao/main.php?do=' . $modObj->Input->get('do') . '">'
+                . '<div class="i18nl10n_page_message">' . $message . $newLanguages
+                . '<div class="tl_submit_container">'
+                . '<a href="contao/main.php?do=' . $modObj->Input->get('do') . '">'
+                . utf8_ucfirst($GLOBALS['TL_LANG']['MSC']['no'])
+                . '</a>'
+                . '<input type="submit" value="' . utf8_ucfirst($GLOBALS['TL_LANG']['MSC']['yes']) . '" class="tl_submit" name="localize_all_" />'
+                . '</div></div>'
+                . '<input type="hidden" name="REQUEST_TOKEN" value="'.REQUEST_TOKEN.'"></form>';
+        }
+        //localise all pages
+        elseif($modObj->Input->post('localize_all_')) {
+
+            \FB::log('localize all step 2');
+
+            $defaultLanguage = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
+            foreach($GLOBALS['i18nl10n_languages'] as $lang) {
+
+                $sql = "
+                  INSERT INTO
+                    tl_page_i18nl10n
+                    (
+                      pid,
+                      sorting,
+                      tstamp,
+                      language,
+                      title,
+                      type,
+                      pageTitle,
+                      description,
+                      cssClass,
+                      alias,
+                      l10n_published,
+                      start,
+                      stop,
+                      dateFormat,
+                      timeFormat,
+                      datimFormat
+                    )
+                  SELECT
+                    p.id AS pid,
+                    p.sorting,
+                    p.tstamp,
+                    '$lang' AS language,
+                    p.title,
+                    p.type,
+                    p.pageTitle,
+                    p.description,
+                    p.cssClass,
+                    p.alias,
+                    p.published,
+                    p.start,
+                    p.stop,
+                    p.dateFormat,
+                    p.timeFormat,
+                    p.datimFormat
+                  FROM
+                    tl_page p
+                  LEFT JOIN
+                    tl_page_i18nl10n i
+                      ON p.id = i.pid
+                      AND i.language='$lang'
+                  WHERE
+                    (
+                      p.language='$defaultLanguage'
+                      OR p.language=''
+                    )
+                    AND p.type !='root'
+                    AND i.pid IS NULL
+                ";
+
+                //TODO:use $objPage->rootLanguage
+                \Database::getInstance()
+                    ->prepare($sql)
+                    ->execute();
+            }
+        }
+    }
 }

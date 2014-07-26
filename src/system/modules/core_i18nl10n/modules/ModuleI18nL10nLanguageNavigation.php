@@ -112,7 +112,7 @@ class ModuleI18nl10nLanguageNavigation extends \Module
         if(!empty($arrTranslations)) {
             $this->loadLanguageFile('languages');
 
-            if($objPage->i18nl10n_published != ''){
+            if($objPage->l10n_published != ''){
                 array_unshift($arrTranslations, array(
                    'id' => $objPage->id,
                    'language' => $GLOBALS['TL_CONFIG']['i18nl10n_default_language'],

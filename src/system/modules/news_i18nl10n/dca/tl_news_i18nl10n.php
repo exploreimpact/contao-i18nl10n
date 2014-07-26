@@ -119,7 +119,7 @@ $GLOBALS['TL_DCA']['tl_news_i18nl10n'] = array
             . '{enclosure_legend:hide},addEnclosure;'
             . '{source_legend:hide},source;'
             . '{publish_legend:hide},start,stop;'
-            . '{i18nl10n_legend},language,i18nl10n_published;'
+            . '{i18nl10n_legend},language,l10n_published;'
     ),
 
     // Subpalettes
@@ -165,7 +165,7 @@ $GLOBALS['TL_DCA']['tl_news_i18nl10n'] = array
         'target'             => $GLOBALS['TL_DCA']['tl_news']['fields']['target'],
         'start'              => $GLOBALS['TL_DCA']['tl_news']['fields']['start'],
         'stop'               => $GLOBALS['TL_DCA']['tl_news']['fields']['stop'],
-        'i18nl10n_published' => $GLOBALS['TL_DCA']['tl_news']['fields']['i18nl10n_published'],
+        'l10n_published' => $GLOBALS['TL_DCA']['tl_news']['fields']['l10n_published'],
         'language'           => array(
             'label'     => &$GLOBALS['TL_LANG']['MSC']['i18nl10n_fields']['language']['label'],
             'filter'    => true,

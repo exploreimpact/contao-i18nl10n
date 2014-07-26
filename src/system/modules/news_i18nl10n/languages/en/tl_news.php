@@ -20,8 +20,23 @@
 /**
  * Buttons
  */
-$GLOBALS['TL_LANG']['tl_news']['i18nl10nToggleTools'] = array
+$GLOBALS['TL_LANG']['tl_news']['toggleL10n'] = array
 (
     'Toggle l10n',
     'Toggle l10n translations and functions'
+);
+
+
+$GLOBALS['TL_LANG']['tl_news']['localize_all'] = array
+(
+    'L10N for аll',
+    'Localize all untranslated news to available languages'
+);
+
+
+
+$GLOBALS['TL_LANG']['tl_news']['define_language'] = array
+(
+    'L10N Languages',
+    'Define languages on settings page'
 );

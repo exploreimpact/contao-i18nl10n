@@ -20,14 +20,38 @@
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_page']['i18nl10n_published'] = array
+$GLOBALS['TL_LANG']['tl_page']['l10n_published'] = array
 (
     'Hide default language',
     'The page is not present in default language only. Page localizations are shown if published.'
 );
 
-$GLOBALS['TL_LANG']['tl_page']['i18nl10nToggleTools'] = array
+$GLOBALS['TL_LANG']['tl_page']['toggleL10n'] = array
 (
-    'Toggle l10n',
-    'Toggle l10n translations and functions'
+    'Toggle L10N',
+    'Toggle L10N translations and functions'
 );
+
+$GLOBALS['TL_LANG']['tl_page']['localize_all'] = array
+(
+    'L10N for аll',
+    'Localize all untranslated pages to available languages'
+);
+
+$GLOBALS['TL_LANG']['tl_page']['define_language'] = array
+(
+    'L10N Languages',
+    'Define languages on settings page'
+);
+
+
+/**
+ * Messages
+ */
+$GLOBALS['TL_LANG']['tl_page']['msg_no_languages'] =
+    'No alternative languages have been defined yet. Please do so on the '
+    . '<a href="%s">settings</a> page.';
+
+$GLOBALS['TL_LANG']['tl_page']['msg_localize_all'] =
+    'For all untranslated pages in <span style="white-space:nowrap">[%s]</span> '
+    . 'I will create localizations. Are you sure you want to create the following localizations for all unlocalized pages?';
