@@ -66,9 +66,9 @@ class ModuleI18nl10nNewsArchive extends \ModuleNews
 		}
 
 		// Show the news reader if an item has been selected
-		if ($this->news_readerModule > 0 && (isset($_GET['items']) || ($GLOBALS['TL_CONFIG']['useAutoItem'] && isset($_GET['auto_item']))))
+		if ($this->i18nl10n_news_readerModule > 0 && (isset($_GET['items']) || ($GLOBALS['TL_CONFIG']['useAutoItem'] && isset($_GET['auto_item']))))
 		{
-			return $this->getFrontendModule($this->news_readerModule, $this->strColumn);
+			return $this->getFrontendModule($this->i18nl10n_news_readerModule, $this->strColumn);
 		}
 
 		// Hide the module if no period has been selected
@@ -230,7 +230,7 @@ class ModuleI18nl10nNewsArchive extends \ModuleNews
             while($objArticles->next()) {
                 $sql = "
                     SELECT
-                      headline,alias,author,subheadline,teaser,addImage,
+                      id,pid,headline,alias,author,subheadline,teaser,addImage,
                       singleSRC,alt,size,imagemargin,imageUrl,fullsize,
                       caption,floating,addEnclosure,enclosure,source,jumpTo,
                       articleId,url,target,language,l10n_published,start,stop

@@ -49,6 +49,7 @@ $GLOBALS['BE_MOD']['content']['news']['tables'][] = 'tl_news_i18nl10n';
  * -------------------------------------------------------------------------
  */
 $GLOBALS['FE_MOD']['i18nl10n']['i18nl10nNewsArchive'] = '\I18nl10n\Modules\ModuleI18nl10nNewsArchive';
+$GLOBALS['FE_MOD']['i18nl10n']['i18nl10nNewsReader'] = '\I18nl10n\Modules\ModuleI18nl10nNewsReader';
 
 
 // add hook for ajax requests

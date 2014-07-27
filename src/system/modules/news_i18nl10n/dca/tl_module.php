@@ -18,9 +18,9 @@
 /**
  * Add palettes to tl_module
  */
-/*$GLOBALS['TL_DCA']['tl_module']['palettes']['i18nl1n_newslist']    = '{title_legend},name,headline,type;{config_legend},news_archives,numberOfItems,news_featured,perPage,skipFirst;{template_legend:hide},news_metaFields,news_template,imgSize;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';
-$GLOBALS['TL_DCA']['tl_module']['palettes']['i18nl1n_newsreader']  = '{title_legend},name,headline,type;{config_legend},news_archives;{template_legend:hide},news_metaFields,news_template,imgSize;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';*/
-$GLOBALS['TL_DCA']['tl_module']['palettes']['i18nl10nNewsArchive'] = '{title_legend},name,headline,type;{config_legend},news_archives,news_jumpToCurrent,news_readerModule,perPage,news_format;{template_legend:hide},news_metaFields,news_template,imgSize;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';
+/*$GLOBALS['TL_DCA']['tl_module']['palettes']['i18nl1n_newslist']    = '{title_legend},name,headline,type;{config_legend},news_archives,numberOfItems,news_featured,perPage,skipFirst;{template_legend:hide},news_metaFields,news_template,imgSize;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';*/
+$GLOBALS['TL_DCA']['tl_module']['palettes']['i18nl10nNewsReader']  = '{title_legend},name,headline,type;{config_legend},news_archives;{template_legend:hide},news_metaFields,news_template,imgSize;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';
+$GLOBALS['TL_DCA']['tl_module']['palettes']['i18nl10nNewsArchive'] = '{title_legend},name,headline,type;{config_legend},news_archives,news_jumpToCurrent,i18nl10n_news_readerModule,perPage,news_format;{template_legend:hide},news_metaFields,news_template,imgSize;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';
 /*$GLOBALS['TL_DCA']['tl_module']['palettes']['i18nl1n_newsmenu']    = '{title_legend},name,headline,type;{config_legend},news_archives,news_showQuantity,news_format,news_startDay,news_order;{redirect_legend},jumpTo;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';*/
 
 
@@ -58,20 +58,20 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['news_jumpToCurrent'] = array
 	'reference'               => &$GLOBALS['TL_LANG']['tl_module'],
 	'eval'                    => array('tl_class'=>'w50'),
 	'sql'                     => "varchar(16) NOT NULL default ''"
-);
+);*/
 
-$GLOBALS['TL_DCA']['tl_module']['fields']['news_readerModule'] = array
+$GLOBALS['TL_DCA']['tl_module']['fields']['i18nl10n_news_readerModule'] = array
 (
 	'label'                   => &$GLOBALS['TL_LANG']['tl_module']['news_readerModule'],
 	'exclude'                 => true,
 	'inputType'               => 'select',
-	'options_callback'        => array('tl_module_news', 'getReaderModules'),
+	'options_callback'        => array('tl_module_news_l10n', 'getReaderModules'),
 	'reference'               => &$GLOBALS['TL_LANG']['tl_module'],
 	'eval'                    => array('includeBlankOption'=>true, 'tl_class'=>'w50'),
 	'sql'                     => "int(10) unsigned NOT NULL default '0'"
 );
 
-$GLOBALS['TL_DCA']['tl_module']['fields']['news_metaFields'] = array
+/*$GLOBALS['TL_DCA']['tl_module']['fields']['news_metaFields'] = array
 (
 	'label'                   => &$GLOBALS['TL_LANG']['tl_module']['news_metaFields'],
 	'default'                 => array('date', 'author'),
@@ -153,7 +153,7 @@ if (in_array('comments', ModuleLoader::getActive()))
 
 
 /**
- * Class tl_module_news
+ * Class tl_module_news_l10n
  *
  * Provide miscellaneous methods that are used by the data configuration array.
  * @copyright  Leo Feyer 2005-2014
@@ -177,7 +177,7 @@ class tl_module_news_l10n extends Backend
 	 * Get all news archives and return them as array
 	 * @return array
 	 */
-	public function getNewsArchives()
+	/*public function getNewsArchives()
 	{
 		if (!$this->User->isAdmin && !is_array($this->User->news))
 		{
@@ -196,7 +196,7 @@ class tl_module_news_l10n extends Backend
 		}
 
 		return $arrArchives;
-	}
+	}*/
 
 
 	/**
@@ -206,7 +206,7 @@ class tl_module_news_l10n extends Backend
 	public function getReaderModules()
 	{
 		$arrModules = array();
-		$objModules = $this->Database->execute("SELECT m.id, m.name, t.name AS theme FROM tl_module m LEFT JOIN tl_theme t ON m.pid=t.id WHERE m.type='newsreader' ORDER BY t.name, m.name");
+		$objModules = $this->Database->execute("SELECT m.id, m.name, t.name AS theme FROM tl_module m LEFT JOIN tl_theme t ON m.pid=t.id WHERE m.type='i18nl10nNewsReader' ORDER BY t.name, m.name");
 
 		while ($objModules->next())
 		{
@@ -221,7 +221,7 @@ class tl_module_news_l10n extends Backend
 	 * Hide the start day drop-down if not applicable
 	 * @return string
 	 */
-	public function hideStartDay()
+	/*public function hideStartDay()
 	{
 		return '
   <script>
@@ -243,15 +243,15 @@ class tl_module_news_l10n extends Backend
       }
     });
   </script>';
-	}
+	}*/
 
 
 	/**
 	 * Return all news templates as array
 	 * @return array
 	 */
-	public function getNewsTemplates()
+	/*public function getNewsTemplates()
 	{
 		return $this->getTemplateGroup('news_');
-	}
+	}*/
 }
