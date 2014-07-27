@@ -109,6 +109,9 @@ class PageI18nl10nRegular extends \PageRegular
      */
     private function fixupCurrentLanguage()
     {
+
+        // TODO: Keep language if fallback
+
         // if language is added to url, get it from there
         if ($GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl'])
         {

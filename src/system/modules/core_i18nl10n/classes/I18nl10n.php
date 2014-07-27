@@ -100,8 +100,6 @@ class I18nl10n extends \Controller
         //localise all pages
         elseif(\Input::post('localize_all_')) {
 
-            \FB::log('localize all step 2');
-
             $defaultLanguage = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
             foreach($GLOBALS['i18nl10n_languages'] as $lang) {
 

@@ -78,7 +78,7 @@ array_insert(
  * FRONT END MODULES
  * -------------------------------------------------------------------------
  */
-$GLOBALS['FE_MOD']['navigationMenu']['i18nl10nLanguageNavigation'] = '\I18nl10n\Modules\ModuleI18nl10nLanguageNavigation';
+$GLOBALS['FE_MOD']['i18nl10n']['i18nl10nLanguageNavigation'] = '\I18nl10n\Modules\ModuleI18nl10nLanguageNavigation';
 //$GLOBALS['FE_MOD']['navigationMenu']['breadcrumb']  = 'ModuleI18nl10nBreadcrumb';
 
 
