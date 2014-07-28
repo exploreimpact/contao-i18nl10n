@@ -31,7 +31,7 @@ namespace Verstaerker\I18nl10n;
 if (TL_MODE == 'BE')
 {
     // CSS files
-    $strCss = 'system/modules/core_i18nl10n/assets/css/style.css';
+    $strCss = 'system/modules/i18nl10n/assets/css/style.css';
 
     if (is_array($GLOBALS['TL_CSS']))
     {
@@ -43,7 +43,7 @@ if (TL_MODE == 'BE')
     }
 
     // JS files
-    $strJs = 'system/modules/core_i18nl10n/assets/js/I18nl10n.js';
+    $strJs = 'system/modules/i18nl10n/assets/js/I18nl10n.js';
 
     if (is_array($GLOBALS['TL_JAVASCRIPT']))
     {
@@ -64,10 +64,10 @@ array_insert(
     array_search("page", array_keys($GLOBALS['BE_MOD']['design'])) + 1,
     array
     (
-        'core_i18nl10n' => array
+        'i18nl10n' => array
         (
             'tables' => array('tl_page_i18nl10n'),
-            'icon'   => 'system/modules/core_i18nl10n/assets/img/i18nl10n.png'
+            'icon'   => 'system/modules/i18nl10n/assets/img/i18nl10n.png'
         )
     )
 );

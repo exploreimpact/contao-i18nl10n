@@ -70,7 +70,7 @@ class I18nl10n extends \Controller
 
         if(\Input::get('localize_all') && !\Input::post('localize_all')) {
             $flag = '<img class="i18nl10n_flag"'
-                . ' src="system/modules/core_i18nl10n/assets/img/flag_icons/'
+                . ' src="system/modules/i18nl10n/assets/img/flag_icons/'
                 . $GLOBALS['TL_CONFIG']['i18nl10n_default_language']
                 . '.png" />&nbsp;';
 
@@ -80,7 +80,7 @@ class I18nl10n extends \Controller
 
             foreach(deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']) as $language) {
                 if($language != $GLOBALS['TL_CONFIG']['i18nl10n_default_language']) {
-                    $newLanguages .= '<li><img class="i18nl10n_flag" src="system/modules/core_i18nl10n/assets/img/flag_icons/' . $language . '.png" /> ' . $GLOBALS['TL_LANG']['LNG'][$language] . '</li>';
+                    $newLanguages .= '<li><img class="i18nl10n_flag" src="system/modules/i18nl10n/assets/img/flag_icons/' . $language . '.png" /> ' . $GLOBALS['TL_LANG']['LNG'][$language] . '</li>';
                 }
             }
 

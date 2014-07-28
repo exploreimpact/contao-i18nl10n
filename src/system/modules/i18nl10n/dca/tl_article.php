@@ -57,10 +57,10 @@ class tl_article_l10n extends tl_article
             foreach($items as $lang) {
                 $count = $lang['items'];
                 $title = $GLOBALS['TL_LANG']['LNG'][$lang['language']] . ": $count " . $GLOBALS['TL_LANG']['tl_article']['elements'];
-                $langIcon = 'system/modules/core_i18nl10n/assets/img/i18nl10n.png';
+                $langIcon = 'system/modules/i18nl10n/assets/img/i18nl10n.png';
 
                 if($lang['language']) {
-                    $langIcon = 'system/modules/core_i18nl10n/assets/img/flag_icons/' . $lang['language'] . '.png';
+                    $langIcon = 'system/modules/i18nl10n/assets/img/flag_icons/' . $lang['language'] . '.png';
                 }
 
                 $label .= '<img class="i18nl10n_article_flag" title="' . $title . '" src="' . $langIcon . '" />';

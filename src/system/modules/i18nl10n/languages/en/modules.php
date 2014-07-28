@@ -19,7 +19,7 @@
 /**
  * Back end modules
  */
-$GLOBALS['TL_LANG']['MOD']['core_i18nl10n'] = array
+$GLOBALS['TL_LANG']['MOD']['i18nl10n'] = array
 (
     'Multilingual pages',
     'Create a one-pagetree multi-language site by adding multiple languages to pages and localizing content elements.'

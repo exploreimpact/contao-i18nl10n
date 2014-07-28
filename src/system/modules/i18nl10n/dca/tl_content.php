@@ -58,9 +58,9 @@ class tl_content_l10n extends tl_content {
     //return of parent::addCteType seems more ...elegant?!?!
     public function addCteType($arrRow) {
         $key = $arrRow['invisible'] ? 'unpublished' : 'published';
-        $langIcon = 'system/modules/core_i18nl10n/assets/img/i18nl10n.png';
+        $langIcon = 'system/modules/i18nl10n/assets/img/i18nl10n.png';
         if($arrRow['language']) {
-            $langIcon = 'system/modules/core_i18nl10n/assets/img/flag_icons/' . $arrRow['language'] . '.png';
+            $langIcon = 'system/modules/i18nl10n/assets/img/flag_icons/' . $arrRow['language'] . '.png';
         }
 
         /*

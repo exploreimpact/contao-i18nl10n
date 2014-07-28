@@ -160,7 +160,7 @@ class ModuleI18nl10nLanguageNavigation extends \Module
 
         // add stylesheets
         if($this->i18nl10nLangStyle != 'disable') {
-            $assetsUrl = 'system/modules/core_i18nl10n/assets/';
+            $assetsUrl = 'system/modules/i18nl10n/assets/';
 
             // global style
             $GLOBALS['TL_CSS'][] = $assetsUrl . 'css/i18nl10n_lang.css';
