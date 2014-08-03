@@ -19,19 +19,27 @@
 
 namespace Verstaerker\I18nl10n\Pages;
 
+
 /**
  * Class I18nPageRegular
  *
- * @copyright  Krasimir Berov 2010-2013
- * @author     Krasimir Berov
- * @package    Controller
+ * @copyright   Verstärker, Patric Eberle 2014
+ * @copyright   Krasimir Berov 2010-2013
+ * @author      Patric Eberle <line-in@derverstaerker.ch>
+ * @author      Krasimir Berov
+ * @package     i18nl10n
  */
 class PageI18nl10nRegular extends \PageRegular
 {
-    //override_function
+    /**
+     * Override TL_PTY.regular
+     *
+     * @param $objPage
+     * @param bool $blnCheckRequest
+     */
     function generate($objPage, $blnCheckRequest = false)
     {
-        $this->fixupCurrentLanguage();
+        self::fixupCurrentLanguage();
 
         if ($GLOBALS['TL_LANGUAGE'] == $GLOBALS['TL_CONFIG']['i18nl10n_default_language'])
         {
@@ -47,7 +55,7 @@ class PageI18nl10nRegular extends \PageRegular
                 $this->log($message, __METHOD__, TL_ERROR);
                 die($message);
             }
-            return parent::generate($objPage);
+            parent::generate($objPage);
         }
 
         //get language specific page properties
@@ -94,7 +102,7 @@ class PageI18nl10nRegular extends \PageRegular
             }
         }
 
-        return parent::generate($objPage);
+        parent::generate($objPage);
     }
 
 
@@ -146,6 +154,7 @@ class PageI18nl10nRegular extends \PageRegular
         {
             $GLOBALS['TL_LANGUAGE'] = $_SESSION['TL_LANGUAGE'];
         }
+
     }
 
 

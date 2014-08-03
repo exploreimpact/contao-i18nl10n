@@ -42,9 +42,15 @@
     color: #d00;
 }
 
-.i18nl10n_flag {
+.i18nl10n_flag,
+.tree_view img.i18nl10n_flag {
     display: inline-block;
     vertical-align: middle;
+}
+
+.i18nl10n_page {
+    color:#b3b3b3;
+    padding-left:3px;
 }
 
 .i18nl10n_page_language_listing {

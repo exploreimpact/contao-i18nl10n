@@ -77,12 +77,15 @@ array_insert(
 
 class tl_module_l10n extends Backend
 {
+
     /**
      * Return all navigation templates as array
-     * @return array
+     *
+     * @returns array
      */
     public function getLanguageTemplates()
     {
         return $this->getTemplateGroup('lang_');
     }
+
 }

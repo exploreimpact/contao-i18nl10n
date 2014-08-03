@@ -18,20 +18,23 @@
 
 namespace Verstaerker\I18nl10n\Modules;
 
+
 /**
- * ModuleI18nl10nLanguageNavigation
- *
  * Generates a languages menu.
  * The site visitor is able to switch between available languages.
  *
  * @copyright  Verstärker, Patric Eberle 2014; Krasimir Berov 2010-2013
  * @author     Patric Eberle <line-in@derverstaerker.ch>; Krasimir Berov
- * @package    MultiLanguagePage
+ * @package    i18nl19n
+ *
+ * Class ModuleI18nl10nLanguageNavigation
+ * @package Verstaerker\I18nl10n\Modules
  */
 class ModuleI18nl10nLanguageNavigation extends \Module
 {
     /**
-     * Template
+     * Default template
+     *
      * @var string
      */
     protected $strTemplate = 'mod_i18nl10n_nav';
@@ -39,6 +42,7 @@ class ModuleI18nl10nLanguageNavigation extends \Module
 
     /**
      * Return a wildcard in the back end
+     *
      * @return string
      */
     public function generate()
@@ -175,6 +179,6 @@ class ModuleI18nl10nLanguageNavigation extends \Module
             }
         }
 
-        $this->Template->items = !empty($items) ? $objTemplate->parse() : '';
+        $this->Template->items = !empty($items) && isset($objTemplate) ? $objTemplate->parse() : '';
     }
 }

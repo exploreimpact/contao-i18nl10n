@@ -19,6 +19,7 @@
 // load language translations
 $this->loadLanguageFile('languages');
 
+
 /**
  * Table tl_page
  */
@@ -41,6 +42,7 @@ $GLOBALS['TL_DCA']['tl_page']['config']['onsubmit_callback'][] = array
     'generatePageL10n'
 );
 
+// splice in l10n_published field into palettes
 foreach($GLOBALS['TL_DCA']['tl_page']['palettes'] as $k => $v){
     $GLOBALS['TL_DCA']['tl_page']['palettes'][$k] = str_replace('published,', 'published,l10n_published,', $v);
 }
@@ -67,16 +69,25 @@ class tl_page_l10n extends tl_page
     public function editL10n($row, $href, $label, $title, $icon)
     {
         //TODO: think about a new page type: regular_localized
-        $title = sprintf($GLOBALS['TL_LANG']['MSC']['editL10n'],"\"{$row['title']}\"");
-        $buttonURL = $this->addToUrl($href.'&amp;node='.$row['id']);
-        $button = '<a href="' . $buttonURL . '" title="' . specialchars($title) . '"><img src="system/modules/i18nl10n/assets/img/i18nl10n.png" /></a>';
+        $title = sprintf(
+            $GLOBALS['TL_LANG']['MSC']['editL10n'],
+            "\"{$row['title']}\""
+        );
 
-        return $button;
+        $buttonURL = $this->addToUrl($href.'&amp;node='.$row['id']);
+
+        return sprintf(
+            '<a href="%1$s" title="%2$s"><img src="system/modules/i18nl10n/assets/img/i18nl10n.png"></a>',
+            $buttonURL,
+            specialchars($title)
+        );
     }
 
 
     /**
      * Apply the root page language to new pages
+     *
+     * @returns void
      */
     public function setDefaultLanguage()
     {
@@ -98,22 +109,20 @@ class tl_page_l10n extends tl_page
 
 
     /**
-     * Automatically create a new localization
-     * upon page creation - similar to tl_page::generateArticle()
+     * Automatically create a new localization upon page creation
+     * (triggered by on submit callback)
      *
      */
     public function generatePageL10n(DataContainer $dc) {
-        if(!$dc->activeRecord || $dc->activeRecord->tstamp > 0)
-        {
-            return;
-        }
+
+        if(!$dc->activeRecord || $dc->activeRecord->tstamp > 0) return;
 
         $new_records = $this->Session->get('new_records');
 
         // Not a new page - copy/paste is a great way to share code :P
         if (!$new_records
-            || (is_array($new_records[$dc->table])
-                && !in_array($dc->id, $new_records[$dc->table])))
+            || is_array($new_records[$dc->table])
+                && !in_array($dc->id, $new_records[$dc->table]))
         {
             return;
         }
@@ -142,7 +151,7 @@ class tl_page_l10n extends tl_page
         foreach ($site_langs as $lang) {
             if($lang == $GLOBALS['TL_CONFIG']['i18nl10n_default_language']) continue;
 
-            $fields['sorting'] +=128;
+            $fields['sorting'] += 128;
             $fields['language'] = $lang;
 
             $sql = "

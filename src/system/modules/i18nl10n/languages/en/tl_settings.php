@@ -29,7 +29,7 @@ $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_languages'][1] =
 
 $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_default_language'][0] = 'Default Language';
 $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_default_language'][1] =
-    'This is the language of your root page. If you change it you must visit and submit this form again, so new facts can be reflected.';
+    'This is the language of your root page.';
 
 $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffix'][0] = 'Use language as alias suffix';
 $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffix'][1] =

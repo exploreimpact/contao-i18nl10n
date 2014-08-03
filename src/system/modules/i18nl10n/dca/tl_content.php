@@ -73,20 +73,31 @@ class tl_content_l10n extends tl_content {
             $langIcon = 'system/modules/i18nl10n/assets/img/flag_icons/' . $arrRow['language'] . '.png';
         }
 
-        /*
-         * TODO: This is no readable at all!
-         */
-        $html = '<div class="cte_type ' . $key . '">'
-            . '<img class="i18nl10n_content_flag" src="' . $langIcon . '" /> '
-            . '[' . $GLOBALS['TL_LANG']['LNG'][$arrRow['language']] . '] '
-            . $GLOBALS['TL_LANG']['CTE'][$arrRow['type']][0]
-            . (($arrRow['type'] == 'alias') ? ' ID ' . $arrRow['cteAlias'] : '')
-            . ($arrRow['protected'] ? ' (' . $GLOBALS['TL_LANG']['MSC']['protected'] . ')' : ($arrRow['guests'] ? ' (' . $GLOBALS['TL_LANG']['MSC']['guests'] . ')' : ''))
-            . '</div>'
-            . '<div class="limit_height' . (!$GLOBALS['TL_CONFIG']['doNotCollapse'] ? ' h64' : '') . ' block">'
-            . $this->getContentElement($arrRow['id'])
-            . '</div>' . "\n";
+        $html = '<div class="cte_type %1$s"><img class="i18nl10n_content_flag" src="%2$s" /> [%3$s] %4$s %5$s';
 
-        return $html;
+        if($arrRow['protected'])
+        {
+            $html .= ' (%6$s)';
+        }
+        elseif($arrRow['guests'])
+        {
+            $html .= ' (%7$s)';
+        }
+
+        $html .= '</div><div class="limit_height %8$s block">%9$s</div>' . "\n";
+
+        return sprintf(
+            $html,
+            $key,
+            $langIcon,
+            $GLOBALS['TL_LANG']['LNG'][$arrRow['language']],
+            $GLOBALS['TL_LANG']['CTE'][$arrRow['type']][0],
+            $arrRow['type'] == 'alias' ? 'ID ' . $arrRow['cteAlias'] : '',
+            $GLOBALS['TL_LANG']['MSC']['protected'],
+            $GLOBALS['TL_LANG']['MSC']['guests'],
+            $GLOBALS['TL_CONFIG']['doNotCollapse'] ? '' : 'h64',
+            $this->getContentElement($arrRow['id'])
+        );
     }
+
 }

@@ -1,12 +1,6 @@
-<?php
-?><!-- indexer::stop -->
-<div class="<?php echo $this->class . ($this->i18nl10nLangStyle ? ' i18nl10n_lang_style_' . $this->i18nl10nLangStyle : ''); ?> block"<?php
-echo $this->cssID;
-if ($this->style){echo "style=\"$this->style\"";}
-?>>
-    <?php
-    if ($this->headline){ echo "  <$this->hl>$this->headline</$this->hl>"; }
-    echo $this->items;
-    ?>
+<!-- indexer::stop -->
+<div class="<?php echo $this->i18nl10nLangStyle ? $this->class . ' i18nl10n_lang_style_' . $this->i18nl10nLangStyle : $this->class; ?> block"<?php echo $this->style ? 'style="' . $this->style . '"' : ''; echo $this->cssID; ?>>
+    <?php echo $this->headline ? "<$this->hl>$this->headline</$this->hl>" : ''; ?>
+    <?php echo $this->items; ?>
 </div>
 <!-- indexer::continue -->

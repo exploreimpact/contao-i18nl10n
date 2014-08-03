@@ -24,9 +24,7 @@ $this->loadLanguageFile('tl_page');
 $this->loadDataContainer('tl_page');
 
 
-/**
- * determine if languages are available to endable/disable editing
- */
+//determine if languages are available to endable/disable editing
 $disableCreate = true;
 $i18nl10n_languages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
 
@@ -34,7 +32,6 @@ if(is_array($i18nl10n_languages) && count($i18nl10n_languages) > 1) {
     $disableCreate = false;
 };
 
-\FB::log('jup');
 
 /**
  * Table tl_page_i18nl10n
@@ -53,7 +50,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         (
             array('tl_page_i18nl10n', 'displayLanguageMessage'),
             array('tl_page', 'addBreadcrumb'),
-            array('tl_page_i18nl10n','localizeAll')
+            array('tl_page_i18nl10n','localizeAllHandler')
         ),
         'sql' => array
         (
@@ -205,9 +202,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
 );
 
 
-/**
- * Splice in localize all in case languages are available
- */
+// Splice in localize all in case languages are available
 if(is_array($i18nl10n_languages) && count($i18nl10n_languages) > 1) {
     $additionalFunctions = array(
         'localize_all' => array
@@ -228,9 +223,6 @@ if(is_array($i18nl10n_languages) && count($i18nl10n_languages) > 1) {
 };
 
 
-/**
- * TODO: Merge this with above definition
- */
 // remove default language
 foreach($i18nl10n_languages as $k => $v) {
     if($v == $GLOBALS['TL_CONFIG']['i18nl10n_default_language']) {
@@ -242,9 +234,7 @@ foreach($i18nl10n_languages as $k => $v) {
 $GLOBALS['i18nl10n_languages'] = $i18nl10n_languages;
 
 
-/**
- * Merge in languages
- */
+// merge language selection into tl_page_i18nl10n fields
 $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['language'] = array_merge(
     $GLOBALS['TL_DCA']['tl_page']['fields']['language'],
     array(
@@ -268,17 +258,27 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['language'] = array_merge(
  * Class tl_page_i18nl10n
  *
  * Provide miscellaneous methods that are used by the data configuration array.
- * @copyright  Krasimir Berov 2010-2011
- * @author     Krasimir Berov <http://i-can.eu>
- * @package    MultiLanguagePage
- * @license    LGPLv3
+ * @copyright   Verstärker, Patric Eberle 2014
+ * @copyright   Krasimir Berov 2010-2011
+ * @author      Patric Eberle <line-in@derverstaerker.ch>
+ * @author      Krasimir Berov <http://i-can.eu>
+ * @package     i18nl10n
+ * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
 class tl_page_i18nl10n extends tl_page
 {
     
     /**
-     * Generate a localization icon
+     * Generate a localization icon for treeview
+     *
+     * @param $row
+     * @param $label
+     * @param DataContainer $dc
+     * @param string $imageAttribute
+     * @param bool $blnReturnImage
+     * @param bool $blnProtected
+     * @return string
      */
     public function addIcon($row, $label, DataContainer $dc=null, $imageAttribute='', $blnReturnImage=false, $blnProtected=false)
     {
@@ -286,55 +286,106 @@ class tl_page_i18nl10n extends tl_page
 
         $src ='system/modules/i18nl10n/assets/img/flag_icons/' . $row['language'] . '.png';
 
-        $label = '<span style="color:#b3b3b3; padding-left:3px;">'
-            . '<img style="vertical-align:middle" src="' . $src . '" /> '
-            . specialchars($row['title']).' ['.$GLOBALS['TL_LANG']['LNG'][$row['language']].']'
-            . '</span>';
+        $label = '<span class="i18nl10n_page"><img class="i18nl10n_flag" src="%1$s"> %2$s [%3$s]</span>';
 
-        return $label;
+        return sprintf(
+            $label,
+            $src,
+            specialchars($row['title']),
+            $GLOBALS['TL_LANG']['LNG'][$row['language']]
+        );
     }
 
 
     /**
-     * Create localization for all pages
+     * Handle 'localize_all' request on onload_callback
+     *
+     * @return void
      */
-    public function localizeAll()
+    public function localizeAllHandler()
     {
-        if($this->Input->get('localize_all') && !$this->Input->post('localize_all')) {
-            $flag = '<img class="i18nl10n_flag"'
-                . ' src="system/modules/i18nl10n/assets/img/flag_icons/'
-                . $GLOBALS['TL_CONFIG']['i18nl10n_default_language']
-                . '.png" />&nbsp;';
 
-            $message = sprintf($GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_localize_all'], $flag . $GLOBALS['TL_LANG']['LNG'][$GLOBALS['TL_CONFIG']['i18nl10n_default_language']]);
-
-            $newLanguages = '<ul class="i18nl10n_page_language_listing">';
-
-            foreach(deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']) as $language) {
-                if($language != $GLOBALS['TL_CONFIG']['i18nl10n_default_language']) {
-                    $newLanguages .= '<li><img class="i18nl10n_flag" src="system/modules/i18nl10n/assets/img/flag_icons/' . $language . '.png" /> ' . $GLOBALS['TL_LANG']['LNG'][$language] . '</li>';
-                }
-            }
-
-            $newLanguages .= '</ul>';
-
-            $GLOBALS['TL_DCA']['tl_page']['list']['sorting']['breadcrumb'] .=
-                '<form method="post" action="contao/main.php?do=' . $this->Input->get('do') . '">'
-                . '<div class="i18nl10n_page_message">' . $message . $newLanguages
-                . '<div class="tl_submit_container">'
-                . '<a href="contao/main.php?do=' . $this->Input->get('do') . '">'
-                . utf8_ucfirst($GLOBALS['TL_LANG']['MSC']['no'])
-                . '</a>'
-                . '<input type="submit" value="' . utf8_ucfirst($GLOBALS['TL_LANG']['MSC']['yes']) . '" class="tl_submit" name="localize_all_" />'
-                . '</div></div>'
-                . '<input type="hidden" name="REQUEST_TOKEN" value="'.REQUEST_TOKEN.'"></form>';
+        // if
+        if($this->Input->get('localize_all') && !$this->Input->post('localize_all'))
+        {
+            self::_localizeAllMessage();
         }
         //localise all pages
         elseif($this->Input->post('localize_all_')) {
-            $defaultLanguage = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
-            foreach($GLOBALS['i18nl10n_languages'] as $lang) {
+            self::_localizeAllAction();
+        }
+    }
 
-                $sql = "
+
+    /**
+     * Show localize all message and form
+     *
+     * @return void
+     */
+    private function _localizeAllMessage() {
+        $flag = '<img class="i18nl10n_flag"'
+            . ' src="system/modules/i18nl10n/assets/img/flag_icons/'
+            . $GLOBALS['TL_CONFIG']['i18nl10n_default_language']
+            . '.png" />&nbsp;';
+
+        $message = sprintf(
+            $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_localize_all'],
+            $flag . $GLOBALS['TL_LANG']['LNG'][$GLOBALS['TL_CONFIG']['i18nl10n_default_language']]
+        );
+
+        $newLanguages = '<ul class="i18nl10n_page_language_listing">';
+
+        foreach(deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']) as $language) {
+            if($language != $GLOBALS['TL_CONFIG']['i18nl10n_default_language']) {
+
+                $html = '<li><img class="i18nl10n_flag" src="system/modules/i18nl10n/assets/img/flag_icons/%1$s.png" /> %2$s</li>';
+
+                $newLanguages .= sprintf(
+                    $html,
+                    $language,
+                    $GLOBALS['TL_LANG']['LNG'][$language]
+                );
+            }
+        }
+
+        $newLanguages .= '</ul>';
+
+        $html =
+            '<form method="post" action="contao/main.php?do=%1$s">
+                <div class="i18nl10n_page_message">
+                    %2$s %3$s
+                    <div class="tl_submit_container">
+                        <a href="contao/main.php?do=%4$s">%5$s</a>
+                        <input type="submit" value="%6$s" class="tl_submit" name="localize_all_" />
+                    </div>
+                </div>
+                <input type="hidden" name="REQUEST_TOKEN" value="%7$s">
+            </form>';
+
+
+        $GLOBALS['TL_DCA']['tl_page']['list']['sorting']['breadcrumb'] .= sprintf(
+            $html,
+            $this->Input->get('do'),
+            $message,
+            $newLanguages,
+            $this->Input->get('do'),
+            utf8_ucfirst($GLOBALS['TL_LANG']['MSC']['no']),
+            utf8_ucfirst($GLOBALS['TL_LANG']['MSC']['yes']),
+            REQUEST_TOKEN
+        );
+    }
+
+
+    /**
+     * Localize all pages
+     *
+     * @return void
+     */
+    private function _localizeAllAction() {
+        $defaultLanguage = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
+        foreach($GLOBALS['i18nl10n_languages'] as $lang) {
+
+            $sql = "
                   INSERT INTO
                     tl_page_i18nl10n
                     (
@@ -343,7 +394,7 @@ class tl_page_i18nl10n extends tl_page
                         l10n_published,start,stop,dateFormat,timeFormat,datimFormat
                     )
                   SELECT
-                    p.id AS pid, p.sorting, p.tstamp, '$lang' AS language,
+                    p.id AS pid, p.sorting, p.tstamp, ? AS language,
                     p.title, p.type, p.pageTitle, p.description,
                     p.cssClass, p.alias, p.published, p.start, p.stop,
                     p.dateFormat, p.timeFormat, p.datimFormat
@@ -352,21 +403,20 @@ class tl_page_i18nl10n extends tl_page
                   LEFT JOIN
                     tl_page_i18nl10n i
                       ON p.id = i.pid
-                      AND i.language='$lang'
+                      AND i.language = ?
                   WHERE
                     (
-                      p.language='$defaultLanguage'
-                      OR p.language=''
+                      p.language = ?
+                      OR p.language = ''
                     )
-                    AND p.type !='root'
+                    AND p.type != 'root'
                     AND i.pid IS NULL
                 ";
 
-                //TODO:use $objPage->rootLanguage
-                \Database::getInstance()
-                    ->prepare($sql)
-                    ->execute();
-            }
+            \Database::getInstance()
+                ->prepare($sql)
+                ->execute($lang, $lang, $defaultLanguage);
+
         }
     }
 
