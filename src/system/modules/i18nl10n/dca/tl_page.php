@@ -62,7 +62,16 @@ $GLOBALS['TL_DCA']['tl_page']['fields']['l10n_published'] = array
 );
 
 
-
+/**
+ * Class tl_page_l10n
+ *
+ * @copyright   Verstärker, Patric Eberle 2014
+ * @copyright   Krasimir Berov 2010-2013
+ * @author      Patric Eberle <line-in@derverstaerker.ch>
+ * @author      Krasimir Berov
+ * @package     tl_page
+ * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
+ */
 class tl_page_l10n extends tl_page
 {
 
