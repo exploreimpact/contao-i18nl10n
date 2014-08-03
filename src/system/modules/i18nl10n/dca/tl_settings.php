@@ -84,8 +84,7 @@ $i18nl10nSettings = array
         'eval'      => array
         (
             'mandatory' => true,
-            'tl_class'  => 'w50',
-            'disabled'  => true
+            'tl_class'  => 'w50'
         )
     ),
     'i18nl10n_alias_suffix'     => array
@@ -202,29 +201,37 @@ class tl_settings_l10n extends Backend
      * @return bool
      */
     function ensureOthersUnchecked($value, DataContainer $dc){
-        if($dc->field == 'i18nl10n_alias_suffix' && $value) {
-            if($GLOBALS['TL_CONFIG']['addLanguageToUrl']
-                || $GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl'])
-            {
+
+        if($value
+            && ($dc->field == 'i18nl10n_alias_suffix'
+                && $GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl'])
+            || ($dc->field == 'i18nl10n_addLanguageToUrl'
+                && $GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix']))
+        {
                 // show error and write to log
-                $errorMessage = $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffixError'];
+                $errorMessage = &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffixError'];
+                $errorMessage = sprintf(
+                    $errorMessage,
+                    $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffix'][0],
+                    $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_addLanguageToUrl'][0]
+                );
                 \Message::addError($errorMessage);
-                \System::log($GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffixlError'], __METHOD__, TL_CONFIGURATION);
+                \System::log($errorMessage, __METHOD__, TL_CONFIGURATION);
 
                 return false;
-            }
-            elseif($dc->field == 'i18nl10n_addLanguageToUrl' && $value)
-            {
-                if($GLOBALS['TL_CONFIG']['addLanguageToUrl']
-                    || $GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix'])
-                {
-                    $errorMessage = $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_addLanguageToUrlError'];
-                    \Message::addError($errorMessage);
-                    \System::log($GLOBALS['TL_LANG']['tl_settings']['i18nl10n_addLanguageToUrlError'], __METHOD__, TL_CONFIGURATION);
-                    return false;
-                }
-            }
         }
+        elseif($GLOBALS['TL_CONFIG']['addLanguageToUrl'])
+        {
+            $errorMessage = &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_contaoAddLanguageToUrlError'];
+            $errorMessage = sprintf(
+                $errorMessage,
+                $GLOBALS['TL_LANG']['tl_settings']['addLanguageToUrl'][0]
+            );
+            \Message::addError($errorMessage);
+            \System::log($errorMessage, __METHOD__, TL_CONFIGURATION);
+            return false;
+        }
+
 
         return $value;
     }

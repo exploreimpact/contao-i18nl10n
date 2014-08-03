@@ -245,7 +245,7 @@ class I18nl10nHooks extends \System
      *
      * TODO: This is a bit of a hack, since the DB request was already made
      * and we just clear all the processed html string data. Is there a
-     * better solution?
+     * better solution? => isVisibleElement
      *
      * @param \ContentModel $objRow
      * @param string $strBuffer
