@@ -100,6 +100,10 @@ class PageI18nl10nRegular extends \PageRegular
                     $objPage->$field = $l10n->$field;
                 }
             }
+        } // else at least replace language, to prevent language switch
+        else
+        {
+            $objPage->language = $GLOBALS['TL_LANGUAGE'];
         }
 
         parent::generate($objPage);

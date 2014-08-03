@@ -309,11 +309,11 @@ class tl_page_i18nl10n extends tl_page
         // if
         if($this->Input->get('localize_all') && !$this->Input->post('localize_all'))
         {
-            self::_localizeAllMessage();
+            self::localizeAllMessage();
         }
         //localise all pages
         elseif($this->Input->post('localize_all_')) {
-            self::_localizeAllAction();
+            self::localizeAllAction();
         }
     }
 
@@ -323,7 +323,7 @@ class tl_page_i18nl10n extends tl_page
      *
      * @return void
      */
-    private function _localizeAllMessage() {
+    private function localizeAllMessage() {
         $flag = '<img class="i18nl10n_flag"'
             . ' src="system/modules/i18nl10n/assets/img/flag_icons/'
             . $GLOBALS['TL_CONFIG']['i18nl10n_default_language']
@@ -382,7 +382,7 @@ class tl_page_i18nl10n extends tl_page
      *
      * @return void
      */
-    private function _localizeAllAction() {
+    private function localizeAllAction() {
         $defaultLanguage = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
         foreach($GLOBALS['i18nl10n_languages'] as $lang) {
 

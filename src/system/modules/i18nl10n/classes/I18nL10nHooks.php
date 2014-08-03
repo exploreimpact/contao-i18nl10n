@@ -23,6 +23,8 @@ namespace Verstaerker\I18nl10n\Classes;
  *
  * Provide Hooks to modify Contao
  * behaviour related to I18N and L10N.
+ *
+ * @package Verstaerker\I18nl10n\Classes
  */
 class I18nl10nHooks extends \System
 {

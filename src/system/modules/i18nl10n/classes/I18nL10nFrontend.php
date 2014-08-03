@@ -42,7 +42,7 @@ class I18nl10nFrontend extends \Controller
      * @param   Array $items The menu items on the current menu level
      * @return  Array $i18n_items
      */
-    public function i18nl10nNavItems(Array $items)
+    public function l10nNavItems(Array $items)
     {
 
         if(empty($items)) return false;
