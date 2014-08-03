@@ -26,12 +26,15 @@ ClassLoader::addNamespaces(array
 ClassLoader::addClasses(array
 (
 	// Classes
-	'Verstaerker\I18nl10n\Classes\I18nl10n'          => 'system/modules/i18nl10n/classes/I18nl10n.php',
-	'Verstaerker\I18nl10n\Classes\I18nl10nFrontend'  => 'system/modules/i18nl10n/classes/I18nl10nFrontend.php',
-	'Verstaerker\I18nl10n\Classes\I18nl10nHooks'     => 'system/modules/i18nl10n/classes/I18nl10nHooks.php',
+	'Verstaerker\I18nl10n\Classes\I18nl10n'                         => 'system/modules/i18nl10n/classes/I18nl10n.php',
+	'Verstaerker\I18nl10n\Classes\I18nl10nFrontend'                 => 'system/modules/i18nl10n/classes/I18nl10nFrontend.php',
+	'Verstaerker\I18nl10n\Classes\I18nl10nHooks'                    => 'system/modules/i18nl10n/classes/I18nl10nHooks.php',
+
+	// Modules
+	'Verstaerker\I18nl10n\Modules\ModuleI18nl10nLanguageNavigation' => 'system/modules/i18nl10n/modules/ModuleI18nl10nLanguageNavigation.php',
 
 	// Pages
-	'Verstaerker\I18nl10n\Pages\PageI18nl10nRegular' => 'system/modules/i18nl10n/pages/PageI18nl10nRegular.php',
+	'Verstaerker\I18nl10n\Pages\PageI18nl10nRegular'                => 'system/modules/i18nl10n/pages/PageI18nl10nRegular.php',
 ));
 
 

@@ -35,14 +35,20 @@ class I18nl10nFrontend extends \Controller
     }
 
 
+    public function l10nNavItems(Array $items) {
+        return self::i18nl10nNavItems($items, true);
+    }
+
+
     /**
      * Replace title and pageTitle with translated equivalents
      * just before display them as menu.
      *
      * @param   Array $items The menu items on the current menu level
+     * @param   Bool $useFallback Keep original item if no translation found
      * @return  Array $i18n_items
      */
-    public function l10nNavItems(Array $items)
+    public function i18nl10nNavItems(Array $items, $useFallback = false)
     {
 
         if(empty($items)) return false;
@@ -55,6 +61,7 @@ class I18nl10nFrontend extends \Controller
 
         $time = time();
         $fields = 'alias,pid,title,pageTitle,description,language';
+        $i18n_items = array();
 
         if($GLOBALS['TL_LANGUAGE'] != $GLOBALS['TL_CONFIG']['i18nl10n_default_language']){
             $sql = "
@@ -80,86 +87,28 @@ class I18nl10nFrontend extends \Controller
                 ->limit(1000)
                 ->execute($GLOBALS['TL_LANGUAGE'])
                 ->fetchAllassoc();
-        }
 
-        $i18n_items = array();
-
-        foreach($items as $item)
-        {
-
-            if($GLOBALS['TL_LANGUAGE'] != $GLOBALS['TL_CONFIG']['i18nl10n_default_language'])
+            foreach($items as $item)
             {
+
+                $foundItem = false;
 
                 foreach($arrLocalizedPages as $row)
                 {
 
                     if($row['pid'] == $item['id'])
                     {
+
+                        $foundItem = true;
+
                         $item['alias'] = $row['alias'] = $row['alias'] ? : $item['alias'];
                         $item['language'] = $row['language'];
 
-                        if($item['type']=='forward')
+                        if($item['type'] == 'forward')
                         {
-
-                            // TODO: Refactor this
-                            if($item['jumpTo'])
-                            {
-                                $sql = "
-                                  SELECT
-                                    *
-                                  FROM
-                                    tl_page_i18nl10n
-                                  WHERE
-                                    pid = ?
-                                    AND language = ?
-                                ";
-
-                                $forward_row = \Database::getInstance()
-                                    ->prepare($sql)
-                                    ->limit(1)
-                                    ->execute($item['jumpTo'],$row['language'])
-                                    ->fetchAssoc();
-                            }
-                            else {
-                                $time = time();
-                                $sql = "
-                                    SELECT
-                                      *
-                                    FROM
-                                      tl_page_i18nl10n
-                                    WHERE
-                                      pid = (
-                                        SELECT
-                                          id
-                                        FROM
-                                          tl_page
-                                        WHERE
-                                          pid = ?
-                                          AND type = 'regular'";
-
-                                if(!BE_USER_LOGGED_IN) {
-                                    $sql .= "
-                                        AND (start='' OR start<$time)
-                                        AND (stop='' OR stop>$time)
-                                        AND published=1";
-                                }
-
-                                $sql .= "
-                                        ORDER BY
-                                            sorting
-                                        LIMIT 0,1
-                                    )
-                                    AND
-                                        language = ?";
-
-                                $forward_row = \Database::getInstance()
-                                    ->prepare($sql)
-                                    ->limit(1)
-                                    ->execute($item['id'],$row['language'])
-                                    ->fetchAssoc();
-                            }
-                            $forward_row['alias'] = $item['alias'] = $forward_row['alias'] ? : $item['alias'];
-                            $item['href'] = $this->generateFrontendUrl($forward_row);
+                            $forwardRow = self::getI18nForward($item, $row['language']);
+                            $forwardRow['alias'] = $item['alias'] = $forwardRow['alias'] ? : $item['alias'];
+                            $item['href'] = $this->generateFrontendUrl($forwardRow);
                         }
                         else
                         {
@@ -177,21 +126,99 @@ class I18nl10nFrontend extends \Controller
 
                         array_push($i18n_items,$item);
 
-                        // decrease iterations for each next items $items[$c]
-//                        $arrLocalizedPages = array_delete($arrLocalizedPages,$d);
-                        break;
                     }
 
                 }
 
+                if($useFallback && !$foundItem) {
+                    array_push($i18n_items, $item);
+                }
+
             }
-            else {
+        }
+        else
+        {
+            foreach($items as $item)
+            {
                 if($item['l10n_published'] == '') continue;
                 array_push($i18n_items,$item);
             }
         }
 
         return $i18n_items;
+    }
+
+
+    /**
+     * Get forward items
+     *
+     * @param array $item
+     * @param string $lang
+     * @return array|false
+     */
+    private function getI18nForward(Array $item, $lang)
+    {
+        if($item['jumpTo'])
+        {
+            $sql = "
+              SELECT
+                *
+              FROM
+                tl_page_i18nl10n
+              WHERE
+                pid = ?
+                AND language = ?
+            ";
+
+            $request = \Database::getInstance()
+                ->prepare($sql)
+                ->limit(1)
+                ->execute($item['jumpTo'],$lang);
+
+            $i18nl = $request->fetchAssoc();
+        }
+        else
+        {
+            $time = time();
+            $sql = "
+                SELECT
+                  *
+                FROM
+                  tl_page_i18nl10n
+                WHERE
+                  pid = (
+                    SELECT
+                      id
+                    FROM
+                      tl_page
+                    WHERE
+                      pid = ?
+                      AND type = 'regular'";
+
+            if(!BE_USER_LOGGED_IN) {
+                $sql .= "
+                    AND (start='' OR start<$time)
+                    AND (stop='' OR stop>$time)
+                    AND published=1";
+            }
+
+            $sql .= "
+                    ORDER BY
+                        sorting
+                    LIMIT 0,1
+                )
+                AND
+                    language = ?";
+
+            $request = \Database::getInstance()
+                ->prepare($sql)
+                ->limit(1)
+                ->execute($item['id'],$lang);
+
+            $i18nl = $request->fetchAssoc();
+        }
+
+        return $i18nl;
     }
 
 }

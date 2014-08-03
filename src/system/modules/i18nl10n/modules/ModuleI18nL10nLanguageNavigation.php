@@ -33,7 +33,7 @@ namespace Verstaerker\I18nl10n\Modules;
 class ModuleI18nl10nLanguageNavigation extends \Module
 {
     /**
-     * Default template
+     * Module wrapper template
      *
      * @var string
      */
