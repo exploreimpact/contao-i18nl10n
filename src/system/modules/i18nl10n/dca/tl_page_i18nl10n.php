@@ -282,9 +282,10 @@ class tl_page_i18nl10n extends tl_page
      */
     public function addIcon($row, $label, DataContainer $dc=null, $imageAttribute='', $blnReturnImage=false, $blnProtected=false)
     {
-        // TODO: Add CSS class, remove style
 
-        $src ='system/modules/i18nl10n/assets/img/flag_icons/' . $row['language'] . '.png';
+        $src ='system/modules/i18nl10n/assets/img/flag_icons/' . $row['language'];
+
+        $src .= $row['l10n_published'] ? '.png' : '_invisible.png';
 
         $label = '<span class="i18nl10n_page"><img class="i18nl10n_flag" src="%1$s"> %2$s [%3$s]</span>';
 
@@ -621,19 +622,20 @@ class tl_page_i18nl10n extends tl_page
             }
         }
 
-        // TODO: Inject protection!! (also on news)
         $sql = "
             UPDATE "
-            . $strTable .
+                . $strTable .
             " SET
                 tstamp=". time() .",
-                l10n_published='" . ($blnPublished ? '' : '1') .
-            "' WHERE id=?";
+                l10n_published = ?
+            WHERE
+                id = ?
+        ";
 
         // Update the database
         $this->Database
             ->prepare($sql)
-            ->execute($intId);
+            ->execute($blnPublished ? '' : '1', $intId);
 
         // create new version
         $objVersions->create();

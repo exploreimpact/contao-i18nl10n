@@ -17,14 +17,18 @@ var I18nl10n =
 
         el.blur();
 
-        var image = $(el).getFirst('img'),
-            publish = (image.src.indexOf('invisible') != -1),
+        var icon = $(el).getFirst('img'),
+            flag = $(el).getParent('li').getElement('.i18nl10n_flag'),
+            publish = (icon.src.indexOf('invisible') != -1),
             div = el.getParent('div');
+
+        console.log('flag',flag);
 
         // Send the request
         if (publish) {
             // set visible
-            image.src = image.src.replace('invisible.gif', 'visible.gif');
+            icon.src = icon.src.replace('invisible.gif', 'visible.gif');
+            flag.src = flag.src.replace(/_invisible\.(gif|png|jpe?g)/, '.$1');
 
             new Request.Contao().post({
                 action: 'toggleL10n',
@@ -35,7 +39,8 @@ var I18nl10n =
             });
         } else {
             // set invisible
-            image.src = image.src.replace('visible.gif', 'invisible.gif');
+            icon.src = icon.src.replace('visible.gif', 'invisible.gif');
+            flag.src = flag.src.replace(/\.(gif|png|jpe?g)/, '_invisible.$1');
 
             new Request.Contao().post({
                 action: 'toggleL10n',
@@ -47,10 +52,6 @@ var I18nl10n =
         }
 
         return false;
-    },
-
-    toggleFunctions: function() {
-        var containers = $$('.i18nl10n_languages');
-        containers.toggleClass('open');
     }
+
 };

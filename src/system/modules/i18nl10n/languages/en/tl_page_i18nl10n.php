@@ -18,12 +18,6 @@
 
 
 /**
- * TODO make those includes more OO and use $this->loadLanguageFile()
- * include_once(TL_ROOT.'/system/modules/backend/languages/en/tl_page.php');
- * /
-
-
-/**
  * Fields
  */
 $GLOBALS['TL_LANG']['tl_page_i18nl10n'][''] = array
