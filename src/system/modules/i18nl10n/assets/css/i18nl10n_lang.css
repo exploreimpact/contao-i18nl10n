@@ -10,13 +10,9 @@
     width: 16px;
     min-height: 12px;
     margin-right: 5px;
-    background: url(../img/i18nl10n.png) no-repeat center;
 }
 
-.i18nl10n_lang_de .i18nl10n_flag {
-    background-image: url(../img/flag_icons/de.png);
-}
-
-.i18nl10n_lang_en .i18nl10n_flag {
-    background-image: url(../img/flag_icons/en.png);
+.i18nl10n_flag img {
+    vertical-align: top;
+    margin-top: 1px;
 }

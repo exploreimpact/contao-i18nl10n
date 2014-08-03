@@ -27,14 +27,16 @@ namespace Verstaerker\I18nl10n\Classes;
 class I18nl10nHooks extends \System
 {
     /**
-     * Generates url for the site according to settings from the backend.
+     * Generates url for the site according to settings from the backend
      *
      * Assumptions:
      * $GLOBALS['TL_CONFIG']['addLanguageToUrl'] == false;
-     * $GLOBALS['TL_CONFIG']['useAutoItem'] == false;
-     * TODO: create our own auto_item?
      *
-     *
+     * @param array $arrRow
+     * @param string $strParams
+     * @param string $strUrl
+     * @return string
+     * @throws \Exception
      */
     public function generateFrontendUrl($arrRow, $strParams, $strUrl)
     {
@@ -53,8 +55,8 @@ class I18nl10nHooks extends \System
         // get script name and prepare for regex
         $environment = $this->Environment->scriptName;
 
-        if($GLOBALS['TL_CONFIG']['websitePath'] &&
-            strpos($environment, $GLOBALS['TL_CONFIG']['websitePath']) == 0)
+        if($GLOBALS['TL_CONFIG']['websitePath']
+            && strpos($environment, $GLOBALS['TL_CONFIG']['websitePath']) == 0)
         {
             $regWebsitePath = preg_quote($GLOBALS['TL_CONFIG']['websitePath']);
             $regex = "@(?<=$regWebsitePath/)(.*)@";
@@ -66,7 +68,6 @@ class I18nl10nHooks extends \System
         // if alias is disabled add language to get param end return
         if ($GLOBALS['TL_CONFIG']['disableAlias'])
         {
-
             $missingValueRegex = '@(.*\?[^&]*&)([^&]*)=(?=$|&)(&.*)?@';
 
             if ($GLOBALS['TL_CONFIG']['useAutoItem'] && preg_match($missingValueRegex, $strUrl) == 1)
@@ -130,6 +131,13 @@ class I18nl10nHooks extends \System
         return $strL10nUrl;
     }
 
+
+    /**
+     * Get page id from url, based on current contao settings
+     *
+     * @param array $arrFragments
+     * @return array
+     */
     public function getPageIdFromUrl(Array $arrFragments)
     {
         global $TL_CONFIG;
@@ -212,10 +220,10 @@ class I18nl10nHooks extends \System
             ";
         }
 
-        $objDatabase = \Database::getInstance();
 
-        $arrAlias = $objDatabase->prepare($sql)
-            ->execute(is_numeric($arrFragments[0] ? $arrFragments[0] : 0), $language, $arrFragments[0], $language)
+        $arrAlias = \Database::getInstance()
+            ->prepare($sql)
+            ->execute(is_numeric($arrFragments[0] ? : 0), $language, $arrFragments[0], $language)
             ->fetchAssoc();
 
         if(is_array($arrAlias) && !empty($arrAlias)) $arrFragments[0] = $arrAlias['alias'];
@@ -231,11 +239,15 @@ class I18nl10nHooks extends \System
 
 
     /**
-     * Filter content elements by language
+     * Filter content elements by language (hook is only called if FE)
      *
-     * @param $objRow \ContentModel
-     * @param $strBuffer String
-     * @param $objElement Object
+     * TODO: This is a bit of a hack, since the DB request was already made
+     * and we just clear all the processed html string data. Is there a
+     * better solution?
+     *
+     * @param \ContentModel $objRow
+     * @param string $strBuffer
+     * @param object $objElement
      * @return string
      */
     public function getContentElement(\ContentModel $objRow, $strBuffer, $objElement) {
@@ -280,9 +292,8 @@ class I18nl10nHooks extends \System
             ";
         }
 
-        $objDatabase = \Database::getInstance();
-
-        $arrL10n = $objDatabase->prepare($sql)
+        $arrL10n = \Database::getInstance()
+            ->prepare($sql)
             ->execute($GLOBALS['TL_LANGUAGE'])
             ->fetchAllassoc();
 

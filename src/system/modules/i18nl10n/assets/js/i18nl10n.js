@@ -13,42 +13,35 @@ var I18nl10n =
      *
      * @returns {boolean}
      */
-    toggleL10n: function (el, id, table) {
+    toggleL10n: function (el, id) {
 
         el.blur();
 
         var image = $(el).getFirst('img'),
-            publish = (image.src.indexOf('invisible') >= 0),
-            div = el.getParent('div'),
-            flag = el.getParent('.i18nl10n_language_item').getElement('.i18nl10n_flag');
-
-        console.log(image,publish,div,flag,table,id);
+            publish = (image.src.indexOf('invisible') != -1),
+            div = el.getParent('div');
 
         // Send the request
         if (publish) {
-            console.info('set visible');
-            
+            // set visible
             image.src = image.src.replace('invisible.gif', 'visible.gif');
-            flag.src = flag.src.replace('_invisible.png', '.png');
-            
+
             new Request.Contao().post({
                 action: 'toggleL10n',
                 id: id, 
                 state: 0, 
-                table: table,
+                table: 'tl_page_i18nl10n',
                 REQUEST_TOKEN: Contao.request_token
             });
         } else {
-            console.info('set invisible');
-
+            // set invisible
             image.src = image.src.replace('visible.gif', 'invisible.gif');
-            flag.src = flag.src.replace('.png', '_invisible.png');
-            
+
             new Request.Contao().post({
                 action: 'toggleL10n',
                 id: id,
                 state: 1,
-                table: table,
+                table: 'tl_page_i18nl10n',
                 REQUEST_TOKEN: Contao.request_token
             });
         }

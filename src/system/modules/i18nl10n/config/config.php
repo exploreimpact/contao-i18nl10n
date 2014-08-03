@@ -20,14 +20,10 @@
 namespace Verstaerker\I18nl10n;
 
 /**
- * -------------------------------------------------------------------------
  * BACK END MODULES
- * -------------------------------------------------------------------------
  */
 
-/**
- * Extend header includes
- */
+// Extend header includes
 if (TL_MODE == 'BE')
 {
     // CSS files
@@ -56,9 +52,7 @@ if (TL_MODE == 'BE')
 }
 
 
-/**
- * Append be module to sidebar
- */
+// Append be module to sidebar
 array_insert(
     $GLOBALS['BE_MOD']['design'],
     array_search("page", array_keys($GLOBALS['BE_MOD']['design'])) + 1,
@@ -74,31 +68,28 @@ array_insert(
 
 
 /**
- * -------------------------------------------------------------------------
  * FRONT END MODULES
- * -------------------------------------------------------------------------
  */
 $GLOBALS['FE_MOD']['i18nl10n']['i18nl10nLanguageNavigation'] = '\I18nl10n\Modules\ModuleI18nl10nLanguageNavigation';
-//$GLOBALS['FE_MOD']['navigationMenu']['breadcrumb']  = 'ModuleI18nl10nBreadcrumb';
 
 
 /**
- * -------------------------------------------------------------------------
  * HOOKS
- * -------------------------------------------------------------------------
  */
 $GLOBALS['TL_HOOKS']['generateFrontendUrl'][] = array('\I18nl10n\Classes\I18nl10nHooks', 'generateFrontendUrl');
 $GLOBALS['TL_HOOKS']['getPageIdFromUrl'][] = array('\I18nl10n\Classes\I18nl10nHooks', 'getPageIdFromUrl');
-$GLOBALS['TL_HOOKS']['getContentElement'][] = array('\I18nl10n\Classes\I18nl10nHooks', 'getContentElement');
 $GLOBALS['TL_HOOKS']['generateBreadcrumb'][] = array('\I18nl10n\Classes\I18nl10nHooks', 'generateBreadcrumb');
 $GLOBALS['TL_HOOKS']['replaceInsertTags'][] = array('\I18nl10n\Pages\PageI18nl10nRegular', 'insertI18nl10nArticle');
-$GLOBALS['TL_HOOKS']['executePostActions'][] = array('tl_page_l10n', 'executePostActions');
+$GLOBALS['TL_HOOKS']['executePostActions'][] = array('tl_page_i18nl10n', 'executePostActions');
+
+// if frontend add getContentElement callback
+if(TL_MODE == 'FE') {
+    $GLOBALS['TL_HOOKS']['getContentElement'][] = array('\I18nl10n\Classes\I18nl10nHooks', 'getContentElement');
+}
 
 
 /**
- * -------------------------------------------------------------------------
  * PAGE TYPES
- * -------------------------------------------------------------------------
  */
 $GLOBALS['TL_PTY']['regular'] =  '\I18nl10n\Pages\PageI18nl10nRegular';
 

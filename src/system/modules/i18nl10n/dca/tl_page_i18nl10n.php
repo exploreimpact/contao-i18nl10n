@@ -34,6 +34,7 @@ if(is_array($i18nl10n_languages) && count($i18nl10n_languages) > 1) {
     $disableCreate = false;
 };
 
+\FB::log('jup');
 
 /**
  * Table tl_page_i18nl10n
@@ -60,7 +61,6 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
             (
                 'id' => 'primary',
                 'pid' => 'index',
-                'language' => 'index',
                 'alias' => 'index'
             )
         )
@@ -71,8 +71,8 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
     (
         'sorting' => array
         (
-            'mode'        => 6,
-            'fields'      => array('language DESC')
+            'mode'        => 6
+            // TODO: Sorting by language is not possible in mode 6?
         ),
 
         'label' => array
@@ -132,11 +132,11 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
                 'attributes' => 'onclick="if(!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['deleteConfirm'] . '\')) return false; Backend.getScrollOffset();"'
             ),
 
-            'toggle' => array
+            'toggle_l10n' => array
             (
                 'label'           => &$GLOBALS['TL_LANG']['tl_page_i18nl10n']['toggle'],
                 'icon'            => 'visible.gif',
-                'attributes'      => 'onclick="Backend.getScrollOffset();return AjaxRequest.toggleVisibility(this,%s)"',
+                'attributes'      => 'onclick="Backend.getScrollOffset();return I18nl10n.toggleL10n(this,%s,\'tl_page_i18nl10n\')"',
                 'button_callback' => array('tl_page_i18nl10n', 'toggleIcon')
             ),
 
@@ -276,11 +276,14 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['language'] = array_merge(
 
 class tl_page_i18nl10n extends tl_page
 {
+    
     /**
      * Generate a localization icon
      */
     public function addIcon($row, $label, DataContainer $dc=null, $imageAttribute='', $blnReturnImage=false, $blnProtected=false)
     {
+        // TODO: Add CSS class, remove style
+
         $src ='system/modules/i18nl10n/assets/img/flag_icons/' . $row['language'] . '.png';
 
         $label = '<span style="color:#b3b3b3; padding-left:3px;">'
@@ -441,7 +444,7 @@ class tl_page_i18nl10n extends tl_page
 
 
     /**
-     * Return the "toggle visibility" button
+     * Return 'toggle visibility' button on view create
      *
      * @param array
      * @param string
@@ -460,14 +463,14 @@ class tl_page_i18nl10n extends tl_page
         }
 
         // Check permissions AFTER checking the tid, so hacking attempts are logged
-        if (!$this->User->isAdmin && !$this->User->hasAccess('tl_page::published', 'alexf'))
+        if (!$this->User->isAdmin && !$this->User->hasAccess('tl_page_i18nl10n::published', 'alexf'))
         {
             return '';
         }
 
         $href .= '&amp;tid='.$row['id'].'&amp;state='.($row['published'] ? '' : 1);
 
-        if (!$row['published'])
+        if (!$row['l10n_published'])
         {
             $icon = 'invisible.gif';
         }
@@ -512,6 +515,98 @@ class tl_page_i18nl10n extends tl_page
             $GLOBALS['TL_DCA']['tl_page']['list']['sorting']['breadcrumb'] .=
                 '<div class="i18nl10n_page_message">' . $message . '</div>';
         };
+    }
+
+
+    public function toggleL10nIcon($row, $href, $label, $title, $icon, $attributes)
+    {
+        $this->import('BackendUser', 'User');
+
+        if (strlen($this->Input->get('tid')))
+        {
+            self::toggleL10n($this->Input->get('tid'), ($this->Input->get('state') == 0), 'tl_page');
+            $this->redirect($this->getReferer());
+        }
+
+        // Check permissions AFTER checking the tid, so hacking attempts are logged
+        if (!$this->User->isAdmin && !$this->User->hasAccess('tl_page::l10n_published', 'alexf'))
+        {
+            return '';
+        }
+
+        $href .= '&amp;id='.$this->Input->get('id').'&amp;tid='.$row['id'].'&amp;state='.$row[''];
+
+        if (!$row['l10n_published'])
+        {
+            $icon = 'invisible.gif';
+        }
+
+        return '<a href="'.$this->addToUrl($href).'" title="'.specialchars($title).'"'.$attributes.'>'.\Image::getHtml($icon, $label).'</a> ';
+    }
+
+
+    public function toggleL10n($intId, $blnPublished)
+    {
+
+        $strTable = 'tl_page_i18nl10n';
+
+        // Check permissions to publish
+        if (!$this->User->isAdmin && !$this->User->hasAccess($strTable . '::l10n_published', 'alexf'))
+        {
+            $this->log('Not enough permissions to show/hide record ID "'.$intId.'"', $strTable . ' toggleVisibility', TL_ERROR);
+            $this->redirect('contao/main.php?act=error');
+        }
+
+        // prepare versions
+        $objVersions = new \Versions($strTable, $intId);
+        $objVersions->initialize();
+
+        // Trigger the save_callback
+        if (is_array($GLOBALS['TL_DCA'][$strTable]['fields']['l10n_published']['save_callback']))
+        {
+            foreach ($GLOBALS['TL_DCA'][$strTable]['fields']['l10n_published']['save_callback'] as $callback)
+            {
+                $this->import($callback[0]);
+                $blnPublished = $this->$callback[0]->$callback[1]($blnPublished, $this);
+            }
+        }
+
+        // TODO: Inject protection!! (also on news)
+        $sql = "
+            UPDATE "
+            . $strTable .
+            " SET
+                tstamp=". time() .",
+                l10n_published='" . ($blnPublished ? '' : '1') .
+            "' WHERE id=?";
+
+        // Update the database
+        $this->Database
+            ->prepare($sql)
+            ->execute($intId);
+
+        // create new version
+        $objVersions->create();
+    }
+
+
+    /**
+     * Execute ajax requests
+     *
+     * @param $strAction
+     * @return bool
+     */
+    public function executePostActions($strAction)
+    {
+        switch($strAction) {
+            case 'toggleL10n':
+                tl_page_i18nl10n::toggleL10n(
+                    \Input::post('id'),
+                    \Input::post('state') == 1,
+                    \Input::post('table')
+                );
+                break;
+        }
     }
 
 }

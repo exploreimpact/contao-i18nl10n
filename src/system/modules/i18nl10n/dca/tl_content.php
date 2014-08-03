@@ -30,35 +30,45 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['language'] = array_merge(
         'filter'    => true,
         'inputType' => 'select',
         'options'   => deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']),
-        'reference'  => &$GLOBALS['TL_LANG']['LNG'],
+        'reference' => &$GLOBALS['TL_LANG']['LNG'],
         'eval'      => array(
-            'mandatory'=>false,
+            'mandatory'          => false,
             'includeBlankOption' => true,
-            'rgxp'=>'alpha',
-            'maxlength'=>2,
-            'nospace'=>true,
-            'tl_class'=>'w50'
+            'rgxp'               => 'alpha',
+            'maxlength'          => 2,
+            'nospace'            => true,
+            'tl_class'           => 'w50'
         )
     )
 );
 
-// add language section to all palettes
-foreach($GLOBALS['TL_DCA']['tl_content']['palettes'] as $k => $v){
-    if( $k == '__selector__' ) continue;
-    $GLOBALS['TL_DCA']['tl_content']['palettes'][$k] = "$v;" . '{l10n_legend:hide},language;';
-}
 
-// define callback to add language icons
-$GLOBALS['TL_DCA']['tl_content']['list']['sorting']['child_record_callback'] =
-    array('tl_content_l10n','addCteType');
+// only insert language extension in article module
+if(\Input::get('do') == 'article') {
+    // add language section to all palettes
+    foreach($GLOBALS['TL_DCA']['tl_content']['palettes'] as $k => $v){
+        if( $k == '__selector__' ) continue;
+        $GLOBALS['TL_DCA']['tl_content']['palettes'][$k] = "$v;" . '{l10n_legend:hide},language;';
+    }
+
+    // define callback to add language icons
+    $GLOBALS['TL_DCA']['tl_content']['list']['sorting']['child_record_callback'] =
+        array('tl_content_l10n','addCteType');
+}
 
 
 class tl_content_l10n extends tl_content {
-    //Hm.. extended but again -> copy/paste/modify... A preg_replace on the
-    //return of parent::addCteType seems more ...elegant?!?!
+
+    /**
+     * Add language icon to content element list entry
+     *
+     * @param $arrRow
+     * @return string
+     */
     public function addCteType($arrRow) {
         $key = $arrRow['invisible'] ? 'unpublished' : 'published';
         $langIcon = 'system/modules/i18nl10n/assets/img/i18nl10n.png';
+
         if($arrRow['language']) {
             $langIcon = 'system/modules/i18nl10n/assets/img/flag_icons/' . $arrRow['language'] . '.png';
         }

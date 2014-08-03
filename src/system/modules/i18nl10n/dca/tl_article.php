@@ -30,8 +30,7 @@ $GLOBALS['TL_DCA']['tl_article']['list']['label']['label_callback'] = array
 class tl_article_l10n extends tl_article
 {
     /**
-     * Add summary of elements by language.
-     * TODO: Make it possible to switch summary off. add widget to tl_settings.
+     * Add summary of elements by language as tooltip.
      */
     public function addIcon($row, $label) {
         $label = parent::addIcon($row, $label);

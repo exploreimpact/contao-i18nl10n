@@ -45,10 +45,7 @@ class I18nl10nFrontend extends \Controller
     public function i18nl10nNavItems(Array $items)
     {
 
-        // TODO: Simplify this code mess!!!
-        if(empty($items)) {
-            return false;
-        }
+        if(empty($items)) return false;
 
         //get item ids
         $item_ids = array();
@@ -86,21 +83,42 @@ class I18nl10nFrontend extends \Controller
         }
 
         $i18n_items = array();
-        foreach($items as $item){
-            if($GLOBALS['TL_LANGUAGE'] !=
-                $GLOBALS['TL_CONFIG']['i18nl10n_default_language']){
-                foreach($arrLocalizedPages as $row) {
-                    if($row['pid']==$item['id']) {
-                        $item['alias'] = $row['alias'] = $row['alias'] ? $row['alias']:$item['alias'];
+
+        foreach($items as $item)
+        {
+
+            if($GLOBALS['TL_LANGUAGE'] != $GLOBALS['TL_CONFIG']['i18nl10n_default_language'])
+            {
+
+                foreach($arrLocalizedPages as $row)
+                {
+
+                    if($row['pid'] == $item['id'])
+                    {
+                        $item['alias'] = $row['alias'] = $row['alias'] ? : $item['alias'];
                         $item['language'] = $row['language'];
 
-                        if($item['type']=='forward'){
-                            if($item['jumpTo']){
-                                $forward_row = \Database::getInstance()->prepare(
-                                    'SELECT * FROM tl_page_i18nl10n WHERE pid=? AND language=?'
-                                )->limit(1)->execute(
-                                        $item['jumpTo'],$row['language']
-                                    )->fetchAssoc();
+                        if($item['type']=='forward')
+                        {
+
+                            // TODO: Refactor this
+                            if($item['jumpTo'])
+                            {
+                                $sql = "
+                                  SELECT
+                                    *
+                                  FROM
+                                    tl_page_i18nl10n
+                                  WHERE
+                                    pid = ?
+                                    AND language = ?
+                                ";
+
+                                $forward_row = \Database::getInstance()
+                                    ->prepare($sql)
+                                    ->limit(1)
+                                    ->execute($item['jumpTo'],$row['language'])
+                                    ->fetchAssoc();
                             }
                             else {
                                 $time = time();
@@ -134,36 +152,47 @@ class I18nl10nFrontend extends \Controller
                                     AND
                                         language = ?";
 
-                                $forward_row = \Database::getInstance()->prepare($sql)
+                                $forward_row = \Database::getInstance()
+                                    ->prepare($sql)
                                     ->limit(1)
-                                    ->execute($item[id],$row['language'])
+                                    ->execute($item['id'],$row['language'])
                                     ->fetchAssoc();
                             }
-                            $forward_row['alias'] = $item['alias'] = $forward_row['alias'] ? $forward_row['alias']:$item['alias'];
+                            $forward_row['alias'] = $item['alias'] = $forward_row['alias'] ? : $item['alias'];
                             $item['href'] = $this->generateFrontendUrl($forward_row);
                         }
-                        else{
+                        else
+                        {
                             $item['href'] = $this->generateFrontendUrl($item);
                         }
+
                         $item['pageTitle'] = specialchars($row['pageTitle'], true);
                         $item['title'] = specialchars($row['title'], true);
                         $item['link'] = $item['title'];
-                        $item['description'] = str_replace(array("\n", "\r"), array(' ' , ''),specialchars($row['description']));
+                        $item['description'] = str_replace(
+                            array("\n", "\r"),
+                            array(' ' , ''),
+                            specialchars($row['description'])
+                        );
 
                         array_push($i18n_items,$item);
-                        //decrease iterations for each next items $items[$c]
-                        $arrLocalizedPages = array_delete($arrLocalizedPages,$d);
+
+                        // decrease iterations for each next items $items[$c]
+//                        $arrLocalizedPages = array_delete($arrLocalizedPages,$d);
                         break;
                     }
-                } //end foreach($arrLocalizedPages as $row)
+
+                }
+
             }
             else {
                 if($item['l10n_published'] == '') continue;
                 array_push($i18n_items,$item);
             }
-        } // end foreach($items as $item)
+        }
+
         return $i18n_items;
-    }//end i18nl10nNavItems
+    }
 
 }
 

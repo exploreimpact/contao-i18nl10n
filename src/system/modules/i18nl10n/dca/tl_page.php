@@ -54,14 +54,16 @@ $GLOBALS['TL_DCA']['tl_page']['fields']['l10n_published'] = array
     'inputType' => 'checkbox',
     'eval'      => array(
         'doNotCopy'=>true,
-        'tl_class'=>'w50'
+        'tl_class'=>'w50 m12'
     ),
     'sql' => "char(1) NOT NULL default '1'"
 );
 
 
 
-class tl_page_l10n extends tl_page {
+class tl_page_l10n extends tl_page
+{
+
     public function editL10n($row, $href, $label, $title, $icon)
     {
         //TODO: think about a new page type: regular_localized
@@ -154,4 +156,5 @@ class tl_page_l10n extends tl_page {
                 ->execute();
         }
     }
+
 }
