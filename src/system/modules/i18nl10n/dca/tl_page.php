@@ -42,12 +42,19 @@ $GLOBALS['TL_DCA']['tl_page']['config']['onsubmit_callback'][] = array
     'generatePageL10n'
 );
 
-// splice in l10n_published field into palettes
-foreach($GLOBALS['TL_DCA']['tl_page']['palettes'] as $k => $v){
-    $GLOBALS['TL_DCA']['tl_page']['palettes'][$k] = str_replace('published,', 'published,l10n_published,', $v);
+
+// only show l10n_published if not a new root page
+if(\Input::get('pid') === NULL || \Input::get('pid') != 0)
+{
+    // splice in l10n_published field into palettes
+    foreach($GLOBALS['TL_DCA']['tl_page']['palettes'] as $k => $v){
+        $GLOBALS['TL_DCA']['tl_page']['palettes'][$k] = str_replace('published,', 'published,l10n_published,', $v);
+    }
+
+    // update field class
+    $GLOBALS['TL_DCA']['tl_page']['fields']['published']['eval']['tl_class'] = 'w50';
 }
 
-$GLOBALS['TL_DCA']['tl_page']['fields']['published']['eval']['tl_class'] = 'w50';
 $GLOBALS['TL_DCA']['tl_page']['fields']['l10n_published'] = array
 (
     'label'     => &$GLOBALS['TL_LANG']['tl_page']['l10n_published'],
@@ -55,10 +62,10 @@ $GLOBALS['TL_DCA']['tl_page']['fields']['l10n_published'] = array
     'exclude'   => true,
     'inputType' => 'checkbox',
     'eval'      => array(
-        'doNotCopy'=>true,
-        'tl_class'=>'w50 m12'
+        'doNotCopy' => true,
+        'tl_class'  => 'w50'
     ),
-    'sql' => "char(1) NOT NULL default '1'"
+    'sql'       => "char(1) NOT NULL default '1'"
 );
 
 

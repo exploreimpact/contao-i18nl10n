@@ -17,8 +17,6 @@
  */
 
 
-namespace Verstaerker\I18nl10n;
-
 /**
  * BACK END MODULES
  */
