@@ -1,12 +1,22 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: atreju
- * Date: 04.08.14
- * Time: 20:45
+ * i18nl10n Contao Module
+ *
+ * The i18nl10n module for Contao allows you to manage multilingual content
+ * on the element level rather than with page trees.
+ *
+ *
+ * PHP version 5
+ * @copyright   Verstärker, Patric Eberle 2014
+ * @author      Patric Eberle <line-in@derverstaerker.ch>
+ * @package     i18nl10n
+ * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
 
+/**
+ * Class I18nl10nRunonceJob
+ */
 class I18nl10nRunonceJob extends \Controller
 {
     public function __construct()
