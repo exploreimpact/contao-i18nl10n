@@ -25,6 +25,10 @@ class I18nl10nRunOnceJob extends \Controller
         $this->import('Database');
     }
 
+
+    /**
+     * If not set yet set default language and available languages
+     */
     public function run()
     {
 
@@ -70,6 +74,16 @@ class I18nl10nRunOnceJob extends \Controller
                     "\$GLOBALS['TL_CONFIG']['i18nl10n_languages']",
                     serialize(array($GLOBALS['TL_CONFIG']['i18nl10n_default_language']))
                 );
+        } // if available languages, check if default needs to be added
+        else {
+            $defaultLanguage = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
+            $availableLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
+
+            if(!in_array($defaultLanguage, $availableLanguages)){
+                $availableLanguages[] = $defaultLanguage;
+
+                $config->update("\$GLOBALS['TL_CONFIG']['i18nl10n_languages']", serialize($availableLanguages));
+            }
         }
 
     }

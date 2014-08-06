@@ -133,7 +133,6 @@ class tl_page_l10n extends tl_page
     /**
      * Automatically create a new localization upon page creation
      * (triggered by on submit callback)
-     *
      */
     public function generatePageL10n(DataContainer $dc) {
 
