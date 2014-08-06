@@ -42,6 +42,12 @@ $GLOBALS['TL_DCA']['tl_page']['config']['onsubmit_callback'][] = array
     'generatePageL10n'
 );
 
+$GLOBALS['TL_DCA']['tl_page']['config']['onsubmit_callback'][] = array
+(
+    'tl_page_l10n',
+    'updateDefaultLanguage'
+);
+
 
 // only show l10n_published if not a new root page
 if(\Input::get('pid') === NULL || \Input::get('pid') != 0)
@@ -156,7 +162,7 @@ class tl_page_l10n extends tl_page
             'pageTitle' => $dc->activeRecord->pageTitle,
             'description' => $dc->activeRecord->description,
             'cssClass' => $dc->activeRecord->cssClass,
-            'published' => $dc->activeRecord->published,
+            'l10n_published' => $dc->activeRecord->published,
             'start' => $dc->activeRecord->start,
             'stop'  => $dc->activeRecord->stop,
             'dateFormat' => $dc->activeRecord->dateFormat,
@@ -179,6 +185,31 @@ class tl_page_l10n extends tl_page
                 ->prepare($sql)
                 ->set($fields)
                 ->execute();
+        }
+    }
+
+
+    /**
+     * Set root page language as default language and update available languages
+     *
+     * @param DataContainer $dc
+     */
+    public function updateDefaultLanguage(DataContainer $dc) {
+
+        if($dc->activeRecord->type == 'root') {
+            $defaultLanguage = $dc->activeRecord->language;
+            $availableLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
+
+            // set root language as default language
+            $config = \Config::getInstance();
+            $config->update("\$GLOBALS['TL_CONFIG']['i18nl10n_default_language']", $defaultLanguage);
+
+            // add language to available languages
+            if(!in_array($defaultLanguage, $availableLanguages)){
+                $availableLanguages[] = $defaultLanguage;
+
+                $config->update("\$GLOBALS['TL_CONFIG']['i18nl10n_languages']", serialize($availableLanguages));
+            }
         }
     }
 

@@ -74,7 +74,7 @@ $i18nl10nSettings = array
     (
         'label'     => &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_default_language'],
         'exclude'   => true,
-        'inputType' => 'select',
+        'inputType' => 'text',
         'options'   => array
         (
             $i18nl10n_default_language => $GLOBALS['TL_LANG']['LNG'][$i18nl10n_default_language]
@@ -82,8 +82,9 @@ $i18nl10nSettings = array
         'default'   => $i18nl10n_default_language,
         'eval'      => array
         (
-            'mandatory' => true,
-            'tl_class'  => 'w50'
+//            'mandatory' => true,
+            'tl_class'  => 'w50',
+            'disabled' => true
         )
     ),
     'i18nl10n_alias_suffix'     => array
@@ -163,17 +164,18 @@ class tl_settings_l10n extends Backend
         $array_language_exists = array();
         $array_languages = deserialize( $languages );
         $default_language_present = false;
-        $i18nl10n_default_language = \Input::post('i18nl10n_default_language');
 
         if(!empty($array_languages))
         {
             foreach($array_languages as $k) {
+                // check if valid language
                 if( array_key_exists($k, $GLOBALS['TL_LANG']['LNG']) )
                 {
                     array_push($array_language_exists,$k);
                 }
 
-                if($k == $i18nl10n_default_language)
+                // check if default language
+                if($k == $GLOBALS['TL_CONFIG']['i18nl10n_default_language'])
                 {
                     $default_language_present = true;
                 }

@@ -32,7 +32,7 @@ $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_languages'] = array
 $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_default_language'] = array
 (
     'Default Language',
-    'This is the language of your root page.'
+    'This is the language of your root page and the default language used by i18nl10n.'
 );
 
 $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffix'] = array
