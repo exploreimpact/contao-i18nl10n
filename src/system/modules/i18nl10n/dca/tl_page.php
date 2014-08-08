@@ -160,6 +160,7 @@ class tl_page_l10n extends tl_page
     public function displayLanguageMessage()
     {
 
+        // only show if treeview
         if (Input::get('act') != '')
         {
             return;
