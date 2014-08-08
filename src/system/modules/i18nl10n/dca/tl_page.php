@@ -135,18 +135,18 @@ class tl_page_l10n extends tl_page
      */
     public function setDefaultLanguage()
     {
-        if ($this->Input->get('act') != 'create')
+        if (\Input::get('act') != 'create')
         {
             return;
         }
 
-        if ($this->Input->get('pid') == 0)
+        if (\Input::get('pid') == 0)
         {
             $GLOBALS['TL_DCA']['tl_page']['fields']['language']['default'] = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
         }
         else
         {
-            $objPage = \PageModel::findWithDetails($this->Input->get('pid'));
+            $objPage = \PageModel::findWithDetails(\Input::get('pid'));
             $GLOBALS['TL_DCA']['tl_page']['fields']['language']['default'] = $objPage->rootLanguage;
         }
     }

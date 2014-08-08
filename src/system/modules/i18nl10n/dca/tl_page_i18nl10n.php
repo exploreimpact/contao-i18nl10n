@@ -310,12 +310,12 @@ class tl_page_i18nl10n extends tl_page
     {
 
         // if
-        if($this->Input->get('localize_all') && !$this->Input->post('localize_all'))
+        if(\Input::get('localize_all') && !\Input::post('localize_all'))
         {
             self::localizeAllMessage();
         }
         //localise all pages
-        elseif($this->Input->post('localize_all_')) {
+        elseif(\Input::post('localize_all_')) {
             self::localizeAllAction();
         }
     }
@@ -520,9 +520,9 @@ class tl_page_i18nl10n extends tl_page
      */
     public function toggleIcon($row, $href, $label, $title, $icon, $attributes)
     {
-        if (strlen($this->Input->get('tid')))
+        if (strlen(\Input::get('tid')))
         {
-            $this->toggleVisibility($this->Input->get('tid'), ($this->Input->get('state') == 1));
+            $this->toggleVisibility(\Input::get('tid'), (\Input::get('state') == 1));
             $this->redirect($this->getReferer());
         }
 
@@ -587,9 +587,9 @@ class tl_page_i18nl10n extends tl_page
     {
         $this->import('BackendUser', 'User');
 
-        if (strlen($this->Input->get('tid')))
+        if (strlen(\Input::get('tid')))
         {
-            self::toggleL10n($this->Input->get('tid'), ($this->Input->get('state') == 0), 'tl_page');
+            self::toggleL10n(\Input::get('tid'), (\Input::get('state') == 0), 'tl_page');
             $this->redirect($this->getReferer());
         }
 
@@ -599,7 +599,7 @@ class tl_page_i18nl10n extends tl_page
             return '';
         }
 
-        $href .= '&amp;id='.$this->Input->get('id').'&amp;tid='.$row['id'].'&amp;state='.$row[''];
+        $href .= '&amp;id='.\Input::get('id').'&amp;tid='.$row['id'].'&amp;state='.$row[''];
 
         if (!$row['l10n_published'])
         {

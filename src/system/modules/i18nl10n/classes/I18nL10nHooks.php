@@ -241,21 +241,19 @@ class I18nl10nHooks extends \System
 
 
     /**
-     * Filter content elements by language (hook is only called if FE)
+     * Only make elements visible, that belong to this or all languages
      *
-     * TODO: This is a bit of a hack, since the DB request was already made
-     * and we just clear all the processed html string data. Is there a
-     * better solution? => isVisibleElement
-     *
-     * @param \ContentModel $objRow
-     * @param string $strBuffer
-     * @param object $objElement
-     * @return string
+     * @param $objElement
+     * @param $blnIsVisible
+     * @return mixed
      */
-    public function getContentElement(\ContentModel $objRow, $strBuffer, $objElement) {
-        $elemLanguage = $objRow->l10n_language;
+    public function isVisibleElement($objElement, $blnIsVisible) {
 
-        return ($elemLanguage == $GLOBALS['TL_LANGUAGE'] || $elemLanguage == '') ? $strBuffer : '';
+        if($objElement->l10n_language) {
+            $blnIsVisible = $objElement->l10n_language == $GLOBALS['TL_LANGUAGE'];
+        }
+
+        return $blnIsVisible;
     }
 
 
