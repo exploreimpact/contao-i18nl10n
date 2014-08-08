@@ -56,6 +56,8 @@ class PageI18nl10nRegular extends \PageRegular
                 die($message);
             }
             parent::generate($objPage);
+
+            return;
         }
 
         //get language specific page properties
@@ -149,8 +151,10 @@ class PageI18nl10nRegular extends \PageRegular
             $selectedLanguage = \Input::get('language');
         }
 
+        $i18nl10nLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
+
         if ($selectedLanguage
-            && in_array($selectedLanguage, deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages'])))
+            && in_array($selectedLanguage, $i18nl10nLanguages))
         {
             $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selectedLanguage;
         }

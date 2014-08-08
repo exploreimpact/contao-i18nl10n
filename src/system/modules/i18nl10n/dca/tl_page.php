@@ -30,22 +30,44 @@ $GLOBALS['TL_DCA']['tl_page']['list']['operations']['page_i18nl10n'] = array
     'button_callback'     => array('tl_page_l10n', 'editL10n')
 );
 
-$GLOBALS['TL_DCA']['tl_page']['config']['onload_callback'][] = array
+$onLoadCallback = array
 (
-    'tl_page_l10n',
-    'setDefaultLanguage'
+    0 => array
+    (
+        'tl_page_l10n',
+        'setDefaultLanguage'
+    ),
+    1 => array
+    (
+        'tl_page_l10n',
+        'displayLanguageMessage'
+    )
 );
 
-$GLOBALS['TL_DCA']['tl_page']['config']['onsubmit_callback'][] = array
-(
-    'tl_page_l10n',
-    'generatePageL10n'
+array_insert(
+    $GLOBALS['TL_DCA']['tl_page']['config']['onload_callback'],
+    count($GLOBALS['TL_DCA']['tl_page']['config']['onload_callback'])-1,
+    $onLoadCallback
 );
 
-$GLOBALS['TL_DCA']['tl_page']['config']['onsubmit_callback'][] = array
+$onSubmitCallback = array
 (
-    'tl_page_l10n',
-    'updateDefaultLanguage'
+    0 => array
+    (
+        'tl_page_l10n',
+        'generatePageL10n'
+    ),
+    1 => array
+    (
+        'tl_page_l10n',
+        'updateDefaultLanguage'
+    )
+);
+
+array_insert(
+    $GLOBALS['TL_DCA']['tl_page']['config']['onsubmit_callback'],
+    count($GLOBALS['TL_DCA']['tl_page']['config']['onsubmit_callback'])-1,
+    $onSubmitCallback
 );
 
 
@@ -131,10 +153,44 @@ class tl_page_l10n extends tl_page
 
 
     /**
+     * Display message when only basic language is available
+     *
+     * @return  void
+     */
+    public function displayLanguageMessage()
+    {
+
+        if (Input::get('act') != '')
+        {
+            return;
+        }
+
+        $i18nl10nLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
+
+        // if no languages or count is smaller 2 (1 = default language)
+        if(!$i18nl10nLanguages || count($i18nl10nLanguages) < 2) {
+
+            $this->loadLanguageFile('tl_page_i18nl10n');
+
+            // TODO: ref= would be nice for link
+            $message = sprintf(
+                $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_no_languages'],
+                '<a class="tl_message_link" href="contao/main.php?do=settings">',
+                '</a>'
+            );
+
+            \Message::addError($message);
+
+        };
+    }
+
+
+    /**
      * Automatically create a new localization upon page creation
      * (triggered by on submit callback)
      */
-    public function generatePageL10n(DataContainer $dc) {
+    public function generatePageL10n(DataContainer $dc)
+    {
 
         if(!$dc->activeRecord || $dc->activeRecord->tstamp > 0) return;
 
@@ -149,7 +205,7 @@ class tl_page_l10n extends tl_page
         }
 
         //now make copies in each language.
-        $site_langs = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
+        $i18nl10nLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
 
         $fields = array (
             'pid'     => $dc->id,
@@ -169,11 +225,11 @@ class tl_page_l10n extends tl_page
             'datimFormat' => $dc->activeRecord->datimFormat
         );
 
-        foreach ($site_langs as $lang) {
-            if($lang == $GLOBALS['TL_CONFIG']['i18nl10n_default_language']) continue;
+        foreach ($i18nl10nLanguages as $language) {
+            if($language == $GLOBALS['TL_CONFIG']['i18nl10n_default_language']) continue;
 
             $fields['sorting'] += 128;
-            $fields['language'] = $lang;
+            $fields['language'] = $language;
 
             $sql = "
               INSERT INTO

@@ -65,3 +65,7 @@
 .tree_view .tl_listing img.i18nl10n_article_flag {
     margin-left: 5px;
 }
+
+.tl_message_link {
+    text-decoration: underline;
+}

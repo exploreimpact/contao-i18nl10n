@@ -26,9 +26,9 @@ $this->loadDataContainer('tl_page');
 
 //determine if languages are available to endable/disable editing
 $disableCreate = true;
-$i18nl10n_languages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
+$i18nl10nLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
 
-if(is_array($i18nl10n_languages) && count($i18nl10n_languages) > 1) {
+if(is_array($i18nl10nLanguages) && count($i18nl10nLanguages) > 1) {
     $disableCreate = false;
 };
 
@@ -206,7 +206,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['l10n_published']['eval']['tl_c
 
 
 // Splice in localize all in case languages are available
-if(is_array($i18nl10n_languages) && count($i18nl10n_languages) > 1) {
+if(!$disableCreate) {
     $additionalFunctions = array(
         'localize_all' => array
         (
@@ -225,17 +225,17 @@ if(is_array($i18nl10n_languages) && count($i18nl10n_languages) > 1) {
     );
 };
 
+$i18nl10nLanguageOptions = array();
 
 // remove default language
-foreach($i18nl10n_languages as $k => $v) {
-    if($v == $GLOBALS['TL_CONFIG']['i18nl10n_default_language']) {
-        $i18nl10n_languages = array_delete($i18nl10n_languages,$k);
-        break;
+if(is_array($i18nl10nLanguages)) {
+    foreach($i18nl10nLanguages as $k => $v) {
+        if($v == $GLOBALS['TL_CONFIG']['i18nl10n_default_language']) {
+            $i18nl10nLanguageOptions = array_delete($i18nl10nLanguages,$k);
+            break;
+        }
     }
 }
-
-$GLOBALS['i18nl10n_languages'] = $i18nl10n_languages;
-
 
 // merge language selection into tl_page_i18nl10n fields
 $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['language'] = array_merge(
@@ -244,7 +244,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['language'] = array_merge(
         'label'     => &$GLOBALS['TL_LANG']['MSC']['i18nl10n_fields']['language']['label'],
         'filter' => true,
         'inputType' => 'select',
-        'options'   => $i18nl10n_languages,
+        'options'   => $i18nl10nLanguageOptions,
         'reference'  => &$GLOBALS['TL_LANG']['LNG'],
         'eval' => array_merge(
                 $GLOBALS['TL_DCA']['tl_page']['fields']['language']['eval'],
@@ -326,6 +326,7 @@ class tl_page_i18nl10n extends tl_page
      *
      * @return void
      */
+    // TODO: Refactor this
     private function localizeAllMessage() {
         $flag = '<img class="i18nl10n_flag"'
             . ' src="system/modules/i18nl10n/assets/img/flag_icons/'
@@ -338,18 +339,19 @@ class tl_page_i18nl10n extends tl_page
         );
 
         $newLanguages = '<ul class="i18nl10n_page_language_listing">';
+        $i18nl10nLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
+        $i18nl10nDefaultLanguage = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
 
-        foreach(deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']) as $language) {
-            if($language != $GLOBALS['TL_CONFIG']['i18nl10n_default_language']) {
+        foreach($i18nl10nLanguages as $language) {
+            if($language == $i18nl10nDefaultLanguage) continue;
 
-                $html = '<li><img class="i18nl10n_flag" src="system/modules/i18nl10n/assets/img/flag_icons/%1$s.png" /> %2$s</li>';
+            $html = '<li><img class="i18nl10n_flag" src="system/modules/i18nl10n/assets/img/flag_icons/%1$s.png" /> %2$s</li>';
 
-                $newLanguages .= sprintf(
-                    $html,
-                    $language,
-                    $GLOBALS['TL_LANG']['LNG'][$language]
-                );
-            }
+            $newLanguages .= sprintf(
+                $html,
+                $language,
+                $GLOBALS['TL_LANG']['LNG'][$language]
+            );
         }
 
         $newLanguages .= '</ul>';
@@ -359,24 +361,24 @@ class tl_page_i18nl10n extends tl_page
                 <div class="i18nl10n_page_message">
                     %2$s %3$s
                     <div class="tl_submit_container">
-                        <a href="contao/main.php?do=%4$s">%5$s</a>
-                        <input type="submit" value="%6$s" class="tl_submit" name="localize_all_" />
+                        <a href="contao/main.php?do=%1$s">%4$s</a>
+                        <input type="submit" value="%5$s" class="tl_submit" name="localize_all_" />
                     </div>
                 </div>
-                <input type="hidden" name="REQUEST_TOKEN" value="%7$s">
+                <input type="hidden" name="REQUEST_TOKEN" value="%6$s">
             </form>';
 
-
-        $GLOBALS['TL_DCA']['tl_page']['list']['sorting']['breadcrumb'] .= sprintf(
+        $rawMessage = sprintf(
             $html,
-            $this->Input->get('do'),
+            \Input::get('do'),
             $message,
             $newLanguages,
-            $this->Input->get('do'),
             utf8_ucfirst($GLOBALS['TL_LANG']['MSC']['no']),
             utf8_ucfirst($GLOBALS['TL_LANG']['MSC']['yes']),
-            REQUEST_TOKEN
-        );
+            REQUEST_TOKEN);
+
+        \Message::addRaw($rawMessage);
+
     }
 
 
@@ -387,9 +389,13 @@ class tl_page_i18nl10n extends tl_page
      */
     private function localizeAllAction() {
         $defaultLanguage = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
-        foreach($GLOBALS['i18nl10n_languages'] as $lang) {
+        $i18nl10nLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
 
-            $sql = "
+        foreach($i18nl10nLanguages as $lang) {
+            if($lang == $defaultLanguage) continue;
+
+
+                $sql = "
                   INSERT INTO
                     tl_page_i18nl10n
                     (
@@ -431,17 +437,21 @@ class tl_page_i18nl10n extends tl_page
      * @return  void
      */
     public function displayLanguageMessage() {
-        if(!is_array($GLOBALS['i18nl10n_languages'])
-            || count($GLOBALS['i18nl10n_languages']) < 1) {
+
+        $i18nl10nLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
+
+        // if no languages or count is smaller 2 (1 = default language)
+        if(!$i18nl10nLanguages || count($i18nl10nLanguages) < 2) {
 
             // TODO: ref= would be nice for link
             $message = sprintf(
                 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_no_languages'],
-                'contao/main.php?do=settings'
+                '<a class="tl_message_link" href="contao/main.php?do=settings">',
+                '</a>'
             );
 
-            $GLOBALS['TL_DCA']['tl_page']['list']['sorting']['breadcrumb'] .=
-                '<div class="i18nl10n_page_message">' . $message . '</div>';
+            \Message::addError($message);
+
         };
     }
 
@@ -561,7 +571,8 @@ class tl_page_i18nl10n extends tl_page
         return '<a href="' . $this->addToUrl($href) . '" title="' . specialchars($title) . '"' . $attributes . '>' . \Image::getHtml($icon, $label) . '</a> ';
     }
 
-    public function displayAddLanguageToUrlMessage() {
+    public function displayAddLanguageToUrlMessage()
+    {
         if($GLOBALS['TL_CONFIG']['addLanguageToUrl']) {
 
             $message = $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_add_language_to_url'];

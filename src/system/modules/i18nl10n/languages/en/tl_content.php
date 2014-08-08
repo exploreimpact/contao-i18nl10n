@@ -20,7 +20,7 @@
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_content']['language'] = &$GLOBALS['TL_LANG']['MSC']['language'];
+$GLOBALS['TL_LANG']['tl_content']['l10n_language'] = &$GLOBALS['TL_LANG']['MSC']['language'];
 
 
 /**

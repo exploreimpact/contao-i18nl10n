@@ -93,8 +93,7 @@ $GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all']   = array
  * Messages
  */
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_no_languages'] =
-    'No alternative languages have been defined yet. Please do so on the '
-    . '<a href="%s">settings</a> page.';
+    'No alternative languages for i18nl10n have been defined yet. Please do so on the %s settings page %s.';
 
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_localize_all'] =
     'For all untranslated pages in <span style="white-space:nowrap">[%s]</span> '

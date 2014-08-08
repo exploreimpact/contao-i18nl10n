@@ -34,6 +34,9 @@ class I18nl10nRunOnceJob extends \Controller
 
         $config = \Config::getInstance();
 
+        $i18nl10nDefaultLanguage = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'] ? : 'en';
+
+
         // if not default try to get from root or use fallback
         if(!$GLOBALS['TL_CONFIG']['i18nl10n_default_language'])
         {
@@ -49,34 +52,32 @@ class I18nl10nRunOnceJob extends \Controller
                   sorting
             ";
 
-            $i18nl10n_default_language = \Database::getInstance()
+            $objRootPage = \Database::getInstance()
                 ->prepare($sql)
                 ->limit(1)
-                ->execute()
-                ->language;
+                ->execute();
 
-            if(!$i18nl10n_default_language) {
-                $i18nl10n_default_language = 'en';
+            if($objRootPage->row()) {
+                $i18nl10nDefaultLanguage = $objRootPage->language;
             }
 
             $config->add
                 (
                     "\$GLOBALS['TL_CONFIG']['i18nl10n_default_language']",
-                    $i18nl10n_default_language
+                    $i18nl10nDefaultLanguage
                 );
         }
-
 
         // if no available languages, set at least default
         if(!$GLOBALS['TL_CONFIG']['i18nl10n_languages']) {
             $config->add
                 (
                     "\$GLOBALS['TL_CONFIG']['i18nl10n_languages']",
-                    serialize(array($GLOBALS['TL_CONFIG']['i18nl10n_default_language']))
+                    serialize(array($i18nl10nDefaultLanguage))
                 );
         } // if available languages, check if default needs to be added
         else {
-            $defaultLanguage = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
+            $defaultLanguage = $i18nl10nDefaultLanguage;
             $availableLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
 
             if(!in_array($defaultLanguage, $availableLanguages)){

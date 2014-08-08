@@ -36,13 +36,13 @@ class tl_article_l10n extends tl_article
         $label = parent::addIcon($row, $label);
         $sql = "
           SELECT
-            COUNT(id) items, language
+            COUNT(id) items, l10n_language
           FROM
             tl_content
           WHERE
             pid =?
           GROUP BY
-            language
+            l10n_language
         ";
 
         // count content elements in different languages and display them
@@ -53,16 +53,16 @@ class tl_article_l10n extends tl_article
 
         // build icon elements
         if(!empty($items)) {
-            foreach($items as $lang) {
-                $count = $lang['items'];
-                $title = $GLOBALS['TL_LANG']['LNG'][$lang['language']] . ": $count " . $GLOBALS['TL_LANG']['tl_article']['elements'];
-                $langIcon = 'system/modules/i18nl10n/assets/img/i18nl10n.png';
+            foreach($items as $l10nItem) {
+                $count = $l10nItem['items'];
+                $title = $GLOBALS['TL_LANG']['LNG'][$l10nItem['l10n_language']] . ": $count " . $GLOBALS['TL_LANG']['tl_article']['elements'];
+                $l10nItemIcon = 'system/modules/i18nl10n/assets/img/i18nl10n.png';
 
-                if($lang['language']) {
-                    $langIcon = 'system/modules/i18nl10n/assets/img/flag_icons/' . $lang['language'] . '.png';
+                if($l10nItem['l10n_language']) {
+                    $l10nItemIcon = 'system/modules/i18nl10n/assets/img/flag_icons/' . $l10nItem['l10n_language'] . '.png';
                 }
 
-                $label .= '<img class="i18nl10n_article_flag" title="' . $title . '" src="' . $langIcon . '" />';
+                $label .= '<img class="i18nl10n_article_flag" title="' . $title . '" src="' . $l10nItemIcon . '" />';
             }
         }
 

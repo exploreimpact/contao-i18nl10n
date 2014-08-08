@@ -23,7 +23,7 @@ $this->loadLanguageFile('tl_content');
 $this->loadDataContainer('tl_page');
 $this->loadDataContainer('tl_content');
 
-$GLOBALS['TL_DCA']['tl_content']['fields']['language'] = array_merge(
+$GLOBALS['TL_DCA']['tl_content']['fields']['l10n_language'] = array_merge(
     $GLOBALS['TL_DCA']['tl_page']['fields']['language'],
     array(
         'label'     => &$GLOBALS['TL_LANG']['MSC']['i18nl10n_fields']['language']['label'],
@@ -48,7 +48,7 @@ if(\Input::get('do') == 'article') {
     // add language section to all palettes
     foreach($GLOBALS['TL_DCA']['tl_content']['palettes'] as $k => $v){
         if( $k == '__selector__' ) continue;
-        $GLOBALS['TL_DCA']['tl_content']['palettes'][$k] = "$v;" . '{l10n_legend:hide},language;';
+        $GLOBALS['TL_DCA']['tl_content']['palettes'][$k] = "$v;" . '{l10n_legend:hide},l10n_language;';
     }
 
     // define callback to add language icons
@@ -69,8 +69,8 @@ class tl_content_l10n extends tl_content {
         $key = $arrRow['invisible'] ? 'unpublished' : 'published';
         $langIcon = 'system/modules/i18nl10n/assets/img/i18nl10n.png';
 
-        if($arrRow['language']) {
-            $langIcon = 'system/modules/i18nl10n/assets/img/flag_icons/' . $arrRow['language'] . '.png';
+        if($arrRow['l10n_language']) {
+            $langIcon = 'system/modules/i18nl10n/assets/img/flag_icons/' . $arrRow['l10n_language'] . '.png';
         }
 
         $html = '<div class="cte_type %1$s"><img class="i18nl10n_content_flag" src="%2$s" /> [%3$s] %4$s %5$s';
@@ -90,7 +90,7 @@ class tl_content_l10n extends tl_content {
             $html,
             $key,
             $langIcon,
-            $GLOBALS['TL_LANG']['LNG'][$arrRow['language']],
+            $GLOBALS['TL_LANG']['LNG'][$arrRow['l10n_language']],
             $GLOBALS['TL_LANG']['CTE'][$arrRow['type']][0],
             $arrRow['type'] == 'alias' ? 'ID ' . $arrRow['cteAlias'] : '',
             $GLOBALS['TL_LANG']['MSC']['protected'],

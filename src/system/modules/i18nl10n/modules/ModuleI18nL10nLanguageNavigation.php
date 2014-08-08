@@ -76,7 +76,7 @@ class ModuleI18nl10nLanguageNavigation extends \Module
         global $objPage;
 
         $time = time();
-        $arrLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
+        $i18nl10nLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
         $sql = "
             SELECT
                 *
@@ -84,7 +84,7 @@ class ModuleI18nl10nLanguageNavigation extends \Module
                 tl_page_i18nl10n
             WHERE
                 pid = ?
-                AND language IN ( '" . implode("', '",$arrLanguages) . "' )
+                AND language IN ( '" . implode("', '",$i18nl10nLanguages) . "' )
         ";
 
         if(!BE_USER_LOGGED_IN) {
@@ -126,9 +126,9 @@ class ModuleI18nl10nLanguageNavigation extends \Module
                 ));
             }
 
-            // keep the order in $arrLanguages and assign to $items
+            // keep the order in $i18nl10nLanguages and assign to $items
             // only if page translation is found in database
-            foreach($arrLanguages as $language) {
+            foreach($i18nl10nLanguages as $language) {
 
                 // check if current language has not to be shown
                 if($language == $GLOBALS['TL_LANGUAGE'] && $this->i18nl10nLangHide == 1) continue;

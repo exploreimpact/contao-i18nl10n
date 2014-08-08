@@ -253,7 +253,7 @@ class I18nl10nHooks extends \System
      * @return string
      */
     public function getContentElement(\ContentModel $objRow, $strBuffer, $objElement) {
-        $elemLanguage = $objRow->language;
+        $elemLanguage = $objRow->l10n_language;
 
         return ($elemLanguage == $GLOBALS['TL_LANGUAGE'] || $elemLanguage == '') ? $strBuffer : '';
     }

@@ -108,7 +108,11 @@ class I18nl10n extends \Controller
         elseif(\Input::post('localize_all_')) {
 
             $defaultLanguage = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
-            foreach($GLOBALS['i18nl10n_languages'] as $lang) {
+            $i18nl10n_languages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
+
+            foreach($i18nl10n_languages as $lang) {
+
+                if($defaultLanguage == $lang) continue;
 
                 $sql = "
                   INSERT INTO

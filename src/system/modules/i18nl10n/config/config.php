@@ -90,7 +90,3 @@ if(TL_MODE == 'FE') {
  * PAGE TYPES
  */
 $GLOBALS['TL_PTY']['regular'] =  '\I18nl10n\Pages\PageI18nl10nRegular';
-
-if(!$GLOBALS['TL_CONFIG']['i18nl10n_languages']){
-    $GLOBALS['TL_CONFIG']['i18nl10n_languages'] = serialize(array('en'));
-}

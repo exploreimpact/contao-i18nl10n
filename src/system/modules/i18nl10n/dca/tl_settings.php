@@ -22,22 +22,7 @@ $this->loadLanguageFile('languages');
 /**
  * Get default language
  */
-$sql = "
-    SELECT
-      language
-    FROM
-      tl_page
-    WHERE
-      type = 'root'
-    ORDER BY
-      sorting
-";
-
-$i18nl10n_default_language = \Database::getInstance()
-    ->prepare($sql)
-    ->limit(1)
-    ->execute()
-    ->language;
+$i18nl10n_default_language = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'] ? : 'en';
 
 
 /**
@@ -75,14 +60,9 @@ $i18nl10nSettings = array
         'label'     => &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_default_language'],
         'exclude'   => true,
         'inputType' => 'text',
-        'options'   => array
-        (
-            $i18nl10n_default_language => $GLOBALS['TL_LANG']['LNG'][$i18nl10n_default_language]
-        ),
         'default'   => $i18nl10n_default_language,
         'eval'      => array
         (
-//            'mandatory' => true,
             'tl_class'  => 'w50',
             'disabled' => true
         )
