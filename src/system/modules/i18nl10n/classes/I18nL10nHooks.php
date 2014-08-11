@@ -249,7 +249,7 @@ class I18nl10nHooks extends \System
      */
     public function isVisibleElement($objElement, $blnIsVisible) {
 
-        if($objElement->l10n_language) {
+        if($blnIsVisible && $objElement->l10n_language) {
             $blnIsVisible = $objElement->l10n_language == $GLOBALS['TL_LANGUAGE'];
         }
 

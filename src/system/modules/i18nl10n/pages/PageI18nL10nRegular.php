@@ -115,7 +115,7 @@ class PageI18nl10nRegular extends \PageRegular
     /**
      * Fix up current language depending on momentary user preference.
      * Strangely $GLOBALS['TL_LANGUAGE'] is switched to the current user language if user is just
-     * authentitcating and has the language property set.
+     * authenticating and has the language property set.
      * See system/libraries/User.php:202
      * We override this behavior and let the user temporarily use the selected by him language.
      * One workaround would be to not let the members have a language property.
@@ -123,8 +123,6 @@ class PageI18nl10nRegular extends \PageRegular
      */
     private function fixupCurrentLanguage()
     {
-
-        // TODO: Keep language if fallback
 
         // if language is added to url, get it from there
         if ($GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl'])
