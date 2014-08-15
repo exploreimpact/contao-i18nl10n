@@ -645,7 +645,7 @@ class tl_page_i18nl10n extends tl_page
         ";
 
         // Update the database
-        $this->Database
+        \Database::getInstance()
             ->prepare($sql)
             ->execute($blnPublished ? '' : '1', $intId);
 
