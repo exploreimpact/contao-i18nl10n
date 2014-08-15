@@ -55,17 +55,8 @@ $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_addLanguageToUrl'] = array
     . '"</em> <em>must</em> be disabled!'
 );
 
-$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alwaysShowL10n'] = array
-(
-    'Show l10n\'s by default',
-    'Always show translation icons and functions for every element in list views'
-);
-
 $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffixError'] =
     'It\'s not possible to use <em>"%s"</em> and <em>"%s"</em> at the same time. Please only select one!';
 
 $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_contaoAddLanguageToUrlError'] =
     'I18nl10n does not support the <em>"%s"</em> feature of Contao. Please us the module alternative instead.';
-
-$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_defLangMissingError'] =
-    'Default language is not present in the list of supported languages. Please add it!';

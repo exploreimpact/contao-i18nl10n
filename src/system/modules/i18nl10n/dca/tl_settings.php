@@ -52,7 +52,6 @@ $i18nl10nSettings = array
         'save_callback' => array
         (
             array('tl_settings_l10n', 'ensureUnique'),
-            array('tl_settings_l10n', 'ensureExists')
         )
     ),
     'i18nl10n_default_language' => array
@@ -129,48 +128,6 @@ class tl_settings_l10n extends Backend
      */
     function ensureUnique($languages, DataContainer $dc) {
         return serialize( array_unique( deserialize( $languages ) ) );
-    }
-
-
-    /**
-     * Ensure a language exists
-     *
-     * @param $languages
-     * @param DataContainer $dc
-     * @return bool|string
-     */
-    function ensureExists($languages, DataContainer $dc) {
-
-        $array_language_exists = array();
-        $array_languages = deserialize( $languages );
-        $default_language_present = false;
-
-        if(!empty($array_languages))
-        {
-            foreach($array_languages as $k) {
-                // check if valid language
-                if( array_key_exists($k, $GLOBALS['TL_LANG']['LNG']) )
-                {
-                    array_push($array_language_exists,$k);
-                }
-
-                // check if default language
-                if($k == $GLOBALS['TL_CONFIG']['i18nl10n_default_language'])
-                {
-                    $default_language_present = true;
-                }
-            }
-        }
-
-        //make sure default language is present
-        if(!$default_language_present){
-            // print error message
-            $errorMessage = $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_defLangMissingError'];
-            \Message::addError($errorMessage);
-
-            return false;
-        }
-        return serialize( $array_language_exists );
     }
 
 
