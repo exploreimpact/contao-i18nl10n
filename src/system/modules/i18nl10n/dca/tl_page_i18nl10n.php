@@ -419,14 +419,12 @@ class tl_page_i18nl10n extends tl_page
                       p.language = ?
                       OR p.language = ''
                     )
-                    AND p.type != 'root'
                     AND i.pid IS NULL
                 ";
 
             \Database::getInstance()
                 ->prepare($sql)
                 ->execute($lang, $lang, $defaultLanguage);
-
         }
     }
 

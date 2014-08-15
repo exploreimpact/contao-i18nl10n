@@ -108,6 +108,19 @@ class PageI18nl10nRegular extends \PageRegular
             $objPage->language = $GLOBALS['TL_LANGUAGE'];
         }
 
+        // update root information
+        $objL10nRootPage = self::getL10nRootPage($objPage);
+
+        if($objL10nRootPage)
+        {
+            $objPage->rootTitle = $objL10nRootPage->title;
+
+            if($objPage->pid == $objPage->rootId) {
+                $objPage->parentTitle = $objL10nRootPage->title;
+                $objPage->parentPageTitle = $objL10nRootPage->pageTitle;
+            }
+        }
+
         parent::generate($objPage);
     }
 
@@ -185,5 +198,42 @@ class PageI18nl10nRegular extends \PageRegular
             . sprintf($GLOBALS['TL_LANG']['MSC']['invalidPage'], $tag[1])
             . '</p>';
         }
+    }
+
+
+    /**
+     * Get localized root page by page object
+     *
+     * @param $objPage
+     * @return \Database\Result|null
+     */
+    public function getL10nRootPage($objPage)
+    {
+        $sql = "
+            SELECT
+              title
+            FROM
+              tl_page_i18nl10n
+            WHERE
+              pid = ?
+              AND language = ?
+        ";
+
+        if(!BE_USER_LOGGED_IN)
+        {
+            $time = time();
+            $sql .= "
+                AND (start = '' OR start < $time)
+                AND (stop = '' OR stop > $time)
+                AND l10n_published = 1
+            ";
+        }
+
+        $objL10nRootPage = \Database::getInstance()
+            ->prepare($sql)
+            ->limit(1)
+            ->execute($objPage->rootId, $GLOBALS['TL_LANGUAGE']);
+
+        return $objL10nRootPage->row() ? $objL10nRootPage : null;
     }
 }
