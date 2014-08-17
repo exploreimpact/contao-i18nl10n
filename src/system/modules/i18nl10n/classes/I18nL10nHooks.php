@@ -49,10 +49,12 @@ class I18nl10nHooks extends \System
         $language = (array_key_exists('robots', $arrRow) ? $GLOBALS['TL_LANGUAGE'] : $arrRow['language']);
 
         $alias = $arrRow['alias'];
+        // regex to remove auto_item and language
+        $regex = '@/auto_item|/language/[A-z]{2}|[\?&]language=[A-z]{2}@';
 
         // remove auto_item and language
-        $strParams = preg_replace('@/auto_item|/language/[A-z]{2}@', '', $strParams);
-        $strUrl = preg_replace('@/auto_item|/language/[A-z]{2}@', '', $strUrl);
+        $strParams = preg_replace($regex, '', $strParams);
+        $strUrl = preg_replace($regex, '', $strUrl);
 
         // get script name and prepare for regex
         $environment = $this->Environment->scriptName;

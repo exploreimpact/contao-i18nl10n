@@ -138,31 +138,39 @@ class PageI18nl10nRegular extends \PageRegular
     {
 
         // if language is added to url, get it from there
-        if ($GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl'])
-        {
+        if ($GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl']
+            && !$GLOBALS['TL_CONFIG']['disableAlias']
+        ) {
             $this->import('Environment');
             $environment = $this->Environment;
-             $basePath = preg_quote($GLOBALS['TL_CONFIG']['rewriteURL'] ? $GLOBALS['TL_CONFIG']['websitePath'] : $environment->scriptName);
+            $basePath = preg_quote($GLOBALS['TL_CONFIG']['rewriteURL'] ? $GLOBALS['TL_CONFIG']['websitePath'] : $environment->scriptName);
 
-             $regex = "@^($basePath/)?([A-z]{2}(?=/)){1}(/.*)@";
+            $regex = "@^($basePath/)?([A-z]{2}(?=/)){1}(/.*)@";
 
-             // only set language if found in url
-             if(preg_match($regex, $environment->requestUri))
-            {
-                 $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = preg_replace($regex, '$2', $environment->requestUri);
+            // only set language if found in url
+            if (preg_match($regex, $environment->requestUri)) {
+                $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = preg_replace($regex, '$2', $environment->requestUri);
             }
 
-             return;
-            }
+            return;
+        }
 
-         $selectedLanguage = \Input::post('language');
+        $selectedLanguage = \Input::post('language');
 
-         // allow GET request for language
-         if(!$selectedLanguage){
+        // allow GET request for language
+        if (!$selectedLanguage) {
             $selectedLanguage = \Input::get('language');
         }
 
         $i18nl10nLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
+
+
+        // if alias is disabled, get language from get param
+        if ($GLOBALS['TL_CONFIG']['disableAlias']) {
+            $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selectedLanguage;
+
+            return;
+        }
 
         if ($selectedLanguage
             && in_array($selectedLanguage, $i18nl10nLanguages))
