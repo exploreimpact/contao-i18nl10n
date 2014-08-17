@@ -74,7 +74,9 @@ class I18nL10nPageRegular extends PageRegular
      */
      private function fixupCurrentLanguage(){
          // if language is added to url, get it from there
-         if($GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl']) {
+         if($GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl']
+             && !$GLOBALS['TL_CONFIG']['disableAlias'])
+         {
              $this->import('Environment');
              $environment = $this->Environment;
              $basePath = preg_quote($GLOBALS['TL_CONFIG']['rewriteURL'] ? $GLOBALS['TL_CONFIG']['websitePath'] : $environment->scriptName);
@@ -95,6 +97,13 @@ class I18nL10nPageRegular extends PageRegular
          // allow GET request for language
          if(!$selectedLanguage){
             $selectedLanguage = $this->Input->get('language');
+         }
+
+         // if alias is disabled, get language from get param
+         if ($GLOBALS['TL_CONFIG']['disableAlias']) {
+             $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selectedLanguage;
+
+             return;
          }
 
          if($selectedLanguage
