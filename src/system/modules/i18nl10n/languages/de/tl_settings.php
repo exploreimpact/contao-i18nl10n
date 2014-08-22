@@ -58,5 +58,5 @@ $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffixError'] =
 $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_contaoAddLanguageToUrlError'] =
     'I18nl10n unterstützt die Contao Einstellung <em>"%s"</em> nicht. Bitte die Modul eigene, gleichnamige Option nutzen.';
 
-$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_defLangMissingError'] =
-    'Die Standardsprache (Fallback) gehört nicht zu den Seitensprachen. Bitte ergänzen!';
+$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_defLangMissingInfo'] =
+    'Die Standardsprache (Fallback) wurde nicht für die Seitensprachen definiert. Der fehlende Wert wurde automatisch hinzugefügt.';

@@ -135,40 +135,37 @@ class tl_settings_l10n extends Backend
     /**
      * Ensure a language exists
      *
-     * @param $languages
+     * @param $strPageLanguages
      * @param DataContainer $dc
-     * @return bool|string
+     * @return string
      */
-    function ensureExists($languages, DataContainer $dc)
+    function ensureExists($strPageLanguages, DataContainer $dc)
     {
 
-        $array_language_exists = array();
-        $array_languages = deserialize($languages);
-        $default_language_present = false;
+        $arrValidLanguages = array();
+        $arrPageLanguages = deserialize($strPageLanguages);
+        $strDefaultLanguage = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
 
-        if (!empty($array_languages)) {
-            foreach ($array_languages as $k) {
-                // check if valid language
-                if (array_key_exists($k, $GLOBALS['TL_LANG']['LNG'])) {
-                    array_push($array_language_exists, $k);
-                }
-
-                // check if default language
-                if ($k == $GLOBALS['TL_CONFIG']['i18nl10n_default_language']) {
-                    $default_language_present = true;
+        // if languages defined, check each one if valid
+        if (!empty($arrPageLanguages)) {
+            foreach ($arrPageLanguages as $language) {
+                // check if valid language and add language
+                if (array_key_exists($language, $GLOBALS['TL_LANG']['LNG'])) {
+                    array_push($arrValidLanguages, $language);
                 }
             }
         }
 
-        //make sure default language is present
-        if (!$default_language_present) {
-            // print error message
-            $errorMessage = $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_defLangMissingError'];
-            \Message::addError($errorMessage);
+        // if default language is missing add it
+        if (!in_array($strDefaultLanguage, $arrPageLanguages)) {
+            array_push($arrValidLanguages, $strDefaultLanguage);
 
-            return false;
+            // show info message
+            $strInfoMessage = $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_defLangMissingInfo'];
+            \Message::addInfo($strInfoMessage);
         }
-        return serialize($array_language_exists);
+
+        return serialize($arrValidLanguages);
     }
 
 

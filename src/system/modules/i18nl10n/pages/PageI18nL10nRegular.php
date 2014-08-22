@@ -43,17 +43,11 @@ class PageI18nl10nRegular extends \PageRegular
 
         if ($GLOBALS['TL_LANGUAGE'] == $GLOBALS['TL_CONFIG']['i18nl10n_default_language'])
         {
+            // if default language is not published, give error
             if ($objPage->l10n_published == '')
             {
-                header('HTTP/1.1 404 Not Found');
-                $message = 'Page "'
-                    . $objPage->alias
-                    . '" is hidden for default language "'
-                    . $objPage->language
-                    . '". See "Publish settings/Hide default language" for Page ID '
-                    . $objPage->id;
-                $this->log($message, __METHOD__, TL_ERROR);
-                die($message);
+                $objError = new \PageError404();
+                $objError->generate($objPage->id);
             }
             parent::generate($objPage);
 
@@ -61,7 +55,7 @@ class PageI18nl10nRegular extends \PageRegular
         }
 
         //get language specific page properties
-        $fields = 'title,language,pageTitle,description,cssClass,dateFormat,timeFormat,datimFormat,l10n_published,start,stop';
+        $fields = 'title,language,pageTitle,description,cssClass,dateFormat,timeFormat,datimFormat,start,stop';
 
         $sql = "
             SELECT

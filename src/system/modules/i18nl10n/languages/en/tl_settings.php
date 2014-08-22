@@ -59,5 +59,5 @@ $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffixError'] =
 $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_contaoAddLanguageToUrlError'] =
     'I18nl10n does not support the <em>"%s"</em> feature of Contao. Please us the module alternative instead.';
 
-$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_defLangMissingError'] =
-    'Default language is not present in the list of supported languages. Please add it!';
+$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_defLangMissingInfo'] =
+    'The default language was missing inside the supported languages for your page and therefore added automatically.';
