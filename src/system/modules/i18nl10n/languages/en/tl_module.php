@@ -17,7 +17,7 @@
 
 $GLOBALS['TL_LANG']['tl_module']['i18nl10nLangTpl'] = array
 (
-    'Tempalte',
+    'Template',
     'Choose a template for the language menu.'
 );
 

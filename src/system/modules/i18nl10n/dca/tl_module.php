@@ -18,14 +18,14 @@
 
 
 // Palettes
-$GLOBALS['TL_DCA']['tl_module']['palettes']['i18nl10nLanguageNavigation'] = '
+$GLOBALS['TL_DCA']['tl_module']['palettes']['i18nl10nLanguageSelection'] = '
     {title_legend},name,headline,type;
     {template_legend:hide},i18nl10nLangTpl,i18nl10nLangStyle,i18nl10nLangHide;
     {protected_legend:hide},protected;
     {expert_legend:hide},guests,cssID,space
 ';
 
-$i18nl10nLanguageNavigation = array
+$i18nl10nLanguageSelection = array
 (
     'i18nl10nLangTpl' => array
     (
@@ -71,7 +71,7 @@ $i18nl10nLanguageNavigation = array
 array_insert(
     $GLOBALS['TL_DCA']['tl_module']['fields'],
     count($GLOBALS['TL_DCA']['tl_module']['fields']) + 1,
-    $i18nl10nLanguageNavigation
+    $i18nl10nLanguageSelection
 );
 
 

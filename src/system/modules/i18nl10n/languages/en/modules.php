@@ -29,8 +29,8 @@ $GLOBALS['TL_LANG']['MOD']['i18nl10n'] = array
 /**
  * Front end modules
  */
-$GLOBALS['TL_LANG']['FMD']['i18nl10nLanguageNavigation'] = array
+$GLOBALS['TL_LANG']['FMD']['i18nl10nLanguageSelection'] = array
 (
-    'Language menu',
+    'Language selection',
     'Generates a flat menu to navigate between page and content languages.'
 );

@@ -155,18 +155,15 @@ class PageI18nl10nRegular extends \PageRegular
             return;
         }
 
-        $selectedLanguage = \Input::post('language');
-
-        // allow GET request for language
-        if (!$selectedLanguage) {
-            $selectedLanguage = \Input::get('language');
-        }
+        // try to get language from post or get
+        $selectedLanguage = \Input::post('language') ? : \Input::get('language');
 
         $i18nl10nLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
 
-
         // if alias is disabled, get language from get param
-        if ($GLOBALS['TL_CONFIG']['disableAlias']) {
+        if ($selectedLanguage
+            && $GLOBALS['TL_CONFIG']['disableAlias']
+        ) {
             $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selectedLanguage;
 
             return;

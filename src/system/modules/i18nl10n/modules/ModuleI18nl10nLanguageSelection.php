@@ -27,10 +27,10 @@ namespace Verstaerker\I18nl10n\Modules;
  * @author     Patric Eberle <line-in@derverstaerker.ch>; Krasimir Berov
  * @package    i18nl19n
  *
- * Class ModuleI18nl10nLanguageNavigation
+ * Class ModuleI18nl10nLanguageSelection
  * @package Verstaerker\I18nl10n\Modules
  */
-class ModuleI18nl10nLanguageNavigation extends \Module
+class ModuleI18nl10nLanguageSelection extends \Module
 {
     /**
      * Module wrapper template
@@ -51,7 +51,7 @@ class ModuleI18nl10nLanguageNavigation extends \Module
         {
             $objTemplate = new \BackendTemplate('be_wildcard');
 
-            $objTemplate->wildcard = '### ' . utf8_strtoupper($GLOBALS['TL_LANG']['FMD']['i18nl10nLanguageNavigation'][0]) . ' ###';
+            $objTemplate->wildcard = '### ' . utf8_strtoupper($GLOBALS['TL_LANG']['FMD']['i18nl10nLanguageSelection'][0]) . ' ###';
             $objTemplate->title = $this->headline;
             $objTemplate->id = $this->id;
             $objTemplate->link = $this->name;
@@ -69,7 +69,7 @@ class ModuleI18nl10nLanguageNavigation extends \Module
     /**
      * Generate the module
      *
-     * @hooks ModuleI18nl10nLanguageNavigation manipulate translation options
+     * @hooks ModuleI18nl10nLanguageSelection manipulate translation options
      */
      protected function compile()
     {
@@ -101,11 +101,10 @@ class ModuleI18nl10nLanguageNavigation extends \Module
             ->fetchAllassoc();
 
         // HOOK: add custom logic
-        if (isset($GLOBALS['TL_HOOKS']['i18nl10nLanguageNavigation'])
-            && is_array($GLOBALS['TL_HOOKS']['i18nl10nLanguageNavigation']))
-        {
-            foreach ($GLOBALS['TL_HOOKS']['i18nl10nLanguageNavigation'] as $callback)
-            {
+        if (isset($GLOBALS['TL_HOOKS']['i18nl10nLanguageSelection'])
+            && is_array($GLOBALS['TL_HOOKS']['i18nl10nLanguageSelection'])
+        ) {
+            foreach ($GLOBALS['TL_HOOKS']['i18nl10nLanguageSelection'] as $callback) {
                 $this->import($callback[0]);
                 $arrTranslations = $this->$callback[0]->$callback[1]($arrTranslations);
             }
