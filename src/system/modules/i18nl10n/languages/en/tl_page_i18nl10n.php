@@ -18,8 +18,10 @@
 
 
 /**
- * Fields
+ * Legends & Fields
  */
+$GLOBALS['TL_LANG']['tl_page_i18nl10n']['i18nl10n_legend'] = 'L10N Settings';
+
 $GLOBALS['TL_LANG']['tl_page_i18nl10n'][''] = array
 (
     '',
@@ -55,19 +57,19 @@ $GLOBALS['TL_LANG']['tl_page_i18nl10n']['define_language'] = array
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['edit']   = array
 (
     'Edit',
-    'Edit meta-fields for page %s'
+    'Edit localization %s'
 );
 
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['copy']   = array
 (
     'Copy',
-    'Copy meta-fields'
+    'Copy localization'
 );
 
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['delete'] = array
 (
     'Delete',
-    'Delete meta-fields'
+    'Delete localization'
 );
 
 $GLOBALS['TL_LANG']['tl_page']['toggle']     = array

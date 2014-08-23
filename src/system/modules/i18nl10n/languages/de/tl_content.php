@@ -16,21 +16,15 @@
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
-/**
- * Back end modules
- */
-$GLOBALS['TL_LANG']['MOD']['i18nl10n'] = array
-(
-    'Multilingual pages',
-    'Create a one-pagetree multi-language site by adding multiple languages to pages and localizing content elements.'
-);
-
 
 /**
- * Front end modules
+ * Fields
  */
-$GLOBALS['TL_LANG']['FMD']['i18nl10nLanguageSelection'] = array
-(
-    'Language selection',
-    'Generates a flat list or a select element of available page languages.'
-);
+$GLOBALS['TL_LANG']['tl_content']['l10n_language'] = & $GLOBALS['TL_LANG']['MSC']['language'];
+
+$GLOBALS['TL_LANG']['tl_content']['l10n_blankOptionLabel'] = 'Alle';
+
+/**
+ * References
+ */
+$GLOBALS['TL_LANG']['tl_content']['l10n_legend'] = 'L10N Einstellungen';

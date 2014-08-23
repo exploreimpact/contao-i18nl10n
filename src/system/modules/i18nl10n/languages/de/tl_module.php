@@ -18,25 +18,25 @@
 $GLOBALS['TL_LANG']['tl_module']['i18nl10nLangTpl'] = array
 (
     'Template',
-    'Choose a template for the language menu.'
+    'Legt das Template für die Sprachwahl fest.'
 );
 
 $GLOBALS['TL_LANG']['tl_module']['i18nl10nLangStyle'] = array
 (
-    'Use style',
-    'Use one of the delivered CSS styles.'
+    'Style verwenden',
+    'Legt fest, welcher der gelieferten CSS Styles verwendet werden soll.'
 );
 
 $GLOBALS['TL_LANG']['tl_module']['i18nl10nLangStyleLabels'] = array
 (
-    'full'      => 'Icon & label',
-    'text'      => 'Label only',
-    'image'     => 'Icon only',
-    'disable'   => 'Disable style'
+    'full'    => 'Flagge & Beschriftung',
+    'text'    => 'Nur Beschriftung',
+    'image'   => 'Nur Flagge',
+    'disable' => 'Kein Style'
 );
 
 $GLOBALS['TL_LANG']['tl_module']['i18nl10nLangHide'] = array
 (
-    'Hide active language',
-    'Don\'t show current language in options.'
+    'Aktive Sprache ausblenden',
+    'Fügt die aktuell aktive Sprache nicht zur Sprachwahl hinzu.'
 );

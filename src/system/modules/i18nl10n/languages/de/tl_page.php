@@ -22,8 +22,8 @@
  */
 $GLOBALS['TL_LANG']['tl_page']['l10n_published'] = array
 (
-    'Publish L10N',
-    'Publish this translation.'
+    'L10N veröffentlichen',
+    'Diese Übersetzung veröffentlichen.'
 );
 
 
@@ -31,9 +31,9 @@ $GLOBALS['TL_LANG']['tl_page']['l10n_published'] = array
  * Messages
  */
 $GLOBALS['TL_LANG']['tl_page']['msg_no_languages'] =
-    'No alternative languages have been defined yet. Please do so on the '
-    . '<a href="%s">settings</a> page.';
+    'Es wurden noch keine alternativen Sprachen festgelegt. Bitte hole dies noch in den '
+    . '<a href="%s">Einstellungen</a> nach.';
 
 $GLOBALS['TL_LANG']['tl_page']['msg_localize_all'] =
-    'For all untranslated pages in <span style="white-space:nowrap">[%s]</span> '
-    . 'I will create localizations. Are you sure you want to create the following localizations for all unlocalized pages?';
+    'Für alle Seiten in <span style="white-space:nowrap">[%s]</span> ohne Übersetzung '
+    . 'werden Lokalisierungen angelegt. Bist du sicher, dass du für die folgenden Sprachen Seiten anlegen möchtest?';

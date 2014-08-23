@@ -34,6 +34,7 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['l10n_language'] = array_merge(
         'eval'      => array(
             'mandatory'          => false,
             'includeBlankOption' => true,
+            'blankOptionLabel' => $GLOBALS['TL_LANG']['tl_content']['l10n_blankOptionLabel'],
             'rgxp'               => 'alpha',
             'maxlength'          => 2,
             'nospace'            => true,

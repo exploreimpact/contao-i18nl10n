@@ -39,14 +39,13 @@ class PageI18nl10nRegular extends \PageRegular
      */
     function generate($objPage, $blnCheckRequest = false)
     {
+
         self::fixupCurrentLanguage();
 
-        if ($GLOBALS['TL_LANGUAGE'] == $GLOBALS['TL_CONFIG']['i18nl10n_default_language'])
-        {
+        if ($GLOBALS['TL_LANGUAGE'] == $GLOBALS['TL_CONFIG']['i18nl10n_default_language']) {
             // if default language is not published, give error
-            if ($objPage->l10n_published == '')
-            {
-                $objError = new \PageError404();
+            if ($objPage->l10n_published == '') {
+                $objError = new $GLOBALS['TL_PTY']['error_404']();
                 $objError->generate($objPage->id);
             }
             parent::generate($objPage);
@@ -67,8 +66,7 @@ class PageI18nl10nRegular extends \PageRegular
               AND language = ?
         ";
 
-        if(!BE_USER_LOGGED_IN)
-        {
+        if (!BE_USER_LOGGED_IN) {
             $time = time();
             $sql .= "
                 AND (start = '' OR start < $time)
@@ -83,33 +81,28 @@ class PageI18nl10nRegular extends \PageRegular
             ->execute($objPage->id, $GLOBALS['TL_LANGUAGE']);
 
         // if translated page, replace given fields in page object
-        if ($l10n->numRows)
-        {
+        if ($l10n->numRows) {
 
             $objPage->defaultPageTitle = $objPage->pageTitle;
             $objPage->defaultTitle = $objPage->title;
 
-            foreach (explode(',', $fields) as $field)
-            {
-                if ($l10n->$field)
-                {
+            foreach (explode(',', $fields) as $field) {
+                if ($l10n->$field) {
                     $objPage->$field = $l10n->$field;
                 }
             }
         } // else at least replace language, to prevent language switch
-        else
-        {
+        else {
             $objPage->language = $GLOBALS['TL_LANGUAGE'];
         }
 
         // update root information
         $objL10nRootPage = self::getL10nRootPage($objPage);
 
-        if($objL10nRootPage)
-        {
+        if ($objL10nRootPage) {
             $objPage->rootTitle = $objL10nRootPage->title;
 
-            if($objPage->pid == $objPage->rootId) {
+            if ($objPage->pid == $objPage->rootId) {
                 $objPage->parentTitle = $objL10nRootPage->title;
                 $objPage->parentPageTitle = $objL10nRootPage->pageTitle;
             }
@@ -164,12 +157,10 @@ class PageI18nl10nRegular extends \PageRegular
         }
 
         if ($selectedLanguage
-            && in_array($selectedLanguage, $i18nl10nLanguages))
-        {
+            && in_array($selectedLanguage, $i18nl10nLanguages)
+        ) {
             $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selectedLanguage;
-        }
-        elseif (isset($_SESSION['TL_LANGUAGE']))
-        {
+        } elseif (isset($_SESSION['TL_LANGUAGE'])) {
             $GLOBALS['TL_LANGUAGE'] = $_SESSION['TL_LANGUAGE'];
         }
 
@@ -179,15 +170,16 @@ class PageI18nl10nRegular extends \PageRegular
     /**
      * Generate content in the current language from articles
      * using insert tags.
-     * A HOOK called in Controller::replaceInsertTags()!!
+     *
      * @param string $insert_tag The insert tag with the alias or id
      * @return string|boolean
      */
-    public function insertI18nl10nArticle($insert_tag)
+    public function replaceI18nl10nArticleInsertTag($insert_tag)
     {
 
-        if (strpos($insert_tag, 'insert_i18nl10n_article') === false)
-            return false;
+        if (strpos($insert_tag, 'insert_i18nl10n_article') === false) return false;
+
+        \FB::log($GLOBALS['TL_HOOKS']['replaceInsertTags']);
 
         $tag = explode('::', $insert_tag);
         if (($strOutput = $this->getArticle($tag[1], false, true)) !== false) {
@@ -218,8 +210,7 @@ class PageI18nl10nRegular extends \PageRegular
               AND language = ?
         ";
 
-        if(!BE_USER_LOGGED_IN)
-        {
+        if (!BE_USER_LOGGED_IN) {
             $time = time();
             $sql .= "
                 AND (start = '' OR start < $time)

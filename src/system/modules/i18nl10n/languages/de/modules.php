@@ -21,8 +21,8 @@
  */
 $GLOBALS['TL_LANG']['MOD']['i18nl10n'] = array
 (
-    'Multilingual pages',
-    'Create a one-pagetree multi-language site by adding multiple languages to pages and localizing content elements.'
+    'Mehrsprachige Seiten',
+    'Erstellt eine mehrsprachige Website mit nur einem Seitenbaum. Seiten und Inhaltselemente können mit Übersetzungen ergänzt werden.'
 );
 
 
@@ -31,6 +31,6 @@ $GLOBALS['TL_LANG']['MOD']['i18nl10n'] = array
  */
 $GLOBALS['TL_LANG']['FMD']['i18nl10nLanguageSelection'] = array
 (
-    'Language selection',
-    'Generates a flat list or a select element of available page languages.'
+    'Sprachwahl',
+    'Generiert eine Liste oder eine Select-Element der verfügbaren Seitensprachen.'
 );

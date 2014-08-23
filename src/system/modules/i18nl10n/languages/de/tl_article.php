@@ -9,22 +9,9 @@
  *
  * PHP version 5
  * @copyright   Verstärker, Patric Eberle 2014
- * @copyright   Krasimir Berov 2010-2013
  * @author      Patric Eberle <line-in@derverstaerker.ch>
- * @author      Krasimir Berov
  * @package     i18nl10n
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
-
-/**
- * Fields
- */
-$GLOBALS['TL_LANG']['tl_content']['l10n_language'] = &$GLOBALS['TL_LANG']['MSC']['language'];
-
-$GLOBALS['TL_LANG']['tl_content']['l10n_blankOptionLabel'] = 'Any';
-
-/**
- * References
- */
-$GLOBALS['TL_LANG']['tl_content']['l10n_legend'] = 'L10N Settings';
+$GLOBALS['TL_LANG']['tl_article']['elements'] = 'Element(e)';
