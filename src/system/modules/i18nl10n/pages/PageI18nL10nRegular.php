@@ -179,8 +179,6 @@ class PageI18nl10nRegular extends \PageRegular
 
         if (strpos($insert_tag, 'insert_i18nl10n_article') === false) return false;
 
-        \FB::log($GLOBALS['TL_HOOKS']['replaceInsertTags']);
-
         $tag = explode('::', $insert_tag);
         if (($strOutput = $this->getArticle($tag[1], false, true)) !== false) {
             return $this->replaceInsertTags(ltrim($strOutput));
