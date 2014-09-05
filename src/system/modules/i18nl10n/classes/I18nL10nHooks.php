@@ -251,8 +251,14 @@ class I18nl10nHooks extends \System
      */
     public function isVisibleElement($objElement, $blnIsVisible) {
 
+        global $objPage;
+
         if($blnIsVisible && $objElement->l10n_language) {
-            $blnIsVisible = $objElement->l10n_language == $GLOBALS['TL_LANGUAGE'];
+
+            // check if given language is valid of fallback should be used
+            $strLanguage = $objPage->useFallbackLanguage ? $GLOBALS['TL_CONFIG']['i18nl10n_default_language'] : $GLOBALS['TL_LANGUAGE'];
+
+            $blnIsVisible = $objElement->l10n_language == $strLanguage;
         }
 
         return $blnIsVisible;

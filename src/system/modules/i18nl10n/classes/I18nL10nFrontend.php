@@ -48,7 +48,7 @@ class I18nl10nFrontend extends \Controller
      * @param   Bool $useFallback Keep original item if no translation found
      * @return  Array $i18n_items
      */
-    public function i18nl10nNavItems(Array $items, $useFallback = false)
+    public function i18nl10nNavItems(Array $items, $blnUseFallback = false)
     {
 
         if(empty($items)) return false;
@@ -74,7 +74,7 @@ class I18nl10nFrontend extends \Controller
                 AND language = ?
             ";
 
-            if(!BE_USER_LOGGED_IN) {
+            if (!$blnUseFallback && !BE_USER_LOGGED_IN) {
                 $sql .= "
                     AND (start='' OR start < $time)
                     AND (stop='' OR stop > $time)
@@ -130,7 +130,7 @@ class I18nl10nFrontend extends \Controller
 
                 }
 
-                if($useFallback && !$foundItem) {
+                if ($blnUseFallback && !$foundItem) {
                     array_push($i18n_items, $item);
                 }
 
@@ -140,7 +140,7 @@ class I18nl10nFrontend extends \Controller
         {
             foreach($items as $item)
             {
-                if($item['l10n_published'] == '') continue;
+                if (!$blnUseFallback && $item['l10n_published'] == '') continue;
                 array_push($i18n_items,$item);
             }
         }

@@ -44,7 +44,7 @@ class PageI18nl10nRegular extends \PageRegular
 
         if ($GLOBALS['TL_LANGUAGE'] == $GLOBALS['TL_CONFIG']['i18nl10n_default_language']) {
             // if default language is not published, give error
-            if ($objPage->l10n_published == '') {
+            if (!$objPage->l10n_published) {
                 $objError = new $GLOBALS['TL_PTY']['error_404']();
                 $objError->generate($objPage->id);
             }
@@ -91,9 +91,22 @@ class PageI18nl10nRegular extends \PageRegular
                     $objPage->$field = $l10n->$field;
                 }
             }
-        } // else at least replace language, to prevent language switch
+        } // else use fallback language
         else {
-            $objPage->language = $GLOBALS['TL_LANGUAGE'];
+
+            // if fallback is not published, show 404
+            if (!$objPage->l10n_published) {
+                $objError = new $GLOBALS['TL_PTY']['error_404']();
+                $objError->generate($objPage->id);
+
+                parent::generate($objPage);
+                return;
+            } // else at least keep current language to prevent language change and set flag
+            else {
+                $objPage->language = $GLOBALS['TL_LANGUAGE'];
+                $objPage->useFallbackLanguage = true;
+            }
+
         }
 
         // update root information
