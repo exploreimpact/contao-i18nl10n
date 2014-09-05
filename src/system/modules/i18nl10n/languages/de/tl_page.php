@@ -32,7 +32,7 @@ $GLOBALS['TL_LANG']['tl_page']['l10n_published'] = array
  */
 $GLOBALS['TL_LANG']['tl_page']['msg_no_languages'] =
     'Es wurden noch keine alternativen Sprachen festgelegt. Bitte hole dies noch in den '
-    . '<a href="%s">Einstellungen</a> nach.';
+    . '%s Einstellungen %s nach.';
 
 $GLOBALS['TL_LANG']['tl_page']['msg_localize_all'] =
     'Für alle Seiten in <span style="white-space:nowrap">[%s]</span> ohne Übersetzung '

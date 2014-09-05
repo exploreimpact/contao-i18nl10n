@@ -168,29 +168,6 @@ class PageI18nl10nRegular extends \PageRegular
 
 
     /**
-     * Generate content in the current language from articles
-     * using insert tags.
-     *
-     * @param string $insert_tag The insert tag with the alias or id
-     * @return string|boolean
-     */
-    public function replaceI18nl10nArticleInsertTag($insert_tag)
-    {
-
-        if (strpos($insert_tag, 'insert_i18nl10n_article') === false) return false;
-
-        $tag = explode('::', $insert_tag);
-        if (($strOutput = $this->getArticle($tag[1], false, true)) !== false) {
-            return $this->replaceInsertTags(ltrim($strOutput));
-        } else {
-            return '<p class="error">'
-            . sprintf($GLOBALS['TL_LANG']['MSC']['invalidPage'], $tag[1])
-            . '</p>';
-        }
-    }
-
-
-    /**
      * Get localized root page by page object
      *
      * @param $objPage

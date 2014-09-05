@@ -180,7 +180,7 @@ class tl_page_l10n extends tl_page
 
             // TODO: ref= would be nice for link
             $message = sprintf(
-                $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_no_languages'],
+                $GLOBALS['TL_LANG']['tl_page']['msg_no_languages'],
                 '<a class="tl_message_link" href="contao/main.php?do=settings">',
                 '</a>'
             );
