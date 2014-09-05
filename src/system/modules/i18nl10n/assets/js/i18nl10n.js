@@ -22,8 +22,6 @@ var I18nl10n =
             publish = (icon.src.indexOf('invisible') != -1),
             div = el.getParent('div');
 
-        console.log('flag',flag);
-
         // Send the request
         if (publish) {
             // set visible
@@ -32,8 +30,8 @@ var I18nl10n =
 
             new Request.Contao().post({
                 action: 'toggleL10n',
-                id: id, 
-                state: 0, 
+                id: id,
+                state: 0,
                 table: 'tl_page_i18nl10n',
                 REQUEST_TOKEN: Contao.request_token
             });
@@ -46,7 +44,6 @@ var I18nl10n =
                 action: 'toggleL10n',
                 id: id,
                 state: 1,
-                table: 'tl_page_i18nl10n',
                 REQUEST_TOKEN: Contao.request_token
             });
         }

@@ -204,7 +204,6 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
 // update field class
 $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['l10n_published']['eval']['tl_class'] = 'w50 m12';
 
-
 // Splice in localize all in case languages are available
 if(!$disableCreate) {
     $additionalFunctions = array(
@@ -666,8 +665,7 @@ class tl_page_i18nl10n extends tl_page
             case 'toggleL10n':
                 tl_page_i18nl10n::toggleL10n(
                     \Input::post('id'),
-                    \Input::post('state') == 1,
-                    \Input::post('table')
+                    \Input::post('state') == 1
                 );
                 break;
         }
