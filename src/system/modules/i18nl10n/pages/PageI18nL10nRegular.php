@@ -42,7 +42,7 @@ class PageI18nl10nRegular extends \PageRegular
 
         self::fixupCurrentLanguage();
 
-        if ($GLOBALS['TL_LANGUAGE'] == $GLOBALS['TL_CONFIG']['i18nl10n_default_language']) {
+        if ($GLOBALS['TL_LANGUAGE'] == \Config::get('i18nl10n_default_language')) {
             // if default language is not published, give error
             if (!$objPage->l10n_published) {
                 $objError = new $GLOBALS['TL_PTY']['error_404']();
@@ -138,12 +138,12 @@ class PageI18nl10nRegular extends \PageRegular
     {
 
         // if language is added to url, get it from there
-        if ($GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl']
-            && !$GLOBALS['TL_CONFIG']['disableAlias']
+        if (\Config::get('i18nl10n_addLanguageToUrl')
+            && !\Config::get('disableAlias')
         ) {
             $this->import('Environment');
             $environment = $this->Environment;
-            $basePath = preg_quote($GLOBALS['TL_CONFIG']['rewriteURL'] ? $GLOBALS['TL_CONFIG']['websitePath'] : $environment->scriptName);
+            $basePath = preg_quote(\Config::get('rewriteURL') ? \Config::get('websitePath') : $environment->scriptName);
 
             $regex = "@^($basePath/)?([A-z]{2}(?=/)){1}(/.*)@";
 
@@ -158,11 +158,11 @@ class PageI18nl10nRegular extends \PageRegular
         // try to get language from post or get
         $selectedLanguage = \Input::post('language') ? : \Input::get('language');
 
-        $i18nl10nLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
+        $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
 
         // if alias is disabled, get language from get param
         if ($selectedLanguage
-            && $GLOBALS['TL_CONFIG']['disableAlias']
+            && \Config::get('disableAlias')
         ) {
             $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selectedLanguage;
 

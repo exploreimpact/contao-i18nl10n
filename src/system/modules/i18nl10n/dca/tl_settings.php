@@ -22,7 +22,7 @@ $this->loadLanguageFile('languages');
 /**
  * Get default language
  */
-$i18nl10n_default_language = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'] ? : 'en';
+$i18nl10n_default_language = \Config::get('i18nl10n_default_language') ? : 'en';
 
 
 /**
@@ -127,7 +127,8 @@ class tl_settings_l10n extends Backend
      * @param DataContainer $dc
      * @return string
      */
-    function ensureUnique($languages, DataContainer $dc) {
+    function ensureUnique($languages, DataContainer $dc)
+    {
         return serialize( array_unique( deserialize( $languages ) ) );
     }
 
@@ -144,7 +145,7 @@ class tl_settings_l10n extends Backend
 
         $arrValidLanguages = array();
         $arrPageLanguages = deserialize($strPageLanguages);
-        $strDefaultLanguage = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
+        $strDefaultLanguage = \Config::get('i18nl10n_default_language');
 
         // if languages defined, check each one if valid
         if (!empty($arrPageLanguages)) {
@@ -176,13 +177,14 @@ class tl_settings_l10n extends Backend
      * @param DataContainer $dc
      * @return bool
      */
-    function ensureOthersUnchecked($value, DataContainer $dc){
+    function ensureOthersUnchecked($value, DataContainer $dc)
+    {
 
         if($value
             && ($dc->field == 'i18nl10n_alias_suffix'
-                && $GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl'] == 1
+                && \Config::get('i18nl10n_addLanguageToUrl') == 1
                 || $dc->field == 'i18nl10n_addLanguageToUrl'
-                && $GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix'] == 1)
+                && \Config::get('i18nl10n_alias_suffix') == 1)
         ) {
 
             // show error and write to log
@@ -198,9 +200,7 @@ class tl_settings_l10n extends Backend
             \System::log($errorMessage, __METHOD__, TL_CONFIGURATION);
 
             return false;
-        }
-        elseif($GLOBALS['TL_CONFIG']['addLanguageToUrl'])
-        {
+        } elseif (\Config::get('addLanguageToUrl')) {
 
             $errorMessage = &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_contaoAddLanguageToUrlError'];
             $errorMessage = sprintf(

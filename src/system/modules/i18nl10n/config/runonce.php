@@ -34,12 +34,11 @@ class I18nl10nRunOnceJob extends \Controller
 
         $config = \Config::getInstance();
 
-        $i18nl10nDefaultLanguage = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'] ? : 'en';
+        $i18nl10nDefaultLanguage = \Config::get('i18nl10n_default_language') ? : 'en';
 
 
         // if not default try to get from root or use fallback
-        if(!$GLOBALS['TL_CONFIG']['i18nl10n_default_language'])
-        {
+        if (!\Config::get('i18nl10n_default_language')) {
 
             $sql = "
                 SELECT
@@ -57,33 +56,33 @@ class I18nl10nRunOnceJob extends \Controller
                 ->limit(1)
                 ->execute();
 
-            if($objRootPage->row()) {
+            if ($objRootPage->row()) {
                 $i18nl10nDefaultLanguage = $objRootPage->language;
             }
 
             $config->add
                 (
-                    "\$GLOBALS['TL_CONFIG']['i18nl10n_default_language']",
+                    "\\Config::get('i18nl10n_default_language')",
                     $i18nl10nDefaultLanguage
                 );
         }
 
         // if no available languages, set at least default
-        if(!$GLOBALS['TL_CONFIG']['i18nl10n_languages']) {
+        if (!\Config::get('i18nl10n_languages')) {
             $config->add
                 (
-                    "\$GLOBALS['TL_CONFIG']['i18nl10n_languages']",
+                    "\\Config::get('i18nl10n_languages')",
                     serialize(array($i18nl10nDefaultLanguage))
                 );
         } // if available languages, check if default needs to be added
         else {
             $defaultLanguage = $i18nl10nDefaultLanguage;
-            $availableLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
+            $availableLanguages = deserialize(\Config::get('i18nl10n_languages'));
 
-            if(!in_array($defaultLanguage, $availableLanguages)){
+            if (!in_array($defaultLanguage, $availableLanguages)) {
                 $availableLanguages[] = $defaultLanguage;
 
-                $config->update("\$GLOBALS['TL_CONFIG']['i18nl10n_languages']", serialize($availableLanguages));
+                $config->update("\\Config::get('i18nl10n_languages')", serialize($availableLanguages));
             }
         }
 

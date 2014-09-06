@@ -1,5 +1,14 @@
 /**
- * Created by atreju on 13.06.14.
+ * i18nl10n Contao Module
+ *
+ * The i18nl10n module for Contao allows you to manage multilingual content
+ * on the element level rather than with page trees.
+ *
+ *
+ * @copyright   Verstärker, Patric Eberle 2014
+ * @author      Patric Eberle <line-in@derverstaerker.ch>
+ * @package     i18nl10n Ajax
+ * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
 var I18nl10n =
@@ -9,7 +18,6 @@ var I18nl10n =
      *
      * @param {object} el    The DOM element
      * @param {string} id    The ID of the target element
-     * @param {string} table The table name
      *
      * @returns {boolean}
      */

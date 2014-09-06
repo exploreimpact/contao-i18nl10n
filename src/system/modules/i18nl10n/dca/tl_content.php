@@ -29,7 +29,7 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['l10n_language'] = array_merge(
         'label'     => &$GLOBALS['TL_LANG']['MSC']['i18nl10n_fields']['language']['label'],
         'filter'    => true,
         'inputType' => 'select',
-        'options'   => deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']),
+        'options' => deserialize(\Config::get('i18nl10n_languages')),
         'reference' => &$GLOBALS['TL_LANG']['LNG'],
         'eval'      => array(
             'mandatory'          => false,
@@ -45,9 +45,9 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['l10n_language'] = array_merge(
 
 
 // only insert language extension in article module
-if(\Input::get('do') == 'article') {
+if (\Input::get('do') == 'article') {
     // add language section to all palettes
-    foreach($GLOBALS['TL_DCA']['tl_content']['palettes'] as $k => $v){
+    foreach ($GLOBALS['TL_DCA']['tl_content']['palettes'] as $k => $v) {
         if( $k == '__selector__' ) continue;
         $GLOBALS['TL_DCA']['tl_content']['palettes'][$k] = "$v;" . '{l10n_legend:hide},l10n_language;';
     }
@@ -58,7 +58,8 @@ if(\Input::get('do') == 'article') {
 }
 
 
-class tl_content_l10n extends tl_content {
+class tl_content_l10n extends tl_content
+{
 
     /**
      * Add language icon to content element list entry
@@ -66,11 +67,12 @@ class tl_content_l10n extends tl_content {
      * @param $arrRow
      * @return string
      */
-    public function addCteType($arrRow) {
+    public function addCteType($arrRow)
+    {
         $key = $arrRow['invisible'] ? 'unpublished' : 'published';
         $langIcon = 'system/modules/i18nl10n/assets/img/i18nl10n.png';
 
-        if($arrRow['l10n_language']) {
+        if ($arrRow['l10n_language']) {
             $langIcon = 'system/modules/i18nl10n/assets/img/flag_icons/' . $arrRow['l10n_language'] . '.png';
         }
 
@@ -96,7 +98,7 @@ class tl_content_l10n extends tl_content {
             $arrRow['type'] == 'alias' ? 'ID ' . $arrRow['cteAlias'] : '',
             $GLOBALS['TL_LANG']['MSC']['protected'],
             $GLOBALS['TL_LANG']['MSC']['guests'],
-            $GLOBALS['TL_CONFIG']['doNotCollapse'] ? '' : 'h64',
+            \Config::get('doNotCollapse') ? '' : 'h64',
             $this->getContentElement($arrRow['id'])
         );
     }

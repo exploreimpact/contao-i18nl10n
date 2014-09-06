@@ -26,9 +26,9 @@ $this->loadDataContainer('tl_page');
 
 //determine if languages are available to endable/disable editing
 $disableCreate = true;
-$i18nl10nLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
+$i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
 
-if(is_array($i18nl10nLanguages) && count($i18nl10nLanguages) > 1) {
+if (is_array($i18nl10nLanguages) && count($i18nl10nLanguages) > 1) {
     $disableCreate = false;
 };
 
@@ -205,7 +205,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
 $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['l10n_published']['eval']['tl_class'] = 'w50 m12';
 
 // Splice in localize all in case languages are available
-if(!$disableCreate) {
+if (!$disableCreate) {
     $additionalFunctions = array(
         'localize_all' => array
         (
@@ -227,9 +227,9 @@ if(!$disableCreate) {
 $i18nl10nLanguageOptions = array();
 
 // remove default language
-if(is_array($i18nl10nLanguages)) {
-    foreach($i18nl10nLanguages as $k => $v) {
-        if($v == $GLOBALS['TL_CONFIG']['i18nl10n_default_language']) {
+if (is_array($i18nl10nLanguages)) {
+    foreach ($i18nl10nLanguages as $k => $v) {
+        if ($v == \Config::get('i18nl10n_default_language')) {
             $i18nl10nLanguageOptions = array_delete($i18nl10nLanguages,$k);
             break;
         }
@@ -314,7 +314,7 @@ class tl_page_i18nl10n extends tl_page
             self::localizeAllMessage();
         }
         //localise all pages
-        elseif(\Input::post('localize_all_')) {
+        elseif (\Input::post('localize_all_')) {
             self::localizeAllAction();
         }
     }
@@ -326,22 +326,23 @@ class tl_page_i18nl10n extends tl_page
      * @return void
      */
     // TODO: Refactor this
-    private function localizeAllMessage() {
+    private function localizeAllMessage()
+    {
         $flag = '<img class="i18nl10n_flag"'
             . ' src="system/modules/i18nl10n/assets/img/flag_icons/'
-            . $GLOBALS['TL_CONFIG']['i18nl10n_default_language']
+            . \Config::get('i18nl10n_default_language')
             . '.png" />&nbsp;';
 
         $message = sprintf(
             $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_localize_all'],
-            $flag . $GLOBALS['TL_LANG']['LNG'][$GLOBALS['TL_CONFIG']['i18nl10n_default_language']]
+            $flag . $GLOBALS['TL_LANG']['LNG'][\Config::get('i18nl10n_default_language')]
         );
 
         $newLanguages = '<ul class="i18nl10n_page_language_listing">';
-        $i18nl10nLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
-        $i18nl10nDefaultLanguage = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
+        $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
+        $i18nl10nDefaultLanguage = \Config::get('i18nl10n_default_language');
 
-        foreach($i18nl10nLanguages as $language) {
+        foreach ($i18nl10nLanguages as $language) {
             if($language == $i18nl10nDefaultLanguage) continue;
 
             $html = '<li><img class="i18nl10n_flag" src="system/modules/i18nl10n/assets/img/flag_icons/%1$s.png" /> %2$s</li>';
@@ -386,11 +387,12 @@ class tl_page_i18nl10n extends tl_page
      *
      * @return void
      */
-    private function localizeAllAction() {
-        $defaultLanguage = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
-        $i18nl10nLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
+    private function localizeAllAction()
+    {
+        $defaultLanguage = \Config::get('i18nl10n_default_language');
+        $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
 
-        foreach($i18nl10nLanguages as $lang) {
+        foreach ($i18nl10nLanguages as $lang) {
             if($lang == $defaultLanguage) continue;
 
 
@@ -433,12 +435,13 @@ class tl_page_i18nl10n extends tl_page
      *
      * @return  void
      */
-    public function displayLanguageMessage() {
+    public function displayLanguageMessage()
+    {
 
-        $i18nl10nLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
+        $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
 
         // if no languages or count is smaller 2 (1 = default language)
-        if(!$i18nl10nLanguages || count($i18nl10nLanguages) < 2) {
+        if (!$i18nl10nLanguages || count($i18nl10nLanguages) < 2) {
 
             // TODO: ref= would be nice for link
             $message = sprintf(
@@ -570,7 +573,7 @@ class tl_page_i18nl10n extends tl_page
 
     public function displayAddLanguageToUrlMessage()
     {
-        if($GLOBALS['TL_CONFIG']['addLanguageToUrl']) {
+        if (\Config::get('addLanguageToUrl')) {
 
             $message = $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_add_language_to_url'];
 
@@ -661,7 +664,7 @@ class tl_page_i18nl10n extends tl_page
      */
     public function executePostActions($strAction)
     {
-        switch($strAction) {
+        switch ($strAction) {
             case 'toggleL10n':
                 tl_page_i18nl10n::toggleL10n(
                     \Input::post('id'),

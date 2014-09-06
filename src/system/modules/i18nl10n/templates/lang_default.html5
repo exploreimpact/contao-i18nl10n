@@ -2,8 +2,8 @@
     $strParams = '';
 
     // get url parameters
-    foreach($_GET as $key => $value){
-        if ($key == 'id') continue;
+foreach ($_GET as $key => $value) {
+    if ($key == 'id') continue;
 
         $strParams .= '/' . $key . '/' . $value;
     }

@@ -76,7 +76,7 @@ class ModuleI18nl10nLanguageSelection extends \Module
         global $objPage;
 
         $time = time();
-        $i18nl10nLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
+        $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
         $sql = "
             SELECT
                 *
@@ -87,7 +87,7 @@ class ModuleI18nl10nLanguageSelection extends \Module
                 AND language IN ( '" . implode("', '",$i18nl10nLanguages) . "' )
         ";
 
-        if(!BE_USER_LOGGED_IN) {
+        if (!BE_USER_LOGGED_IN) {
             $sql .= "
                 AND (start = '' OR start < $time)
                 AND (stop = '' OR stop > $time)
@@ -112,13 +112,13 @@ class ModuleI18nl10nLanguageSelection extends \Module
 
         $items = array();
 
-        if(!empty($arrTranslations)) {
+        if (!empty($arrTranslations)) {
             $this->loadLanguageFile('languages');
 
-            if($objPage->l10n_published != ''){
+            if ($objPage->l10n_published != '') {
                 array_unshift($arrTranslations, array(
                    'id' => $objPage->id,
-                   'language' => $GLOBALS['TL_CONFIG']['i18nl10n_default_language'],
+                   'language' => \Config::get('i18nl10n_default_language'),
                    'title' => $objPage->title,
                    'pageTitle' => $objPage->pageTitle,
                    'alias' => $objPage->alias
@@ -127,16 +127,16 @@ class ModuleI18nl10nLanguageSelection extends \Module
 
             // keep the order in $i18nl10nLanguages and assign to $items
             // only if page translation is found in database
-            foreach($i18nl10nLanguages as $language) {
+            foreach ($i18nl10nLanguages as $language) {
 
                 // check if current language has not to be shown
                 if($language == $GLOBALS['TL_LANGUAGE'] && $this->i18nl10nLangHide == 1) continue;
 
                 // loop translations
-                foreach($arrTranslations as $row){
+                foreach ($arrTranslations as $row) {
 
                     // check if language is needed
-                    if($row['language'] == $language){
+                    if ($row['language'] == $language) {
                         array_push($items, array(
                             'id' => $row['pid']?$row['pid']:$objPage->id,
                             'alias' => $row['alias'] ?: $objPage->alias,
@@ -162,13 +162,13 @@ class ModuleI18nl10nLanguageSelection extends \Module
         }
 
         // add stylesheets
-        if($this->i18nl10nLangStyle != 'disable') {
+        if ($this->i18nl10nLangStyle != 'disable') {
             $assetsUrl = 'system/modules/i18nl10n/assets/';
 
             // global style
             $GLOBALS['TL_CSS'][] = $assetsUrl . 'css/i18nl10n_lang.css';
 
-            switch($this->i18nl10nLangStyle) {
+            switch ($this->i18nl10nLangStyle) {
                 case 'text':
                     $GLOBALS['TL_CSS'][] = $assetsUrl . 'css/i18nl10n_lang_text.css';
                     break;

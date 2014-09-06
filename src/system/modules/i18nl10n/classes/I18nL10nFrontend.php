@@ -35,7 +35,8 @@ class I18nl10nFrontend extends \Controller
     }
 
 
-    public function l10nNavItems(Array $items) {
+    public function l10nNavItems(Array $items)
+    {
         return self::i18nl10nNavItems($items, true);
     }
 
@@ -51,26 +52,26 @@ class I18nl10nFrontend extends \Controller
     public function i18nl10nNavItems(Array $items, $blnUseFallback = false)
     {
 
-        if(empty($items)) return false;
+        if (empty($items)) return false;
 
         //get item ids
         $item_ids = array();
-        foreach($items as $row){
-            $item_ids[]= $row['id'];
+        foreach ($items as $row) {
+            $item_ids[] = $row['id'];
         }
 
         $time = time();
         $fields = 'alias,pid,title,pageTitle,description,language';
         $i18n_items = array();
 
-        if($GLOBALS['TL_LANGUAGE'] != $GLOBALS['TL_CONFIG']['i18nl10n_default_language']){
+        if ($GLOBALS['TL_LANGUAGE'] != \Config::get('i18nl10n_default_language')) {
             $sql = "
                 SELECT
                     $fields
                 FROM
                     tl_page_i18nl10n
                 WHERE
-                    pid IN (" . implode(', ',$item_ids) . ")
+                    pid IN (" . implode(', ', $item_ids) . ")
                 AND language = ?
             ";
 
@@ -88,30 +89,24 @@ class I18nl10nFrontend extends \Controller
                 ->execute($GLOBALS['TL_LANGUAGE'])
                 ->fetchAllassoc();
 
-            foreach($items as $item)
-            {
+            foreach ($items as $item) {
 
                 $foundItem = false;
 
-                foreach($arrLocalizedPages as $row)
-                {
+                foreach ($arrLocalizedPages as $row) {
 
-                    if($row['pid'] == $item['id'])
-                    {
+                    if ($row['pid'] == $item['id']) {
 
                         $foundItem = true;
 
                         $item['alias'] = $row['alias'] = $row['alias'] ? : $item['alias'];
                         $item['language'] = $row['language'];
 
-                        if($item['type'] == 'forward')
-                        {
+                        if ($item['type'] == 'forward') {
                             $forwardRow = self::getI18nForward($item, $row['language']);
                             $forwardRow['alias'] = $item['alias'] = $forwardRow['alias'] ? : $item['alias'];
                             $item['href'] = $this->generateFrontendUrl($forwardRow);
-                        }
-                        else
-                        {
+                        } else {
                             $item['href'] = $this->generateFrontendUrl($item);
                         }
 
@@ -120,11 +115,11 @@ class I18nl10nFrontend extends \Controller
                         $item['link'] = $item['title'];
                         $item['description'] = str_replace(
                             array("\n", "\r"),
-                            array(' ' , ''),
+                            array(' ', ''),
                             specialchars($row['description'])
                         );
 
-                        array_push($i18n_items,$item);
+                        array_push($i18n_items, $item);
 
                     }
 
@@ -135,13 +130,10 @@ class I18nl10nFrontend extends \Controller
                 }
 
             }
-        }
-        else
-        {
-            foreach($items as $item)
-            {
+        } else {
+            foreach ($items as $item) {
                 if (!$blnUseFallback && $item['l10n_published'] == '') continue;
-                array_push($i18n_items,$item);
+                array_push($i18n_items, $item);
             }
         }
 
@@ -158,8 +150,7 @@ class I18nl10nFrontend extends \Controller
      */
     private function getI18nForward(Array $item, $lang)
     {
-        if($item['jumpTo'])
-        {
+        if ($item['jumpTo']) {
             $sql = "
               SELECT
                 *
@@ -173,12 +164,10 @@ class I18nl10nFrontend extends \Controller
             $request = \Database::getInstance()
                 ->prepare($sql)
                 ->limit(1)
-                ->execute($item['jumpTo'],$lang);
+                ->execute($item['jumpTo'], $lang);
 
             $i18nl = $request->fetchAssoc();
-        }
-        else
-        {
+        } else {
             $time = time();
             $sql = "
                 SELECT
@@ -195,7 +184,7 @@ class I18nl10nFrontend extends \Controller
                       pid = ?
                       AND type = 'regular'";
 
-            if(!BE_USER_LOGGED_IN) {
+            if (!BE_USER_LOGGED_IN) {
                 $sql .= "
                     AND (start='' OR start<$time)
                     AND (stop='' OR stop>$time)
@@ -213,7 +202,7 @@ class I18nl10nFrontend extends \Controller
             $request = \Database::getInstance()
                 ->prepare($sql)
                 ->limit(1)
-                ->execute($item['id'],$lang);
+                ->execute($item['id'], $lang);
 
             $i18nl = $request->fetchAssoc();
         }

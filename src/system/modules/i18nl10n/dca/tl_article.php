@@ -32,7 +32,8 @@ class tl_article_l10n extends tl_article
     /**
      * Add summary of elements by language as tooltip.
      */
-    public function addIcon($row, $label) {
+    public function addIcon($row, $label)
+    {
         $label = parent::addIcon($row, $label);
         $sql = "
           SELECT
@@ -52,13 +53,13 @@ class tl_article_l10n extends tl_article
             ->fetchAllAssoc();
 
         // build icon elements
-        if(!empty($items)) {
-            foreach($items as $l10nItem) {
+        if (!empty($items)) {
+            foreach ($items as $l10nItem) {
                 $count = $l10nItem['items'];
                 $title = $GLOBALS['TL_LANG']['LNG'][$l10nItem['l10n_language']] . ": $count " . $GLOBALS['TL_LANG']['tl_article']['elements'];
                 $l10nItemIcon = 'system/modules/i18nl10n/assets/img/i18nl10n.png';
 
-                if($l10nItem['l10n_language']) {
+                if ($l10nItem['l10n_language']) {
                     $l10nItemIcon = 'system/modules/i18nl10n/assets/img/flag_icons/' . $l10nItem['l10n_language'] . '.png';
                 }
 

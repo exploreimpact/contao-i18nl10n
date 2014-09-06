@@ -80,7 +80,7 @@ $GLOBALS['TL_DCA']['tl_page']['config']['ondelete_callback'][] = array
 if(\Input::get('pid') === NULL || \Input::get('pid') != 0)
 {
     // splice in l10n_published field into palettes
-    foreach($GLOBALS['TL_DCA']['tl_page']['palettes'] as $k => $v){
+    foreach ($GLOBALS['TL_DCA']['tl_page']['palettes'] as $k => $v) {
         $GLOBALS['TL_DCA']['tl_page']['palettes'][$k] = str_replace('published,', 'published,l10n_published,', $v);
     }
 
@@ -147,7 +147,7 @@ class tl_page_l10n extends tl_page
 
         if (\Input::get('pid') == 0)
         {
-            $GLOBALS['TL_DCA']['tl_page']['fields']['language']['default'] = $GLOBALS['TL_CONFIG']['i18nl10n_default_language'];
+            $GLOBALS['TL_DCA']['tl_page']['fields']['language']['default'] = \Config::get('i18nl10n_default_language');
         }
         else
         {
@@ -171,10 +171,10 @@ class tl_page_l10n extends tl_page
             return;
         }
 
-        $i18nl10nLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
+        $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
 
         // if no languages or count is smaller 2 (1 = default language)
-        if(!$i18nl10nLanguages || count($i18nl10nLanguages) < 2) {
+        if (!$i18nl10nLanguages || count($i18nl10nLanguages) < 2) {
 
             $this->loadLanguageFile('tl_page_i18nl10n');
 
@@ -211,7 +211,7 @@ class tl_page_l10n extends tl_page
         }
 
         //now make copies in each language.
-        $i18nl10nLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
+        $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
 
         $fields = array (
             'pid'     => $dc->id,
@@ -232,7 +232,7 @@ class tl_page_l10n extends tl_page
         );
 
         foreach ($i18nl10nLanguages as $language) {
-            if($language == $GLOBALS['TL_CONFIG']['i18nl10n_default_language']) continue;
+            if ($language == \Config::get('i18nl10n_default_language')) continue;
 
             $fields['sorting'] += 128;
             $fields['language'] = $language;
@@ -275,21 +275,22 @@ class tl_page_l10n extends tl_page
      *
      * @param DataContainer $dc
      */
-    public function updateDefaultLanguage(DataContainer $dc) {
+    public function updateDefaultLanguage(DataContainer $dc)
+    {
 
-        if($dc->activeRecord->type == 'root') {
+        if ($dc->activeRecord->type == 'root') {
             $defaultLanguage = $dc->activeRecord->language;
-            $availableLanguages = deserialize($GLOBALS['TL_CONFIG']['i18nl10n_languages']);
+            $availableLanguages = deserialize(\Config::get('i18nl10n_languages'));
 
             // set root language as default language
             $config = \Config::getInstance();
-            $config->update("\$GLOBALS['TL_CONFIG']['i18nl10n_default_language']", $defaultLanguage);
+            $config->update("\\Config::get('i18nl10n_default_language')", $defaultLanguage);
 
             // add language to available languages
-            if(!in_array($defaultLanguage, $availableLanguages)){
+            if (!in_array($defaultLanguage, $availableLanguages)) {
                 $availableLanguages[] = $defaultLanguage;
 
-                $config->update("\$GLOBALS['TL_CONFIG']['i18nl10n_languages']", serialize($availableLanguages));
+                $config->update("\\Config::get('i18nl10n_languages')", serialize($availableLanguages));
             }
         }
     }

@@ -32,7 +32,7 @@ class I18nl10nHooks extends \System
      * Generates url for the site according to settings from the backend
      *
      * Assumptions:
-     * $GLOBALS['TL_CONFIG']['addLanguageToUrl'] == false;
+     * \Config::get('disableAlias') == false;
      *
      * @param array $arrRow
      * @param string $strParams
@@ -57,35 +57,29 @@ class I18nl10nHooks extends \System
         $strUrl = preg_replace($regex, '', $strUrl);
 
         // if alias is disabled add language to get param end return
-        if ($GLOBALS['TL_CONFIG']['disableAlias'])
-        {
+        if (\Config::get('disableAlias')) {
             $missingValueRegex = '@(.*\?[^&]*&)([^&]*)=(?=$|&)(&.*)?@';
 
-            if ($GLOBALS['TL_CONFIG']['useAutoItem'] && preg_match($missingValueRegex, $strUrl) == 1)
-            {
+            if (\Config::get('useAutoItem') && preg_match($missingValueRegex, $strUrl) == 1) {
                 $strUrl = preg_replace($missingValueRegex, '${1}auto_item=${2}${3}' , $strUrl);
             }
 
             return $strUrl . '&language=' . $language;
         }
 
-        if ($GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix'] && !$GLOBALS['TL_CONFIG']['disableAlias'])
-        {
-            $strL10nUrl = $alias . $strParams . '.' . $language . $GLOBALS['TL_CONFIG']['urlSuffix'];
+        if (\Config::get('i18nl10n_alias_suffix') && !\Config::get('disableAlias')) {
+            $strL10nUrl = $alias . $strParams . '.' . $language . \Config::get('urlSuffix');
 
             // if rewrite is off, add environment
-            if (!$GLOBALS['TL_CONFIG']['rewriteURL'])
-            {
+            if (!\Config::get('rewriteURL')) {
                 $strL10nUrl = 'index.php/' . $strL10nUrl;
             }
-        }
-        elseif ($GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl'])
-        {
+        } elseif (\Config::get('i18nl10n_addLanguageToUrl')) {
 
-            $strL10nUrl = $language . '/' . $alias . $strParams . $GLOBALS['TL_CONFIG']['urlSuffix'];
+            $strL10nUrl = $language . '/' . $alias . $strParams . \Config::get('urlSuffix');
 
             // if rewrite is off, add environment
-            if(!$GLOBALS['TL_CONFIG']['rewriteURL']) {
+            if (!\Config::get('rewriteURL')) {
                 $strL10nUrl = 'index.php/' . $strL10nUrl;
             }
 
@@ -93,18 +87,17 @@ class I18nl10nHooks extends \System
             // search for
             // www.domain.com/
             // www.domain.com/foo/
-            if(!$GLOBALS['TL_CONFIG']['disableAlias']
-                && preg_match('@' . $arrRow['alias'] . '(?=\\' . $GLOBALS['TL_CONFIG']['urlSuffix'] . '|/)@', $strL10nUrl) === false)
-            {
-                $strL10nUrl .= $alias . $GLOBALS['TL_CONFIG']['urlSuffix'];
+            if (!\Config::get('disableAlias')
+                && preg_match('@' . $arrRow['alias'] . '(?=\\' . \Config::get('urlSuffix') . '|/)@', $strL10nUrl) === false
+            ) {
+                $strL10nUrl .= $alias . \Config::get('urlSuffix');
             }
 
-        }
-        else {
+        } else {
             // if get variables
-            if(strpos($strUrl, '?') !== false) {
+            if (strpos($strUrl, '?') !== false) {
                 // if variable 'language' replace it
-                if(strpos($strUrl, 'language=') !== false) {
+                if (strpos($strUrl, 'language=') !== false) {
                     $regex = "@language=[A-z]{2}@";
                     $strL10nUrl = preg_replace(
                         $regex, 'language=' . $language, $strUrl
@@ -138,8 +131,7 @@ class I18nl10nHooks extends \System
         $language = $TL_CONFIG['i18nl10n_default_language'];
 
         // strip auto_item
-        if ($GLOBALS['TL_CONFIG']['useAutoItem'] && $arrFragments[1] == 'auto_item')
-        {
+        if (\Config::get('useAutoItem') && $arrFragments[1] == 'auto_item') {
             $arrFragments = array_delete($arrFragments, 1);
         }
 
@@ -157,8 +149,7 @@ class I18nl10nHooks extends \System
                 array_push($arrFragments, 'language', $language);
             }
         } // try to get language by suffix
-        elseif ($TL_CONFIG['i18nl10n_alias_suffix'] && !$GLOBALS['TL_CONFIG']['disableAlias'])
-        {
+        elseif ($TL_CONFIG['i18nl10n_alias_suffix'] && !\Config::get('disableAlias')) {
             // last element should contain language info
             if(preg_match('@^([_\-\pL\pN\.]*(?=\.))?\.?([A-z]{2})$@u', $arrFragments[count($arrFragments) - 1], $matches))
             {
@@ -220,8 +211,7 @@ class I18nl10nHooks extends \System
         if(is_array($arrAlias) && !empty($arrAlias)) $arrFragments[0] = $arrAlias['alias'];
 
         // Add the second fragment as auto_item if the number of fragments is even
-        if ($GLOBALS['TL_CONFIG']['useAutoItem'] && count($arrFragments) % 2 == 0)
-        {
+        if (\Config::get('useAutoItem') && count($arrFragments) % 2 == 0) {
             array_insert($arrFragments, 1, array('auto_item'));
         }
 
@@ -236,14 +226,15 @@ class I18nl10nHooks extends \System
      * @param $blnIsVisible
      * @return mixed
      */
-    public function isVisibleElement($objElement, $blnIsVisible) {
+    public function isVisibleElement($objElement, $blnIsVisible)
+    {
 
         global $objPage;
 
-        if($blnIsVisible && $objElement->l10n_language) {
+        if ($blnIsVisible && $objElement->l10n_language) {
 
             // check if given language is valid of fallback should be used
-            $strLanguage = $objPage->useFallbackLanguage ? $GLOBALS['TL_CONFIG']['i18nl10n_default_language'] : $GLOBALS['TL_LANGUAGE'];
+            $strLanguage = $objPage->useFallbackLanguage ? \Config::get('i18nl10n_default_language') : $GLOBALS['TL_LANGUAGE'];
 
             $blnIsVisible = $objElement->l10n_language == $strLanguage;
         }
@@ -259,7 +250,8 @@ class I18nl10nHooks extends \System
      * @param $objModule \Module
      * @return Array
      */
-    public function generateBreadcrumb($arrItems, \Module $objModule) {
+    public function generateBreadcrumb($arrItems, \Module $objModule)
+    {
         $arrPages = array();
 
         foreach($arrItems as $item)
