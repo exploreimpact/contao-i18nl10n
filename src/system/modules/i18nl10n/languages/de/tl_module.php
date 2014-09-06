@@ -27,13 +27,10 @@ $GLOBALS['TL_LANG']['tl_module']['i18nl10nLangStyle'] = array
     'Legt fest, welcher der gelieferten CSS Styles verwendet werden soll.'
 );
 
-$GLOBALS['TL_LANG']['tl_module']['i18nl10nLangStyleLabels'] = array
-(
-    'full'    => 'Flagge & Beschriftung',
-    'text'    => 'Nur Beschriftung',
-    'image'   => 'Nur Flagge',
-    'disable' => 'Kein Style'
-);
+$GLOBALS['TL_LANG']['tl_module']['i18nl10nLangStyleLabels']['full'] = 'Flagge & Beschriftung';
+$GLOBALS['TL_LANG']['tl_module']['i18nl10nLangStyleLabels']['text'] = 'Nur Beschriftung';
+$GLOBALS['TL_LANG']['tl_module']['i18nl10nLangStyleLabels']['image'] = 'Nur Flagge';
+$GLOBALS['TL_LANG']['tl_module']['i18nl10nLangStyleLabels']['disable'] = 'Kein Style';
 
 $GLOBALS['TL_LANG']['tl_module']['i18nl10nLangHide'] = array
 (
