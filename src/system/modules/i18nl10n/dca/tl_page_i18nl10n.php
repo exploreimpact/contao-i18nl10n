@@ -28,7 +28,8 @@ $this->loadDataContainer('tl_page');
 $disableCreate = true;
 $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
 
-if (is_array($i18nl10nLanguages) && count($i18nl10nLanguages) > 1) {
+if (is_array($i18nl10nLanguages) && count($i18nl10nLanguages) > 1)
+{
     $disableCreate = false;
 };
 
@@ -40,42 +41,42 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
 (
 
     // Config
-    'config' => array
+    'config'   => array
     (
-        'dataContainer'     => 'Table',
-        'ptable'            => 'tl_page',
-        'enableVersioning'  => true,
-        'closed'            => $disableCreate,
-        'onload_callback'   => array
+        'dataContainer'    => 'Table',
+        'ptable'           => 'tl_page',
+        'enableVersioning' => true,
+        'closed'           => $disableCreate,
+        'onload_callback'  => array
         (
             array('tl_page_i18nl10n', 'displayLanguageMessage'),
             array('tl_page', 'addBreadcrumb'),
-            array('tl_page_i18nl10n','localizeAllHandler')
+            array('tl_page_i18nl10n', 'localizeAllHandler')
         ),
-        'sql' => array
+        'sql'              => array
         (
             'keys' => array
             (
-                'id' => 'primary',
-                'pid' => 'index',
+                'id'    => 'primary',
+                'pid'   => 'index',
                 'alias' => 'index'
             )
         )
     ),
 
     // List
-    'list' => array
+    'list'     => array
     (
-        'sorting' => array
+        'sorting'           => array
         (
-            'mode'        => 6
+            'mode' => 6
             // TODO: Sorting by language is not possible in mode 6?
         ),
 
-        'label' => array
+        'label'             => array
         (
-            'fields'            => array('title', 'language'),
-            'label_callback'    => array('tl_page_i18nl10n', 'addIcon')
+            'fields'         => array('title', 'language'),
+            'label_callback' => array('tl_page_i18nl10n', 'addIcon')
         ),
 
         // Global operations
@@ -83,19 +84,19 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         (
             'define_language' => array
             (
-                'label'      => &$GLOBALS['TL_LANG']['tl_page_i18nl10n']['define_language'],
-                'href'       => 'do=settings',
-                'class'      => 'header_l10n_define_language',
+                'label' => &$GLOBALS['TL_LANG']['tl_page_i18nl10n']['define_language'],
+                'href'  => 'do=settings',
+                'class' => 'header_l10n_define_language',
             ),
 
-            'toggleNodes' => array
+            'toggleNodes'     => array
             (
                 'label' => &$GLOBALS['TL_LANG']['MSC']['toggleNodes'],
                 'href'  => 'ptg=all',
                 'class' => 'header_toggle'
             ),
 
-            'all' => array
+            'all'             => array
             (
                 'label'      => &$GLOBALS['TL_LANG']['MSC']['all'],
                 'href'       => 'act=select',
@@ -105,23 +106,23 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         ),
 
         // Item operations
-        'operations' => array
+        'operations'        => array
         (
-            'edit' => array
+            'edit'        => array
             (
                 'label' => &$GLOBALS['TL_LANG']['tl_page_i18nl10n']['edit'],
                 'href'  => 'act=edit',
                 'icon'  => 'edit.gif'
             ),
 
-            'copy' => array
+            'copy'        => array
             (
                 'label' => &$GLOBALS['TL_LANG']['tl_page_i18nl10n']['copy'],
                 'href'  => 'act=copy',
                 'icon'  => 'copy.gif'
             ),
 
-            'delete' => array
+            'delete'      => array
             (
                 'label'      => &$GLOBALS['TL_LANG']['tl_page_i18nl10n']['delete'],
                 'href'       => 'act=delete',
@@ -137,7 +138,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
                 'button_callback' => array('tl_page_i18nl10n', 'toggleIcon')
             ),
 
-            'show' => array
+            'show'        => array
             (
                 'label' => &$GLOBALS['TL_LANG']['tl_page_i18nl10n']['show'],
                 'href'  => 'act=show',
@@ -159,7 +160,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
     ),
 
     // Fields
-    'fields' => array
+    'fields'   => array
     (
         /**
          * TODO: add alias localized support so for example alias
@@ -167,16 +168,16 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
          * $GLOBALS['TL_HOOKS']['getPageIdFromUrl']
          */
 
-        'id' => array
+        'id'             => array
         (
             'sql' => "int(10) unsigned NOT NULL auto_increment"
         ),
 
-        'pid' => array
+        'pid'            => array
         (
             'foreignKey' => 'tl_page.id',
-            'sql' => "int(10) unsigned NOT NULL default '0'",
-            'relation' => array(
+            'sql'        => "int(10) unsigned NOT NULL default '0'",
+            'relation'   => array(
                 'type' => 'belongsTo',
                 'load' => 'eager'
             )
@@ -205,7 +206,8 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
 $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['l10n_published']['eval']['tl_class'] = 'w50 m12';
 
 // Splice in localize all in case languages are available
-if (!$disableCreate) {
+if (!$disableCreate)
+{
     $additionalFunctions = array(
         'localize_all' => array
         (
@@ -227,10 +229,13 @@ if (!$disableCreate) {
 $i18nl10nLanguageOptions = array();
 
 // remove default language
-if (is_array($i18nl10nLanguages)) {
-    foreach ($i18nl10nLanguages as $k => $v) {
-        if ($v == \Config::get('i18nl10n_default_language')) {
-            $i18nl10nLanguageOptions = array_delete($i18nl10nLanguages,$k);
+if (is_array($i18nl10nLanguages))
+{
+    foreach ($i18nl10nLanguages as $k => $v)
+    {
+        if ($v == \Config::get('i18nl10n_default_language'))
+        {
+            $i18nl10nLanguageOptions = array_delete($i18nl10nLanguages, $k);
             break;
         }
     }
@@ -241,19 +246,18 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['language'] = array_merge(
     $GLOBALS['TL_DCA']['tl_page']['fields']['language'],
     array(
         'label'     => &$GLOBALS['TL_LANG']['MSC']['i18nl10n_fields']['language']['label'],
-        'filter' => true,
+        'filter'    => true,
         'inputType' => 'select',
         'options'   => $i18nl10nLanguageOptions,
-        'reference'  => &$GLOBALS['TL_LANG']['LNG'],
-        'eval' => array_merge(
-                $GLOBALS['TL_DCA']['tl_page']['fields']['language']['eval'],
-                array(
+        'reference' => &$GLOBALS['TL_LANG']['LNG'],
+        'eval'      => array_merge(
+            $GLOBALS['TL_DCA']['tl_page']['fields']['language']['eval'],
+            array(
                 'includeBlankOption' => true
             )
         )
     )
 );
-
 
 
 /**
@@ -267,10 +271,9 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['language'] = array_merge(
  * @package     i18nl10n
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
-
 class tl_page_i18nl10n extends tl_page
 {
-    
+
     /**
      * Generate a localization icon for treeview
      *
@@ -282,10 +285,10 @@ class tl_page_i18nl10n extends tl_page
      * @param bool $blnProtected
      * @return string
      */
-    public function addIcon($row, $label, DataContainer $dc=null, $imageAttribute='', $blnReturnImage=false, $blnProtected=false)
+    public function addIcon($row, $label, DataContainer $dc = null, $imageAttribute = '', $blnReturnImage = false, $blnProtected = false)
     {
 
-        $src ='system/modules/i18nl10n/assets/img/flag_icons/' . $row['language'];
+        $src = 'system/modules/i18nl10n/assets/img/flag_icons/' . $row['language'];
 
         $src .= $row['l10n_published'] ? '.png' : '_invisible.png';
 
@@ -309,12 +312,13 @@ class tl_page_i18nl10n extends tl_page
     {
 
         // if
-        if(\Input::get('localize_all') && !\Input::post('localize_all'))
+        if (\Input::get('localize_all') && !\Input::post('localize_all'))
         {
             self::localizeAllMessage();
         }
         //localise all pages
-        elseif (\Input::post('localize_all_')) {
+        elseif (\Input::post('localize_all_'))
+        {
             self::localizeAllAction();
         }
     }
@@ -342,8 +346,9 @@ class tl_page_i18nl10n extends tl_page
         $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
         $i18nl10nDefaultLanguage = \Config::get('i18nl10n_default_language');
 
-        foreach ($i18nl10nLanguages as $language) {
-            if($language == $i18nl10nDefaultLanguage) continue;
+        foreach ($i18nl10nLanguages as $language)
+        {
+            if ($language == $i18nl10nDefaultLanguage) continue;
 
             $html = '<li><img class="i18nl10n_flag" src="system/modules/i18nl10n/assets/img/flag_icons/%1$s.png" /> %2$s</li>';
 
@@ -392,11 +397,12 @@ class tl_page_i18nl10n extends tl_page
         $defaultLanguage = \Config::get('i18nl10n_default_language');
         $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
 
-        foreach ($i18nl10nLanguages as $lang) {
-            if($lang == $defaultLanguage) continue;
+        foreach ($i18nl10nLanguages as $lang)
+        {
+            if ($lang == $defaultLanguage) continue;
 
 
-                $sql = "
+            $sql = "
                   INSERT INTO
                     tl_page_i18nl10n
                     (
@@ -441,7 +447,8 @@ class tl_page_i18nl10n extends tl_page
         $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
 
         // if no languages or count is smaller 2 (1 = default language)
-        if (!$i18nl10nLanguages || count($i18nl10nLanguages) < 2) {
+        if (!$i18nl10nLanguages || count($i18nl10nLanguages) < 2)
+        {
 
             // TODO: ref= would be nice for link
             $message = sprintf(
@@ -472,7 +479,7 @@ class tl_page_i18nl10n extends tl_page
         // Check permissions to publish
         if (!$this->User->isAdmin && !$this->User->hasAccess('tl_page::published', 'alexf'))
         {
-            $this->log('Not enough permissions to publish/unpublish L10N page ID "'.$intId.'"', 'tl_page_i18nl10n toggleVisibility', TL_ERROR);
+            $this->log('Not enough permissions to publish/unpublish L10N page ID "' . $intId . '"', 'tl_page_i18nl10n toggleVisibility', TL_ERROR);
             $this->redirect('contao/main.php?act=error');
         }
 
@@ -532,7 +539,7 @@ class tl_page_i18nl10n extends tl_page
             return '';
         }
 
-        $href .= '&amp;tid='.$row['id'].'&amp;state='.($row['published'] ? '' : 1);
+        $href .= '&amp;tid=' . $row['id'] . '&amp;state=' . ($row['published'] ? '' : 1);
 
         if (!$row['l10n_published'])
         {
@@ -573,7 +580,8 @@ class tl_page_i18nl10n extends tl_page
 
     public function displayAddLanguageToUrlMessage()
     {
-        if (\Config::get('addLanguageToUrl')) {
+        if (\Config::get('addLanguageToUrl'))
+        {
 
             $message = $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_add_language_to_url'];
 
@@ -599,14 +607,14 @@ class tl_page_i18nl10n extends tl_page
             return '';
         }
 
-        $href .= '&amp;id='.\Input::get('id').'&amp;tid='.$row['id'].'&amp;state='.$row[''];
+        $href .= '&amp;id=' . \Input::get('id') . '&amp;tid=' . $row['id'] . '&amp;state=' . $row[''];
 
         if (!$row['l10n_published'])
         {
             $icon = 'invisible.gif';
         }
 
-        return '<a href="'.$this->addToUrl($href).'" title="'.specialchars($title).'"'.$attributes.'>'.\Image::getHtml($icon, $label).'</a> ';
+        return '<a href="' . $this->addToUrl($href) . '" title="' . specialchars($title) . '"' . $attributes . '>' . \Image::getHtml($icon, $label) . '</a> ';
     }
 
 
@@ -618,7 +626,7 @@ class tl_page_i18nl10n extends tl_page
         // Check permissions to publish
         if (!$this->User->isAdmin && !$this->User->hasAccess($strTable . '::l10n_published', 'alexf'))
         {
-            $this->log('Not enough permissions to show/hide record ID "'.$intId.'"', $strTable . ' toggleVisibility', TL_ERROR);
+            $this->log('Not enough permissions to show/hide record ID "' . $intId . '"', $strTable . ' toggleVisibility', TL_ERROR);
             $this->redirect('contao/main.php?act=error');
         }
 
@@ -638,9 +646,9 @@ class tl_page_i18nl10n extends tl_page
 
         $sql = "
             UPDATE "
-                . $strTable .
+            . $strTable .
             " SET
-                tstamp=". time() .",
+                tstamp=" . time() . ",
                 l10n_published = ?
             WHERE
                 id = ?
@@ -664,7 +672,8 @@ class tl_page_i18nl10n extends tl_page
      */
     public function executePostActions($strAction)
     {
-        switch ($strAction) {
+        switch ($strAction)
+        {
             case 'toggleL10n':
                 tl_page_i18nl10n::toggleL10n(
                     \Input::post('id'),

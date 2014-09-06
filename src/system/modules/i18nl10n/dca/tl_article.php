@@ -53,13 +53,16 @@ class tl_article_l10n extends tl_article
             ->fetchAllAssoc();
 
         // build icon elements
-        if (!empty($items)) {
-            foreach ($items as $l10nItem) {
+        if (!empty($items))
+        {
+            foreach ($items as $l10nItem)
+            {
                 $count = $l10nItem['items'];
                 $title = $GLOBALS['TL_LANG']['LNG'][$l10nItem['language']] . ": $count " . $GLOBALS['TL_LANG']['tl_article']['elements'];
                 $l10nItemIcon = 'system/modules/i18nl10n/assets/img/i18nl10n.png';
 
-                if ($l10nItem['language']) {
+                if ($l10nItem['language'])
+                {
                     $l10nItemIcon = 'system/modules/i18nl10n/assets/img/flag_icons/' . $l10nItem['language'] . '.png';
                 }
 

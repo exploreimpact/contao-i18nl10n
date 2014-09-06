@@ -25,9 +25,9 @@ $this->loadLanguageFile('languages');
  */
 $GLOBALS['TL_DCA']['tl_page']['list']['operations']['page_i18nl10n'] = array
 (
-    'label'               => 'L10N',
-    'href'                => 'do=i18nl10n',
-    'button_callback'     => array('tl_page_l10n', 'editL10n')
+    'label'           => 'L10N',
+    'href'            => 'do=i18nl10n',
+    'button_callback' => array('tl_page_l10n', 'editL10n')
 );
 
 $onLoadCallback = array
@@ -46,7 +46,7 @@ $onLoadCallback = array
 
 array_insert(
     $GLOBALS['TL_DCA']['tl_page']['config']['onload_callback'],
-    count($GLOBALS['TL_DCA']['tl_page']['config']['onload_callback'])-1,
+    count($GLOBALS['TL_DCA']['tl_page']['config']['onload_callback']) - 1,
     $onLoadCallback
 );
 
@@ -66,7 +66,7 @@ $onSubmitCallback = array
 
 array_insert(
     $GLOBALS['TL_DCA']['tl_page']['config']['onsubmit_callback'],
-    count($GLOBALS['TL_DCA']['tl_page']['config']['onsubmit_callback'])-1,
+    count($GLOBALS['TL_DCA']['tl_page']['config']['onsubmit_callback']) - 1,
     $onSubmitCallback
 );
 
@@ -77,10 +77,11 @@ $GLOBALS['TL_DCA']['tl_page']['config']['ondelete_callback'][] = array
 );
 
 // only show l10n_published if not a new root page
-if(\Input::get('pid') === NULL || \Input::get('pid') != 0)
+if (\Input::get('pid') === NULL || \Input::get('pid') != 0)
 {
     // splice in l10n_published field into palettes
-    foreach ($GLOBALS['TL_DCA']['tl_page']['palettes'] as $k => $v) {
+    foreach ($GLOBALS['TL_DCA']['tl_page']['palettes'] as $k => $v)
+    {
         $GLOBALS['TL_DCA']['tl_page']['palettes'][$k] = str_replace('published,', 'published,l10n_published,', $v);
     }
 
@@ -123,7 +124,7 @@ class tl_page_l10n extends tl_page
             "\"{$row['title']}\""
         );
 
-        $buttonURL = $this->addToUrl($href.'&amp;node='.$row['id']);
+        $buttonURL = $this->addToUrl($href . '&amp;node=' . $row['id']);
 
         return sprintf(
             '<a href="%1$s" title="%2$s"><img src="system/modules/i18nl10n/assets/img/i18nl10n.png"></a>',
@@ -174,7 +175,8 @@ class tl_page_l10n extends tl_page
         $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
 
         // if no languages or count is smaller 2 (1 = default language)
-        if (!$i18nl10nLanguages || count($i18nl10nLanguages) < 2) {
+        if (!$i18nl10nLanguages || count($i18nl10nLanguages) < 2)
+        {
 
             $this->loadLanguageFile('tl_page_i18nl10n');
 
@@ -198,14 +200,15 @@ class tl_page_l10n extends tl_page
     public function generatePageL10n(DataContainer $dc)
     {
 
-        if(!$dc->activeRecord || $dc->activeRecord->tstamp > 0) return;
+        if (!$dc->activeRecord || $dc->activeRecord->tstamp > 0) return;
 
         $new_records = $this->Session->get('new_records');
 
         // Not a new page - copy/paste is a great way to share code :P
         if (!$new_records
             || is_array($new_records[$dc->table])
-                && !in_array($dc->id, $new_records[$dc->table]))
+            && !in_array($dc->id, $new_records[$dc->table])
+        )
         {
             return;
         }
@@ -213,25 +216,26 @@ class tl_page_l10n extends tl_page
         //now make copies in each language.
         $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
 
-        $fields = array (
-            'pid'     => $dc->id,
-            'sorting' => 0,
-            'tstamp'  => time(),
-            'title' => $dc->activeRecord->title,
-            'alias' => $dc->activeRecord->alias,
-            'type'  => $dc->activeRecord->type,
-            'pageTitle' => $dc->activeRecord->pageTitle,
-            'description' => $dc->activeRecord->description,
-            'cssClass' => $dc->activeRecord->cssClass,
+        $fields = array(
+            'pid'            => $dc->id,
+            'sorting'        => 0,
+            'tstamp'         => time(),
+            'title'          => $dc->activeRecord->title,
+            'alias'          => $dc->activeRecord->alias,
+            'type'           => $dc->activeRecord->type,
+            'pageTitle'      => $dc->activeRecord->pageTitle,
+            'description'    => $dc->activeRecord->description,
+            'cssClass'       => $dc->activeRecord->cssClass,
             'l10n_published' => $dc->activeRecord->published,
-            'start' => $dc->activeRecord->start,
-            'stop'  => $dc->activeRecord->stop,
-            'dateFormat' => $dc->activeRecord->dateFormat,
-            'timeFormat' => $dc->activeRecord->timeFormat,
-            'datimFormat' => $dc->activeRecord->datimFormat
+            'start'          => $dc->activeRecord->start,
+            'stop'           => $dc->activeRecord->stop,
+            'dateFormat'     => $dc->activeRecord->dateFormat,
+            'timeFormat'     => $dc->activeRecord->timeFormat,
+            'datimFormat'    => $dc->activeRecord->datimFormat
         );
 
-        foreach ($i18nl10nLanguages as $language) {
+        foreach ($i18nl10nLanguages as $language)
+        {
             if ($language == \Config::get('i18nl10n_default_language')) continue;
 
             $fields['sorting'] += 128;
@@ -278,7 +282,8 @@ class tl_page_l10n extends tl_page
     public function updateDefaultLanguage(DataContainer $dc)
     {
 
-        if ($dc->activeRecord->type == 'root') {
+        if ($dc->activeRecord->type == 'root')
+        {
             $defaultLanguage = $dc->activeRecord->language;
             $availableLanguages = deserialize(\Config::get('i18nl10n_languages'));
 
@@ -287,7 +292,8 @@ class tl_page_l10n extends tl_page
             $config->update("\\Config::get('i18nl10n_default_language')", $defaultLanguage);
 
             // add language to available languages
-            if (!in_array($defaultLanguage, $availableLanguages)) {
+            if (!in_array($defaultLanguage, $availableLanguages))
+            {
                 $availableLanguages[] = $defaultLanguage;
 
                 $config->update("\\Config::get('i18nl10n_languages')", serialize($availableLanguages));

@@ -42,9 +42,11 @@ class PageI18nl10nRegular extends \PageRegular
 
         self::fixupCurrentLanguage();
 
-        if ($GLOBALS['TL_LANGUAGE'] == \Config::get('i18nl10n_default_language')) {
+        if ($GLOBALS['TL_LANGUAGE'] == \Config::get('i18nl10n_default_language'))
+        {
             // if default language is not published, give error
-            if (!$objPage->l10n_published) {
+            if (!$objPage->l10n_published)
+            {
                 $objError = new $GLOBALS['TL_PTY']['error_404']();
                 $objError->generate($objPage->id);
             }
@@ -66,7 +68,8 @@ class PageI18nl10nRegular extends \PageRegular
               AND language = ?
         ";
 
-        if (!BE_USER_LOGGED_IN) {
+        if (!BE_USER_LOGGED_IN)
+        {
             $time = time();
             $sql .= "
                 AND (start = '' OR start < $time)
@@ -81,28 +84,34 @@ class PageI18nl10nRegular extends \PageRegular
             ->execute($objPage->id, $GLOBALS['TL_LANGUAGE']);
 
         // if translated page, replace given fields in page object
-        if ($l10n->numRows) {
+        if ($l10n->numRows)
+        {
 
             $objPage->defaultPageTitle = $objPage->pageTitle;
             $objPage->defaultTitle = $objPage->title;
 
-            foreach (explode(',', $fields) as $field) {
-                if ($l10n->$field) {
+            foreach (explode(',', $fields) as $field)
+            {
+                if ($l10n->$field)
+                {
                     $objPage->$field = $l10n->$field;
                 }
             }
         } // else use fallback language
-        else {
+        else
+        {
 
             // if fallback is not published, show 404
-            if (!$objPage->l10n_published) {
+            if (!$objPage->l10n_published)
+            {
                 $objError = new $GLOBALS['TL_PTY']['error_404']();
                 $objError->generate($objPage->id);
 
                 parent::generate($objPage);
                 return;
             } // else at least keep current language to prevent language change and set flag
-            else {
+            else
+            {
                 $objPage->language = $GLOBALS['TL_LANGUAGE'];
                 $objPage->useFallbackLanguage = true;
             }
@@ -112,10 +121,12 @@ class PageI18nl10nRegular extends \PageRegular
         // update root information
         $objL10nRootPage = self::getL10nRootPage($objPage);
 
-        if ($objL10nRootPage) {
+        if ($objL10nRootPage)
+        {
             $objPage->rootTitle = $objL10nRootPage->title;
 
-            if ($objPage->pid == $objPage->rootId) {
+            if ($objPage->pid == $objPage->rootId)
+            {
                 $objPage->parentTitle = $objL10nRootPage->title;
                 $objPage->parentPageTitle = $objL10nRootPage->pageTitle;
             }
@@ -140,7 +151,8 @@ class PageI18nl10nRegular extends \PageRegular
         // if language is added to url, get it from there
         if (\Config::get('i18nl10n_addLanguageToUrl')
             && !\Config::get('disableAlias')
-        ) {
+        )
+        {
             $this->import('Environment');
             $environment = $this->Environment;
             $basePath = preg_quote(\Config::get('rewriteURL') ? \Config::get('websitePath') : $environment->scriptName);
@@ -148,7 +160,8 @@ class PageI18nl10nRegular extends \PageRegular
             $regex = "@^($basePath/)?([A-z]{2}(?=/)){1}(/.*)@";
 
             // only set language if found in url
-            if (preg_match($regex, $environment->requestUri)) {
+            if (preg_match($regex, $environment->requestUri))
+            {
                 $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = preg_replace($regex, '$2', $environment->requestUri);
             }
 
@@ -163,7 +176,8 @@ class PageI18nl10nRegular extends \PageRegular
         // if alias is disabled, get language from get param
         if ($selectedLanguage
             && \Config::get('disableAlias')
-        ) {
+        )
+        {
             $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selectedLanguage;
 
             return;
@@ -171,9 +185,12 @@ class PageI18nl10nRegular extends \PageRegular
 
         if ($selectedLanguage
             && in_array($selectedLanguage, $i18nl10nLanguages)
-        ) {
+        )
+        {
             $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selectedLanguage;
-        } elseif (isset($_SESSION['TL_LANGUAGE'])) {
+        }
+        elseif (isset($_SESSION['TL_LANGUAGE']))
+        {
             $GLOBALS['TL_LANGUAGE'] = $_SESSION['TL_LANGUAGE'];
         }
 
@@ -198,7 +215,8 @@ class PageI18nl10nRegular extends \PageRegular
               AND language = ?
         ";
 
-        if (!BE_USER_LOGGED_IN) {
+        if (!BE_USER_LOGGED_IN)
+        {
             $time = time();
             $sql .= "
                 AND (start = '' OR start < $time)

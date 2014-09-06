@@ -63,7 +63,7 @@ $i18nl10nSettings = array
         'default'   => $i18nl10n_default_language,
         'eval'      => array
         (
-            'tl_class'  => 'w50',
+            'tl_class' => 'w50',
             'disabled' => true
         )
     ),
@@ -129,7 +129,7 @@ class tl_settings_l10n extends Backend
      */
     function ensureUnique($languages, DataContainer $dc)
     {
-        return serialize( array_unique( deserialize( $languages ) ) );
+        return serialize(array_unique(deserialize($languages)));
     }
 
 
@@ -148,17 +148,21 @@ class tl_settings_l10n extends Backend
         $strDefaultLanguage = \Config::get('i18nl10n_default_language');
 
         // if languages defined, check each one if valid
-        if (!empty($arrPageLanguages)) {
-            foreach ($arrPageLanguages as $language) {
+        if (!empty($arrPageLanguages))
+        {
+            foreach ($arrPageLanguages as $language)
+            {
                 // check if valid language and add language
-                if (array_key_exists($language, $GLOBALS['TL_LANG']['LNG'])) {
+                if (array_key_exists($language, $GLOBALS['TL_LANG']['LNG']))
+                {
                     array_push($arrValidLanguages, $language);
                 }
             }
         }
 
         // if default language is missing add it
-        if (!in_array($strDefaultLanguage, $arrPageLanguages)) {
+        if (!in_array($strDefaultLanguage, $arrPageLanguages))
+        {
             array_push($arrValidLanguages, $strDefaultLanguage);
 
             // show info message
@@ -180,12 +184,13 @@ class tl_settings_l10n extends Backend
     function ensureOthersUnchecked($value, DataContainer $dc)
     {
 
-        if($value
+        if ($value
             && ($dc->field == 'i18nl10n_alias_suffix'
                 && \Config::get('i18nl10n_addLanguageToUrl') == 1
                 || $dc->field == 'i18nl10n_addLanguageToUrl'
                 && \Config::get('i18nl10n_alias_suffix') == 1)
-        ) {
+        )
+        {
 
             // show error and write to log
             $errorMessage = & $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffixError'];
@@ -200,9 +205,11 @@ class tl_settings_l10n extends Backend
             \System::log($errorMessage, __METHOD__, TL_CONFIGURATION);
 
             return false;
-        } elseif (\Config::get('addLanguageToUrl')) {
+        }
+        elseif (\Config::get('addLanguageToUrl'))
+        {
 
-            $errorMessage = &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_contaoAddLanguageToUrlError'];
+            $errorMessage = & $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_contaoAddLanguageToUrlError'];
             $errorMessage = sprintf(
                 $errorMessage,
                 $GLOBALS['TL_LANG']['tl_settings']['addLanguageToUrl'][0]

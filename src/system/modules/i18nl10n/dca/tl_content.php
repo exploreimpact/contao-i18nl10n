@@ -45,9 +45,11 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['language'] = array_merge(
 
 
 // only insert language extension in article module
-if (\Input::get('do') == 'article') {
+if (\Input::get('do') == 'article')
+{
     // add language section to all palettes
-    foreach ($GLOBALS['TL_DCA']['tl_content']['palettes'] as $k => $v) {
+    foreach ($GLOBALS['TL_DCA']['tl_content']['palettes'] as $k => $v)
+    {
         if ($k == '__selector__') continue;
         $GLOBALS['TL_DCA']['tl_content']['palettes'][$k] = "$v;" . '{l10n_legend:hide},language;';
     }
@@ -72,15 +74,19 @@ class tl_content_l10n extends tl_content
         $key = $arrRow['invisible'] ? 'unpublished' : 'published';
         $langIcon = 'system/modules/i18nl10n/assets/img/i18nl10n.png';
 
-        if ($arrRow['language']) {
+        if ($arrRow['language'])
+        {
             $langIcon = 'system/modules/i18nl10n/assets/img/flag_icons/' . $arrRow['language'] . '.png';
         }
 
         $html = '<div class="cte_type %1$s"><img class="i18nl10n_content_flag" src="%2$s" /> [%3$s] %4$s %5$s';
 
-        if ($arrRow['protected']) {
+        if ($arrRow['protected'])
+        {
             $html .= ' (%6$s)';
-        } elseif ($arrRow['guests']) {
+        }
+        elseif ($arrRow['guests'])
+        {
             $html .= ' (%7$s)';
         }
 

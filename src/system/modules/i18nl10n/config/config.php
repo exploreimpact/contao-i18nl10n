@@ -22,22 +22,29 @@
  */
 
 // Extend header includes
-if (TL_MODE == 'BE') {
+if (TL_MODE == 'BE')
+{
     // CSS files
     $strCss = 'system/modules/i18nl10n/assets/css/style.css';
 
-    if (is_array($GLOBALS['TL_CSS'])) {
+    if (is_array($GLOBALS['TL_CSS']))
+    {
         $GLOBALS['TL_CSS'][] = $strCss;
-    } else {
+    }
+    else
+    {
         $GLOBALS['TL_CSS'] = array($strCss);
     }
 
     // JS files
     $strJs = 'system/modules/i18nl10n/assets/js/I18nl10n.js';
 
-    if (is_array($GLOBALS['TL_JAVASCRIPT'])) {
+    if (is_array($GLOBALS['TL_JAVASCRIPT']))
+    {
         $GLOBALS['TL_JAVASCRIPT'][] = $strJs;
-    } else {
+    }
+    else
+    {
         $GLOBALS['TL_JAVASCRIPT'] = array($strJs);
     }
 }
