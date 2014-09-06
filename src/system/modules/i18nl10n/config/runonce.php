@@ -34,11 +34,11 @@ class I18nl10nRunOnceJob extends \Controller
 
         $config = \Config::getInstance();
 
-        $i18nl10nDefaultLanguage = \Config::get('i18nl10n_default_language') ? : 'en';
+        $i18nl10nDefaultLanguage = $config->get('i18nl10n_default_language') ? : 'en';
 
 
         // if not default try to get from root or use fallback
-        if (!\Config::get('i18nl10n_default_language')) {
+        if (!$config->get('i18nl10n_default_language')) {
 
             $sql = "
                 SELECT
@@ -62,16 +62,16 @@ class I18nl10nRunOnceJob extends \Controller
 
             $config->add
                 (
-                    "\\Config::get('i18nl10n_default_language')",
+                    "\$GLOBALS['TL_CONFIG']['i18nl10n_default_language']",
                     $i18nl10nDefaultLanguage
                 );
         }
 
         // if no available languages, set at least default
-        if (!\Config::get('i18nl10n_languages')) {
+        if (!$config->get('i18nl10n_languages')) {
             $config->add
                 (
-                    "\\Config::get('i18nl10n_languages')",
+                    "\$GLOBALS['TL_CONFIG']['i18nl10n_languages']",
                     serialize(array($i18nl10nDefaultLanguage))
                 );
         } // if available languages, check if default needs to be added
@@ -82,7 +82,7 @@ class I18nl10nRunOnceJob extends \Controller
             if (!in_array($defaultLanguage, $availableLanguages)) {
                 $availableLanguages[] = $defaultLanguage;
 
-                $config->update("\\Config::get('i18nl10n_languages')", serialize($availableLanguages));
+                $config->update("\$GLOBALS['TL_CONFIG']['i18nl10n_languages']", serialize($availableLanguages));
             }
         }
 
