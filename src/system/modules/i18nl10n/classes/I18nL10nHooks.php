@@ -61,7 +61,7 @@ class I18nl10nHooks extends \System
             $missingValueRegex = '@(.*\?[^&]*&)([^&]*)=(?=$|&)(&.*)?@';
 
             if (\Config::get('useAutoItem') && preg_match($missingValueRegex, $strUrl) == 1) {
-                $strUrl = preg_replace($missingValueRegex, '${1}auto_item=${2}${3}' , $strUrl);
+                $strUrl = preg_replace($missingValueRegex, '${1}auto_item=${2}${3}', $strUrl);
             }
 
             return $strUrl . '&language=' . $language;
@@ -136,10 +136,8 @@ class I18nl10nHooks extends \System
         }
 
         // try to get language by i18nl10n URL
-        if ($TL_CONFIG['i18nl10n_addLanguageToUrl'])
-        {
-            if (preg_match('@^([A-z]{2})$@', $arrFragments[0], $matches))
-            {
+        if ($TL_CONFIG['i18nl10n_addLanguageToUrl']) {
+            if (preg_match('@^([A-z]{2})$@', $arrFragments[0], $matches)) {
                 $language = strtolower($matches[1]);
 
                 // remove old language entry
@@ -151,32 +149,26 @@ class I18nl10nHooks extends \System
         } // try to get language by suffix
         elseif ($TL_CONFIG['i18nl10n_alias_suffix'] && !\Config::get('disableAlias')) {
             // last element should contain language info
-            if(preg_match('@^([_\-\pL\pN\.]*(?=\.))?\.?([A-z]{2})$@u', $arrFragments[count($arrFragments) - 1], $matches))
-            {
+            if (preg_match('@^([_\-\pL\pN\.]*(?=\.))?\.?([A-z]{2})$@u', $arrFragments[count($arrFragments) - 1], $matches)) {
 
                 // define language and alias value
                 $language = strtolower($matches[2]);
                 $alias = $matches[1] != '' ? $matches[1] : $arrFragments[count($arrFragments) - 1];
 
-                if(in_array($language, $languages))
-                {
+                if (in_array($language, $languages)) {
 
                     // if only language was found, pop it from array
-                    if($matches[1] == '')
-                    {
+                    if ($matches[1] == '') {
                         array_pop($arrFragments);
                     } // else set alias
-                    else
-                    {
+                    else {
                         $arrFragments[count($arrFragments) - 1] = $alias;
                     }
 
                     array_push($arrFragments, 'language', $language);
                 }
             }
-        }
-        elseif (\Input::get('language'))
-        {
+        } elseif (\Input::get('language')) {
             $language = \Input::get('language');
         }
 
@@ -192,8 +184,7 @@ class I18nl10nHooks extends \System
                 )
         ";
 
-        if(!BE_USER_LOGGED_IN)
-        {
+        if (!BE_USER_LOGGED_IN) {
             $time = time();
             $sql .= "
                 AND (start = '' OR start < $time)
@@ -208,7 +199,7 @@ class I18nl10nHooks extends \System
             ->execute(is_numeric($arrFragments[0] ? : 0), $language, $arrFragments[0], $language)
             ->fetchAssoc();
 
-        if(is_array($arrAlias) && !empty($arrAlias)) $arrFragments[0] = $arrAlias['alias'];
+        if (is_array($arrAlias) && !empty($arrAlias)) $arrFragments[0] = $arrAlias['alias'];
 
         // Add the second fragment as auto_item if the number of fragments is even
         if (\Config::get('useAutoItem') && count($arrFragments) % 2 == 0) {
@@ -231,12 +222,12 @@ class I18nl10nHooks extends \System
 
         global $objPage;
 
-        if ($blnIsVisible && $objElement->l10n_language) {
+        if ($blnIsVisible && $objElement->language) {
 
             // check if given language is valid of fallback should be used
             $strLanguage = $objPage->useFallbackLanguage ? \Config::get('i18nl10n_default_language') : $GLOBALS['TL_LANGUAGE'];
 
-            $blnIsVisible = $objElement->l10n_language == $strLanguage;
+            $blnIsVisible = $objElement->language == $strLanguage;
         }
 
         return $blnIsVisible;
@@ -254,8 +245,7 @@ class I18nl10nHooks extends \System
     {
         $arrPages = array();
 
-        foreach($arrItems as $item)
-        {
+        foreach ($arrItems as $item) {
             $arrPages[] = $item['isRoot'] ? $item['data']['pid'] : $item['data']['id'];
         }
 
@@ -269,8 +259,7 @@ class I18nl10nHooks extends \System
               AND language = ?
         ";
 
-        if(!BE_USER_LOGGED_IN)
-        {
+        if (!BE_USER_LOGGED_IN) {
             $time = time();
             $sql .= "
                 AND (start = '' OR start < $time)
@@ -285,20 +274,17 @@ class I18nl10nHooks extends \System
             ->fetchAllassoc();
 
         // if translated page, replace given fields in element array
-        if (count($arrL10n) > 0)
-        {
+        if (count($arrL10n) > 0) {
             // each breadcrumb element
-            for($i = 0; count($arrItems) > $i; $i++)
-            {
+            for ($i = 0; count($arrItems) > $i; $i++) {
                 // each translation
-                foreach($arrL10n as $l10n)
-                {
+                foreach ($arrL10n as $l10n) {
                     // if translation for actual breadcrumb element
-                    if($arrItems[$i]['isRoot'] && $arrItems[$i]['data']['pid'] == $l10n['pid']
-                        || !$arrItems[$i]['isRoot'] && $arrItems[$i]['data']['id'] == $l10n['pid'])
-                    {
-                        if($l10n['pageTitle']) $arrItems[$i]['title'] = $l10n['pageTitle'];
-                        if($l10n['title']) $arrItems[$i]['link'] = $l10n['title'];
+                    if ($arrItems[$i]['isRoot'] && $arrItems[$i]['data']['pid'] == $l10n['pid']
+                        || !$arrItems[$i]['isRoot'] && $arrItems[$i]['data']['id'] == $l10n['pid']
+                    ) {
+                        if ($l10n['pageTitle']) $arrItems[$i]['title'] = $l10n['pageTitle'];
+                        if ($l10n['title']) $arrItems[$i]['link'] = $l10n['title'];
                         break;
                     }
                 }
