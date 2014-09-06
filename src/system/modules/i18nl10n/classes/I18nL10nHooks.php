@@ -56,19 +56,6 @@ class I18nl10nHooks extends \System
         $strParams = preg_replace($regex, '', $strParams);
         $strUrl = preg_replace($regex, '', $strUrl);
 
-        // get script name and prepare for regex
-        $environment = $this->Environment->scriptName;
-
-        if($GLOBALS['TL_CONFIG']['websitePath']
-            && strpos($environment, $GLOBALS['TL_CONFIG']['websitePath']) == 0)
-        {
-            $regWebsitePath = preg_quote($GLOBALS['TL_CONFIG']['websitePath']);
-            $regex = "@(?<=$regWebsitePath/)(.*)@";
-
-            // remove website path
-            $environment = preg_replace($regex, '$1' , $environment);
-        }
-
         // if alias is disabled add language to get param end return
         if ($GLOBALS['TL_CONFIG']['disableAlias'])
         {
@@ -89,7 +76,7 @@ class I18nl10nHooks extends \System
             // if rewrite is off, add environment
             if (!$GLOBALS['TL_CONFIG']['rewriteURL'])
             {
-                $strL10nUrl = $environment . '/' . $strL10nUrl;
+                $strL10nUrl = 'index.php/' . $strL10nUrl;
             }
         }
         elseif ($GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl'])
@@ -99,7 +86,7 @@ class I18nl10nHooks extends \System
 
             // if rewrite is off, add environment
             if(!$GLOBALS['TL_CONFIG']['rewriteURL']) {
-                $strL10nUrl = $environment . '/' . $strL10nUrl;
+                $strL10nUrl = 'index.php/' . $strL10nUrl;
             }
 
             // if alias is missing (f.ex. index.html), add it (exclude news!)

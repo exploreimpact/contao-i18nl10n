@@ -180,24 +180,28 @@ class tl_settings_l10n extends Backend
 
         if($value
             && ($dc->field == 'i18nl10n_alias_suffix'
-                && $GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl'])
-            || ($dc->field == 'i18nl10n_addLanguageToUrl'
-                && $GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix']))
-        {
-                // show error and write to log
-                $errorMessage = &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffixError'];
-                $errorMessage = sprintf(
-                    $errorMessage,
-                    $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffix'][0],
-                    $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_addLanguageToUrl'][0]
-                );
-                \Message::addError($errorMessage);
-                \System::log($errorMessage, __METHOD__, TL_CONFIGURATION);
+                && $GLOBALS['TL_CONFIG']['i18nl10n_addLanguageToUrl'] == 1
+                || $dc->field == 'i18nl10n_addLanguageToUrl'
+                && $GLOBALS['TL_CONFIG']['i18nl10n_alias_suffix'] == 1)
+        ) {
 
-                return false;
+            // show error and write to log
+            $errorMessage = & $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffixError'];
+
+            $errorMessage = sprintf(
+                $errorMessage,
+                $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffix'][0],
+                $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_addLanguageToUrl'][0]
+            );
+
+            \Message::addError($errorMessage);
+            \System::log($errorMessage, __METHOD__, TL_CONFIGURATION);
+
+            return false;
         }
         elseif($GLOBALS['TL_CONFIG']['addLanguageToUrl'])
         {
+
             $errorMessage = &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_contaoAddLanguageToUrlError'];
             $errorMessage = sprintf(
                 $errorMessage,

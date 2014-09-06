@@ -45,7 +45,7 @@ class I18nl10nFrontend extends \Controller
      * just before display them as menu.
      *
      * @param   Array $items The menu items on the current menu level
-     * @param   Bool $useFallback Keep original item if no translation found
+     * @param   Bool $blnUseFallback Keep original item if no translation found
      * @return  Array $i18n_items
      */
     public function i18nl10nNavItems(Array $items, $blnUseFallback = false)
