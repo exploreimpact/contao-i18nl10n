@@ -1,0 +1,102 @@
+.i18nl10n_flag {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+#ctrl_site_languages .tl_text {
+    width: 2em
+}
+
+#pal_page_i18nl10n .w50 {
+    height: 8%;
+}
+
+.i18nl10n_page_message {
+    text-align: left;
+    line-height: 120%;
+    padding: 0.5em;
+    font-weight: bold;
+    background: #fea;
+    border: 1px solid #D49822;
+    margin-bottom: 20px;
+}
+
+.i18nl10n_page_message .tl_submit_container {
+    background: none;
+    border-top: 1px solid #D49822;
+    text-align: right;
+    margin-top: 0.5em;
+    padding: 0.5em;
+}
+
+.i18nl10n_page_message .tl_submit {
+    margin-left: 10px;
+}
+
+.i18nl10n_page_message a {
+    color: #666966;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.i18nl10n_page_message a:hover {
+    color: #d00;
+}
+
+.i18nl10n_page_language_listing {
+    margin: 10px 0;
+}
+
+.tree_view .tl_listing img.i18nl10n_article_flag,
+.i18nl10n_content_flag {
+    vertical-align:middle;
+}
+
+.tree_view .tl_listing img.i18nl10n_article_flag {
+    margin-left: 5px;
+}
+
+.header_localize_all {
+    background: url("../img/localize_all.png") no-repeat scroll left center transparent;
+    padding: 2px 0 3px 20px;
+    margin-left: 15px;
+}
+
+.header_define_language {
+    background: url("../img/i18nl10n.png") no-repeat scroll left center transparent;
+    padding: 2px 0 3px 20px;
+    margin-left: 15px;
+}
+
+.tl_listing .tl_left {
+    /* modify with to prevent linebreak because of to many icons */
+    width: 400px;
+}
+
+.i18nl10n_languages {
+    display: none;
+}
+
+.i18nl10n_languages img {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.i18nl10n_languages.open,
+.tl_content:hover .i18nl10n_languages {
+    display: block;
+}
+
+.i18nl10n_language_functions {
+    display: none;
+}
+
+.i18nl10n_language_item:hover .i18nl10n_language_functions {
+    display: inline;
+}
+
+.i18nl10n_header_toggle_functions {
+    background: url("../img/folPlus.gif") no-repeat scroll left center transparent;
+    padding: 2px 0 3px 20px;
+    margin-left: 15px;
+}

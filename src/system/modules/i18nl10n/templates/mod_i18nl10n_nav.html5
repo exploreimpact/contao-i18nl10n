@@ -1,8 +1,0 @@
-<!-- indexer::stop -->
-<div
-    class="<?php echo $this->i18nl10nLangStyle ? $this->class . ' i18nl10n_lang_style i18nl10n_lang_style_' . $this->i18nl10nLangStyle : $this->class; ?> block"<?php echo $this->style ? 'style="' . $this->style . '"' : '';
-echo $this->cssID; ?>>
-    <?php echo $this->headline ? "<$this->hl>$this->headline</$this->hl>" : ''; ?>
-    <?php echo $this->items; ?>
-</div>
-<!-- indexer::continue -->
