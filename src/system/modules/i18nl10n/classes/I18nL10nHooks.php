@@ -155,18 +155,15 @@ class I18nl10nHooks extends \System
                 $language = strtolower($matches[2]);
                 $alias = $matches[1] != '' ? $matches[1] : $arrFragments[count($arrFragments) - 1];
 
-                if (in_array($language, $languages)) {
-
-                    // if only language was found, pop it from array
-                    if ($matches[1] == '') {
-                        array_pop($arrFragments);
-                    } // else set alias
-                    else {
-                        $arrFragments[count($arrFragments) - 1] = $alias;
-                    }
-
-                    array_push($arrFragments, 'language', $language);
+                // if only language was found, pop it from array
+                if ($matches[1] == '') {
+                    array_pop($arrFragments);
+                } // else set alias
+                else {
+                    $arrFragments[count($arrFragments) - 1] = $alias;
                 }
+
+                array_push($arrFragments, 'language', $language);
             }
         } elseif (\Input::get('language')) {
             $language = \Input::get('language');
