@@ -78,6 +78,19 @@ class I18nL10nModuleLanguageNavigation extends Module
         $res_items = $this->Database->prepare($sql)
             ->execute($objPage->id)->fetchAllassoc();
 
+        // HOOK: add custom logic
+        if (isset($GLOBALS['TL_HOOKS']['i18nl10nLanguageNavigation'])
+            && is_array($GLOBALS['TL_HOOKS']['i18nl10nLanguageNavigation'])
+        )
+        {
+            foreach ($GLOBALS['TL_HOOKS']['i18nl10nLanguageNavigation'] as $callback)
+            {
+                $this->import($callback[0]);
+                $res_items = $this->$callback[0]->$callback[1]($res_items);
+            }
+        }
+
+
         $items = array();
 
         if(!empty($res_items)) {
