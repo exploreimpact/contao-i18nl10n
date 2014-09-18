@@ -150,8 +150,7 @@ class PageI18nl10nRegular extends \PageRegular
 
         // if language is added to url, get it from there
         if (\Config::get('i18nl10n_addLanguageToUrl')
-            && !\Config::get('disableAlias')
-        )
+            && !\Config::get('disableAlias'))
         {
             $this->import('Environment');
             $environment = $this->Environment;
