@@ -215,9 +215,10 @@ class I18nl10nHooks extends \System
             ";
         }
 
-
+        // TODO: check if there is a better solution then limit() for multiple alias use
         $arrAlias = \Database::getInstance()
             ->prepare($sql)
+            ->limit(1)
             ->execute(is_numeric($arrFragments[0] ? : 0), $language, $arrFragments[0], $language)
             ->fetchAssoc();
 
