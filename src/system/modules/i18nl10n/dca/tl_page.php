@@ -289,14 +289,14 @@ class tl_page_l10n extends tl_page
 
             // set root language as default language
             $config = \Config::getInstance();
-            $config->update("\\Config::get('i18nl10n_default_language')", $defaultLanguage);
+            $config->update("\$GLOBALS['TL_CONFIG']['i18nl10n_default_language']", $defaultLanguage);
 
             // add language to available languages
             if (!in_array($defaultLanguage, $availableLanguages))
             {
                 $availableLanguages[] = $defaultLanguage;
 
-                $config->update("\\Config::get('i18nl10n_languages')", serialize($availableLanguages));
+                $config->update("\$GLOBALS['TL_CONFIG']['i18nl10n_languages']", serialize($availableLanguages));
             }
         }
     }
