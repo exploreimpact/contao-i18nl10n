@@ -148,34 +148,40 @@ class PageI18nl10nRegular extends \PageRegular
     private function fixupCurrentLanguage()
     {
 
+        // try to get language from post (committed by language select) or get
+        $selectedLanguage = \Input::post('language') ? : \Input::get('language');
+
         // if language is added to url, get it from there
-        if (\Config::get('i18nl10n_addLanguageToUrl')
-            && !\Config::get('disableAlias'))
+        if (\Config::get('i18nl10n_addLanguageToUrl') && !\Config::get('disableAlias'))
         {
-            $this->import('Environment');
-            $environment = $this->Environment;
-            $basePath = preg_quote(\Config::get('rewriteURL') ? \Config::get('websitePath') : $environment->scriptName);
 
-            $regex = "@^($basePath/)?([A-z]{2}(?=/)){1}(/.*)@";
-
-            // only set language if found in url
-            if (preg_match($regex, $environment->requestUri))
+            // if language is set, it must be given by post (committed by language select)
+            if($selectedLanguage)
             {
-                $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = preg_replace($regex, '$2', $environment->requestUri);
+                $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selectedLanguage;
+            }
+            else
+            {
+                $this->import('Environment');
+                $environment = $this->Environment;
+                $basePath = preg_quote(\Config::get('rewriteURL') ? \Config::get('websitePath') : $environment->scriptName);
+
+                $regex = "@^($basePath/)?([A-z]{2}(?=/)){1}(/.*)@";
+
+                // only set language if found in url
+                if (preg_match($regex, $environment->requestUri))
+                {
+                    $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = preg_replace($regex, '$2', $environment->requestUri);
+                }
             }
 
             return;
         }
 
-        // try to get language from post or get
-        $selectedLanguage = \Input::post('language') ? : \Input::get('language');
-
         $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
 
         // if alias is disabled, get language from get param
-        if ($selectedLanguage
-            && \Config::get('disableAlias')
-        )
+        if ($selectedLanguage && \Config::get('disableAlias'))
         {
             $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selectedLanguage;
 
