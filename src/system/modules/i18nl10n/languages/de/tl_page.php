@@ -34,6 +34,10 @@ $GLOBALS['TL_LANG']['tl_page']['msg_no_languages'] =
     'Es wurden noch keine alternativen Sprachen festgelegt. Bitte hole dies noch in den '
     . '%s Einstellungen %s nach.';
 
+$GLOBALS['TL_LANG']['tl_page']['msg_multiple_root'] =
+    'i18nl10n hat in deiner Seitenstruktur mehr als eine Root-Seite gefunden. '
+    . 'Bitte beachte, dass das Modul nicht für die Verwendung mehrerer Root-Seiten ausgelegt ist!';
+
 $GLOBALS['TL_LANG']['tl_page']['msg_localize_all'] =
     'Für alle Seiten in <span style="white-space:nowrap">[%s]</span> ohne Übersetzung '
     . 'werden Lokalisierungen angelegt. Bist du sicher, dass du für die folgenden Sprachen Seiten anlegen möchtest?';

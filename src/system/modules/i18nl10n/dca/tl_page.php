@@ -40,6 +40,11 @@ $onLoadCallback = array
     1 => array
     (
         'tl_page_l10n',
+        'displayMultipleRootMessage'
+    ),
+    2 => array
+    (
+        'tl_page_l10n',
         'displayLanguageMessage'
     )
 );
@@ -167,7 +172,7 @@ class tl_page_l10n extends tl_page
     {
 
         // only show if treeview
-        if (Input::get('act') != '')
+        if (\Input::get('act') != '')
         {
             return;
         }
@@ -190,6 +195,37 @@ class tl_page_l10n extends tl_page
             \Message::addError($message);
 
         };
+    }
+
+
+    /**
+     * Display message in case site has multiple root pages
+     *
+     * @return void
+     */
+    public function displayMultipleRootMessage()
+    {
+
+        // only show if treeview
+        if (\Input::get('act') != '')
+        {
+            return;
+        }
+
+        $strSql = 'SELECT * FROM tl_page WHERE type = "root"';
+
+        $objResult = \Database::getInstance()
+            ->execute($strSql);
+
+        if($objResult->numRows > 1)
+        {
+
+            $this->loadLanguageFile('tl_page_i18nl10n');
+
+            \Message::addError($GLOBALS['TL_LANG']['tl_page']['msg_multiple_root']);
+
+        };
+
     }
 
 
