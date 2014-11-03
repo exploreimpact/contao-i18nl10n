@@ -56,8 +56,8 @@ class I18nl10nFrontend extends \Controller
 
         //get item ids
         $item_ids = array();
-        foreach ($items as $row)
-        {
+
+        foreach ($items as $row) {
             $item_ids[] = $row['id'];
         }
 

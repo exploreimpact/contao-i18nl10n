@@ -58,4 +58,77 @@ class I18nl10n extends \Controller
 
         return vsprintf($format, $data);
     }
+
+
+    /**
+     * Find alias for internationalized content or use fallback language alias
+     *
+     * @param $arrFragments
+     * @param $strLanguage
+     * @return null|string
+     */
+    public static function findByLocalizedAliases($arrFragments, $strLanguage)
+    {
+
+        $alias = null;
+        $arrAlias = array();
+        $strAlias = $arrFragments[0];
+
+        if (\Config::get('folderUrl') && $arrFragments[count($arrFragments)-2] == 'language') {
+            // glue together possible aliases
+            for($i = 0; count($arrFragments)-2 > $i; $i++) {
+                $arrAlias[] = ($i == 0) ? $arrFragments[$i] : $arrAlias[$i-1] . '/' . $arrFragments[$i];
+            }
+
+            // reverse array to get specific entries first
+            $arrAlias = array_reverse($arrAlias);
+
+            $strAlias = implode("','", $arrAlias);
+        }
+
+        $dataBase = \Database::getInstance();
+
+        $sql = "
+            SELECT
+                alias
+            FROM
+                tl_page
+            WHERE
+                (
+                    id = (SELECT pid FROM tl_page_i18nl10n WHERE id = ? AND language = ?)
+                    OR id = (SELECT pid FROM tl_page_i18nl10n WHERE alias IN('" . $strAlias . "') AND language = ? ORDER BY " . $dataBase->findInSet('alias', $arrAlias) . ")
+                    OR alias IN('" . $strAlias . "')
+                )
+        ";
+
+        if (!BE_USER_LOGGED_IN)
+        {
+            $time = time();
+            $sql .= "
+                AND (start = '' OR start < $time)
+                AND (stop = '' OR stop > $time)
+                AND published = 1
+            ";
+        }
+
+        $sql .= "ORDER BY " . $dataBase->findInSet('alias', $arrAlias);
+
+        $objL10n = $dataBase
+            ->prepare($sql)
+            ->execute(
+                is_numeric($arrFragments[0]) ? $arrFragments[0] : 0,
+                $strLanguage,
+                $strLanguage,
+                $strLanguage
+            );
+
+        if ($objL10n !== null) {
+            // best match is in first item
+            $arrPage = $objL10n->row();
+            $alias = $arrPage['alias'];
+        }
+
+        return $alias;
+
+    }
 }

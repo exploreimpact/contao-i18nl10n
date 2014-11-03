@@ -17,6 +17,8 @@
 
 namespace Verstaerker\I18nl10n\Classes;
 
+use Verstaerker\I18nl10n as I18nl10n;
+
 
 /**
  * Class I18nl10nHooks
@@ -42,6 +44,7 @@ class I18nl10nHooks extends \System
      */
     public function generateFrontendUrl($arrRow, $strParams, $strUrl)
     {
+
         if (!is_array($arrRow))
         {
             throw new \Exception('not an associative array.');
@@ -142,7 +145,6 @@ class I18nl10nHooks extends \System
         global $TL_CONFIG;
 
         $arrFragments = array_map('urldecode', $arrFragments);
-        $languages = deserialize($TL_CONFIG['i18nl10n_languages']);
         $language = $TL_CONFIG['i18nl10n_default_language'];
 
         // strip auto_item
@@ -164,6 +166,7 @@ class I18nl10nHooks extends \System
                 // append new language entry
                 array_push($arrFragments, 'language', $language);
             }
+
         } // try to get language by suffix
         elseif ($TL_CONFIG['i18nl10n_alias_suffix'] && !\Config::get('disableAlias'))
         {
@@ -193,36 +196,27 @@ class I18nl10nHooks extends \System
             $language = \Input::get('language');
         }
 
-        $sql = "
-            SELECT
-                alias
-            FROM
-                tl_page
-            WHERE
-                (
-                    id = (SELECT pid FROM tl_page_i18nl10n WHERE id = ? AND language = ?)
-                    OR id = (SELECT pid FROM tl_page_i18nl10n WHERE alias = ? AND language = ?)
-                )
-        ";
+        // try to find localized page by alias
+        $strAlias = I18nl10n\Classes\I18nl10n::findByLocalizedAliases($arrFragments, $language);
 
-        if (!BE_USER_LOGGED_IN)
+        if ($strAlias !== null)
         {
-            $time = time();
-            $sql .= "
-                AND (start = '' OR start < $time)
-                AND (stop = '' OR stop > $time)
-                AND published = 1
-            ";
+
+            // replace alias
+            $arrFragments[0] = $strAlias;
+
+            // if alias has folder, remove related entries
+            if (strpos($strAlias, '/') !== false) {
+                $arrAlias = explode('/', $strAlias);
+
+                // remove alias parts
+                foreach($arrAlias as $strSubAlias) {
+                    if ($key = array_search($strSubAlias, $arrFragments) !== false) {
+                        unset($arrFragments[$key]);
+                    }
+                }
+            }
         }
-
-        // TODO: check if there is a better solution then limit() for multiple alias use
-        $arrAlias = \Database::getInstance()
-            ->prepare($sql)
-            ->limit(1)
-            ->execute(is_numeric($arrFragments[0] ? : 0), $language, $arrFragments[0], $language)
-            ->fetchAssoc();
-
-        if (is_array($arrAlias) && !empty($arrAlias)) $arrFragments[0] = $arrAlias['alias'];
 
         // Add the second fragment as auto_item if the number of fragments is even
         if (\Config::get('useAutoItem') && count($arrFragments) % 2 == 0)
