@@ -81,13 +81,23 @@ $GLOBALS['TL_DCA']['tl_page']['config']['ondelete_callback'][] = array
     'deletePageL10n'
 );
 
+\FB::log(\Input::get('pid'));
+
 // only show l10n_published if not a new root page
 if (\Input::get('pid') === NULL || \Input::get('pid') != 0)
 {
-    // splice in l10n_published field into palettes
-    foreach ($GLOBALS['TL_DCA']['tl_page']['palettes'] as $k => $v)
+
+    // switch field splicing based on Contao version
+    if ( isset($GLOBALS['TL_DCA']['tl_page']['subpalettes']['published']) )
     {
-        $GLOBALS['TL_DCA']['tl_page']['palettes'][$k] = str_replace('published,', 'published,l10n_published,', $v);
+        // is Contao 3.4+
+        $GLOBALS['TL_DCA']['tl_page']['subpalettes']['published'] = 'l10n_published,' . $GLOBALS['TL_DCA']['tl_page']['subpalettes']['published'];
+    } else {
+        // is before Contao 3.4
+        foreach ($GLOBALS['TL_DCA']['tl_page']['palettes'] as $k => $v)
+        {
+            $GLOBALS['TL_DCA']['tl_page']['palettes'][$k] = str_replace('published,', 'published,l10n_published,', $v);
+        }
     }
 
     // update field class
