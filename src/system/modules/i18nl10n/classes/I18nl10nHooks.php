@@ -52,7 +52,20 @@ class I18nl10nHooks extends \System
 
         $language = (array_key_exists('robots', $arrRow) ? $GLOBALS['TL_LANGUAGE'] : $arrRow['language']);
 
-        $alias = $arrRow['alias'];
+        $arrL10nAlias = null;
+
+        // try to get l10n alias by language and pid
+        if ($language != \Config::get('i18nl10n_default_language')) {
+            $sql = "SELECT alias FROM tl_page_i18nl10n WHERE pid = ? AND language = ?";
+
+            $arrL10nAlias = \Database::getInstance()
+                ->prepare($sql)
+                ->execute($arrRow['id'], $language)
+                ->fetchAssoc();
+        }
+
+        $alias = is_array($arrL10nAlias) ? $arrL10nAlias['alias'] : $arrRow['alias'];
+
         // regex to remove auto_item and language
         $regex = '@/auto_item|/language/[A-z]{2}|[\?&]language=[A-z]{2}@';
 
@@ -142,10 +155,9 @@ class I18nl10nHooks extends \System
      */
     public function getPageIdFromUrl(Array $arrFragments)
     {
-        global $TL_CONFIG;
 
         $arrFragments = array_map('urldecode', $arrFragments);
-        $language = $TL_CONFIG['i18nl10n_default_language'];
+        $language = \Config::get('i18nl10n_default_language');
 
         // strip auto_item
         if (\Config::get('useAutoItem') && $arrFragments[1] == 'auto_item')
@@ -154,7 +166,7 @@ class I18nl10nHooks extends \System
         }
 
         // try to get language by i18nl10n URL
-        if ($TL_CONFIG['i18nl10n_addLanguageToUrl'])
+        if (\Config::get('i18nl10n_addLanguageToUrl'))
         {
             if (preg_match('@^([A-z]{2})$@', $arrFragments[0], $matches))
             {
@@ -168,7 +180,7 @@ class I18nl10nHooks extends \System
             }
 
         } // try to get language by suffix
-        elseif ($TL_CONFIG['i18nl10n_alias_suffix'] && !\Config::get('disableAlias'))
+        elseif (\Config::get('i18nl10n_alias_suffix') && !\Config::get('disableAlias'))
         {
             // last element should contain language info
             if (preg_match('@^([_\-\pL\pN\.]*(?=\.))?\.?([A-z]{2})$@u', $arrFragments[count($arrFragments) - 1], $matches))
@@ -292,7 +304,7 @@ class I18nl10nHooks extends \System
         $arrL10n = \Database::getInstance()
             ->prepare($sql)
             ->execute($GLOBALS['TL_LANGUAGE'])
-            ->fetchAllassoc();
+            ->fetchAllAssoc();
 
         // if translated page, replace given fields in element array
         if (count($arrL10n) > 0)

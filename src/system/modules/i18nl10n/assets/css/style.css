@@ -1,3 +1,36 @@
+/**
+ *  @Section    Extending Contao style
+ *******************************************************
+ */
+.tl_listing .tl_left {
+    width: 400px;
+}
+
+ul.level_1 .tl_left {
+    width: 380px;
+}
+
+ul.level_2 .tl_left {
+    width: 360px;
+}
+
+ul.level_3 .tl_left {
+    width: 340px;
+}
+
+ul.level_4 .tl_left {
+    width: 320px;
+}
+
+ul.level_5 .tl_left {
+    width: 300px;
+}
+
+
+/**
+ *  @Section    i18nl10n styles
+ *******************************************************
+ */
 .header_l10n_localize_all {
     background: url("../img/localize_all.png") no-repeat scroll left center transparent;
     padding: 2px 0 3px 20px;
