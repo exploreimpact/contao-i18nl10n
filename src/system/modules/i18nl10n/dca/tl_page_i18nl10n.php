@@ -466,10 +466,11 @@ class tl_page_i18nl10n extends tl_page
     /**
      * Easily publish/unpublish a page localization
      *
-     * @param integer
-     * @param boolean
+     * @param integer $intId
+     * @param boolean $blnVisible
+     * @param DataContainer $dc
      */
-    public function toggleVisibility($intId, $blnVisible)
+    public function toggleVisibility($intId, $blnVisible, DataContainer $dc = null)
     {
         // Check permissions to edit
         Input::setGet('id', $intId);
@@ -486,7 +487,7 @@ class tl_page_i18nl10n extends tl_page
         $objVersions = new \Versions('tl_page_i18nl10n', $intId);
         $objVersions->initialize();
 
-// Trigger the save_callback
+        // Trigger the save_callback
         if (is_array($GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['l10n_published']['save_callback']))
         {
             foreach ($GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['l10n_published']['save_callback'] as $callback)
@@ -644,20 +645,17 @@ class tl_page_i18nl10n extends tl_page
             }
         }
 
-        $sql = "
-            UPDATE "
-            . $strTable .
-            " SET
-                tstamp=" . time() . ",
-                l10n_published = ?
-            WHERE
-                id = ?
-        ";
+        $sql = "UPDATE ? SET tstamp = ?, l10n_published = ? WHERE id = ?";
 
         // Update the database
         \Database::getInstance()
             ->prepare($sql)
-            ->execute($blnPublished ? '' : '1', $intId);
+            ->execute(
+                $strTable,
+                time(),
+                $blnPublished ? '' : '1',
+                $intId
+            );
 
         // create new version
         $objVersions->create();
