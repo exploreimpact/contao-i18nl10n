@@ -81,8 +81,6 @@ $GLOBALS['TL_DCA']['tl_page']['config']['ondelete_callback'][] = array
     'deletePageL10n'
 );
 
-\FB::log(\Input::get('pid'));
-
 // only show l10n_published if not a new root page
 if (\Input::get('pid') === NULL || \Input::get('pid') != 0)
 {

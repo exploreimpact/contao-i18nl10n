@@ -113,11 +113,14 @@ class ModuleI18nl10nLanguageSelection extends \Module
             }
         }
 
+
         $items = array();
+        $langsNative = array();
 
         if (!empty($arrTranslations))
         {
             $this->loadLanguageFile('languages');
+            include TL_ROOT . '/system/config/languages.php';
 
             if ($objPage->l10n_published != '')
             {
@@ -166,7 +169,7 @@ class ModuleI18nl10nLanguageSelection extends \Module
             $objTemplate = new \BackendTemplate($this->i18nl10nLangTpl);
             $objTemplate->type = get_class($this);
             $objTemplate->items = $items;
-            $objTemplate->languages = $GLOBALS['TL_LANG']['LNG'];
+            $objTemplate->languages = $langsNative;
         }
 
         // add stylesheets
