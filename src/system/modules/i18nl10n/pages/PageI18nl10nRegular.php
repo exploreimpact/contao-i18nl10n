@@ -156,7 +156,7 @@ class PageI18nl10nRegular extends \PageRegular
         {
 
             // if language is set, it must be given by post (committed by language select)
-            if($selectedLanguage)
+            if ($selectedLanguage)
             {
                 $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selectedLanguage;
             }

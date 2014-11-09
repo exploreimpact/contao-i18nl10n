@@ -225,7 +225,7 @@ class tl_page_l10n extends tl_page
         $objResult = \Database::getInstance()
             ->execute($strSql);
 
-        if($objResult->numRows > 1)
+        if ($objResult->numRows > 1)
         {
 
             $this->loadLanguageFile('tl_page_i18nl10n');

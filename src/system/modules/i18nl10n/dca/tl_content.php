@@ -23,6 +23,12 @@ $this->loadLanguageFile('tl_content');
 $this->loadDataContainer('tl_page');
 $this->loadDataContainer('tl_content');
 
+// set callback for dca load to add language selection to content elements IF module is article
+if (\Input::get('do') == 'article')
+{
+    $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] = array('\I18nl10n\Classes\I18nl10nCallbacks', 'content_onload');
+}
+
 $GLOBALS['TL_DCA']['tl_content']['fields']['language'] = array_merge(
     $GLOBALS['TL_DCA']['tl_page']['fields']['language'],
     array(
@@ -42,22 +48,6 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['language'] = array_merge(
         )
     )
 );
-
-
-// only insert language extension in article module
-if (\Input::get('do') == 'article')
-{
-    // add language section to all palettes
-    foreach ($GLOBALS['TL_DCA']['tl_content']['palettes'] as $k => $v)
-    {
-        if ($k == '__selector__') continue;
-        $GLOBALS['TL_DCA']['tl_content']['palettes'][$k] = "$v;" . '{l10n_legend:hide},language;';
-    }
-
-    // define callback to add language icons
-    $GLOBALS['TL_DCA']['tl_content']['list']['sorting']['child_record_callback'] =
-        array('tl_content_l10n', 'addCteType');
-}
 
 
 class tl_content_l10n extends tl_content
