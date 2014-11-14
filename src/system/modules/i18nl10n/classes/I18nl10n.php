@@ -80,6 +80,11 @@ class I18nl10n extends \Controller
                 $arrAlias[] = ($i == 0) ? $arrFragments[$i] : $arrAlias[$i-1] . '/' . $arrFragments[$i];
             }
 
+            // Remove everything that is not an alias
+            $arrAlias = array_filter(array_map(function($v) {
+                return preg_match('/^[\pN\pL\/\._-]+$/u', $v) ? $v : null;
+            }, $arrAlias));
+
             // reverse array to get specific entries first
             $arrAlias = array_reverse($arrAlias);
 

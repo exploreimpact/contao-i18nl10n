@@ -78,7 +78,7 @@ array_insert(
 $GLOBALS['TL_DCA']['tl_page']['config']['ondelete_callback'][] = array
 (
     'tl_page_l10n',
-    'deletePageL10n'
+    'onDelete'
 );
 
 // only show l10n_published if not a new root page
@@ -303,18 +303,20 @@ class tl_page_l10n extends tl_page
      *
      * @param DataContainer $dc
      */
-    public function deletePageL10n(DataContainer $dc)
+    public function onDelete(DataContainer $dc)
     {
-        $sql = "
-            DELETE FROM
-              tl_page_i18nl10n
-            WHERE
-              pid = ?
-        ";
+        $objDatabase = \Database::getInstance();
 
-        \Database::getInstance()
-            ->prepare($sql)
-            ->execute($dc->id);
+        $arrChildRecords = $objDatabase->getChildRecords(array($dc->id), 'tl_page');
+
+        // add actual page itself
+        $arrChildRecords[] = $dc->id;
+
+        // Delete all related localizations from tl_page_i18nl10n
+        $objDatabase
+            ->prepare('DELETE FROM tl_page_i18nl10n WHERE pid IN(' . implode(',', $arrChildRecords) . ')')
+            ->execute();
+
     }
 
 

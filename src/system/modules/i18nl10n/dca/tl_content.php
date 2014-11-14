@@ -95,9 +95,9 @@ class tl_content_l10n extends tl_content
      *
      * Add language field to all content palettes
      *
-     * @param \DataContainer $dc
+     * @param DataContainer $dc
      */
-    public function onLoadCallback(\DataContainer $dc = null)
+    public function onLoadCallback(DataContainer $dc = null)
     {
         $this->loadLanguageFile('tl_content');
         $dc->loadDataContainer('tl_page');

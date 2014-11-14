@@ -59,7 +59,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
             (
                 'id'    => 'primary',
                 'pid'   => 'index',
-                'alias' => 'index'
+                'alias' => 'index',
             )
         )
     ),
