@@ -74,11 +74,11 @@ $GLOBALS['FE_MOD']['i18nl10n']['i18nl10nLanguageSelection'] = '\I18nl10n\Modules
 /**
  * HOOKS
  */
-$GLOBALS['TL_HOOKS']['generateFrontendUrl'][] = array('\I18nl10n\Classes\I18nl10nCallbacks', 'generateFrontendUrl');
-$GLOBALS['TL_HOOKS']['getPageIdFromUrl'][] = array('\I18nl10n\Classes\I18nl10nCallbacks', 'getPageIdFromUrl');
-$GLOBALS['TL_HOOKS']['generateBreadcrumb'][] = array('\I18nl10n\Classes\I18nl10nCallbacks', 'generateBreadcrumb');
+$GLOBALS['TL_HOOKS']['generateFrontendUrl'][] = array('\I18nl10n\Classes\I18nl10nHook', 'generateFrontendUrl');
+$GLOBALS['TL_HOOKS']['getPageIdFromUrl'][] = array('\I18nl10n\Classes\I18nl10nHook', 'getPageIdFromUrl');
+$GLOBALS['TL_HOOKS']['generateBreadcrumb'][] = array('\I18nl10n\Classes\I18nl10nHook', 'generateBreadcrumb');
 $GLOBALS['TL_HOOKS']['executePostActions'][] = array('tl_page_i18nl10n', 'executePostActions');
-$GLOBALS['TL_HOOKS']['isVisibleElement'][] = array('\I18nl10n\Classes\I18nl10nCallbacks', 'isVisibleElement');
+$GLOBALS['TL_HOOKS']['isVisibleElement'][] = array('\I18nl10n\Classes\I18nl10nHook', 'isVisibleElement');
 
 
 /**

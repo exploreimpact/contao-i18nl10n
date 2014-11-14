@@ -27,7 +27,7 @@ ClassLoader::addClasses(array
 (
 	// Classes
 	'Verstaerker\I18nl10n\Classes\I18nl10n'                        => 'system/modules/i18nl10n/classes/I18nl10n.php',
-	'Verstaerker\I18nl10n\Classes\I18nl10nCallbacks'               => 'system/modules/i18nl10n/classes/I18nl10nCallbacks.php',
+	'Verstaerker\I18nl10n\Classes\I18nl10nHook'               => 'system/modules/i18nl10n/classes/I18nl10nHook.php',
 	'Verstaerker\I18nl10n\Classes\I18nl10nFrontend'                => 'system/modules/i18nl10n/classes/I18nl10nFrontend.php',
 
 	// Modules

@@ -21,14 +21,14 @@ use Verstaerker\I18nl10n as I18nl10n;
 
 
 /**
- * Class I18nl10nCallbacks
+ * Class I18nl10nHook
  *
  * Provide callbacks to modify Contao
  * behaviour related to I18N and L10N.
  *
  * @package Verstaerker\I18nl10n\Classes
  */
-class I18nl10nCallbacks extends \System
+class I18nl10nHook extends \System
 {
     /**
      * Generates url for the site according to settings from the backend
@@ -262,31 +262,6 @@ class I18nl10nCallbacks extends \System
         }
 
         return $blnIsVisible;
-    }
-
-
-    /**
-     * Onload callback for tl_content
-     *
-     * Add language field to all content types
-     *
-     * @param \DataContainer $dc
-     */
-    public function content_onload(\DataContainer $dc = null) {
-        $this->loadLanguageFile('tl_content');
-        $dc->loadDataContainer('tl_page');
-        $dc->loadDataContainer('tl_content');
-
-        // add language section to all palettes
-        foreach ($GLOBALS['TL_DCA']['tl_content']['palettes'] as $k => $v)
-        {
-            if ($k == '__selector__') continue;
-            $GLOBALS['TL_DCA']['tl_content']['palettes'][$k] = "$v;" . '{l10n_legend:hide},language;';
-        }
-
-        // define callback to add language icons
-        $GLOBALS['TL_DCA']['tl_content']['list']['sorting']['child_record_callback'] =
-            array('tl_content_l10n', 'addCteType');
     }
 
 

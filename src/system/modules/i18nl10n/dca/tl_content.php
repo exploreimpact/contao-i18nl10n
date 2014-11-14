@@ -26,7 +26,7 @@ $this->loadDataContainer('tl_content');
 // set callback for dca load to add language selection to content elements IF module is article
 if (\Input::get('do') == 'article')
 {
-    $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] = array('\I18nl10n\Classes\I18nl10nCallbacks', 'content_onload');
+    $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] = array('tl_content_l10n', 'onLoadCallback');
 }
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['language'] = array_merge(
@@ -61,7 +61,6 @@ class tl_content_l10n extends tl_content
      */
     public function addCteType($arrRow)
     {
-        $key = $arrRow['invisible'] ? 'unpublished' : 'published';
         $langIcon = 'system/modules/i18nl10n/assets/img/i18nl10n.png';
 
         if ($arrRow['language'])
@@ -69,31 +68,49 @@ class tl_content_l10n extends tl_content
             $langIcon = 'system/modules/i18nl10n/assets/img/flag_icons/' . $arrRow['language'] . '.png';
         }
 
-        $html = '<div class="cte_type %1$s"><img class="i18nl10n_content_flag" src="%2$s" /> [%3$s] %4$s %5$s';
+        $strL10nInsert = '<img class="i18nl10n_content_flag" src="%1$s" /> [%2$s] ';
 
-        if ($arrRow['protected'])
-        {
-            $html .= ' (%6$s)';
-        }
-        elseif ($arrRow['guests'])
-        {
-            $html .= ' (%7$s)';
-        }
-
-        $html .= '</div><div class="limit_height %8$s block">%9$s</div>' . "\n";
-
-        return sprintf(
-            $html,
-            $key,
+        // create l10n information insert
+        $strL10nInsert = sprintf(
+            $strL10nInsert,
             $langIcon,
-            $GLOBALS['TL_LANG']['LNG'][$arrRow['language']],
-            $GLOBALS['TL_LANG']['CTE'][$arrRow['type']][0],
-            $arrRow['type'] == 'alias' ? 'ID ' . $arrRow['cteAlias'] : '',
-            $GLOBALS['TL_LANG']['MSC']['protected'],
-            $GLOBALS['TL_LANG']['MSC']['guests'],
-            \Config::get('doNotCollapse') ? '' : 'h64',
-            $this->getContentElement($arrRow['id'])
+            $GLOBALS['TL_LANG']['LNG'][$arrRow['language']]
         );
+
+        $strElement = parent::addCteType($arrRow);
+        $strRegex = '@(.*?class="cte_type.*?>)(.*)@m';
+
+        // splice in l10n information
+        $strElement = preg_replace($strRegex, '${1}' . $strL10nInsert . '${2}', $strElement);
+
+        return $strElement;
+    }
+
+
+    /**
+     * Onload callback for tl_content
+     *
+     * Add language field to all content palettes
+     *
+     * @param \DataContainer $dc
+     */
+    public function onLoadCallback(\DataContainer $dc = null) {
+
+
+        $this->loadLanguageFile('tl_content');
+        $dc->loadDataContainer('tl_page');
+        $dc->loadDataContainer('tl_content');
+
+        // add language section to all palettes
+        foreach ($GLOBALS['TL_DCA']['tl_content']['palettes'] as $k => $v)
+        {
+            if ($k == '__selector__') continue;
+            $GLOBALS['TL_DCA']['tl_content']['palettes'][$k] = "$v;" . '{l10n_legend:hide},language;';
+        }
+
+        // define callback to add language icons
+        $GLOBALS['TL_DCA']['tl_content']['list']['sorting']['child_record_callback'] =
+            array('tl_content_l10n', 'addCteType');
     }
 
 }
