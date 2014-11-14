@@ -27,6 +27,8 @@ $this->loadDataContainer('tl_content');
 if (\Input::get('do') == 'article')
 {
     $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] = array('tl_content_l10n', 'onLoadCallback');
+    // define callback to add language icons
+    $GLOBALS['TL_DCA']['tl_content']['list']['sorting']['child_record_callback'] = array('tl_content_l10n', 'addCteType');
 }
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['language'] = array_merge(
@@ -95,9 +97,8 @@ class tl_content_l10n extends tl_content
      *
      * @param \DataContainer $dc
      */
-    public function onLoadCallback(\DataContainer $dc = null) {
-
-
+    public function onLoadCallback(\DataContainer $dc = null)
+    {
         $this->loadLanguageFile('tl_content');
         $dc->loadDataContainer('tl_page');
         $dc->loadDataContainer('tl_content');
@@ -105,13 +106,13 @@ class tl_content_l10n extends tl_content
         // add language section to all palettes
         foreach ($GLOBALS['TL_DCA']['tl_content']['palettes'] as $k => $v)
         {
-            if ($k == '__selector__') continue;
-            $GLOBALS['TL_DCA']['tl_content']['palettes'][$k] = "$v;" . '{l10n_legend:hide},language;';
-        }
+            // if element is '__selector__' OR 'default' OR the palette has already a language key
+            if ($k == '__selector__' || $k == 'default' || strpos($v, ',language(?=\{|,|;|$)') !== false) {
+                continue;
+            }
 
-        // define callback to add language icons
-        $GLOBALS['TL_DCA']['tl_content']['list']['sorting']['child_record_callback'] =
-            array('tl_content_l10n', 'addCteType');
+            $GLOBALS['TL_DCA']['tl_content']['palettes'][$k] = $v . ';{l10n_legend:hide},language';
+        }
     }
 
 }
