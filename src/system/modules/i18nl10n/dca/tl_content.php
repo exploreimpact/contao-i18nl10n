@@ -77,6 +77,7 @@ class tl_content_l10n extends tl_content
             $GLOBALS['TL_LANG']['LNG'][$arrRow['language']]
         );
 
+        // get html string from Contao
         $strElement = parent::addCteType($arrRow);
         $strRegex = '@(.*?class="cte_type.*?>)(.*)@m';
 
