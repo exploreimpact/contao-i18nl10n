@@ -159,6 +159,7 @@ class PageI18nl10nRegular extends \PageRegular
             if ($selectedLanguage)
             {
                 $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selectedLanguage;
+                return;
             }
             else
             {
@@ -172,10 +173,9 @@ class PageI18nl10nRegular extends \PageRegular
                 if (preg_match($regex, $environment->requestUri))
                 {
                     $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = preg_replace($regex, '$2', $environment->requestUri);
+                    return;
                 }
             }
-
-            return;
         }
 
         $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
@@ -184,16 +184,31 @@ class PageI18nl10nRegular extends \PageRegular
         if ($selectedLanguage && \Config::get('disableAlias'))
         {
             $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selectedLanguage;
-
             return;
         }
 
-        if ($selectedLanguage
-            && in_array($selectedLanguage, $i18nl10nLanguages)
-        )
+        // if language is part of alias
+        if (\Config::get('i18nl10n_alias_suffix'))
+        {
+            $this->import('Environment');
+            $environment = $this->Environment;
+            $strUrlSuffix = preg_quote( \Config::get('urlSuffix') ?: '.html' );
+
+            $regex = "@.*?\.([a-z]{2})$strUrlSuffix@";
+
+            // only set language if found in url
+            if (preg_match($regex, $environment->requestUri))
+            {
+                $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = preg_replace($regex, '$1', $environment->requestUri);
+                return;
+            }
+        }
+
+        // if everything failed til now, try to use post or get language
+        if ($selectedLanguage && in_array($selectedLanguage, $i18nl10nLanguages))
         {
             $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selectedLanguage;
-        }
+        } // else use session language
         elseif (isset($_SESSION['TL_LANGUAGE']))
         {
             $GLOBALS['TL_LANGUAGE'] = $_SESSION['TL_LANGUAGE'];

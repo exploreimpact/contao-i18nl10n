@@ -645,13 +645,12 @@ class tl_page_i18nl10n extends tl_page
             }
         }
 
-        $sql = "UPDATE ? SET tstamp = ?, l10n_published = ? WHERE id = ?";
+        $sql = "UPDATE " . $strTable . " SET tstamp = ?, l10n_published = ? WHERE id = ?";
 
         // Update the database
         \Database::getInstance()
             ->prepare($sql)
             ->execute(
-                $strTable,
                 time(),
                 $blnPublished ? '' : '1',
                 $intId

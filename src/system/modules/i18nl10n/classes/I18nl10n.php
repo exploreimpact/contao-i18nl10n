@@ -101,10 +101,18 @@ class I18nl10n extends \Controller
             WHERE
                 (
                     id = (SELECT pid FROM tl_page_i18nl10n WHERE id = ? AND language = ?)
-                    OR id = (SELECT pid FROM tl_page_i18nl10n WHERE alias IN('" . $strAlias . "') AND language = ? ORDER BY " . $dataBase->findInSet('alias', $arrAlias) . ")
+                    OR id = (
+                      SELECT pid
+                      FROM tl_page_i18nl10n
+                      WHERE alias
+                        IN('" . $strAlias . "')
+                        AND language = ?
+                        ORDER BY " . $dataBase->findInSet('alias', $arrAlias) . "
+                        LIMIT 0,1)
                     OR alias IN('" . $strAlias . "')
                 )
         ";
+
 
         if (!BE_USER_LOGGED_IN)
         {
