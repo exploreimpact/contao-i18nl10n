@@ -65,33 +65,53 @@ class I18nl10n extends \Controller
      *
      * @param $arrFragments
      * @param $strLanguage
-     * @return null|string
+     * @return null|array
      */
-    public static function findByLocalizedAliases($arrFragments, $strLanguage)
+    public static function findAliasByLocalizedAliases($arrFragments, $strLanguage)
     {
 
-        $alias = null;
         $arrAlias = array();
+        $arrAliasGuess = array();
         $strAlias = $arrFragments[0];
 
         if (\Config::get('folderUrl') && $arrFragments[count($arrFragments)-2] == 'language') {
             // glue together possible aliases
             for($i = 0; count($arrFragments)-2 > $i; $i++) {
-                $arrAlias[] = ($i == 0) ? $arrFragments[$i] : $arrAlias[$i-1] . '/' . $arrFragments[$i];
+                $arrAliasGuess[] = ($i == 0) ? $arrFragments[$i] : $arrAliasGuess[$i-1] . '/' . $arrFragments[$i];
             }
 
             // Remove everything that is not an alias
-            $arrAlias = array_filter(array_map(function($v) {
+            $arrAliasGuess = array_filter(array_map(function($v) {
                 return preg_match('/^[\pN\pL\/\._-]+$/u', $v) ? $v : null;
-            }, $arrAlias));
+            }, $arrAliasGuess));
 
             // reverse array to get specific entries first
-            $arrAlias = array_reverse($arrAlias);
+            $arrAliasGuess = array_reverse($arrAliasGuess);
 
-            $strAlias = implode("','", $arrAlias);
+            $strAlias = implode("','", $arrAliasGuess);
         }
 
         $dataBase = \Database::getInstance();
+
+        $sql = "SELECT pid, alias
+                FROM tl_page_i18nl10n
+                WHERE
+                  id = ? AND language = ?
+                  OR alias IN('" . $strAlias . "') AND language = ?
+                ORDER BY " . $dataBase->findInSet('alias', $arrAliasGuess) . " LIMIT 0,1";
+
+        $arrL10nItem = $dataBase
+            ->prepare($sql)
+            ->execute(
+                is_numeric($arrFragments[0]) ? $arrFragments[0] : 0,
+                $strLanguage,
+                $strLanguage
+            )
+            ->fetchAssoc();
+
+        if (!empty($arrL10nItem)) {
+            $arrAlias['l10nAlias'] = $arrL10nItem['alias'];
+        }
 
         $sql = "
             SELECT
@@ -100,19 +120,10 @@ class I18nl10n extends \Controller
                 tl_page
             WHERE
                 (
-                    id = (SELECT pid FROM tl_page_i18nl10n WHERE id = ? AND language = ?)
-                    OR id = (
-                      SELECT pid
-                      FROM tl_page_i18nl10n
-                      WHERE alias
-                        IN('" . $strAlias . "')
-                        AND language = ?
-                        ORDER BY " . $dataBase->findInSet('alias', $arrAlias) . "
-                        LIMIT 0,1)
+                    id = ?
                     OR alias IN('" . $strAlias . "')
                 )
         ";
-
 
         if (!BE_USER_LOGGED_IN)
         {
@@ -124,24 +135,19 @@ class I18nl10n extends \Controller
             ";
         }
 
-        $sql .= "ORDER BY " . $dataBase->findInSet('alias', $arrAlias);
+        $sql .= "ORDER BY " . $dataBase->findInSet('alias', $arrAliasGuess);
 
         $objL10n = $dataBase
             ->prepare($sql)
-            ->execute(
-                is_numeric($arrFragments[0]) ? $arrFragments[0] : 0,
-                $strLanguage,
-                $strLanguage,
-                $strLanguage
-            );
+            ->execute( empty($arrL10nItem) ? 0 : $arrL10nItem['pid'] );
 
         if ($objL10n !== null) {
             // best match is in first item
             $arrPage = $objL10n->row();
-            $alias = $arrPage['alias'];
+            $arrAlias['alias'] = $arrPage['alias'];
         }
 
-        return $alias;
+        return $arrAlias;
 
     }
 }

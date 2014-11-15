@@ -211,23 +211,24 @@ class I18nl10nHook extends \System
         }
 
         // try to find localized page by alias
-        $strAlias = I18nl10n\Classes\I18nl10n::findByLocalizedAliases($arrFragments, $language);
+        $arrAlias = I18nl10n\Classes\I18nl10n::findAliasByLocalizedAliases($arrFragments, $language);
 
-        if ($strAlias !== null)
+        if (!empty($arrAlias))
         {
 
             // replace alias
-            $arrFragments[0] = $strAlias;
+            $arrFragments[0] = $arrAlias['alias'];
 
             // if alias has folder, remove related entries
-            if (strpos($strAlias, '/') !== false) {
-                $arrAlias = explode('/', $strAlias);
+            if (strpos($arrAlias['alias'], '/') !== false || strpos($arrAlias['l10nAlias'], '/') !== false) {
+                $arrAliasFragments = array_merge(explode('/', $arrAlias['alias']), explode('/', $arrAlias['l10nAlias']));
+                $arrAliasFragments = array_unique($arrAliasFragments);
 
                 // remove alias parts
-                foreach($arrAlias as $strSubAlias) {
+                foreach($arrAliasFragments as $strAliasFragment) {
 
                     // if alias part is still part of arrFragments, remove it from there
-                    if ( ($key = array_search($strSubAlias, $arrFragments)) !== false ) {
+                    if ( ($key = array_search($strAliasFragment, $arrFragments)) !== false ) {
                         unset($arrFragments[$key]);
                     }
                 }
