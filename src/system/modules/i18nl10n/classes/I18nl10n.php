@@ -73,6 +73,7 @@ class I18nl10n extends \Controller
         $arrAlias = array();
         $arrAliasGuess = array();
         $strAlias = $arrFragments[0];
+        $dataBase = \Database::getInstance();
 
         if (\Config::get('folderUrl') && $arrFragments[count($arrFragments)-2] == 'language') {
             // glue together possible aliases
@@ -91,8 +92,7 @@ class I18nl10n extends \Controller
             $strAlias = implode("','", $arrAliasGuess);
         }
 
-        $dataBase = \Database::getInstance();
-
+        // Try to find a localized content
         $sql = "SELECT pid, alias
                 FROM tl_page_i18nl10n
                 WHERE
@@ -109,10 +109,12 @@ class I18nl10n extends \Controller
             )
             ->fetchAssoc();
 
+        // Set l10n alias, if item was found (is needed to be removed from url params later on)
         if (!empty($arrL10nItem)) {
             $arrAlias['l10nAlias'] = $arrL10nItem['alias'];
         }
 
+        // Try to find default language page by localized id or alias
         $sql = "
             SELECT
                 alias
@@ -141,6 +143,7 @@ class I18nl10n extends \Controller
             ->prepare($sql)
             ->execute( empty($arrL10nItem) ? 0 : $arrL10nItem['pid'] );
 
+        // Set alias if a page was found
         if ($objL10n !== null) {
             // best match is in first item
             $arrPage = $objL10n->row();
