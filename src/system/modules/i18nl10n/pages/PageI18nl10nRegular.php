@@ -192,7 +192,7 @@ class PageI18nl10nRegular extends \PageRegular
         {
             $this->import('Environment');
             $environment = $this->Environment;
-            $strUrlSuffix = preg_quote( \Config::get('urlSuffix') ?: '.html' );
+            $strUrlSuffix = preg_quote( \Config::get('urlSuffix') );
 
             $regex = "@.*?\.([a-z]{2})$strUrlSuffix@";
 

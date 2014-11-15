@@ -88,6 +88,7 @@ class I18nl10nHook extends \System
 
         if (\Config::get('i18nl10n_alias_suffix') && !\Config::get('disableAlias'))
         {
+
             $strL10nUrl = $alias . $strParams . '.' . $language . \Config::get('urlSuffix');
 
             // if rewrite is off, add environment
@@ -179,6 +180,7 @@ class I18nl10nHook extends \System
                 array_push($arrFragments, 'language', $language);
             }
 
+
         } // try to get language by suffix
         elseif (\Config::get('i18nl10n_alias_suffix') && !\Config::get('disableAlias'))
         {
@@ -223,12 +225,15 @@ class I18nl10nHook extends \System
 
                 // remove alias parts
                 foreach($arrAlias as $strSubAlias) {
-                    if ($key = array_search($strSubAlias, $arrFragments) !== false) {
+
+                    // if alias part is still part of arrFragments, remove it from there
+                    if ( ($key = array_search($strSubAlias, $arrFragments)) !== false ) {
                         unset($arrFragments[$key]);
                     }
                 }
             }
         }
+
 
         // Add the second fragment as auto_item if the number of fragments is even
         if (\Config::get('useAutoItem') && count($arrFragments) % 2 == 0)
