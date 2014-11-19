@@ -132,7 +132,7 @@ class PageI18nl10nRegular extends \PageRegular
             }
         }
 
-        parent::generate($objPage);
+        parent::generate($objPage, $blnCheckRequest);
     }
 
 
