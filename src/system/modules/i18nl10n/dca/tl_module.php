@@ -46,7 +46,7 @@ $i18nl10nLanguageSelection = array
         'exclude'   => true,
         'inputType' => 'radio',
         'default'   => 'full',
-        'options'   => array('full', 'text', 'image', 'disable'),
+        'options'   => array('full', 'text', 'image', 'iso', 'disable'),
         'reference' => &$GLOBALS['TL_LANG']['tl_module']['i18nl10nLangStyleLabels'],
         'eval'      => array
         (

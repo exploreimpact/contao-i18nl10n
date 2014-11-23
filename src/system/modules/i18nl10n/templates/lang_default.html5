@@ -23,6 +23,9 @@ foreach ($_GET as $key => $value)
             <span class="i18nl10n_label">
                 <?php echo $this->languages[$item['language']]; ?>
             </span>
+            <span class="i18nl10n_iso">
+                <?php echo $item['language']; ?>
+            </span>
                 <?php if (!$item['isActive']): // disable link if active ?>
             </a>
         <?php endif; ?>

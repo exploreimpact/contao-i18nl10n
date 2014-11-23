@@ -1,0 +1,12 @@
+/** type 'image' style adjustments **/
+.i18nl10n_lang_style_iso .i18nl10n_iso {
+    display: inline;
+}
+
+.i18nl10n_lang_style_iso .i18nl10n_label {
+    display: none;
+}
+
+.i18nl10n_lang_style_iso .i18nl10n_flag {
+    display: none;
+}

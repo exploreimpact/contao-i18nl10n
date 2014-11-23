@@ -188,6 +188,9 @@ class ModuleI18nl10nLanguageSelection extends \Module
                 case 'image':
                     $GLOBALS['TL_CSS'][] = $assetsUrl . 'css/i18nl10n_lang_image.css';
                     break;
+                case 'iso':
+                    $GLOBALS['TL_CSS'][] = $assetsUrl . 'css/i18nl10n_lang_iso.css';
+                    break;
             }
         }
 
