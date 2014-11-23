@@ -36,6 +36,8 @@ class I18nl10nRunOnceJob extends \Controller
 
         $i18nl10nDefaultLanguage = $config->get('i18nl10n_default_language') ? : 'en';
 
+        $objDatabase = \Database::getInstance();
+
 
         // if not default try to get from root or use fallback
         if (!$config->get('i18nl10n_default_language'))
@@ -52,7 +54,7 @@ class I18nl10nRunOnceJob extends \Controller
                   sorting
             ";
 
-            $objRootPage = \Database::getInstance()
+            $objRootPage = $objDatabase
                 ->prepare($sql)
                 ->limit(1)
                 ->execute();
@@ -90,6 +92,15 @@ class I18nl10nRunOnceJob extends \Controller
                 $config->update("\$GLOBALS['TL_CONFIG']['i18nl10n_languages']", serialize($availableLanguages));
             }
         }
+
+        // Remove orphaned entries from tl_page_118nl10n
+        $objDatabase
+            ->prepare("DELETE FROM tl_page_i18nl10n
+                       WHERE NOT EXISTS (
+                          SELECT *
+                          FROM tl_page as p
+                          WHERE tl_page_i18nl10n.pid = p.id)")
+            ->execute();
 
     }
 }
