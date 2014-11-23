@@ -26,7 +26,6 @@ $this->loadDataContainer('tl_content');
 // set callback for dca load to add language selection to content elements IF module is article
 if (\Input::get('do') == 'article')
 {
-    $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] = array('tl_content_l10n', 'onLoadCallback');
     // define callback to add language icons
     $GLOBALS['TL_DCA']['tl_content']['list']['sorting']['child_record_callback'] = array('tl_content_l10n', 'addCteType');
 }

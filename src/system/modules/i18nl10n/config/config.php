@@ -79,6 +79,7 @@ $GLOBALS['TL_HOOKS']['getPageIdFromUrl'][] = array('\I18nl10n\Classes\I18nl10nHo
 $GLOBALS['TL_HOOKS']['generateBreadcrumb'][] = array('\I18nl10n\Classes\I18nl10nHook', 'generateBreadcrumb');
 $GLOBALS['TL_HOOKS']['executePostActions'][] = array('tl_page_i18nl10n', 'executePostActions');
 $GLOBALS['TL_HOOKS']['isVisibleElement'][] = array('\I18nl10n\Classes\I18nl10nHook', 'isVisibleElement');
+$GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('\I18nl10n\Classes\I18nl10nHook', 'loadDataContainer');
 
 
 /**

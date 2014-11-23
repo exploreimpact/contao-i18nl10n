@@ -337,4 +337,20 @@ class I18nl10nHook extends \System
         return $arrItems;
     }
 
+
+    /**
+     * loadDataContainer hook
+     *
+     * Add onload_callback definition when loadDataContainer hook is
+     * called to define onload_callback as late as possible
+     *
+     * @param $strName
+     */
+    public function loadDataContainer($strName) {
+        if ($strName == "tl_content" && \Input::get('do') == 'article')
+        {
+            $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] = array('tl_content_l10n', 'onLoadCallback');
+        }
+    }
+
 }
