@@ -30,7 +30,7 @@ $GLOBALS['TL_LANG']['tl_module']['i18nl10nLangStyle'] = array
 $GLOBALS['TL_LANG']['tl_module']['i18nl10nLangStyleLabels']['full'] = 'Icon & label';
 $GLOBALS['TL_LANG']['tl_module']['i18nl10nLangStyleLabels']['text'] = 'Label only';
 $GLOBALS['TL_LANG']['tl_module']['i18nl10nLangStyleLabels']['image'] = 'Icon only';
-$GLOBALS['TL_LANG']['tl_module']['i18nl10nLangStyleLabels']['iso'] = 'ISO Code';
+$GLOBALS['TL_LANG']['tl_module']['i18nl10nLangStyleLabels']['iso'] = 'ISO code';
 $GLOBALS['TL_LANG']['tl_module']['i18nl10nLangStyleLabels']['disable'] = 'Disable style';
 
 $GLOBALS['TL_LANG']['tl_module']['i18nl10nLangHide'] = array
