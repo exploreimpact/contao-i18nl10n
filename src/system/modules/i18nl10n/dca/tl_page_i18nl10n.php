@@ -150,9 +150,16 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
     // Palettes
     'palettes' => array
     (
-        'default' =>
-            '{menu_legend},title,alias;'
+        '__selector__' => array('type'),
+        'default' => '{menu_legend},title,alias;'
             . '{meta_legend},pageTitle,description;'
+            . '{time_legend:hide},dateFormat,timeFormat,datimFormat;'
+            . '{expert_legend:hide},cssClass;'
+            . '{publish_legend},start,stop;'
+            . '{i18nl10n_legend},language,l10n_published',
+        'redirect' => '{menu_legend},title,alias;'
+            . '{meta_legend},pageTitle,type;'
+            . '{redirect_legend},url;'
             . '{time_legend:hide},dateFormat,timeFormat,datimFormat;'
             . '{expert_legend:hide},cssClass;'
             . '{publish_legend},start,stop;'
@@ -184,26 +191,29 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         ),
 
         // copy settings from tl_page dca
-        'sorting'        => $GLOBALS['TL_DCA']['tl_page']['fields']['sorting'],
-        'tstamp'         => $GLOBALS['TL_DCA']['tl_page']['fields']['tstamp'],
-        'type'           => $GLOBALS['TL_DCA']['tl_page']['fields']['type'],
-        'title'          => $GLOBALS['TL_DCA']['tl_page']['fields']['title'],
-        'language'       => $GLOBALS['TL_DCA']['tl_page']['fields']['language'],
-        'alias'          => $GLOBALS['TL_DCA']['tl_page']['fields']['alias'],
-        'pageTitle'      => $GLOBALS['TL_DCA']['tl_page']['fields']['pageTitle'],
-        'description'    => $GLOBALS['TL_DCA']['tl_page']['fields']['description'],
-        'cssClass'       => $GLOBALS['TL_DCA']['tl_page']['fields']['cssClass'],
-        'dateFormat'     => $GLOBALS['TL_DCA']['tl_page']['fields']['dateFormat'],
-        'timeFormat'     => $GLOBALS['TL_DCA']['tl_page']['fields']['timeFormat'],
-        'datimFormat'    => $GLOBALS['TL_DCA']['tl_page']['fields']['datimFormat'],
-        'start'          => $GLOBALS['TL_DCA']['tl_page']['fields']['start'],
-        'stop'           => $GLOBALS['TL_DCA']['tl_page']['fields']['stop'],
+        'sorting' => $GLOBALS['TL_DCA']['tl_page']['fields']['sorting'],
+        'tstamp' => $GLOBALS['TL_DCA']['tl_page']['fields']['tstamp'],
+        'type' => $GLOBALS['TL_DCA']['tl_page']['fields']['type'],
+        'title' => $GLOBALS['TL_DCA']['tl_page']['fields']['title'],
+        'url' => $GLOBALS['TL_DCA']['tl_page']['fields']['url'],
+        'alias' => $GLOBALS['TL_DCA']['tl_page']['fields']['alias'],
+        'pageTitle' => $GLOBALS['TL_DCA']['tl_page']['fields']['pageTitle'],
+        'description' => $GLOBALS['TL_DCA']['tl_page']['fields']['description'],
+        'cssClass' => $GLOBALS['TL_DCA']['tl_page']['fields']['cssClass'],
+        'dateFormat' => $GLOBALS['TL_DCA']['tl_page']['fields']['dateFormat'],
+        'timeFormat' => $GLOBALS['TL_DCA']['tl_page']['fields']['timeFormat'],
+        'datimFormat' => $GLOBALS['TL_DCA']['tl_page']['fields']['datimFormat'],
+        'start' => $GLOBALS['TL_DCA']['tl_page']['fields']['start'],
+        'stop' => $GLOBALS['TL_DCA']['tl_page']['fields']['stop'],
+        'language' => $GLOBALS['TL_DCA']['tl_page']['fields']['language'],
         'l10n_published' => $GLOBALS['TL_DCA']['tl_page']['fields']['l10n_published']
     )
 );
 
-// update field class
+// update fields
 $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['l10n_published']['eval']['tl_class'] = 'w50 m12';
+$GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['url']['eval']['mandatory'] = false;
+$GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['url']['eval']['tl_class'] = 'long';
 
 // Splice in localize all in case languages are available
 if (!$disableCreate)

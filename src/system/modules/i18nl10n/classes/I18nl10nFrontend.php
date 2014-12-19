@@ -56,38 +56,33 @@ class I18nl10nFrontend extends \Controller
      */
     public function i18nl10nNavItems(Array $items, $blnUseFallback = false)
     {
-
         if (empty($items)) return false;
 
         //get item ids
         $item_ids = array();
 
-        foreach ($items as $row) {
+        foreach ($items as $row)
+        {
             $item_ids[] = $row['id'];
         }
 
-        $time = time();
-        $fields = 'alias,pid,title,pageTitle,description,language';
         $i18n_items = array();
 
-        if ($GLOBALS['TL_LANGUAGE'] != \Config::get('i18nl10n_default_language')) {
+        if ($GLOBALS['TL_LANGUAGE'] != \Config::get('i18nl10n_default_language'))
+        {
+            $time = time();
+            $fields = 'alias,pid,title,pageTitle,description,url,language';
+            $sqlPublishedCondition = !$blnUseFallback && !BE_USER_LOGGED_IN
+                ? " AND (start='' OR start < $time) AND (stop='' OR stop > $time) AND l10n_published = 1 "
+                : '';
+
             $sql = "
-                SELECT
-                    $fields
-                FROM
-                    tl_page_i18nl10n
+                SELECT $fields
+                FROM tl_page_i18nl10n
                 WHERE
                     pid IN (" . implode(', ', $item_ids) . ")
-                AND language = ?
-            ";
-
-            if (!$blnUseFallback && !BE_USER_LOGGED_IN) {
-                $sql .= "
-                    AND (start='' OR start < $time)
-                    AND (stop='' OR stop > $time)
-                    AND l10n_published = 1
-                ";
-            }
+                    AND language = ?
+                    $sqlPublishedCondition";
 
             $arrLocalizedPages = \Database::getInstance()
                 ->prepare($sql)
@@ -103,7 +98,8 @@ class I18nl10nFrontend extends \Controller
                 foreach ($arrLocalizedPages as $row)
                 {
 
-                    if ($row['pid'] == $item['id']) {
+                    if ($row['pid'] == $item['id'])
+                    {
 
                         $foundItem = true;
                         $alias = $row['alias'] ? : $item['alias'];
@@ -112,12 +108,24 @@ class I18nl10nFrontend extends \Controller
                         $row['alias'] = $alias;
                         $item['language'] = $row['language'];
 
-                        if ($item['type'] == 'forward') {
-                            $forwardRow = self::getI18nForward($item, $row['language']);
-                            $forwardRow['alias'] = $item['alias'] = $forwardRow['alias'] ? : $item['alias'];
-                            $item['href'] = $this->generateFrontendUrl($forwardRow);
-                        } else {
-                            $item['href'] = $this->generateFrontendUrl($item);
+                        switch ($item['type'])
+                        {
+                            case 'forward':
+                                $forwardRow = self::getI18nForward($item, $row['language']);
+                                $forwardRow['alias'] = $item['alias'] = $forwardRow['alias'] ? : $item['alias'];
+                                $item['href'] = $this->generateFrontendUrl($forwardRow);
+                                break;
+
+                            case 'redirect';
+                                if($row['url'])
+                                {
+                                    $item['href'] = $row['url'];
+                                }
+                                break;
+
+                            default:
+                                $item['href'] = $this->generateFrontendUrl($item);
+                                break;
                         }
 
                         $item['pageTitle'] = specialchars($row['pageTitle'], true);
@@ -135,13 +143,17 @@ class I18nl10nFrontend extends \Controller
 
                 }
 
-                if ($blnUseFallback && !$foundItem) {
+                if ($blnUseFallback && !$foundItem)
+                {
                     array_push($i18n_items, $item);
                 }
 
             }
-        } else {
-            foreach ($items as $item) {
+        }
+        else
+        {
+            foreach ($items as $item)
+            {
                 if (!$blnUseFallback && $item['l10n_published'] == '') continue;
                 array_push($i18n_items, $item);
             }
@@ -159,7 +171,9 @@ class I18nl10nFrontend extends \Controller
      */
     private function getI18nForward(Array $item, $lang)
     {
-        if ($item['jumpTo']) {
+        if ($item['jumpTo'])
+        {
+            // If jumpTo is set, get the target page
             $sql = "
               SELECT
                 *
@@ -176,47 +190,52 @@ class I18nl10nFrontend extends \Controller
                 ->execute($item['jumpTo'], $lang);
 
             $i18nl = $request->fetchAssoc();
-        } else {
-            $time = time();
-            $sql = "
-                SELECT
-                  *
-                FROM
-                  tl_page_i18nl10n
-                WHERE
-                  pid = (
-                    SELECT
-                      id
-                    FROM
-                      tl_page
-                    WHERE
-                      pid = ?
-                      AND type = 'regular'";
-
-            if (!BE_USER_LOGGED_IN) {
-                $sql .= "
-                    AND (start='' OR start<$time)
-                    AND (stop='' OR stop>$time)
-                    AND published=1";
-            }
-
-            $sql .= "
-                    ORDER BY
-                        sorting
-                    LIMIT 0,1
-                )
-                AND
-                    language = ?";
-
-            $request = \Database::getInstance()
-                ->prepare($sql)
-                ->limit(1)
-                ->execute($item['id'], $lang);
-
-            $i18nl = $request->fetchAssoc();
+        }
+        else
+        {
+            // If jumpTo is not set, get first published subpage
+            $i18nl = self::findFirstPublishedL10nRegularByPid($item['id'], $lang);
         }
 
         return $i18nl;
     }
 
+    /**
+     * Get first published sub page for given id and language
+     *
+     * @param $intId
+     * @param $strLang
+     *
+     * @return array|false
+     */
+    public function findFirstPublishedL10nRegularByPid($intId, $strLang)
+    {
+        $time = time();
+        $sqlPublishedCondition = !BE_USER_LOGGED_IN
+            ? " AND (start='' OR start < $time) AND (stop='' OR stop > $time) AND published = 1 "
+            : '';
+
+        $sql = "
+            SELECT *
+            FROM tl_page_i18nl10n
+            WHERE
+              pid = (
+                SELECT id
+                FROM tl_page
+                WHERE
+                  pid = ?
+                  AND type = 'regular'
+                  $sqlPublishedCondition
+                ORDER BY sorting
+                LIMIT 0,1
+              )
+            AND language = ?";
+
+        $request = \Database::getInstance()
+            ->prepare($sql)
+            ->limit(1)
+            ->execute($intId, $strLang);
+
+        return $request->fetchAssoc();
+    }
 }
