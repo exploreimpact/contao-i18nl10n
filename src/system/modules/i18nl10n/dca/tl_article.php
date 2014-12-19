@@ -35,16 +35,7 @@ class tl_article_l10n extends tl_article
     public function addIcon($row, $label)
     {
         $label = parent::addIcon($row, $label);
-        $sql = "
-          SELECT
-            COUNT(id) items, language
-          FROM
-            tl_content
-          WHERE
-            pid =?
-          GROUP BY
-            language
-        ";
+        $sql = 'SELECT COUNT(id) items, language FROM tl_content WHERE pid =? GROUP BY language';
 
         // count content elements in different languages and display them
         $items = \Database::getInstance()

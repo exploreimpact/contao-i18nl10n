@@ -285,10 +285,10 @@ class tl_page_l10n extends tl_page
             $fields['sorting'] += 128;
             $fields['language'] = $language;
 
-            $sql = "
+            $sql = '
               INSERT INTO
                 tl_page_i18nl10n %s
-            ";
+            ';
 
             \Database::getInstance()
                 ->prepare($sql)

@@ -132,7 +132,7 @@ class I18nl10nFrontend extends \Controller
                         $item['title'] = specialchars($row['title'], true);
                         $item['link'] = $item['title'];
                         $item['description'] = str_replace(
-                            array("\n", "\r"),
+                            array('\n', '\r'),
                             array(' ', ''),
                             specialchars($row['description'])
                         );
@@ -174,15 +174,13 @@ class I18nl10nFrontend extends \Controller
         if ($item['jumpTo'])
         {
             // If jumpTo is set, get the target page
-            $sql = "
-              SELECT
-                *
-              FROM
-                tl_page_i18nl10n
+            $sql = '
+              SELECT *
+              FROM tl_page_i18nl10n
               WHERE
                 pid = ?
                 AND language = ?
-            ";
+            ';
 
             $request = \Database::getInstance()
                 ->prepare($sql)

@@ -56,7 +56,7 @@ class I18nl10nHook extends \System
 
         // try to get l10n alias by language and pid
         if ($language != \Config::get('i18nl10n_default_language')) {
-            $sql = "SELECT alias FROM tl_page_i18nl10n WHERE pid = ? AND language = ?";
+            $sql = 'SELECT alias FROM tl_page_i18nl10n WHERE pid = ? AND language = ?';
 
             $arrL10nAlias = \Database::getInstance()
                 ->prepare($sql)
@@ -116,7 +116,7 @@ class I18nl10nHook extends \System
             if (strpos($strUrl, '?') !== false) {
                 if (strpos($strUrl, 'language=') !== false) {
                     // if variable 'language' replace it
-                    $regex = "@language=[A-z]{2}@";
+                    $regex = '@language=[A-z]{2}@';
                     $strL10nUrl = preg_replace(
                         $regex, 'language=' . $language, $strUrl
                     );
@@ -259,13 +259,13 @@ class I18nl10nHook extends \System
             $arrPages[] = $item['isRoot'] ? $item['data']['pid'] : $item['data']['id'];
         }
 
-        $sql = "
+        $sql = '
             SELECT *
             FROM tl_page_i18nl10n
             WHERE
-              pid IN (" . implode(',', $arrPages) . ")
+              pid IN (' . implode(',', $arrPages) . ')
               AND language = ?
-        ";
+        ';
 
         if (!BE_USER_LOGGED_IN) {
             $time = time();
@@ -313,7 +313,7 @@ class I18nl10nHook extends \System
      * @param $strName
      */
     public function loadDataContainer($strName) {
-        if ($strName == "tl_content" && \Input::get('do') == 'article') {
+        if ($strName == 'tl_content' && \Input::get('do') == 'article') {
             $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] = array('tl_content_l10n', 'onLoadCallback');
         }
     }

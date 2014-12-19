@@ -53,7 +53,7 @@ if (TL_MODE == 'BE')
 // Append be module to sidebar
 array_insert(
     $GLOBALS['BE_MOD']['design'],
-    array_search("page", array_keys($GLOBALS['BE_MOD']['design'])) + 1,
+    array_search('page', array_keys($GLOBALS['BE_MOD']['design'])) + 1,
     array
     (
         'i18nl10n' => array

@@ -558,19 +558,13 @@ class tl_page_i18nl10n extends tl_page
         }
 
         $sql = "
-            SELECT
-              *
-            FROM
-              tl_page
+            SELECT *
+            FROM tl_page
             WHERE
-              id =
-              (
-                SELECT
-                  pid
-                FROM
-                  tl_page_i18nl10n
-                WHERE
-                  id = ?
+              id = (
+                SELECT pid
+                FROM tl_page_i18nl10n
+                WHERE id = ?
               )
         ";
 

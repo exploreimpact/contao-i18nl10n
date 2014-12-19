@@ -56,10 +56,8 @@ class PageI18nl10nRegular extends \PageRegular
         $fields = 'title,language,pageTitle,description,cssClass,dateFormat,timeFormat,datimFormat,start,stop';
 
         $sql = "
-            SELECT
-              $fields
-            FROM
-              tl_page_i18nl10n
+            SELECT $fields
+            FROM tl_page_i18nl10n
             WHERE
               pid = ?
               AND language = ?
@@ -207,10 +205,8 @@ class PageI18nl10nRegular extends \PageRegular
     public function getL10nRootPage($objPage)
     {
         $sql = "
-            SELECT
-              title
-            FROM
-              tl_page_i18nl10n
+            SELECT title
+            FROM tl_page_i18nl10n
             WHERE
               pid = ?
               AND language = ?

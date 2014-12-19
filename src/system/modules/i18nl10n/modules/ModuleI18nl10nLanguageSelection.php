@@ -77,10 +77,8 @@ class ModuleI18nl10nLanguageSelection extends \Module
         $time = time();
         $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
         $sql = "
-            SELECT
-                *
-            FROM
-                tl_page_i18nl10n
+            SELECT *
+            FROM tl_page_i18nl10n
             WHERE
                 pid = ?
                 AND language IN ( '" . implode("', '", $i18nl10nLanguages) . "' )

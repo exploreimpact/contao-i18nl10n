@@ -43,16 +43,7 @@ class I18nl10nRunOnceJob extends \Controller
         if (!$config->get('i18nl10n_default_language'))
         {
 
-            $sql = "
-                SELECT
-                  language
-                FROM
-                  tl_page
-                WHERE
-                  type = 'root'
-                ORDER BY
-                  sorting
-            ";
+            $sql = "SELECT language FROM tl_page WHERE type = 'root' ORDER BY sorting";
 
             $objRootPage = $objDatabase
                 ->prepare($sql)
@@ -95,11 +86,11 @@ class I18nl10nRunOnceJob extends \Controller
 
         // Remove orphaned entries from tl_page_118nl10n
         $objDatabase
-            ->prepare("DELETE FROM tl_page_i18nl10n
+            ->prepare('DELETE FROM tl_page_i18nl10n
                        WHERE NOT EXISTS (
                           SELECT *
                           FROM tl_page as p
-                          WHERE tl_page_i18nl10n.pid = p.id)")
+                          WHERE tl_page_i18nl10n.pid = p.id)')
             ->execute();
 
     }

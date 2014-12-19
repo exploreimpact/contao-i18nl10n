@@ -118,10 +118,8 @@ class I18nl10n extends \Controller
 
         // Try to find default language page by localized id or alias
         $sql = "
-            SELECT
-                alias
-            FROM
-                tl_page
+            SELECT alias
+            FROM tl_page
             WHERE
                 (
                     id = ?
@@ -139,7 +137,7 @@ class I18nl10n extends \Controller
             ";
         }
 
-        $sql .= "ORDER BY " . $dataBase->findInSet('alias', $arrAliasGuess);
+        $sql .= 'ORDER BY ' . $dataBase->findInSet('alias', $arrAliasGuess);
 
         $objL10n = $dataBase
             ->prepare($sql)
