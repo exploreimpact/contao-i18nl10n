@@ -307,7 +307,7 @@ class tl_page_l10n extends tl_page
                 $strFolderUrl = $objL10nParentPage->alias . '/';
             }
 
-            $fields['alias'] = $strFolderUrl . $strAlias . '-' . $dc->id;
+            $fields['alias'] = $strFolderUrl . $strAlias . '-' . $dc->activeRecord->pid . $dc->id;
 
             $sql = 'INSERT INTO tl_page_i18nl10n %s';
 
