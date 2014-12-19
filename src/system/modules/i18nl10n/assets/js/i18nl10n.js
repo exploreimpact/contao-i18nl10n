@@ -25,10 +25,10 @@ var I18nl10n =
 
         el.blur();
 
-        var icon = $(el).getFirst('img'),
-            flag = $(el).getParent('li').getElement('.i18nl10n_flag'),
-            publish = (icon.src.indexOf('invisible') != -1),
-            div = el.getParent('div');
+        var icon = $(el).getFirst('img');
+        var flag = $(el).getParent('li').getElement('.i18nl10n_flag');
+        var publish = (icon.src.indexOf('invisible') != -1);
+        var div = el.getParent('div');
 
         // Send the request
         if (publish) {
@@ -58,5 +58,4 @@ var I18nl10n =
 
         return false;
     }
-
 };

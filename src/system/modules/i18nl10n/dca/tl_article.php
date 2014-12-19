@@ -31,6 +31,11 @@ class tl_article_l10n extends tl_article
 {
     /**
      * Add summary of elements by language as tooltip.
+     *
+     * @param $row
+     * @param $label
+     *
+     * @return string
      */
     public function addIcon($row, $label)
     {

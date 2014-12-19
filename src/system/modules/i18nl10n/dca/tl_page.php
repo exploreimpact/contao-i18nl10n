@@ -236,10 +236,11 @@ class tl_page_l10n extends tl_page
 
     }
 
-
     /**
      * Automatically create a new localization upon page creation
      * (triggered by on submit callback)
+     *
+     * @param DataContainer $dc
      */
     public function generatePageL10n(DataContainer $dc)
     {
@@ -285,10 +286,7 @@ class tl_page_l10n extends tl_page
             $fields['sorting'] += 128;
             $fields['language'] = $language;
 
-            $sql = '
-              INSERT INTO
-                tl_page_i18nl10n %s
-            ';
+            $sql = 'INSERT INTO tl_page_i18nl10n %s';
 
             \Database::getInstance()
                 ->prepare($sql)
