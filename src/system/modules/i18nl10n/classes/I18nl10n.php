@@ -153,4 +153,108 @@ class I18nl10n extends \Controller
         return $arrAlias;
 
     }
+
+    /**
+     * Get first published sub page for given l10n id and language
+     *
+     * @param $intId
+     * @param $strLang
+     *
+     * @return array|false
+     */
+    public static function findFirstPublishedL10nRegularPageByPid($intId, $strLang)
+    {
+        $time = time();
+        $sqlPublishedCondition = !BE_USER_LOGGED_IN
+            ? " AND (start='' OR start < $time) AND (stop='' OR stop > $time) AND published = 1 "
+            : '';
+
+        $sql = "
+            SELECT *
+            FROM tl_page_i18nl10n
+            WHERE
+              pid = (
+                SELECT id
+                FROM tl_page
+                WHERE
+                  pid = ?
+                  AND type = 'regular'
+                  $sqlPublishedCondition
+                ORDER BY sorting
+                LIMIT 0,1
+              )
+            AND language = ?";
+
+        $request = \Database::getInstance()
+            ->prepare($sql)
+            ->limit(1)
+            ->execute($intId, $strLang);
+
+        return $request->fetchAssoc();
+    }
+
+    /**
+     * Get first published sub page for given l10n id and language
+     *
+     * @param $intId
+     * @param $strLang
+     *
+     * @return object
+     */
+    public static function findL10nWithDetails($intId, $strLang)
+    {
+        // Get page by id
+        $objCurrentPage = \PageModel::findWithDetails($intId);
+
+        // Get localization
+        return I18nl10n::findPublishedL10nPage($objCurrentPage, $strLang, false);
+    }
+
+    /**
+     * Find localized page for given page obj and replace string values
+     *
+     * @param       $objPage
+     * @param       $strLang
+     * @param bool  $blnTranslateOnly
+     *
+     * @return object
+     */
+    public static function findPublishedL10nPage($objPage, $strLang, $blnTranslateOnly = true)
+    {
+        //get language specific page properties
+        $time = time();
+        $fields = 'title,language,pageTitle,description,url,cssClass,dateFormat,timeFormat,datimFormat,start,stop';
+
+        if (!$blnTranslateOnly)
+        {
+            $fields .= ',alias,l10n_published';
+        }
+
+        $sqlPublishedCondition = !BE_USER_LOGGED_IN
+            ? " AND (start='' OR start < $time) AND (stop='' OR stop > $time) AND l10n_published = 1 "
+            : '';
+
+        $sql = "SELECT $fields FROM tl_page_i18nl10n WHERE pid = ? AND language = ? $sqlPublishedCondition";
+
+        $objL10nPage = \Database::getInstance()
+            ->prepare($sql)
+            ->limit(1)
+            ->execute($objPage->id, $strLang);
+
+        if ($objL10nPage->numRows)
+        {
+            $objPage->defaultPageTitle = $objPage->pageTitle;
+            $objPage->defaultTitle = $objPage->title;
+
+            // Replace strings with localized content
+            foreach (explode(',', $fields) as $field)
+            {
+                if ($objL10nPage->$field) {
+                    $objPage->$field = $objL10nPage->$field;
+                }
+            }
+        }
+
+        return $objPage;
+    }
 }

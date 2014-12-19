@@ -25,9 +25,9 @@ $GLOBALS['TL_LANG']['MSC']['i18nl10n_fields']['language']['label'] = array
     'Language',
     'Please select one of the available languages'
 );
-
 $GLOBALS['TL_LANG']['MSC']['editL10n'] = 'Edit localizations for page %s';
-
 $GLOBALS['TL_LANG']['MSC']['language'] = 'language';
 
 $GLOBALS['TL_LANG']['LNG'][''] = 'Any';
+
+$GLOBALS['TL_LANG']['ERR']['l10nAliasExists'] = 'The alias "%s" already exists for the selected language.';

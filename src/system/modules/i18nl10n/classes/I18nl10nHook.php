@@ -17,8 +17,6 @@
 
 namespace Verstaerker\I18nl10n\Classes;
 
-use Verstaerker\I18nl10n as I18nl10n;
-
 
 /**
  * Class I18nl10nHook
@@ -188,12 +186,9 @@ class I18nl10nHook extends \System
         }
 
         // try to find localized page by alias
-        $arrAlias = I18nl10n\Classes\I18nl10n::findAliasByLocalizedAliases($arrFragments, $language);
+        $arrAlias = I18nl10n::findAliasByLocalizedAliases($arrFragments, $language);
 
         if (!empty($arrAlias)) {
-
-            // replace alias
-            $arrFragments[0] = $arrAlias['alias'];
 
             // if alias has folder, remove related entries
             if (strpos($arrAlias['alias'], '/') !== false || strpos($arrAlias['l10nAlias'], '/') !== false) {
@@ -209,6 +204,9 @@ class I18nl10nHook extends \System
                     }
                 }
             }
+
+            // replace alias
+            $arrFragments[0] = $arrAlias['alias'];
         }
 
 

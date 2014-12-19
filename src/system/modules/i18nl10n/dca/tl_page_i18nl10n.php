@@ -16,6 +16,8 @@
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
+use \Verstaerker\I18nl10n\Classes\I18nl10n;
+
 // load language translations
 $this->loadLanguageFile('languages');
 
@@ -192,12 +194,12 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         // copy settings from tl_page dca
         'sorting' => $GLOBALS['TL_DCA']['tl_page']['fields']['sorting'],
         'tstamp' => $GLOBALS['TL_DCA']['tl_page']['fields']['tstamp'],
-        'type' => $GLOBALS['TL_DCA']['tl_page']['fields']['type'],
         'title' => $GLOBALS['TL_DCA']['tl_page']['fields']['title'],
-        'url' => $GLOBALS['TL_DCA']['tl_page']['fields']['url'],
         'alias' => $GLOBALS['TL_DCA']['tl_page']['fields']['alias'],
+        'type' => $GLOBALS['TL_DCA']['tl_page']['fields']['type'],
         'pageTitle' => $GLOBALS['TL_DCA']['tl_page']['fields']['pageTitle'],
         'description' => $GLOBALS['TL_DCA']['tl_page']['fields']['description'],
+        'url' => $GLOBALS['TL_DCA']['tl_page']['fields']['url'],
         'cssClass' => $GLOBALS['TL_DCA']['tl_page']['fields']['cssClass'],
         'dateFormat' => $GLOBALS['TL_DCA']['tl_page']['fields']['dateFormat'],
         'timeFormat' => $GLOBALS['TL_DCA']['tl_page']['fields']['timeFormat'],
@@ -210,9 +212,11 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
 );
 
 // update fields
-$GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['l10n_published']['eval']['tl_class'] = 'w50 m12';
+$GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['title']['eval']['tl_class'] = 'w50';
+$GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['alias']['save_callback'] = array(array('tl_page_i18nl10n', 'generateAlias'));
 $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['url']['eval']['mandatory'] = false;
 $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['url']['eval']['tl_class'] = 'long';
+$GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['l10n_published']['eval']['tl_class'] = 'w50 m12';
 
 // Splice in localize all in case languages are available
 if (!$disableCreate)
@@ -410,7 +414,6 @@ class tl_page_i18nl10n extends tl_page
         {
             if ($lang == $defaultLanguage) continue;
 
-
             $sql = "
                   INSERT INTO
                     tl_page_i18nl10n
@@ -582,19 +585,31 @@ class tl_page_i18nl10n extends tl_page
         return '<a href="' . $this->addToUrl($href) . '" title="' . specialchars($title) . '"' . $attributes . '>' . \Image::getHtml($icon, $label) . '</a> ';
     }
 
+    /**
+     * Display invalid config error message
+     */
     public function displayAddLanguageToUrlMessage()
     {
         if (\Config::get('addLanguageToUrl'))
         {
-
             $message = $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_add_language_to_url'];
-
             $GLOBALS['TL_DCA']['tl_page']['list']['sorting']['breadcrumb'] .=
                 '<div class="i18nl10n_page_message">' . $message . '</div>';
         };
     }
 
-
+    /**
+     * Toggle eye icon
+     *
+     * @param $row
+     * @param $href
+     * @param $label
+     * @param $title
+     * @param $icon
+     * @param $attributes
+     *
+     * @return string
+     */
     public function toggleL10nIcon($row, $href, $label, $title, $icon, $attributes)
     {
         $this->import('BackendUser', 'User');
@@ -621,7 +636,12 @@ class tl_page_i18nl10n extends tl_page
         return '<a href="' . $this->addToUrl($href) . '" title="' . specialchars($title) . '"' . $attributes . '>' . \Image::getHtml($icon, $label) . '</a> ';
     }
 
-
+    /**
+     * Toggle localized page visibility
+     *
+     * @param $intId
+     * @param $blnPublished
+     */
     public function toggleL10n($intId, $blnPublished)
     {
 
@@ -681,6 +701,62 @@ class tl_page_i18nl10n extends tl_page
                 );
                 break;
         }
+    }
+
+    /**
+     * Auto-generate a page alias if it has not been set yet
+     *
+     * @param mixed
+     * @param \DataContainer
+     * @return string
+     * @throws \Exception
+     */
+    public function generateAlias($varValue, DataContainer $dc)
+    {
+        $autoAlias = false;
+        $strLanguage = $dc->activeRecord->language;
+
+        // Generate an alias if there is none
+        if ($varValue == '')
+        {
+            $autoAlias = true;
+            $varValue = standardize(String::restoreBasicEntities($dc->activeRecord->title));
+
+            // Generate folder URL aliases (see #4933)
+            if (Config::get('folderUrl'))
+            {
+                // Get parent page
+                $objParentPage = \PageModel::findWithDetails($dc->activeRecord->pid);
+
+                if ($objParentPage->type !== 'root')
+                {
+                    // Get translation for parent page
+                    $objL10nParentPage = I18nl10n::findL10nWithDetails($objParentPage->pid, $strLanguage);
+
+                    // Create folder url
+                    $varValue = $objL10nParentPage->alias . '/' . $varValue;
+                }
+            }
+        }
+
+        $objAlias = $this->Database->prepare("SELECT id FROM tl_page_i18nl10n WHERE (id = ? OR alias = ?) AND language = ?")
+            ->execute($dc->id, $varValue, $strLanguage);
+
+        // Check whether the page alias exists
+        if ($objAlias->numRows > ($autoAlias ? 0 : 1))
+        {
+            // @todo: check for multiple domains
+            if ($autoAlias)
+            {
+                $varValue .= '-' . $dc->id;
+            }
+            else
+            {
+                throw new Exception(sprintf($GLOBALS['TL_LANG']['ERR']['l10nAliasExists'], $varValue));
+            }
+        }
+
+        return $varValue;
     }
 
 }

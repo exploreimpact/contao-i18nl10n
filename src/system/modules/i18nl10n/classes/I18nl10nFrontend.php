@@ -17,7 +17,6 @@
 
 namespace Verstaerker\I18nl10n\Classes;
 
-
 /**
  * Class I18nl10nFrontend
  * Common frontend functions go here
@@ -192,48 +191,9 @@ class I18nl10nFrontend extends \Controller
         else
         {
             // If jumpTo is not set, get first published subpage
-            $i18nl = self::findFirstPublishedL10nRegularByPid($item['id'], $lang);
+            $i18nl = I18nl10n::findFirstPublishedL10nRegularPageByPid($item['id'], $lang);
         }
 
         return $i18nl;
-    }
-
-    /**
-     * Get first published sub page for given id and language
-     *
-     * @param $intId
-     * @param $strLang
-     *
-     * @return array|false
-     */
-    public function findFirstPublishedL10nRegularByPid($intId, $strLang)
-    {
-        $time = time();
-        $sqlPublishedCondition = !BE_USER_LOGGED_IN
-            ? " AND (start='' OR start < $time) AND (stop='' OR stop > $time) AND published = 1 "
-            : '';
-
-        $sql = "
-            SELECT *
-            FROM tl_page_i18nl10n
-            WHERE
-              pid = (
-                SELECT id
-                FROM tl_page
-                WHERE
-                  pid = ?
-                  AND type = 'regular'
-                  $sqlPublishedCondition
-                ORDER BY sorting
-                LIMIT 0,1
-              )
-            AND language = ?";
-
-        $request = \Database::getInstance()
-            ->prepare($sql)
-            ->limit(1)
-            ->execute($intId, $strLang);
-
-        return $request->fetchAssoc();
     }
 }

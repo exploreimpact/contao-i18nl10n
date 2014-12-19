@@ -18,6 +18,7 @@
 
 
 namespace Verstaerker\I18nl10n\Pages;
+use Verstaerker\I18nl10n\Classes\I18nl10n;
 
 
 /**
@@ -43,7 +44,8 @@ class PageI18nl10nRegular extends \PageRegular
 
         if ($GLOBALS['TL_LANGUAGE'] == \Config::get('i18nl10n_default_language')) {
             // if default language is not published, give error
-            if (!$objPage->l10n_published) {
+            if (!$objPage->l10n_published)
+            {
                 $objError = new $GLOBALS['TL_PTY']['error_404']();
                 $objError->generate($objPage->id);
             }
@@ -52,55 +54,22 @@ class PageI18nl10nRegular extends \PageRegular
             return;
         }
 
-        //get language specific page properties
-        $fields = 'title,language,pageTitle,description,cssClass,dateFormat,timeFormat,datimFormat,start,stop';
-
-        $sql = "
-            SELECT $fields
-            FROM tl_page_i18nl10n
-            WHERE
-              pid = ?
-              AND language = ?
-        ";
-
-        if (!BE_USER_LOGGED_IN) {
-            $time = time();
-            $sql .= "
-                AND (start = '' OR start < $time)
-                AND (stop = '' OR stop > $time)
-                AND l10n_published = 1
-            ";
-        }
-
-        $l10n = \Database::getInstance()
-            ->prepare($sql)
-            ->limit(1)
-            ->execute($objPage->id, $GLOBALS['TL_LANGUAGE']);
+        $objPage = I18nl10n::findPublishedL10nPage($objPage, $GLOBALS['TL_LANGUAGE']);
 
         // if translated page, replace given fields in page object
-        if ($l10n->numRows) {
-
-            $objPage->defaultPageTitle = $objPage->pageTitle;
-            $objPage->defaultTitle = $objPage->title;
-
-            foreach (explode(',', $fields) as $field)
-            {
-                if ($l10n->$field) {
-                    $objPage->$field = $l10n->$field;
-                }
-            }
-        } // else use fallback language
-        else
+        if (!$objPage)
         {
-
             // if fallback is not published, show 404
-            if (!$objPage->l10n_published) {
+            if (!$objPage->l10n_published)
+            {
                 $objError = new $GLOBALS['TL_PTY']['error_404']();
                 $objError->generate($objPage->id);
 
                 parent::generate($objPage);
                 return;
-            } else {
+            }
+            else
+            {
                 // else at least keep current language to prevent language change and set flag
                 $objPage->language = $GLOBALS['TL_LANGUAGE'];
                 $objPage->useFallbackLanguage = true;
@@ -111,10 +80,12 @@ class PageI18nl10nRegular extends \PageRegular
         // update root information
         $objL10nRootPage = self::getL10nRootPage($objPage);
 
-        if ($objL10nRootPage) {
+        if ($objL10nRootPage)
+        {
             $objPage->rootTitle = $objL10nRootPage->title;
 
-            if ($objPage->pid == $objPage->rootId) {
+            if ($objPage->pid == $objPage->rootId)
+            {
                 $objPage->parentTitle = $objL10nRootPage->title;
                 $objPage->parentPageTitle = $objL10nRootPage->pageTitle;
             }

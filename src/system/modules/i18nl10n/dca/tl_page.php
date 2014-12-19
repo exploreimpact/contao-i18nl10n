@@ -16,6 +16,8 @@
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
+use Verstaerker\I18nl10n\Classes\I18nl10n;
+
 // load language translations
 $this->loadLanguageFile('languages');
 
@@ -258,15 +260,22 @@ class tl_page_l10n extends tl_page
             return;
         }
 
-        //now make copies in each language.
         $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
+
+        if (Config::get('folderUrl')) {
+            $arrAlias = explode('/', $dc->activeRecord->alias);
+            $strAlias = array_pop($arrAlias);
+        }
+        else
+        {
+            $strAlias = $dc->activeRecord->alias;
+        }
 
         $fields = array(
             'pid'            => $dc->id,
             'sorting'        => 0,
             'tstamp'         => time(),
             'title'          => $dc->activeRecord->title,
-            'alias'          => $dc->activeRecord->alias,
             'type'           => $dc->activeRecord->type,
             'pageTitle'      => $dc->activeRecord->pageTitle,
             'description'    => $dc->activeRecord->description,
@@ -279,12 +288,26 @@ class tl_page_l10n extends tl_page
             'datimFormat'    => $dc->activeRecord->datimFormat
         );
 
+        //now make copies in each language.
         foreach ($i18nl10nLanguages as $language)
         {
             if ($language == \Config::get('i18nl10n_default_language')) continue;
 
+            $strFolderUrl = '';
             $fields['sorting'] += 128;
             $fields['language'] = $language;
+
+            // Create alias based on folder url setting
+            if (Config::get('folderUrl'))
+            {
+                // Get translation for parent page
+                $objL10nParentPage = I18nl10n::findL10nWithDetails($dc->activeRecord->pid, $language);
+
+                // Create folder url
+                $strFolderUrl = $objL10nParentPage->alias . '/';
+            }
+
+            $fields['alias'] = $strFolderUrl . $strAlias . '-' . $dc->id;
 
             $sql = 'INSERT INTO tl_page_i18nl10n %s';
 
