@@ -227,7 +227,7 @@ class I18nl10n extends \Controller
 
         if (!$blnTranslateOnly)
         {
-            $fields .= ',alias,l10n_published';
+            $fields .= ',id,pid,sorting,tstamp,alias,l10n_published';
         }
 
         $sqlPublishedCondition = !BE_USER_LOGGED_IN
