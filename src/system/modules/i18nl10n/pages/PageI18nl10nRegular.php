@@ -39,14 +39,11 @@ class PageI18nl10nRegular extends \PageRegular
      */
     function generate($objPage, $blnCheckRequest = false)
     {
-
         self::fixupCurrentLanguage();
 
-        if ($GLOBALS['TL_LANGUAGE'] == \Config::get('i18nl10n_default_language'))
-        {
+        if ($GLOBALS['TL_LANGUAGE'] == \Config::get('i18nl10n_default_language')) {
             // if default language is not published, give error
-            if (!$objPage->l10n_published)
-            {
+            if (!$objPage->l10n_published) {
                 $objError = new $GLOBALS['TL_PTY']['error_404']();
                 $objError->generate($objPage->id);
             }
@@ -68,8 +65,7 @@ class PageI18nl10nRegular extends \PageRegular
               AND language = ?
         ";
 
-        if (!BE_USER_LOGGED_IN)
-        {
+        if (!BE_USER_LOGGED_IN) {
             $time = time();
             $sql .= "
                 AND (start = '' OR start < $time)
@@ -84,16 +80,14 @@ class PageI18nl10nRegular extends \PageRegular
             ->execute($objPage->id, $GLOBALS['TL_LANGUAGE']);
 
         // if translated page, replace given fields in page object
-        if ($l10n->numRows)
-        {
+        if ($l10n->numRows) {
 
             $objPage->defaultPageTitle = $objPage->pageTitle;
             $objPage->defaultTitle = $objPage->title;
 
             foreach (explode(',', $fields) as $field)
             {
-                if ($l10n->$field)
-                {
+                if ($l10n->$field) {
                     $objPage->$field = $l10n->$field;
                 }
             }
@@ -102,16 +96,14 @@ class PageI18nl10nRegular extends \PageRegular
         {
 
             // if fallback is not published, show 404
-            if (!$objPage->l10n_published)
-            {
+            if (!$objPage->l10n_published) {
                 $objError = new $GLOBALS['TL_PTY']['error_404']();
                 $objError->generate($objPage->id);
 
                 parent::generate($objPage);
                 return;
-            } // else at least keep current language to prevent language change and set flag
-            else
-            {
+            } else {
+                // else at least keep current language to prevent language change and set flag
                 $objPage->language = $GLOBALS['TL_LANGUAGE'];
                 $objPage->useFallbackLanguage = true;
             }
@@ -121,12 +113,10 @@ class PageI18nl10nRegular extends \PageRegular
         // update root information
         $objL10nRootPage = self::getL10nRootPage($objPage);
 
-        if ($objL10nRootPage)
-        {
+        if ($objL10nRootPage) {
             $objPage->rootTitle = $objL10nRootPage->title;
 
-            if ($objPage->pid == $objPage->rootId)
-            {
+            if ($objPage->pid == $objPage->rootId) {
                 $objPage->parentTitle = $objL10nRootPage->title;
                 $objPage->parentPageTitle = $objL10nRootPage->pageTitle;
             }
@@ -134,7 +124,6 @@ class PageI18nl10nRegular extends \PageRegular
 
         parent::generate($objPage, $blnCheckRequest);
     }
-
 
     /**
      * Fix up current language depending on momentary user preference.
@@ -147,32 +136,31 @@ class PageI18nl10nRegular extends \PageRegular
      */
     private function fixupCurrentLanguage()
     {
-
         // try to get language from post (committed by language select) or get
         $selectedLanguage = \Input::post('language') ? : \Input::get('language');
 
         // if language is added to url, get it from there
-        if (\Config::get('i18nl10n_addLanguageToUrl') && !\Config::get('disableAlias'))
-        {
+        if (\Config::get('i18nl10n_addLanguageToUrl') && !\Config::get('disableAlias')) {
 
             // if language is set, it must be given by post (committed by language select)
-            if ($selectedLanguage)
-            {
+            if ($selectedLanguage) {
                 $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selectedLanguage;
                 return;
-            }
-            else
-            {
+            } else {
                 $this->import('Environment');
                 $environment = $this->Environment;
-                $basePath = preg_quote(\Config::get('rewriteURL') ? \Config::get('websitePath') : $environment->scriptName);
+                $basePath = preg_quote(\Config::get('rewriteURL')
+                    ? \Config::get('websitePath')
+                    : $environment->scriptName);
 
                 $regex = "@^($basePath/)?([A-z]{2}(?=/)){1}(/.*)@";
 
                 // only set language if found in url
-                if (preg_match($regex, $environment->requestUri))
-                {
-                    $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = preg_replace($regex, '$2', $environment->requestUri);
+                if (preg_match($regex, $environment->requestUri)) {
+                    $language = preg_replace($regex, '$2', $environment->requestUri);
+
+                    $_SESSION['TL_LANGUAGE'] = $language;
+                    $GLOBALS['TL_LANGUAGE'] = $language;
                     return;
                 }
             }
@@ -181,15 +169,13 @@ class PageI18nl10nRegular extends \PageRegular
         $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
 
         // if alias is disabled, get language from get param
-        if ($selectedLanguage && \Config::get('disableAlias'))
-        {
+        if ($selectedLanguage && \Config::get('disableAlias')) {
             $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selectedLanguage;
             return;
         }
 
         // if language is part of alias
-        if (\Config::get('i18nl10n_alias_suffix'))
-        {
+        if (\Config::get('i18nl10n_alias_suffix')) {
             $this->import('Environment');
             $environment = $this->Environment;
             $strUrlSuffix = preg_quote( \Config::get('urlSuffix') );
@@ -197,25 +183,20 @@ class PageI18nl10nRegular extends \PageRegular
             $regex = "@.*?\.([a-z]{2})$strUrlSuffix@";
 
             // only set language if found in url
-            if (preg_match($regex, $environment->requestUri))
-            {
+            if (preg_match($regex, $environment->requestUri)) {
                 $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = preg_replace($regex, '$1', $environment->requestUri);
                 return;
             }
         }
 
         // if everything failed til now, try to use post or get language
-        if ($selectedLanguage && in_array($selectedLanguage, $i18nl10nLanguages))
-        {
+        if ($selectedLanguage && in_array($selectedLanguage, $i18nl10nLanguages)) {
             $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selectedLanguage;
-        } // else use session language
-        elseif (isset($_SESSION['TL_LANGUAGE']))
-        {
+        } elseif (isset($_SESSION['TL_LANGUAGE'])) {
+            // else use session language
             $GLOBALS['TL_LANGUAGE'] = $_SESSION['TL_LANGUAGE'];
         }
-
     }
-
 
     /**
      * Get localized root page by page object
@@ -235,8 +216,7 @@ class PageI18nl10nRegular extends \PageRegular
               AND language = ?
         ";
 
-        if (!BE_USER_LOGGED_IN)
-        {
+        if (!BE_USER_LOGGED_IN) {
             $time = time();
             $sql .= "
                 AND (start = '' OR start < $time)

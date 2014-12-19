@@ -78,7 +78,9 @@ class I18nl10n extends \Controller
         if (\Config::get('folderUrl') && $arrFragments[count($arrFragments)-2] == 'language') {
             // glue together possible aliases
             for($i = 0; count($arrFragments)-2 > $i; $i++) {
-                $arrAliasGuess[] = ($i == 0) ? $arrFragments[$i] : $arrAliasGuess[$i-1] . '/' . $arrFragments[$i];
+                $arrAliasGuess[] = ($i == 0)
+                    ? $arrFragments[$i]
+                    : $arrAliasGuess[$i-1] . '/' . $arrFragments[$i];
             }
 
             // Remove everything that is not an alias

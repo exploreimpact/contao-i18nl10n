@@ -44,7 +44,6 @@ class I18nl10nHook extends \System
      */
     public function generateFrontendUrl($arrRow, $strParams, $strUrl)
     {
-
         if (!is_array($arrRow)) {
             throw new \Exception('not an associative array.');
         }
@@ -134,7 +133,6 @@ class I18nl10nHook extends \System
         return $strL10nUrl;
     }
 
-
     /**
      * Get page id from url, based on current contao settings
      *
@@ -171,7 +169,9 @@ class I18nl10nHook extends \System
 
                 // define language and alias value
                 $language = strtolower($matches[2]);
-                $alias = $matches[1] != '' ? $matches[1] : $arrFragments[count($arrFragments) - 1];
+                $alias = $matches[1] != ''
+                    ? $matches[1]
+                    : $arrFragments[count($arrFragments) - 1];
 
                 // if only language was found, pop it from array
                 if ($matches[1] == '') {
@@ -220,7 +220,6 @@ class I18nl10nHook extends \System
         return $arrFragments;
     }
 
-
     /**
      * Only make elements visible, that belong to this or all languages
      *
@@ -235,14 +234,15 @@ class I18nl10nHook extends \System
 
         if ($blnIsVisible && $objElement->language) {
             // check if given language is valid of fallback should be used
-            $strLanguage = $objPage->useFallbackLanguage ? \Config::get('i18nl10n_default_language') : $GLOBALS['TL_LANGUAGE'];
+            $strLanguage = $objPage->useFallbackLanguage
+                ? \Config::get('i18nl10n_default_language')
+                : $GLOBALS['TL_LANGUAGE'];
 
             $blnIsVisible = $objElement->language == $strLanguage;
         }
 
         return $blnIsVisible;
     }
-
 
     /**
      * Breadcrumb callback to translate elements
@@ -303,7 +303,6 @@ class I18nl10nHook extends \System
 
         return $arrItems;
     }
-
 
     /**
      * loadDataContainer hook

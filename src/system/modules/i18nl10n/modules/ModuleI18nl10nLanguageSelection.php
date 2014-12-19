@@ -47,8 +47,7 @@ class ModuleI18nl10nLanguageSelection extends \Module
      */
     public function generate()
     {
-        if (TL_MODE == 'BE')
-        {
+        if (TL_MODE == 'BE') {
             $objTemplate = new \BackendTemplate('be_wildcard');
 
             $objTemplate->wildcard = '### ' . utf8_strtoupper($GLOBALS['TL_LANG']['FMD']['i18nl10nLanguageSelection'][0]) . ' ###';
@@ -87,8 +86,7 @@ class ModuleI18nl10nLanguageSelection extends \Module
                 AND language IN ( '" . implode("', '", $i18nl10nLanguages) . "' )
         ";
 
-        if (!BE_USER_LOGGED_IN)
-        {
+        if (!BE_USER_LOGGED_IN) {
             $sql .= "
                 AND (start = '' OR start < $time)
                 AND (stop = '' OR stop > $time)
@@ -104,8 +102,7 @@ class ModuleI18nl10nLanguageSelection extends \Module
         // HOOK: add custom logic
         if (isset($GLOBALS['TL_HOOKS']['i18nl10nLanguageSelection'])
             && is_array($GLOBALS['TL_HOOKS']['i18nl10nLanguageSelection'])
-        )
-        {
+        ) {
             foreach ($GLOBALS['TL_HOOKS']['i18nl10nLanguageSelection'] as $callback)
             {
                 $this->import($callback[0]);
@@ -117,13 +114,11 @@ class ModuleI18nl10nLanguageSelection extends \Module
         $items = array();
         $langsNative = array();
 
-        if (!empty($arrTranslations))
-        {
+        if (!empty($arrTranslations)) {
             $this->loadLanguageFile('languages');
             include TL_ROOT . '/system/config/languages.php';
 
-            if ($objPage->l10n_published != '')
-            {
+            if ($objPage->l10n_published != '') {
                 array_unshift($arrTranslations, array(
                     'id'        => $objPage->id,
                     'language'  => \Config::get('i18nl10n_default_language'),
@@ -142,19 +137,17 @@ class ModuleI18nl10nLanguageSelection extends \Module
                 if ($language == $GLOBALS['TL_LANGUAGE'] && $this->i18nl10nLangHide == 1) continue;
 
                 // loop translations
-                foreach ($arrTranslations as $row)
-                {
+                foreach ($arrTranslations as $row) {
 
                     // check if language is needed
-                    if ($row['language'] == $language)
-                    {
+                    if ($row['language'] == $language) {
                         array_push($items, array(
                             'id'        => $row['pid'] ? $row['pid'] : $objPage->id,
                             'alias'     => $row['alias'] ? : $objPage->alias,
                             'title'     => $row['title'] ? : $objPage->title,
                             'pageTitle' => $row['pageTitle'] ? : $objPage->pageTitle,
                             'language'  => $language,
-                            'isActive'  => ($language == $GLOBALS['TL_LANGUAGE']) ? true : false
+                            'isActive'  => ($language == $GLOBALS['TL_LANGUAGE'])
                         ));
                         break;
                     }
@@ -173,15 +166,13 @@ class ModuleI18nl10nLanguageSelection extends \Module
         }
 
         // add stylesheets
-        if ($this->i18nl10nLangStyle != 'disable')
-        {
+        if ($this->i18nl10nLangStyle != 'disable') {
             $assetsUrl = 'system/modules/i18nl10n/assets/';
 
             // global style
             $GLOBALS['TL_CSS'][] = $assetsUrl . 'css/i18nl10n_lang.css';
 
-            switch ($this->i18nl10nLangStyle)
-            {
+            switch ($this->i18nl10nLangStyle) {
                 case 'text':
                     $GLOBALS['TL_CSS'][] = $assetsUrl . 'css/i18nl10n_lang_text.css';
                     break;
