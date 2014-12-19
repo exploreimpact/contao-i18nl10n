@@ -33,7 +33,7 @@ $GLOBALS['TL_LANG']['tl_page_i18nl10n'][''] = array
  * References
  */
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['menu_legend'] = 'Lokalisierte Felder für Menüs und URLs';
-$GLOBALS['TL_LANG']['tl_page_i18nl10n']['meta_legend'] = 'Lokalisierte Meta-Felder des &lt;head&gt;&lt;/head&gt; Bereichs.';
+$GLOBALS['TL_LANG']['tl_page_i18nl10n']['meta_legend'] = 'Lokalisierte Meta-Informationen';
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['time_legend'] = 'Lokalisierte Datums- und Zeiteinstellungen';
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['expert_legend'] = & $GLOBALS['TL_LANG']['tl_page']['expert_legend'];
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['publish_legend'] = & $GLOBALS['TL_LANG']['tl_page']['publish_legend'];

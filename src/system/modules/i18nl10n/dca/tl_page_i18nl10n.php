@@ -158,9 +158,8 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
             . '{publish_legend},start,stop;'
             . '{i18nl10n_legend},language,l10n_published',
         'redirect' => '{menu_legend},title,alias;'
-            . '{meta_legend},pageTitle,type;'
+            . '{meta_legend},pageTitle;'
             . '{redirect_legend},url;'
-            . '{time_legend:hide},dateFormat,timeFormat,datimFormat;'
             . '{expert_legend:hide},cssClass;'
             . '{publish_legend},start,stop;'
             . '{i18nl10n_legend},language,l10n_published'
