@@ -304,8 +304,12 @@ class tl_page_l10n extends tl_page
                 // Get translation for parent page
                 $objL10nParentPage = I18nl10n::findL10nWithDetails($dc->activeRecord->pid, $language);
 
-                // Create folder url
-                $strFolderUrl = $objL10nParentPage->alias . '/';
+                if($objL10nParentPage->type !== 'root')
+                {
+                    // Create folder url
+                    $strFolderUrl = $objL10nParentPage->alias . '/';
+                }
+
             }
 
             $fields['alias'] = $strFolderUrl . $strAlias . '-' . $dc->activeRecord->pid . $dc->id;
