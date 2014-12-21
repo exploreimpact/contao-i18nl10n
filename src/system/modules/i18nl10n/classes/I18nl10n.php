@@ -75,16 +75,19 @@ class I18nl10n extends \Controller
         $strAlias = $arrFragments[0];
         $dataBase = \Database::getInstance();
 
-        if (\Config::get('folderUrl') && $arrFragments[count($arrFragments)-2] == 'language') {
+        if (\Config::get('folderUrl') && $arrFragments[count($arrFragments)-2] == 'language')
+        {
             // glue together possible aliases
-            for($i = 0; count($arrFragments)-2 > $i; $i++) {
+            for($i = 0; count($arrFragments)-2 > $i; $i++)
+            {
                 $arrAliasGuess[] = ($i == 0)
                     ? $arrFragments[$i]
                     : $arrAliasGuess[$i-1] . '/' . $arrFragments[$i];
             }
 
             // Remove everything that is not an alias
-            $arrAliasGuess = array_filter(array_map(function($v) {
+            $arrAliasGuess = array_filter(array_map(function($v)
+            {
                 return preg_match('/^[\pN\pL\/\._-]+$/u', $v) ? $v : null;
             }, $arrAliasGuess));
 
@@ -112,7 +115,8 @@ class I18nl10n extends \Controller
             ->fetchAssoc();
 
         // Set l10n alias, if item was found (is needed to be removed from url params later on)
-        if (!empty($arrL10nItem)) {
+        if (!empty($arrL10nItem))
+        {
             $arrAlias['l10nAlias'] = $arrL10nItem['alias'];
         }
 
@@ -144,7 +148,8 @@ class I18nl10n extends \Controller
             ->execute( empty($arrL10nItem) ? 0 : $arrL10nItem['pid'] );
 
         // Set alias if a page was found
-        if ($objL10n !== null) {
+        if ($objL10n !== null)
+        {
             // best match is in first item
             $arrPage = $objL10n->row();
             $arrAlias['alias'] = $arrPage['alias'];
@@ -249,7 +254,8 @@ class I18nl10n extends \Controller
             // Replace strings with localized content
             foreach (explode(',', $fields) as $field)
             {
-                if ($objL10nPage->$field) {
+                if ($objL10nPage->$field)
+                {
                     $objPage->$field = $objL10nPage->$field;
                 }
             }

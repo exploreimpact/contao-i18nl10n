@@ -106,7 +106,8 @@ class tl_content_l10n extends tl_content
         foreach ($GLOBALS['TL_DCA']['tl_content']['palettes'] as $k => $v)
         {
             // if element is '__selector__' OR 'default' OR the palette has already a language key
-            if ($k == '__selector__' || $k == 'default' || strpos($v, ',language(?=\{|,|;|$)') !== false) {
+            if ($k == '__selector__' || $k == 'default' || strpos($v, ',language(?=\{|,|;|$)') !== false)
+            {
                 continue;
             }
 

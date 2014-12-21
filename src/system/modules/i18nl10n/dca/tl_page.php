@@ -262,7 +262,8 @@ class tl_page_l10n extends tl_page
 
         $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
 
-        if (Config::get('folderUrl')) {
+        if (Config::get('folderUrl'))
+        {
             $arrAlias = explode('/', $dc->activeRecord->alias);
             $strAlias = array_pop($arrAlias);
         }
