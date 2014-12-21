@@ -726,13 +726,14 @@ class tl_page_i18nl10n extends tl_page
             if (Config::get('folderUrl'))
             {
                 // Get parent page
-                $objParentPage = \PageModel::findWithDetails($dc->activeRecord->pid);
+                $objBaseLangPage = \PageModel::findWithDetails($dc->activeRecord->pid);
 
-                if ($objParentPage->type !== 'root')
+                // Get translation for parent page
+                $objL10nParentPage = I18nl10n::findL10nWithDetails($objBaseLangPage->pid, $strLanguage);
+
+                // Only create folder url if parent is not root
+                if ($objL10nParentPage->type !== 'root')
                 {
-                    // Get translation for parent page
-                    $objL10nParentPage = I18nl10n::findL10nWithDetails($objParentPage->pid, $strLanguage);
-
                     // Create folder url
                     $varValue = $objL10nParentPage->alias . '/' . $varValue;
                 }
