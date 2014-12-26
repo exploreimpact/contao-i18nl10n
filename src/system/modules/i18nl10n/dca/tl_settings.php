@@ -84,7 +84,7 @@ $i18nl10nSettings = array
     ),
     'i18nl10n_addLanguageToUrl' => array
     (
-        'label'         => &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_addLanguageToUrl'],
+        'label'         => sprintf(&$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_addLanguageToUrl'], &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffix'][0]),
         'exclude'       => true,
         'inputType'     => 'checkbox',
         'default'       => false,
