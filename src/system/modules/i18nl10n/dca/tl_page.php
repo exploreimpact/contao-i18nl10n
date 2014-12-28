@@ -83,7 +83,9 @@ $GLOBALS['TL_DCA']['tl_page']['config']['ondelete_callback'][] = array
     'onDelete'
 );
 
-// only show l10n_published if not a new root page
+/**
+ * Append l10n published field to palette (if NOT root page)
+ */
 if (\Input::get('pid') === NULL || \Input::get('pid') != 0)
 {
 
@@ -104,17 +106,51 @@ if (\Input::get('pid') === NULL || \Input::get('pid') != 0)
     $GLOBALS['TL_DCA']['tl_page']['fields']['published']['eval']['tl_class'] = 'w50';
 }
 
-$GLOBALS['TL_DCA']['tl_page']['fields']['l10n_published'] = array
-(
-    'label'     => &$GLOBALS['TL_LANG']['tl_page']['l10n_published'],
-    'default'   => true,
-    'exclude'   => true,
-    'inputType' => 'checkbox',
-    'eval'      => array(
-        'doNotCopy' => true,
-        'tl_class'  => 'w50'
-    ),
-    'sql'       => "char(1) NOT NULL default '1'"
+$GLOBALS['TL_DCA']['tl_page']['palettes']['root'] .= ';{i18nl10n},i18nl10n_languages';
+
+/**
+ * Define i18nl10n fields
+ */
+$i18nl10nFields = array(
+    'l10n_published' => array
+        (
+            'label'     => &$GLOBALS['TL_LANG']['tl_page']['l10n_published'],
+            'default'   => true,
+            'exclude'   => true,
+            'inputType' => 'checkbox',
+            'eval'      => array(
+                'doNotCopy' => true,
+                'tl_class'  => 'w50'
+            ),
+            'sql'       => "char(1) NOT NULL default '1'"
+        ),
+    'i18nl10n_languages' => array
+    (
+        'label' => &$GLOBALS['TL_LANG']['tl_page']['i18nl10n_languages'],
+        'exclude'       => true,
+        'inputType'     => 'listWizard',
+        'eval'          => array
+        (
+            'style'     => 'width:5em;',
+            'tl_class'  => 'w50 autoheight',
+            'nospace'   => true
+        ),
+        'save_callback' => array
+        (
+            array('tl_page_l10n', 'ensureUnique'),
+            array('tl_page_l10n', 'ensureExists')
+        ),
+        'sql'                     => "blob NULL"
+    )
+);
+
+/**
+ * Insert i18nl10n fileds
+ */
+array_insert(
+    $GLOBALS['TL_DCA']['tl_page']['fields'],
+    count($GLOBALS['TL_DCA']['tl_page']['fields']),
+    $i18nl10nFields
 );
 
 
@@ -371,6 +407,58 @@ class tl_page_l10n extends tl_page
                 $config->update("\$GLOBALS['TL_CONFIG']['i18nl10n_languages']", serialize($availableLanguages));
             }
         }
+    }
+
+    /**
+     * Ensure a language key is unique
+     *
+     * @param $strPageLanguages
+     * @param DataContainer $dc
+     *
+     * @return string
+     */
+    public function ensureUnique($strPageLanguages, DataContainer $dc)
+    {
+        return serialize(array_unique(deserialize($strPageLanguages)));
+    }
+
+    /**
+     * Ensure a language exists
+     *
+     * @param $strPageLanguages
+     * @param DataContainer $dc
+     *
+     * @return string
+     */
+    public function ensureExists($strPageLanguages, DataContainer $dc)
+    {
+        $arrValidLanguages = array();
+        $arrPageLanguages  = deserialize($strPageLanguages);
+        $strDefaultLanguage = $dc->activeRecord->language;
+
+        // if languages defined, check each one if valid
+        if (!empty($arrPageLanguages)) {
+            foreach ($arrPageLanguages as $language) {
+                // check if valid language and add language
+                if ($this->isValidLanguageCode($language) && $strDefaultLanguage !== $language) {
+                    array_push($arrValidLanguages, $language);
+                }
+            }
+        }
+
+        return serialize($arrValidLanguages);
+    }
+
+    /**
+     * Check if given language code is valid and available
+     *
+     * @param $strLanguage
+     *
+     * @return bool
+     */
+    public function isValidLanguageCode($strLanguage)
+    {
+        return array_key_exists($strLanguage, $GLOBALS['TL_LANG']['LNG']);
     }
 
 }
