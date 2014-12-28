@@ -26,6 +26,8 @@ $GLOBALS['TL_LANG']['tl_page']['i18nl10n_languages'] = array
     'Additional available languages/localizations for this page tree.'
 );
 
+$GLOBALS['TL_LANG']['tl_page']['i18nl10n_language'] = 'Language';
+
 /**
  * Messages
  */

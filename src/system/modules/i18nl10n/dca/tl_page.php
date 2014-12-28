@@ -6,12 +6,8 @@
  * The i18nl10n module for Contao allows you to manage multilingual content
  * on the element level rather than with page trees.
  *
- *
- * PHP version 5
  * @copyright   Verstärker, Patric Eberle 2014
- * @copyright   Krasimir Berov 2010-2013
  * @author      Patric Eberle <line-in@derverstaerker.ch>
- * @author      Krasimir Berov
  * @package     i18nl10n
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
@@ -34,21 +30,8 @@ $GLOBALS['TL_DCA']['tl_page']['list']['operations']['page_i18nl10n'] = array
 
 $onLoadCallback = array
 (
-    0 => array
-    (
-        'tl_page_l10n',
-        'setDefaultLanguage'
-    ),
-    1 => array
-    (
-        'tl_page_l10n',
-        'displayMultipleRootMessage'
-    ),
-    2 => array
-    (
-        'tl_page_l10n',
-        'displayLanguageMessage'
-    )
+    array('tl_page_l10n', 'setDefaultLanguage'),
+    array('tl_page_l10n', 'displayLanguageMessage')
 );
 
 array_insert(
@@ -59,16 +42,8 @@ array_insert(
 
 $onSubmitCallback = array
 (
-    0 => array
-    (
-        'tl_page_l10n',
-        'generatePageL10n'
-    ),
-    1 => array
-    (
-        'tl_page_l10n',
-        'updateDefaultLanguage'
-    )
+    array('tl_page_l10n', 'generatePageL10n'),
+    array('tl_page_l10n', 'updateDefaultLanguage')
 );
 
 array_insert(
@@ -86,18 +61,16 @@ $GLOBALS['TL_DCA']['tl_page']['config']['ondelete_callback'][] = array
 /**
  * Append l10n published field to palette (if NOT root page)
  */
-if (\Input::get('pid') === NULL || \Input::get('pid') != 0)
-{
+if (\Input::get('pid') === null || \Input::get('pid') != 0) {
 
     // switch field splicing based on Contao version
-    if ( isset($GLOBALS['TL_DCA']['tl_page']['subpalettes']['published']) )
-    {
+    if (isset($GLOBALS['TL_DCA']['tl_page']['subpalettes']['published'])) {
         // is Contao 3.4+
-        $GLOBALS['TL_DCA']['tl_page']['subpalettes']['published'] = 'l10n_published,' . $GLOBALS['TL_DCA']['tl_page']['subpalettes']['published'];
+        $GLOBALS['TL_DCA']['tl_page']['subpalettes']['published'] =
+            'l10n_published,' . $GLOBALS['TL_DCA']['tl_page']['subpalettes']['published'];
     } else {
         // is before Contao 3.4
-        foreach ($GLOBALS['TL_DCA']['tl_page']['palettes'] as $k => $v)
-        {
+        foreach ($GLOBALS['TL_DCA']['tl_page']['palettes'] as $k => $v) {
             $GLOBALS['TL_DCA']['tl_page']['palettes'][$k] = str_replace('published,', 'published,l10n_published,', $v);
         }
     }
@@ -106,46 +79,58 @@ if (\Input::get('pid') === NULL || \Input::get('pid') != 0)
     $GLOBALS['TL_DCA']['tl_page']['fields']['published']['eval']['tl_class'] = 'w50';
 }
 
-$GLOBALS['TL_DCA']['tl_page']['palettes']['root'] .= ';{i18nl10n},i18nl10n_languages';
+$GLOBALS['TL_DCA']['tl_page']['palettes']['root'] = str_replace(
+    'language,fallback;',
+    'language,fallback;{i18nl10n},i18nl10n_languages;',
+    $GLOBALS['TL_DCA']['tl_page']['palettes']['root']
+);
 
 /**
  * Define i18nl10n fields
  */
 $i18nl10nFields = array(
-    'l10n_published' => array
-        (
-            'label'     => &$GLOBALS['TL_LANG']['tl_page']['l10n_published'],
-            'default'   => true,
-            'exclude'   => true,
-            'inputType' => 'checkbox',
-            'eval'      => array(
-                'doNotCopy' => true,
-                'tl_class'  => 'w50'
-            ),
-            'sql'       => "char(1) NOT NULL default '1'"
+    'l10n_published'     => array
+    (
+        'label'     => &$GLOBALS['TL_LANG']['tl_page']['l10n_published'],
+        'default'   => true,
+        'exclude'   => true,
+        'inputType' => 'checkbox',
+        'eval'      => array(
+            'doNotCopy' => true,
+            'tl_class'  => 'w50'
         ),
+        'sql'       => "char(1) NOT NULL default '1'"
+    ),
     'i18nl10n_languages' => array
     (
-        'label' => &$GLOBALS['TL_LANG']['tl_page']['i18nl10n_languages'],
-        'exclude'       => true,
-        'inputType'     => 'listWizard',
-        'eval'          => array
+        'label'     => &$GLOBALS['TL_LANG']['tl_page']['i18nl10n_languages'],
+        'exclude'   => true,
+        'inputType' => 'multiColumnWizard',
+        'eval'      => array
         (
-            'style'     => 'width:5em;',
-            'tl_class'  => 'w50 autoheight',
-            'nospace'   => true
+            'tl_class'     => 'w50 autoheight',
+            'columnFields' => array
+            (
+                'language' => array
+                (
+                    'label'     => &$GLOBALS['TL_LANG']['tl_page']['i18nl10n_language'],
+                    'exclude'   => true,
+                    'inputType' => 'select',
+                    'options'   => &$GLOBALS['TL_LANG']['LNG'],
+                    'eval'      => array
+                    (
+                        'style'  => 'width:250px',
+                        'chosen' => true
+                    )
+                )
+            )
         ),
-        'save_callback' => array
-        (
-            array('tl_page_l10n', 'ensureUnique'),
-            array('tl_page_l10n', 'ensureExists')
-        ),
-        'sql'                     => "blob NULL"
+        'sql'       => "blob NULL"
     )
 );
 
 /**
- * Insert i18nl10n fileds
+ * Insert i18nl10n fields
  */
 array_insert(
     $GLOBALS['TL_DCA']['tl_page']['fields'],
@@ -158,18 +143,26 @@ array_insert(
  * Class tl_page_l10n
  *
  * @copyright   Verstärker, Patric Eberle 2014
- * @copyright   Krasimir Berov 2010-2013
  * @author      Patric Eberle <line-in@derverstaerker.ch>
- * @author      Krasimir Berov
  * @package     tl_page
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 class tl_page_l10n extends tl_page
 {
 
+    /**
+     * Add language hyperlink button to entry buttons
+     *
+     * @param $row
+     * @param $href
+     * @param $label
+     * @param $title
+     * @param $icon
+     *
+     * @return string
+     */
     public function editL10n($row, $href, $label, $title, $icon)
     {
-        //TODO: think about a new page type: regular_localized
         $title = sprintf(
             $GLOBALS['TL_LANG']['MSC']['editL10n'],
             "\"{$row['title']}\""
@@ -184,7 +177,6 @@ class tl_page_l10n extends tl_page
         );
     }
 
-
     /**
      * Apply the root page language to new pages
      *
@@ -192,22 +184,15 @@ class tl_page_l10n extends tl_page
      */
     public function setDefaultLanguage()
     {
-        if (\Input::get('act') != 'create')
-        {
+        if (\Input::get('act') != 'create') {
             return;
         }
 
-        if (\Input::get('pid') == 0)
-        {
-            $GLOBALS['TL_DCA']['tl_page']['fields']['language']['default'] = \Config::get('i18nl10n_default_language');
-        }
-        else
-        {
+        if (\Input::get('pid') != 0) {
             $objPage = \PageModel::findWithDetails(\Input::get('pid'));
             $GLOBALS['TL_DCA']['tl_page']['fields']['language']['default'] = $objPage->rootLanguage;
         }
     }
-
 
     /**
      * Display message when only basic language is available
@@ -218,16 +203,14 @@ class tl_page_l10n extends tl_page
     {
 
         // only show if treeview
-        if (\Input::get('act') != '')
-        {
+        if (\Input::get('act') != '') {
             return;
         }
 
         $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
 
         // if no languages or count is smaller 2 (1 = default language)
-        if (!$i18nl10nLanguages || count($i18nl10nLanguages) < 2)
-        {
+        if (!$i18nl10nLanguages || count($i18nl10nLanguages) < 2) {
 
             $this->loadLanguageFile('tl_page_i18nl10n');
 
@@ -243,37 +226,6 @@ class tl_page_l10n extends tl_page
         };
     }
 
-
-    /**
-     * Display message in case site has multiple root pages
-     *
-     * @return void
-     */
-    public function displayMultipleRootMessage()
-    {
-
-        // only show if treeview
-        if (\Input::get('act') != '')
-        {
-            return;
-        }
-
-        $strSql = 'SELECT * FROM tl_page WHERE type = "root"';
-
-        $objResult = \Database::getInstance()
-            ->execute($strSql);
-
-        if ($objResult->numRows > 1)
-        {
-
-            $this->loadLanguageFile('tl_page_i18nl10n');
-
-            \Message::addError($GLOBALS['TL_LANG']['tl_page']['msg_multiple_root']);
-
-        };
-
-    }
-
     /**
      * Automatically create a new localization upon page creation
      * (triggered by on submit callback)
@@ -283,28 +235,26 @@ class tl_page_l10n extends tl_page
     public function generatePageL10n(DataContainer $dc)
     {
 
-        if (!$dc->activeRecord || $dc->activeRecord->tstamp > 0) return;
+        if (!$dc->activeRecord || $dc->activeRecord->tstamp > 0) {
+            return;
+        }
 
         $new_records = $this->Session->get('new_records');
 
         // Not a new page - copy/paste is a great way to share code :P
         if (!$new_records
             || is_array($new_records[$dc->table])
-            && !in_array($dc->id, $new_records[$dc->table])
-        )
-        {
+               && !in_array($dc->id, $new_records[$dc->table])
+        ) {
             return;
         }
 
         $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
 
-        if (Config::get('folderUrl'))
-        {
+        if (Config::get('folderUrl')) {
             $arrAlias = explode('/', $dc->activeRecord->alias);
             $strAlias = array_pop($arrAlias);
-        }
-        else
-        {
+        } else {
             $strAlias = $dc->activeRecord->alias;
         }
 
@@ -326,22 +276,21 @@ class tl_page_l10n extends tl_page
         );
 
         //now make copies in each language.
-        foreach ($i18nl10nLanguages as $language)
-        {
-            if ($language == \Config::get('i18nl10n_default_language')) continue;
+        foreach ($i18nl10nLanguages as $language) {
+            if ($language == \Config::get('i18nl10n_default_language')) {
+                continue;
+            }
 
             $strFolderUrl = '';
             $fields['sorting'] += 128;
             $fields['language'] = $language;
 
             // Create alias based on folder url setting
-            if (Config::get('folderUrl'))
-            {
+            if (Config::get('folderUrl')) {
                 // Get translation for parent page
                 $objL10nParentPage = I18nl10n::findL10nWithDetails($dc->activeRecord->pid, $language);
 
-                if($objL10nParentPage->type !== 'root')
-                {
+                if ($objL10nParentPage->type !== 'root') {
                     // Create folder url
                     $strFolderUrl = $objL10nParentPage->alias . '/';
                 }
@@ -359,7 +308,6 @@ class tl_page_l10n extends tl_page
         }
     }
 
-
     /**
      * Delete localizations for deleted page
      *
@@ -367,20 +315,17 @@ class tl_page_l10n extends tl_page
      */
     public function onDelete(DataContainer $dc)
     {
-        $objDatabase = \Database::getInstance();
-
-        $arrChildRecords = $objDatabase->getChildRecords(array($dc->id), 'tl_page');
+        $arrChildRecords = $this->Database->getChildRecords(array($dc->id), 'tl_page');
 
         // add actual page itself
         $arrChildRecords[] = $dc->id;
 
         // Delete all related localizations from tl_page_i18nl10n
-        $objDatabase
+        $this->Database
             ->prepare('DELETE FROM tl_page_i18nl10n WHERE pid IN(' . implode(',', $arrChildRecords) . ')')
             ->execute();
 
     }
-
 
     /**
      * Set root page language as default language and update available languages
@@ -390,63 +335,25 @@ class tl_page_l10n extends tl_page
     public function updateDefaultLanguage(DataContainer $dc)
     {
 
-        if ($dc->activeRecord->type == 'root')
-        {
-            $defaultLanguage = $dc->activeRecord->language;
-            $availableLanguages = deserialize(\Config::get('i18nl10n_languages'));
-
-            // set root language as default language
-            $config = \Config::getInstance();
-            $config->update("\$GLOBALS['TL_CONFIG']['i18nl10n_default_language']", $defaultLanguage);
-
-            // add language to available languages
-            if (!in_array($defaultLanguage, $availableLanguages))
-            {
-                $availableLanguages[] = $defaultLanguage;
-
-                $config->update("\$GLOBALS['TL_CONFIG']['i18nl10n_languages']", serialize($availableLanguages));
-            }
-        }
-    }
-
-    /**
-     * Ensure a language key is unique
-     *
-     * @param $strPageLanguages
-     * @param DataContainer $dc
-     *
-     * @return string
-     */
-    public function ensureUnique($strPageLanguages, DataContainer $dc)
-    {
-        return serialize(array_unique(deserialize($strPageLanguages)));
-    }
-
-    /**
-     * Ensure a language exists
-     *
-     * @param $strPageLanguages
-     * @param DataContainer $dc
-     *
-     * @return string
-     */
-    public function ensureExists($strPageLanguages, DataContainer $dc)
-    {
-        $arrValidLanguages = array();
-        $arrPageLanguages  = deserialize($strPageLanguages);
-        $strDefaultLanguage = $dc->activeRecord->language;
-
-        // if languages defined, check each one if valid
-        if (!empty($arrPageLanguages)) {
-            foreach ($arrPageLanguages as $language) {
-                // check if valid language and add language
-                if ($this->isValidLanguageCode($language) && $strDefaultLanguage !== $language) {
-                    array_push($arrValidLanguages, $language);
-                }
-            }
+        if ($dc->activeRecord->type != 'root') {
+            return;
         }
 
-        return serialize($arrValidLanguages);
+        $objFirstChildPage = $this->Database
+            ->prepare('SELECT * FROM tl_page WHERE pid = ? && language = ?')
+            ->execute($dc->activeRecord->id, $dc->activeRecord->language);
+
+        // If first child has not same language, language needs to be updated on page tree
+        if(!$objFirstChildPage->count()) {
+
+            $arrChildRecords = $this->Database
+                ->getChildRecords(array($dc->activeRecord->id), 'tl_page');
+
+            $this->Database
+                ->prepare('UPDATE tl_page SET language = ? WHERE id IN(' . implode(',', $arrChildRecords) . ')')
+                ->execute($dc->activeRecord->language);
+
+        }
     }
 
     /**
@@ -460,5 +367,4 @@ class tl_page_l10n extends tl_page
     {
         return array_key_exists($strLanguage, $GLOBALS['TL_LANG']['LNG']);
     }
-
 }
