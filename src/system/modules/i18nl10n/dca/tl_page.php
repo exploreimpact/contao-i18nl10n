@@ -116,7 +116,7 @@ $i18nl10nFields = array(
                     'label'     => &$GLOBALS['TL_LANG']['tl_page']['i18nl10n_language'],
                     'exclude'   => true,
                     'inputType' => 'select',
-                    'options'   => &$GLOBALS['TL_LANG']['LNG'],
+                    'options_callback' => array('tl_page_l10n', 'languageOptions'),
                     'eval'      => array
                     (
                         'style'  => 'width:250px',
@@ -203,7 +203,7 @@ class tl_page_l10n extends tl_page
     {
 
         // only show if treeview
-        if (\Input::get('act') != '') {
+        if ($this->Input->get('act') != '') {
             return;
         }
 
@@ -234,23 +234,18 @@ class tl_page_l10n extends tl_page
      */
     public function generatePageL10n(DataContainer $dc)
     {
-
-        if (!$dc->activeRecord || $dc->activeRecord->tstamp > 0) {
+        // Only continue if new entry
+        if (!$this->isNewEntry($dc)) {
             return;
         }
 
-        $new_records = $this->Session->get('new_records');
-
-        // Not a new page - copy/paste is a great way to share code :P
-        if (!$new_records
-            || is_array($new_records[$dc->table])
-               && !in_array($dc->id, $new_records[$dc->table])
-        ) {
-            return;
+        if ($dc->activeRecord->type !== 'root') {
+            $i18nl10nLanguages = I18nl10n::getLanguagesByPageId($dc->activeRecord->pid, 'tl_page', false);
+        } else {
+            $i18nl10nLanguages = deserialize($dc->activeRecord->i18nl10n_languages);
         }
 
-        $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
-
+        // If folder urls are enabled, get only last part from alias
         if (Config::get('folderUrl')) {
             $arrAlias = explode('/', $dc->activeRecord->alias);
             $strAlias = array_pop($arrAlias);
@@ -275,12 +270,8 @@ class tl_page_l10n extends tl_page
             'datimFormat'    => $dc->activeRecord->datimFormat
         );
 
-        //now make copies in each language.
+        // Now make copies in each language
         foreach ($i18nl10nLanguages as $language) {
-            if ($language == \Config::get('i18nl10n_default_language')) {
-                continue;
-            }
-
             $strFolderUrl = '';
             $fields['sorting'] += 128;
             $fields['language'] = $language;
@@ -299,10 +290,8 @@ class tl_page_l10n extends tl_page
 
             $fields['alias'] = $strFolderUrl . $strAlias . '-' . $dc->activeRecord->pid . $dc->id;
 
-            $sql = 'INSERT INTO tl_page_i18nl10n %s';
-
             \Database::getInstance()
-                ->prepare($sql)
+                ->prepare('INSERT INTO tl_page_i18nl10n %s')
                 ->set($fields)
                 ->execute();
         }
@@ -366,5 +355,36 @@ class tl_page_l10n extends tl_page
     public function isValidLanguageCode($strLanguage)
     {
         return array_key_exists($strLanguage, $GLOBALS['TL_LANG']['LNG']);
+    }
+
+    /**
+     * Check if the given data container is a new entry
+     *
+     * @param DataContainer $dc
+     *
+     * @return bool
+     */
+    public function isNewEntry(DataContainer $dc)
+    {
+        $objPage = $this->Database
+            ->prepare('SELECT * FROM tl_page WHERE id = ?')
+            ->limit(1)
+            ->execute($dc->id);
+
+        return $objPage->first()->tstamp == 0;
+    }
+
+    /**
+     * Map language options
+     *
+     * @return array
+     */
+    public function languageOptions() {
+        $arrLanguages = $GLOBALS['TL_LANG']['LNG'];
+
+        // remove option 'all'
+        unset($arrLanguages['']);
+
+        return $arrLanguages;
     }
 }

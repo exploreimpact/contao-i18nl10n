@@ -263,4 +263,83 @@ class I18nl10n extends \Controller
 
         return $objPage;
     }
+
+    /**
+     * Get language definition for given page id and table
+     *
+     * @param      $intId
+     * @param      $strTable
+     * @param bool $blnIncludeDefault   Include default language
+     *
+     * @return array
+     */
+    static public function getLanguagesByPageId($intId, $strTable, $blnIncludeDefault = true)
+    {
+        switch ($strTable) {
+            case 'tl_page':
+                $rootId = self::getRootIdByPageId($intId, $strTable);
+
+                $arrLanguages = self::getLanguagesByRootId($rootId, $blnIncludeDefault);
+                break;
+
+            case 'tl_page_i18nl10n':
+                $arrLanguages = array();
+                break;
+
+            default:
+                $arrLanguages = array();
+                break;
+        }
+
+        return $arrLanguages;
+    }
+
+    /**
+     * Get root page by page id and table
+     *
+     * @param $intId
+     * @param $strTable
+     *
+     * @return mixed|null
+     */
+    static public function getRootIdByPageId($intId, $strTable)
+    {
+        switch ($strTable) {
+            case 'tl_page':
+                $rootId = \PageModel::findWithDetails($intId)->rootId;
+                break;
+
+            default:
+                $rootId = null;
+                break;
+        }
+
+        return $rootId;
+    }
+
+    /**
+     * Get language definition by root page id
+     *
+     * @param      $intId
+     * @param bool $blnIncludeDefault
+     *
+     * @return array
+     */
+    static public function getLanguagesByRootId($intId, $blnIncludeDefault = true)
+    {
+        $objPage = \PageModel::findWithDetails($intId);
+        $arrI18nl10nLanguages = array();
+
+        // Get language values
+        foreach (deserialize($objPage->i18nl10n_languages) as $entry) {
+            $arrI18nl10nLanguages[] = $entry['language'];
+        }
+
+        // Include default language
+        if ($blnIncludeDefault) {
+            $arrI18nl10nLanguages[] = $objPage->language;
+        }
+
+        return $arrI18nl10nLanguages;
+    }
 }
