@@ -24,12 +24,16 @@ $this->loadLanguageFile('languages');
  */
 $i18nl10n_default_language = \Config::get('i18nl10n_default_language') ? : 'en';
 
+/**
+ * Update label
+ */
+$i18nl10n_addLanguageToUrlLabel = &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_addLanguageToUrl'];
+$i18nl10n_addLanguageToUrlLabel[1] = sprintf($GLOBALS['TL_LANG']['tl_settings']['i18nl10n_addLanguageToUrl'][1], $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffix'][0]);
 
 /**
  * i18nl10n settings palettes
  */
 $GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= ';{module_i18nl10n:hide},i18nl10n_languages,i18nl10n_default_language,i18nl10n_alias_suffix,i18nl10n_addLanguageToUrl';
-
 
 /**
  * i18nl10n settings fields
@@ -84,7 +88,7 @@ $i18nl10nSettings = array
     ),
     'i18nl10n_addLanguageToUrl' => array
     (
-        'label'         => sprintf(&$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_addLanguageToUrl'], &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffix'][0]),
+        'label'         => $i18nl10n_addLanguageToUrlLabel,
         'exclude'       => true,
         'inputType'     => 'checkbox',
         'default'       => false,
