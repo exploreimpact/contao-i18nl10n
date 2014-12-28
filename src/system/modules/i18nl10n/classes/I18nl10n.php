@@ -283,7 +283,9 @@ class I18nl10n extends \Controller
                 break;
 
             case 'tl_page_i18nl10n':
-                $arrLanguages = array();
+                $rootId = self::getRootIdByPageId($intId, $strTable);
+
+                $arrLanguages = self::getLanguagesByRootId($rootId, $blnIncludeDefault);
                 break;
 
             default:
@@ -309,6 +311,15 @@ class I18nl10n extends \Controller
                 $rootId = \PageModel::findWithDetails($intId)->rootId;
                 break;
 
+            case 'tl_page_i18nl10n':
+                $arrPage = \Database::getInstance()
+                    ->prepare('SELECT * FROM tl_page_i18nl10n WHERE id = ?')
+                    ->execute($intId)
+                    ->fetchAssoc();
+
+                $rootId = \PageModel::findWithDetails($arrPage['pid'])->rootId;
+                break;
+
             default:
                 $rootId = null;
                 break;
@@ -332,7 +343,9 @@ class I18nl10n extends \Controller
 
         // Get language values
         foreach (deserialize($objPage->i18nl10n_languages) as $entry) {
-            $arrI18nl10nLanguages[] = $entry['language'];
+            if (!empty($entry['language'])) {
+                $arrI18nl10nLanguages[] = $entry['language'];
+            }
         }
 
         // Include default language
@@ -341,5 +354,72 @@ class I18nl10n extends \Controller
         }
 
         return $arrI18nl10nLanguages;
+    }
+
+    /**
+     * Get all available languages
+     *
+     * @param bool $blnIncludeDefault
+     *
+     * @return array
+     */
+    static public function getAllLanguages($blnIncludeDefault = true, $blnSortByRoot = false)
+    {
+        // Get root pages
+        $objRootPages = self::getAllRootPages();
+
+        $arrLanguages = array();
+
+        if ($objRootPages->numRows) {
+            // Loop root pages and collect languages
+            while ($objRootPages->next()) {
+
+                if ($blnSortByRoot) {
+                    $arrLanguages[$objRootPages->id] = array();
+                }
+
+                foreach (deserialize($objRootPages->i18nl10n_languages) as $entry) {
+                    if (!empty($entry['language'])) {
+                        // If sort by root, add additional level
+                        if ($blnSortByRoot) {
+                            $arrLanguages[$objRootPages->id][] = $entry['language'];
+                        } else {
+                            $arrLanguages[] = $entry['language'];
+                        }
+                    }
+                }
+
+                if ($blnIncludeDefault) {
+
+                    // If sort by root add additional level
+                    if ($blnSortByRoot) {
+                        $arrLanguages[$objRootPages->id][] = $objRootPages->language;
+                    } else {
+                        $arrLanguages[] = $objRootPages->language;
+                    }
+                }
+
+                // Remove duplicates
+                if($blnSortByRoot) {
+                    $arrLanguages[$objRootPages->id] = array_unique($arrLanguages[$objRootPages->id]);
+                }
+            }
+        }
+
+        // Remove duplicates
+        if(!$blnSortByRoot) {
+            $arrLanguages = array_unique($arrLanguages);
+        }
+
+        return $arrLanguages;
+    }
+
+    /**
+     * Get all root pages for current Contao setup
+     *
+     * @return \Database\Result
+     */
+    static public function getAllRootPages() {
+        return \Database::getInstance()->query('SELECT * FROM tl_page WHERE type = "root"');
     }
 }

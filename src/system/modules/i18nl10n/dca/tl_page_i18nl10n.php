@@ -6,17 +6,13 @@
  * The i18nl10n module for Contao allows you to manage multilingual content
  * on the element level rather than with page trees.
  *
- *
- * PHP version 5
  * @copyright   Verstärker, Patric Eberle 2014
- * @copyright   Krasimir Berov 2010-2013
  * @author      Patric Eberle <line-in@derverstaerker.ch>
- * @author      Krasimir Berov
  * @package     i18nl10n
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
-use \Verstaerker\I18nl10n\Classes\I18nl10n;
+use Verstaerker\I18nl10n\Classes\I18nl10n;
 
 // load language translations
 $this->loadLanguageFile('languages');
@@ -34,7 +30,6 @@ if (is_array($i18nl10nLanguages) && count($i18nl10nLanguages) > 1)
 {
     $disableCreate = false;
 };
-
 
 /**
  * Table tl_page_i18nl10n
@@ -84,13 +79,6 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         // Global operations
         'global_operations' => array
         (
-            'define_language' => array
-            (
-                'label' => &$GLOBALS['TL_LANG']['tl_page_i18nl10n']['define_language'],
-                'href'  => 'do=settings',
-                'class' => 'header_l10n_define_language',
-            ),
-
             'toggleNodes'     => array
             (
                 'label' => &$GLOBALS['TL_LANG']['MSC']['toggleNodes'],
@@ -261,7 +249,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['language'] = array_merge(
         'label'     => &$GLOBALS['TL_LANG']['MSC']['i18nl10n_fields']['language']['label'],
         'filter'    => true,
         'inputType' => 'select',
-        'options'   => $i18nl10nLanguageOptions,
+        'options_callback'   => array('tl_page_i18nl10n', 'languageOptions'),
         'reference' => &$GLOBALS['TL_LANG']['LNG'],
         'eval'      => array_merge(
             $GLOBALS['TL_DCA']['tl_page']['fields']['language']['eval'],
@@ -300,7 +288,6 @@ class tl_page_i18nl10n extends tl_page
      */
     public function addIcon($row, $label, DataContainer $dc = null, $imageAttribute = '', $blnReturnImage = false, $blnProtected = false)
     {
-
         $src = 'system/modules/i18nl10n/assets/img/flag_icons/' . $row['language'];
 
         $src .= $row['l10n_published'] ? '.png' : '_invisible.png';
@@ -449,29 +436,51 @@ class tl_page_i18nl10n extends tl_page
 
 
     /**
-     * Display message when only basic language is available
+     * Display message when no languages are set up
      *
      * @return  void
      */
     public function displayLanguageMessage()
     {
 
-        $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
+        $arrLanguages = I18nl10n::getAllLanguages(false, true);
+        $info = false;
+        $error = false;
 
-        // if no languages or count is smaller 2 (1 = default language)
-        if (!$i18nl10nLanguages || count($i18nl10nLanguages) < 2)
-        {
-
-            // TODO: ref= would be nice for link
-            $message = sprintf(
-                $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_no_languages'],
-                '<a class="tl_message_link" href="contao/main.php?do=settings">',
-                '</a>'
+        // If no root pages found, give error
+        if (!count($arrLanguages)) {
+            $error = sprintf(
+                $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_no_root'],
+                $GLOBALS['TL_LANG']['MOD']['page'][0]
             );
+        } else {
+            $countLanguages = 0;
 
-            \Message::addError($message);
+            // Loop roots
+            foreach ($arrLanguages as $root) {
+                $countLanguages += count($root);
 
-        };
+                // If a root page has no alternative languages, give info
+                if (!count($root)) {
+                    $info = &$GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_some_languages'];
+                }
+            }
+
+            // If no languages found, give error
+            if (!$countLanguages) {
+                $error = sprintf(
+                    $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_no_languages'],
+                    $GLOBALS['TL_LANG']['MOD']['page'][0]
+                );
+            }
+        }
+
+        // Show error or info if needed
+        if ($error) {
+            \Message::addError($error);
+        } else if ($info) {
+            \Message::addInfo($info);
+        }
     }
 
 
@@ -758,6 +767,26 @@ class tl_page_i18nl10n extends tl_page
         }
 
         return $varValue;
+    }
+
+    /**
+     * Create language options
+     *
+     * @return array
+     */
+    public function languageOptions() {
+        $id = $this->Input->get('id') ?: $this->Input->get('pid');
+        $arrLanguages = $GLOBALS['TL_LANG']['LNG'];
+
+        $i18nl10nLanguages = I18nl10n::getLanguagesByPageId($id, 'tl_page_i18nl10n', false);
+        $arrOptions = array();
+
+        // Create options array base on root page languages
+        foreach ($i18nl10nLanguages as $language) {
+            $arrOptions[$language] = $arrLanguages[$language];
+        }
+
+        return $arrOptions;
     }
 
 }

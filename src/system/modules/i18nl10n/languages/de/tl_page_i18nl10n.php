@@ -86,7 +86,11 @@ $GLOBALS['TL_LANG']['tl_page_i18nl10n']['localize_all'] = array
 /**
  * Messages
  */
+$GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_no_root'] =
+    'Es wurden noch keine Root-Seiten erstellt. Bitte hole dies über "%s" nach.';
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_no_languages'] =
-    'Es wurden noch keine alternativen Sprachen festgelegt. Bitte hole dies noch in den %s Einstellungen %s nach.';
+    'Es wurden noch keine alternativen Sprachen festgelegt. Bitte hole dies noch im jeweiligen Startpunkt unter "%s" nach.';
+$GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_some_languages'] =
+    'Einige Root-Seiten besitzen keine alternativen Sprachen.';
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_localize_all'] =
     'Für alle Seiten in <span style="white-space:nowrap">[%s]</span> ohne Übersetzung werden Lokalisierungen angelegt. Bist du sicher, dass du für die folgenden Sprachen Seiten anlegen möchtest?';

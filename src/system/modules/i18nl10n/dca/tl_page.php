@@ -116,6 +116,7 @@ $i18nl10nFields = array(
                     'label'     => &$GLOBALS['TL_LANG']['tl_page']['i18nl10n_language'],
                     'exclude'   => true,
                     'inputType' => 'select',
+                    'includeBlankOption' => true,
                     'options_callback' => array('tl_page_l10n', 'languageOptions'),
                     'eval'      => array
                     (
@@ -382,8 +383,8 @@ class tl_page_l10n extends tl_page
     public function languageOptions() {
         $arrLanguages = $GLOBALS['TL_LANG']['LNG'];
 
-        // remove option 'all'
-        unset($arrLanguages['']);
+        // Make 'all' entry a blank entry
+        $arrLanguages[''] = '-';
 
         return $arrLanguages;
     }
