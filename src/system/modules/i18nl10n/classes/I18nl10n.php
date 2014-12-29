@@ -342,15 +342,17 @@ class I18nl10n extends \Controller
         $arrI18nl10nLanguages = array();
 
         // Get language values
-        foreach (deserialize($objPage->i18nl10n_languages) as $entry) {
-            if (!empty($entry['language'])) {
-                $arrI18nl10nLanguages[] = $entry['language'];
+        if ($objPage) {
+            foreach (deserialize($objPage->i18nl10n_languages) as $entry) {
+                if (!empty($entry['language'])) {
+                    $arrI18nl10nLanguages[] = $entry['language'];
+                }
             }
-        }
 
-        // Include default language
-        if ($blnIncludeDefault) {
-            $arrI18nl10nLanguages[] = $objPage->language;
+            // Include default language
+            if ($blnIncludeDefault) {
+                $arrI18nl10nLanguages[] = $objPage->language;
+            }
         }
 
         return $arrI18nl10nLanguages;

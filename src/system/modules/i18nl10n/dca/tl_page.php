@@ -1,5 +1,4 @@
 <?php
-
 /**
  * i18nl10n Contao Module
  *
@@ -116,12 +115,13 @@ $i18nl10nFields = array(
                     'label'     => &$GLOBALS['TL_LANG']['tl_page']['i18nl10n_language'],
                     'exclude'   => true,
                     'inputType' => 'select',
-                    'includeBlankOption' => true,
+//                    'options' => $GLOBALS['TL_LANG']['LNG'],
                     'options_callback' => array('tl_page_l10n', 'languageOptions'),
                     'eval'      => array
                     (
                         'style'  => 'width:250px',
-                        'chosen' => true
+                        'chosen' => true,
+                        'includeBlankOption' => true
                     )
                 )
             )
@@ -383,8 +383,11 @@ class tl_page_l10n extends tl_page
     public function languageOptions() {
         $arrLanguages = $GLOBALS['TL_LANG']['LNG'];
 
-        // Make 'all' entry a blank entry
-        $arrLanguages[''] = '-';
+        // Remove 'all' entry
+        unset($arrLanguages['']);
+
+        // Sort by value (a-z)
+        asort($arrLanguages);
 
         return $arrLanguages;
     }
