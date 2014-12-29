@@ -1,5 +1,4 @@
 <?php
-
 /**
  * i18nl10n Contao Module
  *
@@ -8,6 +7,7 @@
  *
  *
  * PHP version 5
+ *
  * @copyright   Verstärker, Patric Eberle 2014
  * @copyright   Krasimir Berov 2010-2013
  * @author      Patric Eberle <line-in@derverstaerker.ch>
@@ -16,6 +16,7 @@
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
+use Verstaerker\I18nl10n\Classes\I18nl10n;
 
 $this->loadLanguageFile('languages');
 $this->loadLanguageFile('tl_page');
@@ -24,21 +25,21 @@ $this->loadDataContainer('tl_page');
 $this->loadDataContainer('tl_content');
 
 // set callback for dca load to add language selection to content elements IF module is article
-if (\Input::get('do') == 'article')
-{
+if (\Input::get('do') == 'article') {
     // define callback to add language icons
-    $GLOBALS['TL_DCA']['tl_content']['list']['sorting']['child_record_callback'] = array('tl_content_l10n', 'addCteType');
+    $GLOBALS['TL_DCA']['tl_content']['list']['sorting']['child_record_callback'] =
+        array('tl_content_l10n', 'addCteType');
 }
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['language'] = array_merge(
     $GLOBALS['TL_DCA']['tl_page']['fields']['language'],
     array(
-        'label'     => &$GLOBALS['TL_LANG']['MSC']['i18nl10n_fields']['language']['label'],
-        'filter'    => true,
-        'inputType' => 'select',
-        'options'   => deserialize(\Config::get('i18nl10n_languages')),
-        'reference' => &$GLOBALS['TL_LANG']['LNG'],
-        'eval'      => array(
+        'label'            => &$GLOBALS['TL_LANG']['MSC']['i18nl10n_fields']['language']['label'],
+        'filter'           => true,
+        'inputType'        => 'select',
+        'options_callback' => array('tl_content_l10n', 'languageOptions'),
+        'reference'        => &$GLOBALS['TL_LANG']['LNG'],
+        'eval'             => array(
             'mandatory'          => false,
             'includeBlankOption' => true,
             'blankOptionLabel'   => $GLOBALS['TL_LANG']['tl_content']['l10n_blankOptionLabel'],
@@ -58,29 +59,26 @@ class tl_content_l10n extends tl_content
      * Add language icon to content element list entry
      *
      * @param $arrRow
+     *
      * @return string
      */
     public function addCteType($arrRow)
     {
-        $langIcon = 'system/modules/i18nl10n/assets/img/i18nl10n.png';
-
-        if ($arrRow['language'])
-        {
-            $langIcon = 'system/modules/i18nl10n/assets/img/flag_icons/' . $arrRow['language'] . '.png';
-        }
-
-        $strL10nInsert = '<img class="i18nl10n_content_flag" src="%1$s" /> [%2$s] ';
+        // Prepare icon link
+        $langIcon = $arrRow['language']
+            ? 'system/modules/i18nl10n/assets/img/flag_icons/' . $arrRow['language'] . '.png'
+            : 'system/modules/i18nl10n/assets/img/i18nl10n.png';
 
         // create l10n information insert
         $strL10nInsert = sprintf(
-            $strL10nInsert,
+            '<img class="i18nl10n_content_flag" src="%1$s" /> [%2$s] ',
             $langIcon,
             $GLOBALS['TL_LANG']['LNG'][$arrRow['language']]
         );
 
         // get html string from Contao
         $strElement = parent::addCteType($arrRow);
-        $strRegex = '@(.*?class="cte_type.*?>)(.*)@m';
+        $strRegex   = '@(.*?class="cte_type.*?>)(.*)@m';
 
         // splice in l10n information
         $strElement = preg_replace($strRegex, '${1}' . $strL10nInsert . '${2}', $strElement);
@@ -103,16 +101,57 @@ class tl_content_l10n extends tl_content
         $dc->loadDataContainer('tl_content');
 
         // add language section to all palettes
-        foreach ($GLOBALS['TL_DCA']['tl_content']['palettes'] as $k => $v)
-        {
+        foreach ($GLOBALS['TL_DCA']['tl_content']['palettes'] as $k => $v) {
             // if element is '__selector__' OR 'default' OR the palette has already a language key
-            if ($k == '__selector__' || $k == 'default' || strpos($v, ',language(?=\{|,|;|$)') !== false)
-            {
+            if ($k == '__selector__' || $k == 'default' || strpos($v, ',language(?=\{|,|;|$)') !== false) {
                 continue;
             }
 
             $GLOBALS['TL_DCA']['tl_content']['palettes'][$k] = $v . ';{l10n_legend:hide},language';
         }
+    }
+
+    /**
+     * Create language options based on root page and already used languages
+     *
+     * @param DataContainer $dc
+     *
+     * @return array
+     */
+    public function languageOptions(DataContainer $dc)
+    {
+        $id           = $dc->activeRecord->id;
+        $arrLanguages = $GLOBALS['TL_LANG']['LNG'];
+        $arrOptions   = array();
+
+        $i18nl10nLanguages = $this->getLanguageOptionsByContentId($dc->activeRecord->id);
+
+        // Create options array base on root page languages
+        foreach ($i18nl10nLanguages as $language) {
+            $arrOptions[$language] = $arrLanguages[$language];
+        }
+
+        return $arrOptions;
+    }
+
+    /**
+     * Get available languages by content element id
+     *
+     * @param $id
+     *
+     * @return array
+     */
+    private function getLanguageOptionsByContentId($id)
+    {
+        $arrPageId = $this->Database
+            ->prepare("SELECT pid as id FROM tl_article WHERE id = (SELECT pid FROM tl_content WHERE id = ?)")
+            ->limit(1)
+            ->execute($id)
+            ->fetchAssoc();
+
+        $i18nl10nLanguages = I18nl10n::getLanguagesByPageId($arrPageId['id'], 'tl_page');
+
+        return $i18nl10nLanguages;
     }
 
 }
