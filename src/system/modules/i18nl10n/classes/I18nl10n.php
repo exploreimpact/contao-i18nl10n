@@ -6,11 +6,8 @@
  * on the element level rather than with page trees.
  *
  *
- * PHP version 5
  * @copyright   Verstärker, Patric Eberle 2014
- * @copyright   Krasimir Berov 2010-2013
  * @author      Patric Eberle <line-in@derverstaerker.ch>
- * @author      Krasimir Berov
  * @package     i18nl10n
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
@@ -58,7 +55,6 @@ class I18nl10n extends \Controller
 
         return vsprintf($format, $data);
     }
-
 
     /**
      * Find alias for internationalized content or use fallback language alias
@@ -421,7 +417,23 @@ class I18nl10n extends \Controller
      *
      * @return \Database\Result
      */
-    static public function getAllRootPages() {
+    static public function getAllRootPages()
+    {
         return \Database::getInstance()->query('SELECT * FROM tl_page WHERE type = "root"');
+    }
+
+    /**
+     * Get native language names
+     *
+     * @return array
+     */
+    static public function getNativeLanguageNames()
+    {
+        $langsNative = array();
+
+        // Include languages to get $langsNative
+        include(TL_ROOT . '/system/config/languages.php');
+
+        return $langsNative;
     }
 }
