@@ -26,5 +26,7 @@ $GLOBALS['TL_LANG']['tl_page']['msg_no_languages']  =
     'Es wurden noch keine alternativen Sprachen festgelegt. Bitte hole dies noch in den %s Einstellungen %s nach.';
 $GLOBALS['TL_LANG']['tl_page']['msg_multiple_root'] =
     'i18nl10n hat in deiner Seitenstruktur mehr als eine Root-Seite gefunden. Bitte beachte, dass das Modul nicht für die Verwendung mehrerer Root-Seiten ausgelegt ist!';
-$GLOBALS['TL_LANG']['tl_page']['msg_localize_all']  =
-    'Für alle Seiten in <span style="white-space:nowrap">[%s]</span> ohne Übersetzung werden Lokalisierungen angelegt. Bist du sicher, dass du für die folgenden Sprachen Seiten anlegen möchtest?';
+$GLOBALS['TL_LANG']['tl_page']['msg_missing_dns']  =
+    'Bei der Verwendung von mehr als einer Root-Seite zusammen mit dem i18nl10n Modul muss für jede Root-Seite ein eindeutiger Domainname vergeben werden! Einer oder mehreren Seiten fehlt dieser Wert!';
+$GLOBALS['TL_LANG']['tl_page']['msg_duplicated_dns']  =
+    'Einige Root-Seiten besitzen den gleichen DNS-Wert. Bei der Verwendung des Modules i18nl10n ist pro Domain nur eine Root-Seite erlaubt.';

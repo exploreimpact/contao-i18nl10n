@@ -16,7 +16,6 @@ use Verstaerker\I18nl10n\Classes\I18nl10n;
 // load language translations
 $this->loadLanguageFile('languages');
 
-
 /**
  * Table tl_page
  */
@@ -27,10 +26,12 @@ $GLOBALS['TL_DCA']['tl_page']['list']['operations']['page_i18nl10n'] = array
     'button_callback' => array('tl_page_l10n', 'editL10n')
 );
 
+// Extend onload_callback
 $onLoadCallback = array
 (
     array('tl_page_l10n', 'setDefaultLanguage'),
-    array('tl_page_l10n', 'displayLanguageMessage')
+    array('tl_page_l10n', 'displayLanguageMessage'),
+    array('tl_page_l10n', 'displayDnsMessage')
 );
 
 array_insert(
@@ -39,6 +40,7 @@ array_insert(
     $onLoadCallback
 );
 
+// Extend onsubmit_callback
 $onSubmitCallback = array
 (
     array('tl_page_l10n', 'generatePageL10n'),
@@ -56,6 +58,14 @@ $GLOBALS['TL_DCA']['tl_page']['config']['ondelete_callback'][] = array
     'tl_page_l10n',
     'onDelete'
 );
+
+/**
+ * Modify tl_page field DCA
+ */
+if (tl_page_l10n::countRootPages() > 1) {
+    // If there is already a root page, a domain name must be set
+    $GLOBALS['TL_DCA']['tl_page']['fields']['dns']['eval']['mandatory'] = true;
+}
 
 /**
  * Append l10n published field to palette (if NOT root page)
@@ -78,6 +88,7 @@ if (\Input::get('pid') === null || \Input::get('pid') != 0) {
     $GLOBALS['TL_DCA']['tl_page']['fields']['published']['eval']['tl_class'] = 'w50';
 }
 
+// Extend root page palette
 $GLOBALS['TL_DCA']['tl_page']['palettes']['root'] = str_replace(
     'language,fallback;',
     'language,fallback;{i18nl10n},i18nl10n_languages;',
@@ -225,6 +236,35 @@ class tl_page_l10n extends tl_page
             \Message::addError($message);
 
         };
+    }
+
+    /**
+     * If this installation has more than one root page, check if they all have a domain
+     *
+     * @return void
+     */
+    public function displayDnsMessage()
+    {
+        // Only apply if multiple root pages
+        if ($this->countRootPages() > 1) {
+            $objRootPages = I18nl10n::getAllRootPages();
+            $arrDns = array();
+
+            while ($objRootPages->next()) {
+
+                // Check if dns value is missing
+                if ($objRootPages->dns === '') {
+                    \Message::addError($GLOBALS['TL_LANG']['tl_page']['msg_missing_dns']);
+                } else {
+                    $arrDns[] = $objRootPages->dns;
+                }
+            }
+
+            // Check if duplicated dns values
+            if(count(array_unique($arrDns)) < count($arrDns)) {
+                \Message::addError($GLOBALS['TL_LANG']['tl_page']['msg_duplicated_dns']);
+            }
+        }
     }
 
     /**
@@ -390,5 +430,17 @@ class tl_page_l10n extends tl_page
         asort($arrLanguages);
 
         return $arrLanguages;
+    }
+
+    /**
+     * Count available root pages
+     *
+     * @return int
+     */
+    static public function countRootPages()
+    {
+        $objRootPages = I18nl10n::getAllRootPages();
+
+        return $objRootPages->count();
     }
 }

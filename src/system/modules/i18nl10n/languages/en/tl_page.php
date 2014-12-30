@@ -35,5 +35,7 @@ $GLOBALS['TL_LANG']['tl_page']['msg_no_languages']  =
     'No alternative languages have been defined yet. Please do so on the %s settings %s page.';
 $GLOBALS['TL_LANG']['tl_page']['msg_multiple_root'] =
     'i18nl10n discovered multiple root pages in your page structure. Please be aware, that the module is not able to handle multiple page trees!';
-$GLOBALS['TL_LANG']['tl_page']['msg_localize_all']  =
-    'For all untranslated pages in <span style="white-space:nowrap">[%s]</span> I will create localizations. Are you sure you want to create the following localizations for all unlocalized pages?';
+$GLOBALS['TL_LANG']['tl_page']['msg_missing_dns']  =
+    'When using more than one root page with i18nl10n, every root page needs a unique domain name! One or more roots are missing this value!';
+$GLOBALS['TL_LANG']['tl_page']['msg_duplicated_dns']  =
+    'Some root pages us the same domain value. When using the i18nl10n module only one root page is allowed for a domain.';

@@ -156,7 +156,6 @@ class I18nl10nHook extends \System
      */
     public function getPageIdFromUrl(Array $arrFragments)
     {
-
         $arrFragments = array_map('urldecode', $arrFragments);
         $language = \Config::get('i18nl10n_default_language');
 
@@ -260,17 +259,16 @@ class I18nl10nHook extends \System
      */
     public function isVisibleElement($objElement, $blnIsVisible)
     {
-
         global $objPage;
 
         if ($blnIsVisible && $objElement->language)
         {
-            // check if given language is valid of fallback should be used
+            // check if given language is valid or fallback should be used
             $strLanguage = $objPage->useFallbackLanguage
-                ? \Config::get('i18nl10n_default_language')
+                ? $objPage->rootLanguage
                 : $GLOBALS['TL_LANGUAGE'];
 
-            $blnIsVisible = $objElement->language == $strLanguage;
+            $blnIsVisible = $objElement->language === $strLanguage;
         }
 
         return $blnIsVisible;
