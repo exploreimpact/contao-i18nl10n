@@ -30,7 +30,6 @@ $GLOBALS['TL_DCA']['tl_page']['list']['operations']['page_i18nl10n'] = array
 $onLoadCallback = array
 (
     array('tl_page_l10n', 'setDefaultLanguage'),
-    array('tl_page_l10n', 'displayLanguageMessage'),
     array('tl_page_l10n', 'displayDnsMessage')
 );
 
@@ -204,38 +203,6 @@ class tl_page_l10n extends tl_page
             $objPage = \PageModel::findWithDetails(\Input::get('pid'));
             $GLOBALS['TL_DCA']['tl_page']['fields']['language']['default'] = $objPage->rootLanguage;
         }
-    }
-
-    /**
-     * Display message when only basic language is available
-     *
-     * @return  void
-     */
-    public function displayLanguageMessage()
-    {
-
-        // only show if treeview
-        if ($this->Input->get('act') != '') {
-            return;
-        }
-
-        $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
-
-        // if no languages or count is smaller 2 (1 = default language)
-        if (!$i18nl10nLanguages || count($i18nl10nLanguages) < 2) {
-
-            $this->loadLanguageFile('tl_page_i18nl10n');
-
-            // TODO: ref= would be nice for link
-            $message = sprintf(
-                $GLOBALS['TL_LANG']['tl_page']['msg_no_languages'],
-                '<a class="tl_message_link" href="contao/main.php?do=settings">',
-                '</a>'
-            );
-
-            \Message::addError($message);
-
-        };
     }
 
     /**

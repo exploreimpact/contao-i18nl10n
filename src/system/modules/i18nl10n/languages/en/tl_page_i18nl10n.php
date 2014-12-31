@@ -64,7 +64,7 @@ $GLOBALS['TL_LANG']['tl_page_i18nl10n']['delete'] = array
     'Delete localization'
 );
 
-$GLOBALS['TL_LANG']['tl_page']['toggle'] = array
+$GLOBALS['TL_LANG']['tl_page_i18nl10n']['toggle'] = array
 (
     'Publish/unpublish L10N',
     'Publish/unpublish L10N ID %s'
@@ -92,4 +92,5 @@ $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_no_languages'] =
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_some_languages'] =
     'Some root pages have no language alternatives.';
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_localize_all'] =
-    'For all untranslated pages in <span style="white-space:nowrap">[%s]</span> I will create localizations. Are you sure you want to create the following localizations for all unlocalized pages?';
+    'I will create localizations for all missing translations based on the following list. Are you sure you want to continue?';
+$GLOBALS['TL_LANG']['tl_page_i18nl10n']['no_languages'] = 'No languages';

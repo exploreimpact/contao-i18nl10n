@@ -425,6 +425,13 @@ class I18nl10n extends \Controller
         return $langsNative;
     }
 
+    /**
+     * Map all default and localized languages from a database result and return as array
+     *
+     * @param \Database\Mysqli\Result $objRootPage
+     *
+     * @return array
+     */
     static private function mapLanguagesFromDatabaseRootPageResult(\Database\Mysqli\Result $objRootPage)
     {
         $arrLanguages = array();
@@ -434,6 +441,7 @@ class I18nl10n extends \Controller
             while ($objRootPage->next()) {
                 $arrLanguages[$objRootPage->dns] = array
                 (
+                    'rootId' => $objRootPage->id,
                     'default' => $objRootPage->language,
                     'localizations' => array()
                 );

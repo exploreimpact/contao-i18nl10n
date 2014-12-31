@@ -64,7 +64,7 @@ $GLOBALS['TL_LANG']['tl_page_i18nl10n']['delete'] = array
     'Lokalisierung löschen'
 );
 
-$GLOBALS['TL_LANG']['tl_page']['toggle'] = array
+$GLOBALS['TL_LANG']['tl_page_i18nl10n']['toggle'] = array
 (
     'L10N veröffentlichen/unveröffentlichen',
     'L10N mit der ID %s veröffentlichen/unveröffentlichen'
@@ -93,4 +93,5 @@ $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_no_languages'] =
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_some_languages'] =
     'Einige Root-Seiten besitzen keine alternativen Sprachen.';
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_localize_all'] =
-    'Für alle Seiten in <span style="white-space:nowrap">[%s]</span> ohne Übersetzung werden Lokalisierungen angelegt. Bist du sicher, dass du für die folgenden Sprachen Seiten anlegen möchtest?';
+    'Ich werde für jede fehlenden Übersetzung eine lokalisierte Seite gemäss der angezeigten Liste anlegen. Möchtest du wirklich fortfahren?';
+$GLOBALS['TL_LANG']['tl_page_i18nl10n']['no_languages'] = 'Keine Sprachen';

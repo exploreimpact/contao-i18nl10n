@@ -22,11 +22,17 @@ $this->loadDataContainer('tl_page');
 
 
 //determine if languages are available to endable/disable editing
-$disableCreate     = true;
-$i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
+$enableCreate = false;
+$arrLanguages = I18nl10n::getAllLanguages();
 
-if (is_array($i18nl10nLanguages) && count($i18nl10nLanguages) > 1) {
-    $disableCreate = false;
+// Check if localizations are available, else the create option for the DCA will be disabled
+if (!count($arrLanguages)) {
+    foreach ($arrLanguages as $domain) {
+        if (count($domain['localizations'])) {
+            $enableCreate = true;
+            break;
+        }
+    }
 };
 
 /**
@@ -40,7 +46,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         'dataContainer'    => 'Table',
         'ptable'           => 'tl_page',
         'enableVersioning' => true,
-        'closed'           => $disableCreate,
+        'closed'           => $enableCreate,
         'onload_callback'  => array
         (
             array('tl_page', 'addBreadcrumb'),
@@ -145,12 +151,6 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
     // Fields
     'fields'   => array
     (
-        /**
-         * TODO: add alias localized support so for example alias
-         * 'начало' links to 'home' with l10n enabled use
-         * $GLOBALS['TL_HOOKS']['getPageIdFromUrl']
-         */
-
         'id'             => array
         (
             'sql' => "int(10) unsigned NOT NULL auto_increment"
@@ -195,7 +195,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['url']['eval']['tl_class']     
 $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['l10n_published']['eval']['tl_class'] = 'w50 m12';
 
 // Splice in localize all in case languages are available
-if (!$disableCreate) {
+if (!$enableCreate) {
     $additionalFunctions = array(
         'localize_all' => array
         (
@@ -213,18 +213,6 @@ if (!$disableCreate) {
         $additionalFunctions
     );
 };
-
-$i18nl10nLanguageOptions = array();
-
-// remove default language
-if (is_array($i18nl10nLanguages)) {
-    foreach ($i18nl10nLanguages as $k => $v) {
-        if ($v == \Config::get('i18nl10n_default_language')) {
-            $i18nl10nLanguageOptions = array_delete($i18nl10nLanguages, $k);
-            break;
-        }
-    }
-}
 
 // merge language selection into tl_page_i18nl10n fields
 $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['language'] = array_merge(
@@ -303,7 +291,6 @@ class tl_page_i18nl10n extends tl_page
         }
     }
 
-    // @todo: Refactor this
     /**
      * Show localize all message and form
      *
@@ -311,38 +298,45 @@ class tl_page_i18nl10n extends tl_page
      */
     private function localizeAllMessage()
     {
-        $i18nl10nDefaultLanguage = \Config::get('i18nl10n_default_language');
+        $arrLanguages       = I18nl10n::getAllLanguages();
+        $strFlagPath        = 'system/modules/i18nl10n/assets/img/flag_icons/';
+        $strMessage         = $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_localize_all'];
+        $strDomainLanguages = '';
 
-        $flag = sprintf(
-            '<img class="i18nl10n_flag" src="system/modules/i18nl10n/assets/img/flag_icons/%s.png" />&nbsp;',
-            $i18nl10nDefaultLanguage
-        );
+        foreach ($arrLanguages as $key => $domain) {
+            $strDomainLocalization = '';
 
-        $message = sprintf(
-            $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_localize_all'],
-            $flag . $GLOBALS['TL_LANG']['LNG'][\Config::get('i18nl10n_default_language')]
-        );
-
-        $newLanguages            = '<ul class="i18nl10n_page_language_listing">';
-        $i18nl10nLanguages       = deserialize(\Config::get('i18nl10n_languages'));
-
-        foreach ($i18nl10nLanguages as $language) {
-            if ($language == $i18nl10nDefaultLanguage) {
-                continue;
+            if (count($domain['localizations'])) {
+                foreach ($domain['localizations'] as $localization) {
+                    $strDomainLocalization .= sprintf(
+                        '<li><img class="i18nl10n_flag" src="%1$s.png" /> %2$s</li>',
+                        $strFlagPath . $localization,
+                        $GLOBALS['TL_LANG']['LNG'][$localization]
+                    );
+                }
+            } else {
+                $strDomainLocalization .= sprintf(
+                    '<li>%s</li>',
+                    $GLOBALS['TL_LANG']['tl_page_i18nl10n']['no_languages']
+                );
             }
 
-            $newLanguages .= sprintf(
-                '<li><img class="i18nl10n_flag" src="system/modules/i18nl10n/assets/img/flag_icons/%1$s.png" /> %2$s</li>',
-                $language,
-                $GLOBALS['TL_LANG']['LNG'][$language]
+            $strDomainLanguages .= sprintf(
+                '<li class="i18nl10n_localize_domain"><img class="i18nl10n_flag" src="%1$s.png" /> %2$s<ul>%3$s</ul></li>',
+                $strFlagPath . $domain['default'],
+                $key,
+                $strDomainLocalization
             );
         }
 
-        $newLanguages .= '</ul>';
+        $strDomainList = sprintf(
+            '<ul class="i18nl10n_localize_list">%s</ul>',
+            $strDomainLanguages
+        );
 
         $html =
-            '<form method="post" action="contao/main.php?do=%1$s">
-                <div class="i18nl10n_page_message">
+            '<form class="i18nl10n_localize" method="post" action="contao/main.php?do=%1$s">
+                <div class="i18nl10n_message">
                     %2$s %3$s
                     <div class="tl_submit_container">
                         <a href="contao/main.php?do=%1$s">%4$s</a>
@@ -355,8 +349,8 @@ class tl_page_i18nl10n extends tl_page
         $rawMessage = sprintf(
             $html,
             \Input::get('do'),
-            $message,
-            $newLanguages,
+            $strMessage,
+            $strDomainList,
             utf8_ucfirst($GLOBALS['TL_LANG']['MSC']['no']),
             utf8_ucfirst($GLOBALS['TL_LANG']['MSC']['yes']),
             REQUEST_TOKEN
@@ -368,50 +362,45 @@ class tl_page_i18nl10n extends tl_page
 
 
     /**
-     * Localize all pages
+     * Localize all pages with missing localization
      *
      * @return void
      */
     private function localizeAllAction()
     {
-        $defaultLanguage   = \Config::get('i18nl10n_default_language');
-        $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
+        $arrLanguages = I18nl10n::getAllLanguages();
 
-        foreach ($i18nl10nLanguages as $lang) {
-            if ($lang == $defaultLanguage) {
-                continue;
-            }
+        foreach ($arrLanguages as $domain) {
+            $arrPageIds = $this->Database->getChildRecords(array($domain['rootId']), 'tl_page');
 
-            $sql = "
+            foreach ($domain['localizations'] as $localization) {
+                $sql = '
                   INSERT INTO
                     tl_page_i18nl10n
                     (
-                        pid,sorting,tstamp,language,title,type,
-                        pageTitle,description,cssClass,alias,
-                        l10n_published,start,stop,dateFormat,timeFormat,datimFormat
+                        pid, sorting, tstamp, language, title, type, pageTitle, description, cssClass,
+                        alias, l10n_published, start, stop, dateFormat, timeFormat, datimFormat
                     )
                   SELECT
-                    p.id AS pid, p.sorting, p.tstamp, ? AS language,
-                    p.title, p.type, p.pageTitle, p.description,
-                    p.cssClass, p.alias, p.published, p.start, p.stop,
+                    p.id AS pid, p.sorting, p.tstamp, ? AS language,p.title, p.type, p.pageTitle,
+                    p.description, p.cssClass, p.alias, p.published, p.start, p.stop,
                     p.dateFormat, p.timeFormat, p.datimFormat
                   FROM
-                    tl_page p
+                    tl_page as p
                   LEFT JOIN
-                    tl_page_i18nl10n i
+                    tl_page_i18nl10n as i
                       ON p.id = i.pid
                       AND i.language = ?
                   WHERE
-                    (
-                      p.language = ?
-                      OR p.language = ''
-                    )
+                    p.id IN(' . implode($arrPageIds, ',') . ')
+                    AND (p.language = ? OR p.language = "")
                     AND i.pid IS NULL
-                ";
+                ';
 
-            \Database::getInstance()
-                ->prepare($sql)
-                ->execute($lang, $lang, $defaultLanguage);
+                \Database::getInstance()
+                    ->prepare($sql)
+                    ->execute($localization, $localization, $domain['default']);
+            }
         }
     }
 
@@ -423,7 +412,6 @@ class tl_page_i18nl10n extends tl_page
      */
     public function displayLanguageMessage()
     {
-
         $arrLanguages = I18nl10n::getAllLanguages();
         $info         = false;
         $error        = false;
@@ -579,7 +567,7 @@ class tl_page_i18nl10n extends tl_page
         if (\Config::get('addLanguageToUrl')) {
             $message = $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_add_language_to_url'];
             $GLOBALS['TL_DCA']['tl_page']['list']['sorting']['breadcrumb'] .=
-                '<div class="i18nl10n_page_message">' . $message . '</div>';
+                '<div class="i18nl10n_message">' . $message . '</div>';
         };
     }
 
@@ -627,7 +615,6 @@ class tl_page_i18nl10n extends tl_page
      */
     public function toggleL10n($intId, $blnPublished)
     {
-
         $strTable = 'tl_page_i18nl10n';
 
         // Check permissions to publish
@@ -722,9 +709,9 @@ class tl_page_i18nl10n extends tl_page
             }
         }
 
-        $objAlias =
-            $this->Database->prepare("SELECT id FROM tl_page_i18nl10n WHERE (id = ? OR alias = ?) AND language = ?")
-                ->execute($dc->id, $varValue, $strLanguage);
+        $objAlias = $this->Database
+            ->prepare("SELECT id FROM tl_page_i18nl10n WHERE (id = ? OR alias = ?) AND language = ?")
+            ->execute($dc->id, $varValue, $strLanguage);
 
         // Check whether the page alias exists
         if ($objAlias->numRows > ($autoAlias ? 0 : 1)) {

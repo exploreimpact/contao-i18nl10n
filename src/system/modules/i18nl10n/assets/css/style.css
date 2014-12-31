@@ -43,7 +43,7 @@ ul.level_5 .tl_left {
     margin-left: 15px;
 }
 
-.i18nl10n_page_message {
+.i18nl10n_message {
     text-align: left;
     line-height: 120%;
     padding: 0.5em;
@@ -53,7 +53,7 @@ ul.level_5 .tl_left {
     margin-bottom: 20px;
 }
 
-.i18nl10n_page_message .tl_submit_container {
+.i18nl10n_message .tl_submit_container {
     background: none;
     border-top: 1px solid #D49822;
     text-align: right;
@@ -61,17 +61,17 @@ ul.level_5 .tl_left {
     padding: 0.5em;
 }
 
-.i18nl10n_page_message .tl_submit {
+.i18nl10n_message .tl_submit {
     margin-left: 10px;
 }
 
-.i18nl10n_page_message a {
+.i18nl10n_message a {
     color: #666966;
     font-weight: bold;
     text-decoration: underline;
 }
 
-.i18nl10n_page_message a:hover {
+.i18nl10n_message a:hover {
     color: #d00;
 }
 
@@ -86,8 +86,24 @@ ul.level_5 .tl_left {
     padding-left: 3px;
 }
 
-.i18nl10n_page_language_listing {
+p + .i18nl10n_localize {
+    margin-top: 10px;
+}
+
+.i18nl10n_localize_list {
     margin: 10px 0;
+}
+
+.i18nl10n_localize_domain {
+    margin-bottom: 20px;
+}
+
+.i18nl10n_localize_domain ul {
+    margin: 5px 0 0 20px;
+}
+
+.i18nl10n_localize_domain li {
+    margin-bottom: 5px;
 }
 
 .tree_view .tl_listing img.i18nl10n_article_flag,

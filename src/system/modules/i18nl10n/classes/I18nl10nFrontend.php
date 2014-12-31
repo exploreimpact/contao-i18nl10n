@@ -55,7 +55,11 @@ class I18nl10nFrontend extends \Controller
      */
     public function i18nl10nNavItems(Array $items, $blnUseFallback = false)
     {
-        if (empty($items)) return false;
+        if (empty($items)) {
+            return false;
+        }
+
+        $arrLanguages = I18nl10n::getLanguagesByDomain();
 
         //get item ids
         $item_ids = array();
@@ -67,7 +71,7 @@ class I18nl10nFrontend extends \Controller
 
         $i18n_items = array();
 
-        if ($GLOBALS['TL_LANGUAGE'] != \Config::get('i18nl10n_default_language'))
+        if ($GLOBALS['TL_LANGUAGE'] != $arrLanguages['default'])
         {
             $time = time();
             $fields = 'alias,pid,title,pageTitle,description,url,language';

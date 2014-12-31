@@ -51,10 +51,11 @@ class I18nl10nHook extends \System
                 ? $GLOBALS['TL_LANGUAGE']
                 : $arrRow['language'];
 
+        $arrLanguages = I18nl10n::getLanguagesByDomain();
         $arrL10nAlias = null;
 
         // try to get l10n alias by language and pid
-        if ($language != \Config::get('i18nl10n_default_language'))
+        if ($language != $arrLanguages['default'])
         {
             $sql = 'SELECT alias FROM tl_page_i18nl10n WHERE pid = ? AND language = ?';
 
