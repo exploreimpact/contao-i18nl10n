@@ -145,7 +145,7 @@ class tl_content_l10n extends tl_content
 
         $i18nl10nLanguages = I18nl10n::getLanguagesByPageId($arrPageId['id'], 'tl_page');
 
-        return $i18nl10nLanguages;
+        return $i18nl10nLanguages['languages'];
     }
 
 }

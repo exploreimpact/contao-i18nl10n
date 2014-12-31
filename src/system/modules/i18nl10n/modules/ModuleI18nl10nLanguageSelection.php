@@ -77,14 +77,15 @@ class ModuleI18nl10nLanguageSelection extends \Module
             ? " AND (start = '' OR start < $time) AND (stop = '' OR stop > $time) AND l10n_published = 1 "
             : '';
 
-        $i18nl10nLanguages = I18nl10n::getLanguagesByRootId($objPage->rootId);
+        // Get all possible languages for this page tree
+        $arrLanguages = I18nl10n::getLanguagesByRootId($objPage->rootId);
 
         $sql = "
             SELECT *
             FROM tl_page_i18nl10n
             WHERE
                 pid = ?
-                AND language IN ( '" . implode("', '", $i18nl10nLanguages) . "' )
+                AND language IN ( '" . implode("', '", $arrLanguages['languages']) . "' )
                 $sqlPublishedCondition
         ";
 
@@ -122,7 +123,7 @@ class ModuleI18nl10nLanguageSelection extends \Module
 
             // keep the order in $i18nl10nLanguages and assign to $items
             // only if page translation is found in database
-            foreach ($i18nl10nLanguages as $language) {
+            foreach ($arrLanguages['languages'] as $language) {
                 // check if current language has not to be shown
                 if ($language === $GLOBALS['TL_LANGUAGE'] && $this->i18nl10nLangHide === 1) {
                     continue;

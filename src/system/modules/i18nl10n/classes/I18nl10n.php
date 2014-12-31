@@ -272,13 +272,10 @@ class I18nl10n extends \Controller
     static public function getLanguagesByPageId($intId, $strTable, $blnIncludeDefault = true)
     {
         switch ($strTable) {
-            case 'tl_page':
-                $rootId = self::getRootIdByPageId($intId, $strTable);
-
-                $arrLanguages = self::getLanguagesByRootId($rootId, $blnIncludeDefault);
-                break;
-
             case 'tl_page_i18nl10n':
+                // no break
+
+            case 'tl_page':
                 $rootId = self::getRootIdByPageId($intId, $strTable);
 
                 $arrLanguages = self::getLanguagesByRootId($rootId, $blnIncludeDefault);
@@ -334,24 +331,13 @@ class I18nl10n extends \Controller
      */
     static public function getLanguagesByRootId($intId, $blnIncludeDefault = true)
     {
-        $objPage = \PageModel::findWithDetails($intId);
-        $arrI18nl10nLanguages = array();
+        $objRootPage = \Database::getInstance()
+            ->prepare('SELECT * FROM tl_page WHERE id = ?')
+            ->execute($intId);
 
-        // Get language values
-        if ($objPage) {
-            foreach (deserialize($objPage->i18nl10n_languages) as $entry) {
-                if (!empty($entry['language'])) {
-                    $arrI18nl10nLanguages[] = $entry['language'];
-                }
-            }
+        $arrLanguage = self::mapLanguagesFromDatabaseRootPageResult($objRootPage);
 
-            // Include default language
-            if ($blnIncludeDefault) {
-                $arrI18nl10nLanguages[] = $objPage->language;
-            }
-        }
-
-        return $arrI18nl10nLanguages;
+        return array_shift($arrLanguage);
     }
 
     /**
@@ -365,7 +351,9 @@ class I18nl10n extends \Controller
     {
         $objRootPage = self::getRootPageByDomain($strDomain);
 
-        return self::mapLanguagesFromDatabaseRootPageResult($objRootPage);
+        $arrLanguage = self::mapLanguagesFromDatabaseRootPageResult($objRootPage);
+
+        return array_shift($arrLanguage);
     }
 
     /**
@@ -443,18 +431,25 @@ class I18nl10n extends \Controller
                 (
                     'rootId' => $objRootPage->id,
                     'default' => $objRootPage->language,
-                    'localizations' => array()
+                    'localizations' => array(),
+                    'languages' => array($objRootPage->language)
                 );
 
                 foreach (deserialize($objRootPage->i18nl10n_languages) as $localization) {
 
                     if (!empty($localization['language'])) {
                         $arrLanguages[$objRootPage->dns]['localizations'][] = $localization['language'];
+                        $arrLanguages[$objRootPage->dns]['languages'][] = $localization['language'];
                     }
                 }
 
                 // @todo: check on save if duplicated entries
                 $arrLanguages[$objRootPage->dns]['localizations'] = array_unique($arrLanguages[$objRootPage->dns]['localizations']);
+                $arrLanguages[$objRootPage->dns]['languages'] = array_unique($arrLanguages[$objRootPage->dns]['languages']);
+
+                // Sort alphabetically
+                asort($arrLanguages[$objRootPage->dns]['localizations']);
+                asort($arrLanguages[$objRootPage->dns]['languages']);
             }
         }
 

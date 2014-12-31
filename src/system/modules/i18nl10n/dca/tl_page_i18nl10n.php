@@ -750,7 +750,7 @@ class tl_page_i18nl10n extends tl_page
         $arrSiblingLanguages = explode(',', $arrSiblingLanguages['language']);
 
         // Create options array base on root page languages
-        foreach ($i18nl10nLanguages as $language) {
+        foreach ($i18nl10nLanguages['localizations'] as $language) {
             if (!in_array($language, $arrSiblingLanguages)) {
                 $arrOptions[$language] = $arrLanguages[$language];
             }
