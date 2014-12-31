@@ -355,61 +355,30 @@ class I18nl10n extends \Controller
     }
 
     /**
-     * Get all available languages
+     * Get language by given or actual domain
      *
-     * @param bool $blnIncludeDefault
+     * @param null $strDomain
      *
      * @return array
      */
-    static public function getAllLanguages($blnIncludeDefault = true, $blnSortByRoot = false)
+    static public function getLanguagesByDomain($strDomain = null)
+    {
+        $objRootPage = self::getRootPageByDomain($strDomain);
+
+        return self::mapLanguagesFromDatabaseRootPageResult($objRootPage);
+    }
+
+    /**
+     * Get all available languages
+     *
+     * @return array
+     */
+    static public function getAllLanguages()
     {
         // Get root pages
         $objRootPages = self::getAllRootPages();
 
-        $arrLanguages = array();
-
-        if ($objRootPages->numRows) {
-            // Loop root pages and collect languages
-            while ($objRootPages->next()) {
-
-                if ($blnSortByRoot) {
-                    $arrLanguages[$objRootPages->id] = array();
-                }
-
-                foreach (deserialize($objRootPages->i18nl10n_languages) as $entry) {
-                    if (!empty($entry['language'])) {
-                        // If sort by root, add additional level
-                        if ($blnSortByRoot) {
-                            $arrLanguages[$objRootPages->id][] = $entry['language'];
-                        } else {
-                            $arrLanguages[] = $entry['language'];
-                        }
-                    }
-                }
-
-                if ($blnIncludeDefault) {
-
-                    // If sort by root add additional level
-                    if ($blnSortByRoot) {
-                        $arrLanguages[$objRootPages->id][] = $objRootPages->language;
-                    } else {
-                        $arrLanguages[] = $objRootPages->language;
-                    }
-                }
-
-                // Remove duplicates
-                if($blnSortByRoot) {
-                    $arrLanguages[$objRootPages->id] = array_unique($arrLanguages[$objRootPages->id]);
-                }
-            }
-        }
-
-        // Remove duplicates
-        if(!$blnSortByRoot) {
-            $arrLanguages = array_unique($arrLanguages);
-        }
-
-        return $arrLanguages;
+        return self::mapLanguagesFromDatabaseRootPageResult($objRootPages);
     }
 
     /**
@@ -420,6 +389,25 @@ class I18nl10n extends \Controller
     static public function getAllRootPages()
     {
         return \Database::getInstance()->query('SELECT * FROM tl_page WHERE type = "root"');
+    }
+
+    /**
+     * Get a root page by given or actual domain
+     *
+     * @param null $strDomain
+     *
+     * @return \Database\Result
+     */
+    static public function getRootPageByDomain($strDomain = null)
+    {
+        if (empty($strDomain)) {
+            $strDomain = \Environment::get('host');
+        }
+
+        return \Database::getInstance()
+            ->prepare('SELECT * FROM tl_page WHERE dns = ?')
+            ->limit(1)
+            ->execute($strDomain);
     }
 
     /**
@@ -435,5 +423,33 @@ class I18nl10n extends \Controller
         include(TL_ROOT . '/system/config/languages.php');
 
         return $langsNative;
+    }
+
+    static private function mapLanguagesFromDatabaseRootPageResult(\Database\Mysqli\Result $objRootPage)
+    {
+        $arrLanguages = array();
+
+        if ($objRootPage->count()) {
+            // Loop root pages and collect languages
+            while ($objRootPage->next()) {
+                $arrLanguages[$objRootPage->dns] = array
+                (
+                    'default' => $objRootPage->language,
+                    'localizations' => array()
+                );
+
+                foreach (deserialize($objRootPage->i18nl10n_languages) as $localization) {
+
+                    if (!empty($localization['language'])) {
+                        $arrLanguages[$objRootPage->dns]['localizations'][] = $localization['language'];
+                    }
+                }
+
+                // @todo: check on save if duplicated entries
+                $arrLanguages[$objRootPage->dns]['localizations'] = array_unique($arrLanguages[$objRootPage->dns]['localizations']);
+            }
+        }
+
+        return $arrLanguages;
     }
 }

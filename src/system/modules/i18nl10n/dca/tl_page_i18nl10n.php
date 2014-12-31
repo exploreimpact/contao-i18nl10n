@@ -43,8 +43,8 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         'closed'           => $disableCreate,
         'onload_callback'  => array
         (
-            array('tl_page_i18nl10n', 'displayLanguageMessage'),
             array('tl_page', 'addBreadcrumb'),
+            array('tl_page_i18nl10n', 'displayLanguageMessage'),
             array('tl_page_i18nl10n', 'localizeAllHandler')
         ),
         'sql'              => array
@@ -424,7 +424,7 @@ class tl_page_i18nl10n extends tl_page
     public function displayLanguageMessage()
     {
 
-        $arrLanguages = I18nl10n::getAllLanguages(false, true);
+        $arrLanguages = I18nl10n::getAllLanguages();
         $info         = false;
         $error        = false;
 
@@ -439,10 +439,10 @@ class tl_page_i18nl10n extends tl_page
 
             // Loop roots
             foreach ($arrLanguages as $root) {
-                $countLanguages += count($root);
+                $countLanguages += count($root['localizations']);
 
                 // If a root page has no alternative languages, give info
-                if (!count($root)) {
+                if (!count($root['localizations'])) {
                     $info = &$GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_some_languages'];
                 }
             }

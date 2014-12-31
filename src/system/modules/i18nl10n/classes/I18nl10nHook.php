@@ -157,7 +157,15 @@ class I18nl10nHook extends \System
     public function getPageIdFromUrl(Array $arrFragments)
     {
         $arrFragments = array_map('urldecode', $arrFragments);
-        $language = \Config::get('i18nl10n_default_language');
+        $arrLanguages = I18nl10n::getLanguagesByDomain();
+
+        // If no root pages found, return
+        if (!count($arrLanguages)) {
+            return $arrFragments;
+        }
+
+        // Get default language
+        $rootDefaultLanguage = $arrLanguages['default'];
 
         // strip auto_item
         if (\Config::get('useAutoItem') && $arrFragments[1] == 'auto_item')
@@ -170,13 +178,13 @@ class I18nl10nHook extends \System
         {
             if (preg_match('@^([A-z]{2})$@', $arrFragments[0], $matches))
             {
-                $language = strtolower($matches[1]);
+                $rootDefaultLanguage = strtolower($matches[1]);
 
                 // remove old language entry
                 $arrFragments = array_delete($arrFragments, 0);
 
                 // append new language entry
-                array_push($arrFragments, 'language', $language);
+                array_push($arrFragments, 'language', $rootDefaultLanguage);
             }
         }
         elseif (\Config::get('i18nl10n_alias_suffix') && !\Config::get('disableAlias'))
@@ -188,7 +196,7 @@ class I18nl10nHook extends \System
             {
 
                 // define language and alias value
-                $language = strtolower($matches[2]);
+                $rootDefaultLanguage = strtolower($matches[2]);
                 $alias = $matches[1] != ''
                     ? $matches[1]
                     : $arrFragments[count($arrFragments) - 1];
@@ -204,16 +212,16 @@ class I18nl10nHook extends \System
                     $arrFragments[count($arrFragments) - 1] = $alias;
                 }
 
-                array_push($arrFragments, 'language', $language);
+                array_push($arrFragments, 'language', $rootDefaultLanguage);
             }
         }
         elseif (\Input::get('language'))
         {
-            $language = \Input::get('language');
+            $rootDefaultLanguage = \Input::get('language');
         }
 
         // try to find localized page by alias
-        $arrAlias = I18nl10n::findAliasByLocalizedAliases($arrFragments, $language);
+        $arrAlias = I18nl10n::findAliasByLocalizedAliases($arrFragments, $rootDefaultLanguage);
 
         if (!empty($arrAlias))
         {
