@@ -6,11 +6,8 @@
  * on the element level rather than with page trees.
  *
  *
- * PHP version 5
  * @copyright   2015 Verstärker, Patric Eberle
- * @copyright   Krasimir Berov 2010-2013
  * @author      Patric Eberle <line-in@derverstaerker.ch>
- * @author      Krasimir Berov
  * @package     i18nl10n
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
@@ -31,36 +28,31 @@ class I18nl10nHook extends \System
     /**
      * Generates url for the site according to settings from the backend
      *
-     * Assumptions:
-     * \Config::get('disableAlias') == false;
-     *
-     * @param array $arrRow
+     * @param array  $arrRow
      * @param string $strParams
      * @param string $strUrl
+     *
      * @return string
+     *
      * @throws \Exception
      */
     public function generateFrontendUrl($arrRow, $strParams, $strUrl)
     {
-        if (!is_array($arrRow))
-        {
+        if (!is_array($arrRow)) {
             throw new \Exception('not an associative array.');
         }
 
         $language = !empty($arrRow['robots']) || empty($arrRow['language'])
-                ? $GLOBALS['TL_LANGUAGE']
-                : $arrRow['language'];
+            ? $GLOBALS['TL_LANGUAGE']
+            : $arrRow['language'];
 
         $arrLanguages = I18nl10n::getLanguagesByDomain();
         $arrL10nAlias = null;
 
         // try to get l10n alias by language and pid
-        if ($language != $arrLanguages['default'])
-        {
-            $sql = 'SELECT alias FROM tl_page_i18nl10n WHERE pid = ? AND language = ?';
-
+        if ($language != $arrLanguages['default']) {
             $arrL10nAlias = \Database::getInstance()
-                ->prepare($sql)
+                ->prepare('SELECT alias FROM tl_page_i18nl10n WHERE pid = ? AND language = ?')
                 ->execute($arrRow['id'], $language)
                 ->fetchAssoc();
         }
@@ -68,44 +60,37 @@ class I18nl10nHook extends \System
         $alias = is_array($arrL10nAlias) ? $arrL10nAlias['alias'] : $arrRow['alias'];
 
         // regex to remove auto_item and language
-        $regex = '@/auto_item|/language/[A-z]{2}|[\?&]language=[A-z]{2}@';
+        $regex = '@/auto_item|/language/[a-z]{2}|[\?&]language=[a-z]{2}@';
 
         // remove auto_item and language
         $strParams = preg_replace($regex, '', $strParams);
-        $strUrl = preg_replace($regex, '', $strUrl);
+        $strUrl    = preg_replace($regex, '', $strUrl);
 
         // if alias is disabled add language to get param end return
-        if (\Config::get('disableAlias'))
-        {
+        if (\Config::get('disableAlias')) {
             $missingValueRegex = '@(.*\?[^&]*&)([^&]*)=(?=$|&)(&.*)?@';
 
-            if (\Config::get('useAutoItem') && preg_match($missingValueRegex, $strUrl) == 1)
-            {
+            if (\Config::get('useAutoItem') && preg_match($missingValueRegex, $strUrl) == 1) {
                 $strUrl = preg_replace($missingValueRegex, '${1}auto_item=${2}${3}', $strUrl);
             }
 
             return $strUrl . '&language=' . $language;
         }
 
-        if (\Config::get('i18nl10n_alias_suffix') && !\Config::get('disableAlias'))
-        {
+        if (\Config::get('i18nl10n_urlParam') === 'alias' && !\Config::get('disableAlias')) {
 
             $strL10nUrl = $alias . $strParams . '.' . $language . \Config::get('urlSuffix');
 
             // if rewrite is off, add environment
-            if (!\Config::get('rewriteURL'))
-            {
+            if (!\Config::get('rewriteURL')) {
                 $strL10nUrl = 'index.php/' . $strL10nUrl;
             }
-        }
-        elseif (\Config::get('i18nl10n_addLanguageToUrl'))
-        {
+        } elseif (\Config::get('i18nl10n_urlParam') === 'url') {
 
             $strL10nUrl = $language . '/' . $alias . $strParams . \Config::get('urlSuffix');
 
             // if rewrite is off, add environment
-            if (!\Config::get('rewriteURL'))
-            {
+            if (!\Config::get('rewriteURL')) {
                 $strL10nUrl = 'index.php/' . $strL10nUrl;
             }
 
@@ -114,33 +99,30 @@ class I18nl10nHook extends \System
             // www.domain.com/
             // www.domain.com/foo/
             if (!\Config::get('disableAlias')
-                && preg_match('@' . $arrRow['alias'] . '(?=\\' . \Config::get('urlSuffix') . '|/)@', $strL10nUrl) === false)
-            {
+                && preg_match(
+                       '@' . $arrRow['alias'] . '(?=\\' . \Config::get('urlSuffix') . '|/)@',
+                       $strL10nUrl
+                   ) === false
+            ) {
                 $strL10nUrl .= $alias . \Config::get('urlSuffix');
             }
 
-        }
-        else
-        {
+        } else {
             // if get variables
-            if (strpos($strUrl, '?') !== false)
-            {
-                if (strpos($strUrl, 'language=') !== false)
-                {
+            if (strpos($strUrl, '?') !== false) {
+                if (strpos($strUrl, 'language=') !== false) {
                     // if variable 'language' replace it
-                    $regex = '@language=[A-z]{2}@';
+                    $regex      = '@language=[a-z]{2}@';
                     $strL10nUrl = preg_replace(
-                        $regex, 'language=' . $language, $strUrl
+                        $regex,
+                        'language=' . $language,
+                        $strUrl
                     );
-                }
-                else
-                {
+                } else {
                     // if no variable 'language' add it
                     $strL10nUrl = $strUrl . '&language=' . $language;
                 }
-            }
-            else
-            {
+            } else {
                 // if no variables define variable 'language'
                 $strL10nUrl = $strUrl . '?language=' . $language;
             }
@@ -153,6 +135,7 @@ class I18nl10nHook extends \System
      * Get page id from url, based on current contao settings
      *
      * @param array $arrFragments
+     *
      * @return array
      */
     public function getPageIdFromUrl(Array $arrFragments)
@@ -169,16 +152,13 @@ class I18nl10nHook extends \System
         $rootDefaultLanguage = $arrLanguages['default'];
 
         // strip auto_item
-        if (\Config::get('useAutoItem') && $arrFragments[1] == 'auto_item')
-        {
+        if (\Config::get('useAutoItem') && $arrFragments[1] == 'auto_item') {
             $arrFragments = array_delete($arrFragments, 1);
         }
 
         // try to get language by i18nl10n URL
-        if (\Config::get('i18nl10n_addLanguageToUrl'))
-        {
-            if (preg_match('@^([A-z]{2})$@', $arrFragments[0], $matches))
-            {
+        if (\Config::get('i18nl10n_urlParam') === 'url') {
+            if (preg_match('@^([a-z]{2})$@', $arrFragments[0], $matches)) {
                 $rootDefaultLanguage = strtolower($matches[1]);
 
                 // remove old language entry
@@ -187,59 +167,52 @@ class I18nl10nHook extends \System
                 // append new language entry
                 array_push($arrFragments, 'language', $rootDefaultLanguage);
             }
-        }
-        elseif (\Config::get('i18nl10n_alias_suffix') && !\Config::get('disableAlias'))
-        {
+        } elseif (\Config::get('i18nl10n_urlParam') === 'alias' && !\Config::get('disableAlias')) {
             // try to get language by suffix
 
             // last element should contain language info
-            if (preg_match('@^([_\-\pL\pN\.]*(?=\.))?\.?([A-z]{2})$@u', $arrFragments[count($arrFragments) - 1], $matches))
-            {
+            if (preg_match(
+                '@^([_\-\pL\pN\.]*(?=\.))?\.?([a-z]{2})$@u',
+                $arrFragments[count($arrFragments) - 1],
+                $matches
+            )) {
 
                 // define language and alias value
                 $rootDefaultLanguage = strtolower($matches[2]);
-                $alias = $matches[1] != ''
+                $alias               = $matches[1] != ''
                     ? $matches[1]
                     : $arrFragments[count($arrFragments) - 1];
 
                 // if only language was found, pop it from array
-                if ($matches[1] == '')
-                {
+                if ($matches[1] === '') {
                     array_pop($arrFragments);
-                }
-                else
-                {
+                } else {
                     // else set alias
                     $arrFragments[count($arrFragments) - 1] = $alias;
                 }
 
                 array_push($arrFragments, 'language', $rootDefaultLanguage);
             }
-        }
-        elseif (\Input::get('language'))
-        {
+        } elseif (\Input::get('language')) {
             $rootDefaultLanguage = \Input::get('language');
         }
 
         // try to find localized page by alias
         $arrAlias = I18nl10n::findAliasByLocalizedAliases($arrFragments, $rootDefaultLanguage);
 
-        if (!empty($arrAlias))
-        {
+        if (!empty($arrAlias)) {
 
             // if alias has folder, remove related entries
-            if (strpos($arrAlias['alias'], '/') !== false || strpos($arrAlias['l10nAlias'], '/') !== false)
-            {
-                $arrAliasFragments = array_merge(explode('/', $arrAlias['alias']), explode('/', $arrAlias['l10nAlias']));
+            if (strpos($arrAlias['alias'], '/') !== false || strpos($arrAlias['l10nAlias'], '/') !== false) {
+                $arrAliasFragments =
+                    array_merge(explode('/', $arrAlias['alias']), explode('/', $arrAlias['l10nAlias']));
                 $arrAliasFragments = array_unique($arrAliasFragments);
 
                 // remove alias parts
-                foreach($arrAliasFragments as $strAliasFragment)
-                {
+                foreach ($arrAliasFragments as $strAliasFragment) {
 
                     // if alias part is still part of arrFragments, remove it from there
-                    if ( ($key = array_search($strAliasFragment, $arrFragments)) !== false )
-                    {
+                    if (($key = array_search($strAliasFragment, $arrFragments)) !== false) {
                         unset($arrFragments[$key]);
                     }
                 }
@@ -249,10 +222,8 @@ class I18nl10nHook extends \System
             $arrFragments[0] = $arrAlias['alias'];
         }
 
-
         // Add the second fragment as auto_item if the number of fragments is even
-        if (\Config::get('useAutoItem') && count($arrFragments) % 2 == 0)
-        {
+        if (\Config::get('useAutoItem') && count($arrFragments) % 2 == 0) {
             array_insert($arrFragments, 1, array('auto_item'));
         }
 
@@ -264,14 +235,14 @@ class I18nl10nHook extends \System
      *
      * @param $objElement
      * @param $blnIsVisible
+     *
      * @return mixed
      */
     public function isVisibleElement($objElement, $blnIsVisible)
     {
         global $objPage;
 
-        if ($blnIsVisible && $objElement->language)
-        {
+        if ($blnIsVisible && $objElement->language) {
             // check if given language is valid or fallback should be used
             $strLanguage = $objPage->useFallbackLanguage
                 ? $objPage->rootLanguage
@@ -286,16 +257,16 @@ class I18nl10nHook extends \System
     /**
      * Breadcrumb callback to translate elements
      *
-     * @param $arrItems Array
+     * @param $arrItems  Array
      * @param $objModule \Module
+     *
      * @return Array
      */
     public function generateBreadcrumb($arrItems, \Module $objModule)
     {
         $arrPages = array();
 
-        foreach ($arrItems as $item)
-        {
+        foreach ($arrItems as $item) {
             $arrPages[] = $item['isRoot'] ? $item['data']['pid'] : $item['data']['id'];
         }
 
@@ -307,8 +278,7 @@ class I18nl10nHook extends \System
               AND language = ?
         ';
 
-        if (!BE_USER_LOGGED_IN)
-        {
+        if (!BE_USER_LOGGED_IN) {
             $time = time();
             $sql .= "
                 AND (start = '' OR start < $time)
@@ -323,20 +293,21 @@ class I18nl10nHook extends \System
             ->fetchAllAssoc();
 
         // if translated page, replace given fields in element array
-        if (count($arrL10n) > 0)
-        {
+        if (count($arrL10n) > 0) {
             // each breadcrumb element
-            for ($i = 0; count($arrItems) > $i; $i++)
-            {
+            for ($i = 0; count($arrItems) > $i; $i++) {
                 // each translation
-                foreach ($arrL10n as $l10n)
-                {
+                foreach ($arrL10n as $l10n) {
                     // if translation for actual breadcrumb element
                     if ($arrItems[$i]['isRoot'] && $arrItems[$i]['data']['pid'] == $l10n['pid']
-                        || !$arrItems[$i]['isRoot'] && $arrItems[$i]['data']['id'] == $l10n['pid'])
-                    {
-                        if ($l10n['pageTitle']) $arrItems[$i]['title'] = $l10n['pageTitle'];
-                        if ($l10n['title']) $arrItems[$i]['link'] = $l10n['title'];
+                        || !$arrItems[$i]['isRoot'] && $arrItems[$i]['data']['id'] == $l10n['pid']
+                    ) {
+                        if ($l10n['pageTitle']) {
+                            $arrItems[$i]['title'] = $l10n['pageTitle'];
+                        }
+                        if ($l10n['title']) {
+                            $arrItems[$i]['link'] = $l10n['title'];
+                        }
                         break;
                     }
                 }
@@ -356,9 +327,9 @@ class I18nl10nHook extends \System
      */
     public function loadDataContainer($strName)
     {
-        if ($strName == 'tl_content' && \Input::get('do') == 'article')
-        {
-            $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] = array('tl_content_l10n', 'onLoadCallback');
+        if ($strName == 'tl_content' && \Input::get('do') == 'article') {
+            $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] =
+                array('tl_content_l10n', 'onLoadCallback');
         }
     }
 }

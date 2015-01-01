@@ -24,7 +24,6 @@ class I18nl10nRunOnceJob extends \Controller
         $this->import('Database');
     }
 
-
     // @todo: refactor this
     /**
      * If not set yet set default language and available languages
@@ -32,11 +31,17 @@ class I18nl10nRunOnceJob extends \Controller
     public function run()
     {
 
+        // @todo: override 'add language to url'
+
         $config = \Config::getInstance();
 
         $i18nl10nDefaultLanguage = $config->get('i18nl10n_default_language') ? : 'en';
 
         $objDatabase = \Database::getInstance();
+
+        if ($config->get('addLanguageToUrl')) {
+            $config->delete("\$GLOBALS['TL_CONFIG']['addLanguageToUrl']");
+        }
 
 
         // if not default try to get from root or use fallback

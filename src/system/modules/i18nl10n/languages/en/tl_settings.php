@@ -20,30 +20,16 @@ $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_urlParam'] = array
     'Add language to url',
     'Define how the language will appear in the websites urls.'
 );
-/*
-$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_languages'] = array
-(
-    'Site Languages',
-    'Define <a target="_blank" href="http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes"><em>valid ISO 639-1</em></a> language codes (e.g. <em>en</em> or <em>bg</em>) which represent the languages of your site. The default language <strong>must</strong> also be added here.'
-);
 
-$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_default_language'] = array
-(
-    'Default Language (Fallback)',
-    'This is the language of your root page and the default language used by i18nl10n.'
-);
-
-$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffix'] = array
-(
-    'Use language as alias suffix',
-    'The corresponding language will be appended on the fly to the current page alias (e.g. home &gt; home.en). URL suffix will be appended after it (e.g. home.en.html). Note: This will change dynamically generated links in menus, but not your page aliases!'
-);
+$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_urlParamLabels']['parameter'] = 'as parameter (f.ex. ?language=en)';
+$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_urlParamLabels']['alias'] = 'as part of alias (f.ex. home.en.html)';
+$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_urlParamLabels']['url'] = 'as part of url (f.ex. mypage.com/en/index.html)';
 
 $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_addLanguageToUrl'] = array
 (
-    'Add the language to the URL',
-    'Add the language string as first URL parameter (e.g. <em>http://domain.tld/en/</em>). Works the same way as the core feature <em>"Add the language to the URL"</em>. Note!: If you enable this, the core feature and <em>"%s"</em> <em>must</em> be disabled!'
-);*/
+    '%s',
+    'Disabled by i18nl10n module. Please use module alternative.'
+);
 
 $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_aliasSuffixError'] =
     'It\'s not possible to use <em>"%s"</em> and <em>"%s"</em> at the same time. Please only select one!';

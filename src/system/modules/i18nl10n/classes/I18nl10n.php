@@ -14,7 +14,6 @@
 
 namespace Verstaerker\I18nl10n\Classes;
 
-
 /**
  * Class I18nl10n
  *
