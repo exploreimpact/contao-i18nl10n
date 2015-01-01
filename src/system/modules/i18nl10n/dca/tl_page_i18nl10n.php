@@ -5,7 +5,7 @@
  * The i18nl10n module for Contao allows you to manage multilingual content
  * on the element level rather than with page trees.
  *
- * @copyright   Verstärker, Patric Eberle 2014
+ * @copyright   2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
@@ -135,16 +135,16 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
     'palettes' => array
     (
         '__selector__' => array('type'),
-        'default'      => '{menu_legend},title,alias;'
-                          . '{meta_legend},pageTitle,description;'
-                          . '{time_legend:hide},dateFormat,timeFormat,datimFormat;'
-                          . '{expert_legend:hide},cssClass;'
+        'default'      => '{i18nl10n_menuLegend},title,alias;'
+                          . '{i18nl10n_metaLegend},pageTitle,description;'
+                          . '{i18nl10n_timeLegend:hide},dateFormat,timeFormat,datimFormat;'
+                          . '{i18nl10n_expertLegend:hide},cssClass;'
                           . '{publish_legend},start,stop;'
                           . '{i18nl10n_legend},language,l10n_published',
-        'redirect'     => '{menu_legend},title,alias;'
-                          . '{meta_legend},pageTitle;'
+        'redirect'     => '{i18nl10n_menuLegend},title,alias;'
+                          . '{i18nl10n_metaLegend},pageTitle;'
                           . '{redirect_legend},url;'
-                          . '{expert_legend:hide},cssClass;'
+                          . '{i18nl10n_expertLegend:hide},cssClass;'
                           . '{publish_legend},start,stop;'
                           . '{i18nl10n_legend},language,l10n_published'
     ),
@@ -238,7 +238,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['language'] = array_merge(
  *
  * Provide miscellaneous methods that are used by the data configuration array.
  *
- * @copyright   Verstärker, Patric Eberle 2014
+ * @copyright   2015 Verstärker, Patric Eberle
  * @copyright   Krasimir Berov 2010-2011
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @author      Krasimir Berov <http://i-can.eu>
@@ -719,7 +719,7 @@ class tl_page_i18nl10n extends tl_page
             if ($autoAlias) {
                 $varValue .= '-' . $dc->id;
             } else {
-                throw new Exception(sprintf($GLOBALS['TL_LANG']['ERR']['l10nAliasExists'], $varValue));
+                throw new Exception(sprintf($GLOBALS['TL_LANG']['ERR']['i18nl10n_aliasExists'], $varValue));
             }
         }
 

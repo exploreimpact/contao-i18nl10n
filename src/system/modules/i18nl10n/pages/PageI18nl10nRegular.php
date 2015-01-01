@@ -1,5 +1,4 @@
 <?php
-
 /**
  * i18nl10n Contao Module
  *
@@ -7,15 +6,11 @@
  * on the element level rather than with page trees.
  *
  *
- * PHP version 5
- * @copyright   Verstärker, Patric Eberle 2014
- * @copyright   Krasimir Berov 2010-2013
+ * @copyright   2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
- * @author      Krasimir Berov
  * @package     i18nl10n
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
-
 
 namespace Verstaerker\I18nl10n\Pages;
 use Verstaerker\I18nl10n\Classes\I18nl10n;
@@ -24,15 +19,14 @@ use Verstaerker\I18nl10n\Classes\I18nl10n;
 /**
  * Class I18nPageRegular
  *
- * @copyright   Verstärker, Patric Eberle 2014
- * @copyright   Krasimir Berov 2010-2013
+ * @copyright   2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
- * @author      Krasimir Berov
  * @package     i18nl10n
  */
 class PageI18nl10nRegular extends \PageRegular
 {
     /**
+     * Generate FE page
      * Override TL_PTY.regular
      *
      * @param $objPage
@@ -42,7 +36,9 @@ class PageI18nl10nRegular extends \PageRegular
     {
         self::fixupCurrentLanguage();
 
-        if ($GLOBALS['TL_LANGUAGE'] == \Config::get('i18nl10n_default_language'))
+        $arrLanguages = I18nl10n::getLanguagesByDomain();
+
+        if ($GLOBALS['TL_LANGUAGE'] === $arrLanguages['default'])
         {
             // if default language is not published, give error
             if (!$objPage->l10n_published)
@@ -142,8 +138,6 @@ class PageI18nl10nRegular extends \PageRegular
             }
         }
 
-        $i18nl10nLanguages = deserialize(\Config::get('i18nl10n_languages'));
-
         // if alias is disabled, get language from get param
         if ($selectedLanguage && \Config::get('disableAlias'))
         {
@@ -168,8 +162,10 @@ class PageI18nl10nRegular extends \PageRegular
             }
         }
 
+        $arrLanguages = I18nl10n::getLanguagesByDomain();
+
         // if everything failed til now, try to use post or get language
-        if ($selectedLanguage && in_array($selectedLanguage, $i18nl10nLanguages))
+        if ($selectedLanguage && in_array($selectedLanguage, $arrLanguages['localizations']))
         {
             $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selectedLanguage;
         }
@@ -184,6 +180,7 @@ class PageI18nl10nRegular extends \PageRegular
      * Get localized root page by page object
      *
      * @param $objPage
+     *
      * @return \Database\Result|null
      */
     public function getL10nRootPage($objPage)

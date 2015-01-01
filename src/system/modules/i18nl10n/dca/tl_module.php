@@ -1,5 +1,4 @@
 <?php
-
 /**
  * i18nl10n Contao Module
  *
@@ -7,11 +6,8 @@
  * on the element level rather than with page trees.
  *
  *
- * PHP version 5
- * @copyright   Verstärker, Patric Eberle 2014
- * @copyright   Krasimir Berov 2010-2013
+ * @copyright   2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
- * @author      Krasimir Berov
  * @package     i18nl10n
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
@@ -29,7 +25,7 @@ $i18nl10nLanguageSelection = array
 (
     'i18nl10nLangTpl'   => array
     (
-        'label'            => &$GLOBALS['TL_LANG']['tl_module']['i18nl10nLangTpl'],
+        'label'            => &$GLOBALS['TL_LANG']['tl_module']['i18nl10n_langTpl'],
         'exclude'          => true,
         'inputType'        => 'select',
         'options_callback' => array('tl_module_l10n', 'getLanguageTemplates'),
@@ -42,12 +38,12 @@ $i18nl10nLanguageSelection = array
     ),
     'i18nl10nLangStyle' => array
     (
-        'label'     => &$GLOBALS['TL_LANG']['tl_module']['i18nl10nLangStyle'],
+        'label'     => &$GLOBALS['TL_LANG']['tl_module']['i18nl10n_langStyle'],
         'exclude'   => true,
         'inputType' => 'radio',
         'default'   => 'full',
         'options'   => array('full', 'text', 'image', 'iso', 'disable'),
-        'reference' => &$GLOBALS['TL_LANG']['tl_module']['i18nl10nLangStyleLabels'],
+        'reference' => &$GLOBALS['TL_LANG']['tl_module']['i18nl10n_langStyleLabels'],
         'eval'      => array
         (
             'tl_class' => 'w50 autoheight'
@@ -56,7 +52,7 @@ $i18nl10nLanguageSelection = array
     ),
     'i18nl10nLangHide'  => array
     (
-        'label'     => &$GLOBALS['TL_LANG']['tl_module']['i18nl10nLangHide'],
+        'label'     => &$GLOBALS['TL_LANG']['tl_module']['i18nl10n_langHide'],
         'exclude'   => true,
         'inputType' => 'checkbox',
         'eval'      => array

@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * @copyright   &copy; 2015 Verstärker, Patric Eberle 2014
+ * @copyright   2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
@@ -25,10 +25,10 @@ $GLOBALS['TL_LANG']['tl_page_i18nl10n'][''] = array
 /**
  * References
  */
-$GLOBALS['TL_LANG']['tl_page_i18nl10n']['menu_legend']    = 'Localized fields for menus and URL';
-$GLOBALS['TL_LANG']['tl_page_i18nl10n']['meta_legend']    = 'Localized meta information';
-$GLOBALS['TL_LANG']['tl_page_i18nl10n']['time_legend']    = 'Localized date and time settings';
-$GLOBALS['TL_LANG']['tl_page_i18nl10n']['expert_legend']  = &$GLOBALS['TL_LANG']['tl_page']['expert_legend'];
+$GLOBALS['TL_LANG']['tl_page_i18nl10n']['i18nl10n_menuLegend']    = 'Localized fields for menus and URL';
+$GLOBALS['TL_LANG']['tl_page_i18nl10n']['i18nl10n_metaLegend']    = 'Localized meta information';
+$GLOBALS['TL_LANG']['tl_page_i18nl10n']['i18nl10n_timeLegend']    = 'Localized date and time settings';
+$GLOBALS['TL_LANG']['tl_page_i18nl10n']['i18nl10n_expertLegend']  = &$GLOBALS['TL_LANG']['tl_page']['expert_legend'];
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['publish_legend'] = &$GLOBALS['TL_LANG']['tl_page']['publish_legend'];
 
 /**

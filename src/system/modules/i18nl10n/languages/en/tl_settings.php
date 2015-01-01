@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * @copyright   &copy; 2015 Verstärker, Patric Eberle 2014
+ * @copyright   2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
@@ -15,6 +15,12 @@
  */
 $GLOBALS['TL_LANG']['tl_settings']['module_i18nl10n'] = 'Multilingual content (i18nl10n)';
 
+$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_urlParam'] = array
+(
+    'Add language to url',
+    'Define how the language will appear in the websites urls.'
+);
+/*
 $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_languages'] = array
 (
     'Site Languages',
@@ -37,9 +43,9 @@ $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_addLanguageToUrl'] = array
 (
     'Add the language to the URL',
     'Add the language string as first URL parameter (e.g. <em>http://domain.tld/en/</em>). Works the same way as the core feature <em>"Add the language to the URL"</em>. Note!: If you enable this, the core feature and <em>"%s"</em> <em>must</em> be disabled!'
-);
+);*/
 
-$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffixError'] =
+$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_aliasSuffixError'] =
     'It\'s not possible to use <em>"%s"</em> and <em>"%s"</em> at the same time. Please only select one!';
 
 $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_contaoAddLanguageToUrlError'] =

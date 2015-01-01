@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * @copyright   &copy; 2015 Verstärker, Patric Eberle 2014
+ * @copyright   2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
@@ -14,7 +14,7 @@
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_page']['l10n_published'] = array
+$GLOBALS['TL_LANG']['tl_page']['i18nl10n_published'] = array
 (
     'Publish L10N',
     'Publish this translation.'

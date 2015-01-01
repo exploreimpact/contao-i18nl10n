@@ -2,9 +2,11 @@
 /**
  * i18nl10n Contao Module
  *
- * PHP version 5
+ * The i18nl10n module for Contao allows you to manage multilingual content
+ * on the element level rather than with page trees.
  *
- * @copyright   &copy; 2015 Verstärker, Patric Eberle 2014
+ *
+ * @copyright   2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
@@ -15,6 +17,19 @@
  */
 $GLOBALS['TL_LANG']['tl_settings']['module_i18nl10n'] = 'Mehrsprachige Inhalte (i18nl10n)';
 
+$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_urlParam'] = array
+(
+    'Sprache zur URL hinzufügen',
+    'Definiert wie die Sprache in den URLs der Website verwendet wird.'
+);
+
+$GLOBALS['TL_LANG']['tl_module']['i18nl10n_urlParamLabels']['full']    = 'Flagge & Beschriftung';
+$GLOBALS['TL_LANG']['tl_module']['i18nl10n_urlParamLabels']['text']    = 'Nur Beschriftung';
+$GLOBALS['TL_LANG']['tl_module']['i18nl10n_urlParamLabels']['image']   = 'Nur Flagge';
+$GLOBALS['TL_LANG']['tl_module']['i18nl10n_urlParamLabels']['iso']     = 'ISO-Code';
+$GLOBALS['TL_LANG']['tl_module']['i18nl10n_urlParamLabels']['disable'] = 'Kein Style';
+
+/*
 $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_languages'] = array
 (
     'Seitensprachen',
@@ -37,9 +52,9 @@ $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_addLanguageToUrl'] = array
 (
     'Die Sprache zur URL hinzufügen',
     'Fügt den Sprachkürzel als ersten parameter der URL hinzu (z.B. <em>http://www.meine-website.com/en/</em>) und ist die Modulalternative zur gleichnamigen Contao Einstellung. Hinweis!: Bei der Verwendung dieser Option <em>muss</em> neben der gleichnamigen Contao Einstellung auch <em>"%s"</em> deaktiviert werden!'
-);
+);*/
 
-$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_alias_suffixError'] =
+$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_aliasSuffixError'] =
     'Es ist nicht möglich die Optionen <em>"%s"</em> und <em>"%s"</em> gleichzeitig zu aktivieren!';
 
 $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_contaoAddLanguageToUrlError'] =

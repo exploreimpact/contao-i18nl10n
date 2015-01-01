@@ -7,7 +7,7 @@
  *
  *
  * PHP version 5
- * @copyright   Verstärker, Patric Eberle 2014
+ * @copyright   2015 Verstärker, Patric Eberle
  * @copyright   Krasimir Berov 2010-2013
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @author      Krasimir Berov

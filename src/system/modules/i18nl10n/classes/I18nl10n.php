@@ -6,7 +6,7 @@
  * on the element level rather than with page trees.
  *
  *
- * @copyright   Verstärker, Patric Eberle 2014
+ * @copyright   2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
@@ -212,7 +212,7 @@ class I18nl10n extends \Controller
     }
 
     /**
-     * Find localized page for given page obj and replace string values
+     * Find localized page for given page object and replace string values
      *
      * @param       $objPage
      * @param       $strLang
@@ -341,7 +341,7 @@ class I18nl10n extends \Controller
     }
 
     /**
-     * Get language by given or actual domain
+     * Get languages by given or actual domain
      *
      * @param null $strDomain
      *
