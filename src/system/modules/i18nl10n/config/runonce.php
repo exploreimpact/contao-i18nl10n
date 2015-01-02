@@ -14,7 +14,9 @@
 
 
 /**
- * Class I18nl10nRunonceJob
+ * Class I18nl10nRunOnceJob
+ *
+ * Update or prepare module
  */
 class I18nl10nRunOnceJob extends \Controller
 {
@@ -22,82 +24,119 @@ class I18nl10nRunOnceJob extends \Controller
     {
         parent::__construct();
         $this->import('Database');
+        $this->import('Config');
     }
 
-    // @todo: refactor this
     /**
-     * If not set yet set default language and available languages
+     * Move old settings to root page and update or prepare settings
      */
     public function run()
     {
+        if ($this->Config->get('addLanguageToUrl')) {
+            $this->deleteConfig('addLanguageToUrl');
 
-        // @todo: override 'add language to url'
+            // Check if urlParam value already set, else set url
+            if (!$this->Config->get('i18nl10n_urlParam')) {
+                $this->addConfig('i18nl10n_urlParam', 'parameter');
 
-        $config = \Config::getInstance();
-
-        $i18nl10nDefaultLanguage = $config->get('i18nl10n_default_language') ? : 'en';
-
-        $objDatabase = \Database::getInstance();
-
-        if ($config->get('addLanguageToUrl')) {
-            $config->delete("\$GLOBALS['TL_CONFIG']['addLanguageToUrl']");
-        }
-
-
-        // if not default try to get from root or use fallback
-        if (!$config->get('i18nl10n_default_language'))
-        {
-
-            $sql = "SELECT language FROM tl_page WHERE type = 'root' ORDER BY sorting";
-
-            $objRootPage = $objDatabase
-                ->prepare($sql)
-                ->limit(1)
-                ->execute();
-
-            if ($objRootPage->row())
-            {
-                $i18nl10nDefaultLanguage = $objRootPage->language;
             }
+        } else {
+            // Check if urlParam needs to be set
+            if (!$this->Config->get('i18nl10n_urlParam')) {
 
-            $config->add
-                (
-                    "\$GLOBALS['TL_CONFIG']['i18nl10n_default_language']",
-                    $i18nl10nDefaultLanguage
-                );
-        }
+                // Determin old setting or use default
+                if ($this->Config->get('i18nl10n_addLanguageToUrl')) {
+                    $strType = 'url';
+                } elseif ($this->Config->get('i18nl10n_alias_suffix')) {
+                    $strType = 'alias';
+                } else {
+                    $strType = 'parameter';
+                }
 
-        // if no available languages, set at least default
-        if (!$config->get('i18nl10n_languages'))
-        {
-            $config->add
-                (
-                    "\$GLOBALS['TL_CONFIG']['i18nl10n_languages']",
-                    serialize(array($i18nl10nDefaultLanguage))
-                );
-        } // if available languages, check if default needs to be added
-        else
-        {
-            $defaultLanguage = $i18nl10nDefaultLanguage;
-            $availableLanguages = deserialize(\Config::get('i18nl10n_languages'));
-
-            if (!in_array($defaultLanguage, $availableLanguages))
-            {
-                $availableLanguages[] = $defaultLanguage;
-
-                $config->update("\$GLOBALS['TL_CONFIG']['i18nl10n_languages']", serialize($availableLanguages));
+                $this->addConfig('i18nl10n_urlParam', $strType);
             }
         }
 
-        // Remove orphaned entries from tl_page_118nl10n
-        $objDatabase
-            ->prepare('DELETE FROM tl_page_i18nl10n
-                       WHERE NOT EXISTS (
-                          SELECT *
-                          FROM tl_page as p
-                          WHERE tl_page_i18nl10n.pid = p.id)')
-            ->execute();
+        // If deprecated settings are used, move them to root page
+        if ($arrLanguages = $this->Config->get('i18nl10n_languages')) {
 
+            // Get first root page
+            $objRootPage = $this->Database
+                ->query('SELECT * FROM tl_page WHERE type = "root" ORDER BY id LIMIT 0,1');
+
+
+            if($objRootPage->first() && !$objRootPage->i18nl10n_languages) {
+                // Remove root language from languages
+                foreach ($arrLanguages as $key => $strLanguage) {
+                    if ($objRootPage->language === $strLanguage) {
+                        unset($arrLanguages[$key]);
+                    }
+                }
+
+                // Set localizations
+                $this->Database
+                    ->prepare('UPDATE tl_page SET i18nl10n = ? WHERE type = "root" ORDER BY id')
+                    ->limit(1)
+                    ->execute(serialize($arrLanguages));
+            }
+        }
+
+        $this->removeL10nPageOrphans();
+        $this->removeDeprecatedSettings();
+    }
+
+    /**
+     * Set a config value
+     * 
+     * @param $strKey
+     * @param $strValue
+     */
+    private function addConfig($strKey, $strValue)
+    {
+        $this->Config->add("\$GLOBALS['TL_CONFIG']['$strKey']", $strValue);
+    }
+
+    /**
+     * Delete a config entry
+     *
+     * @param $varKey   String|Array
+     */
+    private function deleteConfig($varKey)
+    {
+        switch (gettype($varKey)) {
+            case 'string':
+                $this->Config->delete("\$GLOBALS['TL_CONFIG']['$varKey']");
+                break;
+
+            case 'array':
+                foreach ($varKey as $key) {
+                    $this->deleteConfig($key);
+                }
+                break;
+        }
+    }
+
+    /**
+     * Remove deprecated settings
+     */
+    private function removeDeprecatedSettings()
+    {
+        $arrKeys = array(
+            'i18nl10n_default_language',
+            'i18nl10n_languages',
+            'i18nl10n_addLanguageToUrl'
+        );
+
+        $this->deleteConfig($arrKeys);
+    }
+
+    /**
+     * Remove orphaned tl_page_i18nl10n entries
+     */
+    private function removeL10nPageOrphans()
+    {
+        $this->Database
+            ->query('DELETE FROM tl_page_i18nl10n WHERE NOT EXISTS (SELECT * FROM tl_page as p WHERE tl_page_i18nl10n.pid = p.id)');
     }
 }
 

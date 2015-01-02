@@ -17,7 +17,11 @@ $this->loadLanguageFile('languages');
 /**
  * i18nl10n settings palettes
  */
-$GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= ';{module_i18nl10n:hide},i18nl10n_urlParam';
+$GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] = str_replace(
+    ',addLanguageToUrl,',
+    ',i18nl10n_urlParam,',
+    $GLOBALS['TL_DCA']['tl_settings']['palettes']['default']
+);
 
 /**
  * i18nl10n settings fields
@@ -46,14 +50,4 @@ array_insert(
     $GLOBALS['TL_DCA']['tl_settings']['fields'],
     count($GLOBALS['TL_DCA']['tl_settings']['fields']),
     $i18nl10nSettings
-);
-
-// Update addLanguageToUrl field definition
-$GLOBALS['TL_DCA']['tl_settings']['fields']['addLanguageToUrl']['eval']['disabled'] = true;
-$GLOBALS['TL_DCA']['tl_settings']['fields']['addLanguageToUrl']['label'] = array(
-    sprintf(
-        $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_addLanguageToUrl'][0],
-        $GLOBALS['TL_LANG']['tl_settings']['addLanguageToUrl'][0]
-    ),
-    $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_addLanguageToUrl'][1]
 );

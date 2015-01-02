@@ -13,23 +13,13 @@
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_settings']['module_i18nl10n'] = 'Multilingual content (i18nl10n)';
-
-$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_urlParam'] = array
-(
-    'Add language to url',
-    'Define how the language will appear in the websites urls.'
-);
+$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_urlParam'][0] = $GLOBALS['TL_LANG']['tl_settings']['addLanguageToUrl'][0];
+$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_urlParam'][1] =
+    'Define how the language will appear in the websites urls.';
 
 $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_urlParamLabels']['parameter'] = 'as parameter (f.ex. ?language=en)';
 $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_urlParamLabels']['alias'] = 'as part of alias (f.ex. home.en.html)';
 $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_urlParamLabels']['url'] = 'as part of url (f.ex. mypage.com/en/index.html)';
-
-$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_addLanguageToUrl'] = array
-(
-    '%s',
-    'Disabled by i18nl10n module. Please use module alternative.'
-);
 
 $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_aliasSuffixError'] =
     'It\'s not possible to use <em>"%s"</em> and <em>"%s"</em> at the same time. Please only select one!';
