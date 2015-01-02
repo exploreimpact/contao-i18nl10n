@@ -1,5 +1,5 @@
 <form name="<?php echo $this->type; ?>" method="post">
-    <select name="language" onchange="this.form.submit();">
+    <select name="i18nl10n_language" onchange="this.form.submit();">
 
         <?php foreach ($this->items as $item): ?>
             <option

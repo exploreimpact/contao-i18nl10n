@@ -32,12 +32,13 @@ class I18nl10nRunOnceJob extends \Controller
      */
     public function run()
     {
+        // If Contao addLanguageToUrl is used, disable it
         if ($this->Config->get('addLanguageToUrl')) {
             $this->deleteConfig('addLanguageToUrl');
 
             // Check if urlParam value already set, else set url
             if (!$this->Config->get('i18nl10n_urlParam')) {
-                $this->addConfig('i18nl10n_urlParam', 'parameter');
+                $this->addConfig('i18nl10n_urlParam', 'url');
 
             }
         } else {

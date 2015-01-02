@@ -97,7 +97,7 @@ class PageI18nl10nRegular extends \PageRegular
     private function fixupCurrentLanguage()
     {
         // Try to get language from post (committed by language select) or get
-        $selectedLanguage = \Input::post('language') ?: \Input::get('language');
+        $selectedLanguage = \Input::post('i18nl10n_language') ?: \Input::get('language');
 
         // If selected language is found already, use it
         if ($selectedLanguage) {
