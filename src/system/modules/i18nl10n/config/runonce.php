@@ -74,11 +74,21 @@ class I18nl10nRunOnceJob extends \Controller
                     }
                 }
 
+                $arrMappedLanguages = array();
+
+                // Map to db format
+                foreach ($arrLanguages as $language) {
+                    $arrMappedLanguages[] = array
+                    (
+                        'language' => $language
+                    );
+                }
+
                 // Set localizations
                 $this->Database
                     ->prepare('UPDATE tl_page SET i18nl10n = ? WHERE type = "root" ORDER BY id')
                     ->limit(1)
-                    ->execute(serialize($arrLanguages));
+                    ->execute(serialize($arrMappedLanguages));
             }
         }
 
