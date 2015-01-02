@@ -35,7 +35,6 @@ class PageI18nl10nRegular extends \PageRegular
      */
     function generate($objPage, $blnCheckRequest = false)
     {
-
         self::fixupCurrentLanguage();
 
         $arrLanguages = I18nl10n::getLanguagesByDomain();
@@ -97,7 +96,7 @@ class PageI18nl10nRegular extends \PageRegular
     private function fixupCurrentLanguage()
     {
         // Try to get language from post (committed by language select) or get
-        $selectedLanguage = \Input::post('i18nl10n_language') ?: \Input::get('language');
+        $selectedLanguage = \Input::get('language');
 
         // If selected language is found already, use it
         if ($selectedLanguage) {
@@ -108,15 +107,15 @@ class PageI18nl10nRegular extends \PageRegular
         // if language is part of alias
         if (\Config::get('i18nl10n_urlParam') === 'alias') {
             $this->import('Environment');
-            $environment  = $this->Environment;
+            $requestUri  = $this->Environment->requestUri;
             $strUrlSuffix = preg_quote(\Config::get('urlSuffix'));
 
             $regex = "@.*?\.([a-z]{2})$strUrlSuffix@";
 
             // only set language if found in url
-            if (preg_match($regex, $environment->requestUri)) {
+            if (preg_match($regex, $requestUri)) {
                 $_SESSION['TL_LANGUAGE'] =
-                $GLOBALS['TL_LANGUAGE'] = preg_replace($regex, '$1', $environment->requestUri);
+                $GLOBALS['TL_LANGUAGE'] = preg_replace($regex, '$1', $requestUri);
                 return;
             }
         }
@@ -134,22 +133,13 @@ class PageI18nl10nRegular extends \PageRegular
      */
     public function getL10nRootPage($objPage)
     {
-        $sql = "
-            SELECT title
-            FROM tl_page_i18nl10n
-            WHERE
-              pid = ?
-              AND language = ?
-        ";
+        $time = time();
 
-        if (!BE_USER_LOGGED_IN) {
-            $time = time();
-            $sql .= "
-                AND (start = '' OR start < $time)
-                AND (stop = '' OR stop > $time)
-                AND l10n_published = 1
-            ";
-        }
+        $sqlPublishedCondition = !BE_USER_LOGGED_IN
+            ? " AND (start = '' OR start < $time) AND (stop = '' OR stop > $time) AND l10n_published = 1 "
+            : '';
+
+        $sql = "SELECT title FROM tl_page_i18nl10n WHERE pid = ? AND language = ? $sqlPublishedCondition";
 
         $objL10nRootPage = \Database::getInstance()
             ->prepare($sql)

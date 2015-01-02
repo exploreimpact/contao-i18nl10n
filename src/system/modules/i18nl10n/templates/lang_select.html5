@@ -1,12 +1,22 @@
-<form name="<?php echo $this->type; ?>" method="post">
-    <select name="i18nl10n_language" onchange="this.form.submit();">
+<?php
+$strParams = '';
 
-        <?php foreach ($this->items as $item): ?>
-            <option
-                value="<?php echo $item['language']; ?>" <?php echo $item['isActive'] ? ' class="active" selected="selected"' : ''; ?>>
-                <?php echo $this->languages[$item['language']]; ?>
-            </option>
-        <?php endforeach; ?>
+// get url parameters
+foreach ($_GET as $key => $value) {
+    if ($key == 'id') continue;
+    $strParams .= '/' . $key . '/' . $value;
+}
+?>
+
+<form name="<?php echo $this->type; ?>" method="post">
+    <select name="i18nl10n_language" onchange="window.location.href = this.value;">
+
+    <?php foreach ($this->items as $item): ?>
+        <option
+            value="<?php echo $this->generateFrontendUrl($item, $strParams); ?>" <?php echo $item['isActive'] ? ' class="active" selected="selected"' : ''; ?>>
+            <?php echo $this->languages[$item['language']]; ?>
+        </option>
+    <?php endforeach; ?>
 
     </select>
     <input type="hidden" name="REQUEST_TOKEN" value="{{request_token}}"/>

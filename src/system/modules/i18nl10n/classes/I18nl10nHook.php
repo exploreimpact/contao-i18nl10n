@@ -57,7 +57,9 @@ class I18nl10nHook extends \System
                 ->fetchAssoc();
         }
 
-        $alias = is_array($arrL10nAlias) ? $arrL10nAlias['alias'] : $arrRow['alias'];
+        $alias = is_array($arrL10nAlias)
+            ? $arrL10nAlias['alias']
+            : $arrRow['alias'];
 
         // regex to remove auto_item and language
         $regex = '@/auto_item|/language/[a-z]{2}|[\?&]language=[a-z]{2}@';
@@ -149,7 +151,7 @@ class I18nl10nHook extends \System
         }
 
         // Get default language
-        $rootDefaultLanguage = $arrLanguages['default'];
+        $strLanguage = $arrLanguages['default'];
 
         // strip auto_item
         if (\Config::get('useAutoItem') && $arrFragments[1] == 'auto_item') {
@@ -159,13 +161,13 @@ class I18nl10nHook extends \System
         // try to get language by i18nl10n URL
         if (\Config::get('i18nl10n_urlParam') === 'url') {
             if (preg_match('@^([a-z]{2})$@', $arrFragments[0], $matches)) {
-                $rootDefaultLanguage = strtolower($matches[1]);
+                $strLanguage = strtolower($matches[1]);
 
                 // remove old language entry
                 $arrFragments = array_delete($arrFragments, 0);
 
                 // append new language entry
-                array_push($arrFragments, 'language', $rootDefaultLanguage);
+                array_push($arrFragments, 'language', $strLanguage);
             }
         } elseif (\Config::get('i18nl10n_urlParam') === 'alias' && !\Config::get('disableAlias')) {
             // try to get language by suffix
@@ -178,7 +180,7 @@ class I18nl10nHook extends \System
             )) {
 
                 // define language and alias value
-                $rootDefaultLanguage = strtolower($matches[2]);
+                $strLanguage = strtolower($matches[2]);
                 $alias               = $matches[1] != ''
                     ? $matches[1]
                     : $arrFragments[count($arrFragments) - 1];
@@ -191,14 +193,14 @@ class I18nl10nHook extends \System
                     $arrFragments[count($arrFragments) - 1] = $alias;
                 }
 
-                array_push($arrFragments, 'language', $rootDefaultLanguage);
+                array_push($arrFragments, 'language', $strLanguage);
             }
         } elseif (\Input::get('language')) {
-            $rootDefaultLanguage = \Input::get('language');
+            $strLanguage = \Input::get('language');
         }
 
         // try to find localized page by alias
-        $arrAlias = I18nl10n::findAliasByLocalizedAliases($arrFragments, $rootDefaultLanguage);
+        $arrAlias = $this->findAliasByLocalizedAliases($arrFragments, $strLanguage);
 
         if (!empty($arrAlias)) {
 
@@ -270,22 +272,13 @@ class I18nl10nHook extends \System
             $arrPages[] = $item['isRoot'] ? $item['data']['pid'] : $item['data']['id'];
         }
 
-        $sql = '
-            SELECT *
-            FROM tl_page_i18nl10n
-            WHERE
-              pid IN (' . implode(',', $arrPages) . ')
-              AND language = ?
-        ';
+        $time = time();
 
-        if (!BE_USER_LOGGED_IN) {
-            $time = time();
-            $sql .= "
-                AND (start = '' OR start < $time)
-                AND (stop = '' OR stop > $time)
-                AND l10n_published = 1
-            ";
-        }
+        $sqlPublishedCondition = !BE_USER_LOGGED_IN
+            ? " AND (start = '' OR start < $time) AND (stop = '' OR stop > $time) AND l10n_published = 1 "
+            : '';
+
+        $sql = "SELECT * FROM tl_page_i18nl10n WHERE pid IN ('" . implode(',', $arrPages) . "') AND language = ? $sqlPublishedCondition";
 
         $arrL10n = \Database::getInstance()
             ->prepare($sql)
@@ -331,5 +324,96 @@ class I18nl10nHook extends \System
             $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] =
                 array('tl_content_l10n', 'onLoadCallback');
         }
+    }
+
+    /**
+     * Find alias for internationalized content or use fallback language alias
+     *
+     * @param $arrFragments
+     * @param $strLanguage
+     *
+     * @return null|array
+     */
+    private function findAliasByLocalizedAliases($arrFragments, $strLanguage)
+    {
+        $arrAlias      = array();
+        $arrAliasGuess = array();
+        $strAlias      = $arrFragments[0];
+        $dataBase      = \Database::getInstance();
+
+        if (\Config::get('folderUrl') && $arrFragments[count($arrFragments) - 2] == 'language') {
+            // glue together possible aliases
+            for ($i = 0; count($arrFragments) - 2 > $i; $i++) {
+                $arrAliasGuess[] = ($i == 0)
+                    ? $arrFragments[$i]
+                    : $arrAliasGuess[$i - 1] . '/' . $arrFragments[$i];
+            }
+
+            // Remove everything that is not an alias
+            $arrAliasGuess = array_filter(
+                array_map(
+                    function ($v) {
+                        return preg_match('/^[\pN\pL\/\._-]+$/u', $v) ? $v : null;
+                    },
+                    $arrAliasGuess
+                )
+            );
+
+            // reverse array to get specific entries first
+            $arrAliasGuess = array_reverse($arrAliasGuess);
+
+            $strAlias = implode("','", $arrAliasGuess);
+        }
+
+        // Try to find a localized content
+        $sql = "SELECT pid, alias
+                FROM tl_page_i18nl10n
+                WHERE
+                  id = ? AND language = ?
+                  OR alias IN('" . $strAlias . "') AND language = ?
+                ORDER BY " . $dataBase->findInSet('alias', $arrAliasGuess) . " LIMIT 0,1";
+
+        $arrL10nItem = $dataBase
+            ->prepare($sql)
+            ->execute(
+                is_numeric($arrFragments[0]) ? $arrFragments[0] : 0,
+                $strLanguage,
+                $strLanguage
+            )
+            ->fetchAssoc();
+
+        // Set l10n alias, if item was found (is needed to be removed from url params later on)
+        if (!empty($arrL10nItem)) {
+            $arrAlias['l10nAlias'] = $arrL10nItem['alias'];
+        }
+
+        $time = time();
+
+        $sqlPublishedCondition = !BE_USER_LOGGED_IN
+            ? " AND (start = '' OR start < $time) AND (stop = '' OR stop > $time) AND published = 1 "
+            : '';
+
+        // Try to find default language page by localized id or alias
+        $sql = "
+            SELECT alias
+            FROM tl_page
+            WHERE
+                (id = ? OR alias IN('" . $strAlias . "'))
+                $sqlPublishedCondition
+            ORDER BY " . $dataBase->findInSet('alias', $arrAliasGuess);
+
+        $objL10n = $dataBase
+            ->prepare($sql)
+            ->execute(empty($arrL10nItem) ? 0 : $arrL10nItem['pid']);
+
+        // Set alias if a page was found
+        if ($objL10n !== null) {
+            // best match is in first item
+            $arrPage           = $objL10n->row();
+            $arrAlias['alias'] = $arrPage['alias'];
+        }
+
+        return $arrAlias;
+
     }
 }
