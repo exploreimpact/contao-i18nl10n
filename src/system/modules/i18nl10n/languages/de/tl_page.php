@@ -13,6 +13,8 @@
 /**
  * Fields
  */
+$GLOBALS['TL_LANG']['tl_page']['module_i18nl10n'] = 'i18nl10n-Einstellungen';
+
 $GLOBALS['TL_LANG']['tl_page']['i18nl10n_published'] = array
 (
     'L10N veröffentlichen',

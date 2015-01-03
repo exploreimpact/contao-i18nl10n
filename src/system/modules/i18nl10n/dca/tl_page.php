@@ -90,7 +90,7 @@ if (\Input::get('pid') === null || \Input::get('pid') != 0) {
 // Extend root page palette
 $GLOBALS['TL_DCA']['tl_page']['palettes']['root'] = str_replace(
     'language,fallback;',
-    'language,fallback;{i18nl10n},i18nl10n_localizations;',
+    'language,fallback;{module_i18nl10n},i18nl10n_localizations;',
     $GLOBALS['TL_DCA']['tl_page']['palettes']['root']
 );
 
