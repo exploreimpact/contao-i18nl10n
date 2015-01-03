@@ -237,13 +237,6 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['language'] = array_merge(
  * Class tl_page_i18nl10n
  *
  * Provide miscellaneous methods that are used by the data configuration array.
- *
- * @copyright   2015 Verstärker, Patric Eberle
- * @copyright   Krasimir Berov 2010-2011
- * @author      Patric Eberle <line-in@derverstaerker.ch>
- * @author      Krasimir Berov <http://i-can.eu>
- * @package     i18nl10n
- * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 class tl_page_i18nl10n extends tl_page
 {

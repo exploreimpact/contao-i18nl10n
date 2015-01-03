@@ -6,11 +6,8 @@
  * on the element level rather than with page trees.
  *
  *
- * PHP version 5
  * @copyright   2015 Verstärker, Patric Eberle
- * @copyright   Krasimir Berov 2010-2013
  * @author      Patric Eberle <line-in@derverstaerker.ch>
- * @author      Krasimir Berov
  * @package     i18nl10n
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
