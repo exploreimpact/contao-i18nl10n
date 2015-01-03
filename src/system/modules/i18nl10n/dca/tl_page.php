@@ -61,7 +61,7 @@ $GLOBALS['TL_DCA']['tl_page']['config']['ondelete_callback'][] = array
 /**
  * Modify tl_page field DCA
  */
-if (tl_page_l10n::countRootPages() > 1) {
+if (I18nl10n::countRootPages() > 1) {
     // If there is already a root page, a domain name must be set
     $GLOBALS['TL_DCA']['tl_page']['fields']['dns']['eval']['mandatory'] = true;
 }
@@ -125,7 +125,6 @@ $i18nl10nFields = array(
                     'label'     => &$GLOBALS['TL_LANG']['tl_page']['i18nl10n_language'],
                     'exclude'   => true,
                     'inputType' => 'select',
-//                    'options' => $GLOBALS['TL_LANG']['LNG'],
                     'options_callback' => array('tl_page_l10n', 'languageOptions'),
                     'eval'      => array
                     (
@@ -135,6 +134,10 @@ $i18nl10nFields = array(
                     )
                 )
             )
+        ),
+        'save_callback' => array
+        (
+            array('tl_page_l10n', 'validateLocalizations')
         ),
         'sql'       => "blob NULL"
     )
@@ -160,6 +163,8 @@ array_insert(
  */
 class tl_page_l10n extends tl_page
 {
+
+    protected $i18nl10nLocalizations;
 
     /**
      * Add language hyperlink button to entry buttons
@@ -213,7 +218,7 @@ class tl_page_l10n extends tl_page
     public function displayDnsMessage()
     {
         // Only apply if multiple root pages
-        if ($this->countRootPages() > 1) {
+        if (I18nl10n::countRootPages() > 1) {
             $objRootPages = I18nl10n::getAllRootPages();
             $arrDns = array();
 
@@ -394,6 +399,14 @@ class tl_page_l10n extends tl_page
         // Remove 'all' entry
         unset($arrLanguages['']);
 
+        // @todo: refactor to allow sublanguages (f.ex. de-CH)
+        // Keep only 2 letter languages
+        foreach ($arrLanguages as $key => $language) {
+            if (strlen($key) > 2) {
+                unset($arrLanguages[$key]);
+            }
+        }
+
         // Sort by value (a-z)
         asort($arrLanguages);
 
@@ -401,14 +414,32 @@ class tl_page_l10n extends tl_page
     }
 
     /**
-     * Count available root pages
+     * Validate localizations
      *
-     * @return int
+     * Remove duplicates
+     * Remove root language
+     *
+     * @param               $strValue
+     * @param DataContainer $dc
+     *
+     * @return string
      */
-    static public function countRootPages()
+    public function validateLocalizations($strValue, DataContainer $dc)
     {
-        $objRootPages = I18nl10n::getAllRootPages();
+        $arrLanguages = array();
+        $arrValues = deserialize($strValue);
 
-        return $objRootPages->count();
+        foreach ($arrValues as $key => $value) {
+            // Remove duplicates OR root language
+            if (in_array($value['language'], $arrLanguages)
+                || $value['language'] === $dc->activeRecord->language) {
+                array_splice($arrValues, $key, 1);
+                continue;
+            }
+
+            $arrLanguages[] = $value['language'];
+        }
+
+        return serialize($arrValues);
     }
 }

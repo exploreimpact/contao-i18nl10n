@@ -354,4 +354,16 @@ class I18nl10n extends \Controller
 
         return $arrLanguages;
     }
+
+    /**
+     * Count available root pages
+     *
+     * @return int
+     */
+    static public function countRootPages()
+    {
+        $objRootPages = I18nl10n::getAllRootPages();
+
+        return $objRootPages->count();
+    }
 }
