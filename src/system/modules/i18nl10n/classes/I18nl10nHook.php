@@ -181,7 +181,7 @@ class I18nl10nHook extends \System
 
                 // define language and alias value
                 $strLanguage = strtolower($matches[2]);
-                $alias               = $matches[1] != ''
+                $alias       = $matches[1] != ''
                     ? $matches[1]
                     : $arrFragments[count($arrFragments) - 1];
 
@@ -278,7 +278,8 @@ class I18nl10nHook extends \System
             ? " AND (start = '' OR start < $time) AND (stop = '' OR stop > $time) AND i18nl10n_published = 1 "
             : '';
 
-        $sql = "SELECT * FROM tl_page_i18nl10n WHERE pid IN ('" . implode(',', $arrPages) . "') AND language = ? $sqlPublishedCondition";
+        $sql = "SELECT * FROM tl_page_i18nl10n WHERE pid IN ('" . implode(',', $arrPages)
+               . "') AND language = ? $sqlPublishedCondition";
 
         $arrL10n = \Database::getInstance()
             ->prepare($sql)
@@ -336,7 +337,11 @@ class I18nl10nHook extends \System
      */
     private function findAliasByLocalizedAliases($arrFragments, $strLanguage)
     {
-        $arrAlias      = array();
+        $arrAlias      = array
+        (
+            'alias'     => '',
+            'l10nAlias' => ''
+        );
         $arrAliasGuess = array();
         $strAlias      = $arrFragments[0];
         $dataBase      = \Database::getInstance();
@@ -375,26 +380,27 @@ class I18nl10nHook extends \System
 
         $objL10nPage = $dataBase
             ->prepare($sql)
-            ->limit(1)
             ->execute(
                 is_numeric($arrFragments[0]) ? $arrFragments[0] : 0,
                 $strLanguage,
                 $strLanguage
             );
 
-        // If page was found, get l10n alias and related parent page
-        if ($objL10nPage->first()) {
+        // If page(s) where found, get l10n alias and related parent page
+        while ($objL10nPage->next()) {
             $arrAlias['l10nAlias'] = $objL10nPage->alias;
 
             // Get tl_page with details
             $objPage = \PageModel::findWithDetails($objL10nPage->pid);
 
             if ($objPage !== null) {
+
                 $strHost = \Environment::get('host');
 
                 // Save alias of page with related or empty domain
                 if (empty($objPage->domain) || $objPage->domain === $strHost) {
                     $arrAlias['alias'] = $objPage->alias;
+                    break;
                 }
             }
         }

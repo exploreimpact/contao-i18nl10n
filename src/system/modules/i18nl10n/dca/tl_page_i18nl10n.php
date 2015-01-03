@@ -682,7 +682,7 @@ class tl_page_i18nl10n extends tl_page
         $strLanguage = $dc->activeRecord->language;
 
         // Generate an alias if there is none
-        if ($varValue == '') {
+        if ($varValue === '') {
             $autoAlias = true;
             $varValue  = standardize(String::restoreBasicEntities($dc->activeRecord->title));
 
@@ -703,16 +703,36 @@ class tl_page_i18nl10n extends tl_page
         }
 
         $objAlias = $this->Database
-            ->prepare("SELECT id FROM tl_page_i18nl10n WHERE (id = ? OR alias = ?) AND language = ?")
+            ->prepare("SELECT pid FROM tl_page_i18nl10n WHERE (id = ? OR alias = ?) AND language = ?")
             ->execute($dc->id, $varValue, $strLanguage);
 
         // Check whether the page alias exists
         if ($objAlias->numRows > ($autoAlias ? 0 : 1)) {
-            // @todo: check for multiple domains
-            if ($autoAlias) {
-                $varValue .= '-' . $dc->id;
-            } else {
-                throw new Exception(sprintf($GLOBALS['TL_LANG']['ERR']['i18nl10n_aliasExists'], $varValue));
+            $arrPages = array();
+            $strDomain = '';
+
+            // Build domain array based on pages
+            while ($objAlias->next()) {
+                $objCurrentPage = \PageModel::findWithDetails($objAlias->pid);
+                $domain = $objCurrentPage->domain ?: '*';
+
+                // Store the current page's data
+                if ($objCurrentPage->id === $dc->activeRecord->pid) {
+                    $strDomain = ($objCurrentPage->type === 'root')
+                        ? \Input::post('dns')
+                        : $domain;
+                } else {
+                    $arrPages[$domain][] = $objAlias->pid;
+                }
+            }
+
+            // Check if there are multiple results for the current domain
+            if (!empty($arrPages[$strDomain])) {
+                if ($autoAlias) {
+                    $varValue .= '-' . $dc->id;
+                } else {
+                    throw new Exception(sprintf($GLOBALS['TL_LANG']['ERR']['aliasExists'], $varValue));
+                }
             }
         }
 

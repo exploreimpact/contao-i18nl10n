@@ -66,7 +66,7 @@ class I18nl10nFrontend extends \Controller
             $item_ids[] = $row['id'];
         }
 
-        $i18n_items = array();
+        $arrI18nItems = array();
 
         if ($GLOBALS['TL_LANGUAGE'] != $arrLanguages['default'])
         {
@@ -137,7 +137,7 @@ class I18nl10nFrontend extends \Controller
                             specialchars($row['description'])
                         );
 
-                        array_push($i18n_items, $item);
+                        array_push($arrI18nItems, $item);
 
                     }
 
@@ -145,7 +145,7 @@ class I18nl10nFrontend extends \Controller
 
                 if ($blnUseFallback && !$foundItem)
                 {
-                    array_push($i18n_items, $item);
+                    array_push($arrI18nItems, $item);
                 }
 
             }
@@ -155,11 +155,11 @@ class I18nl10nFrontend extends \Controller
             foreach ($items as $item)
             {
                 if (!$blnUseFallback && $item['i18nl10n_published'] == '') continue;
-                array_push($i18n_items, $item);
+                array_push($arrI18nItems, $item);
             }
         }
 
-        return $i18n_items;
+        return $arrI18nItems;
     }
 
     /**
