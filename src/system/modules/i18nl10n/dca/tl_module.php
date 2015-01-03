@@ -16,14 +16,14 @@
 // Palettes
 $GLOBALS['TL_DCA']['tl_module']['palettes']['i18nl10nLanguageSelection'] = '
     {title_legend},name,headline,type;
-    {template_legend:hide},i18nl10nLangTpl,i18nl10nLangStyle,i18nl10nLangHide;
+    {template_legend:hide},i18nl10n_langTpl,i18nl10n_langStyle,i18nl10n_langHide;
     {protected_legend:hide},protected;
     {expert_legend:hide},guests,cssID,space
 ';
 
 $i18nl10nLanguageSelection = array
 (
-    'i18nl10nLangTpl'   => array
+    'i18nl10n_langTpl'   => array
     (
         'label'            => &$GLOBALS['TL_LANG']['tl_module']['i18nl10n_langTpl'],
         'exclude'          => true,
@@ -36,7 +36,7 @@ $i18nl10nLanguageSelection = array
         ),
         'sql'              => "varchar(64) NOT NULL default ''"
     ),
-    'i18nl10nLangStyle' => array
+    'i18nl10n_langStyle' => array
     (
         'label'     => &$GLOBALS['TL_LANG']['tl_module']['i18nl10n_langStyle'],
         'exclude'   => true,
@@ -50,7 +50,7 @@ $i18nl10nLanguageSelection = array
         ),
         'sql'       => "varchar(64) NOT NULL default ''"
     ),
-    'i18nl10nLangHide'  => array
+    'i18nl10n_langHide'  => array
     (
         'label'     => &$GLOBALS['TL_LANG']['tl_module']['i18nl10n_langHide'],
         'exclude'   => true,
@@ -59,7 +59,7 @@ $i18nl10nLanguageSelection = array
         (
             'tl_class' => 'clr'
         ),
-        'sql'       => "varchar(1) NOT NULL default ''"
+        'sql'       => "char(1) NOT NULL default ''"
     )
 
 );

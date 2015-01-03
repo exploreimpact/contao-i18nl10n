@@ -75,11 +75,11 @@ if (\Input::get('pid') === null || \Input::get('pid') != 0) {
     if (isset($GLOBALS['TL_DCA']['tl_page']['subpalettes']['published'])) {
         // is Contao 3.4+
         $GLOBALS['TL_DCA']['tl_page']['subpalettes']['published'] =
-            'l10n_published,' . $GLOBALS['TL_DCA']['tl_page']['subpalettes']['published'];
+            'i18nl10n_published,' . $GLOBALS['TL_DCA']['tl_page']['subpalettes']['published'];
     } else {
         // is before Contao 3.4
         foreach ($GLOBALS['TL_DCA']['tl_page']['palettes'] as $k => $v) {
-            $GLOBALS['TL_DCA']['tl_page']['palettes'][$k] = str_replace('published,', 'published,l10n_published,', $v);
+            $GLOBALS['TL_DCA']['tl_page']['palettes'][$k] = str_replace('published,', 'published,i18nl10n_published,', $v);
         }
     }
 
@@ -90,7 +90,7 @@ if (\Input::get('pid') === null || \Input::get('pid') != 0) {
 // Extend root page palette
 $GLOBALS['TL_DCA']['tl_page']['palettes']['root'] = str_replace(
     'language,fallback;',
-    'language,fallback;{i18nl10n},i18nl10n_languages;',
+    'language,fallback;{i18nl10n},i18nl10n_localizations;',
     $GLOBALS['TL_DCA']['tl_page']['palettes']['root']
 );
 
@@ -98,7 +98,7 @@ $GLOBALS['TL_DCA']['tl_page']['palettes']['root'] = str_replace(
  * Define i18nl10n fields
  */
 $i18nl10nFields = array(
-    'l10n_published'     => array
+    'i18nl10n_published'     => array
     (
         'label'     => &$GLOBALS['TL_LANG']['tl_page']['i18nl10n_published'],
         'default'   => true,
@@ -110,9 +110,9 @@ $i18nl10nFields = array(
         ),
         'sql'       => "char(1) NOT NULL default '1'"
     ),
-    'i18nl10n_languages' => array
+    'i18nl10n_localizations' => array
     (
-        'label'     => &$GLOBALS['TL_LANG']['tl_page']['i18nl10n_languages'],
+        'label'     => &$GLOBALS['TL_LANG']['tl_page']['i18nl10n_localizations'],
         'exclude'   => true,
         'inputType' => 'multiColumnWizard',
         'eval'      => array
@@ -251,7 +251,7 @@ class tl_page_l10n extends tl_page
             $i18nl10nLanguages = I18nl10n::getLanguagesByPageId($dc->activeRecord->pid, 'tl_page');
             $i18nl10nLanguages = $i18nl10nLanguages['localizations'];
         } else {
-            $i18nl10nLanguages = deserialize($dc->activeRecord->i18nl10n_languages);
+            $i18nl10nLanguages = deserialize($dc->activeRecord->i18nl10n_localizations);
         }
 
         // If folder urls are enabled, get only last part from alias
@@ -271,7 +271,7 @@ class tl_page_l10n extends tl_page
             'pageTitle'      => $dc->activeRecord->pageTitle,
             'description'    => $dc->activeRecord->description,
             'cssClass'       => $dc->activeRecord->cssClass,
-            'l10n_published' => $dc->activeRecord->published,
+            'i18nl10n_published' => $dc->activeRecord->published,
             'start'          => $dc->activeRecord->start,
             'stop'           => $dc->activeRecord->stop,
             'dateFormat'     => $dc->activeRecord->dateFormat,

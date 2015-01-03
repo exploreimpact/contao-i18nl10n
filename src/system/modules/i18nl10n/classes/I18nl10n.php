@@ -128,11 +128,11 @@ class I18nl10n extends \Controller
         $fields = 'title,language,pageTitle,description,url,cssClass,dateFormat,timeFormat,datimFormat,start,stop';
 
         if (!$blnTranslateOnly) {
-            $fields .= ',id,pid,sorting,tstamp,alias,l10n_published';
+            $fields .= ',id,pid,sorting,tstamp,alias,i18nl10n_published';
         }
 
         $sqlPublishedCondition = !BE_USER_LOGGED_IN
-            ? " AND (start='' OR start < $time) AND (stop='' OR stop > $time) AND l10n_published = 1 "
+            ? " AND (start='' OR start < $time) AND (stop='' OR stop > $time) AND i18nl10n_published = 1 "
             : '';
 
         $sql = "SELECT $fields FROM tl_page_i18nl10n WHERE pid = ? AND language = ? $sqlPublishedCondition";
@@ -332,7 +332,7 @@ class I18nl10n extends \Controller
                     'languages'     => array($objRootPage->language)
                 );
 
-                foreach (deserialize($objRootPage->i18nl10n_languages) as $localization) {
+                foreach (deserialize($objRootPage->i18nl10n_localizations) as $localization) {
 
                     if (!empty($localization['language'])) {
                         $arrLanguages[$objRootPage->dns]['localizations'][] = $localization['language'];

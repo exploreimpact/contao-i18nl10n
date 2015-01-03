@@ -76,7 +76,7 @@ class I18nl10nFrontend extends \Controller
             $time = time();
             $fields = 'alias,pid,title,pageTitle,description,url,language';
             $sqlPublishedCondition = !$blnUseFallback && !BE_USER_LOGGED_IN
-                ? " AND (start='' OR start < $time) AND (stop='' OR stop > $time) AND l10n_published = 1 "
+                ? " AND (start='' OR start < $time) AND (stop='' OR stop > $time) AND i18nl10n_published = 1 "
                 : '';
 
             $sql = "
@@ -157,7 +157,7 @@ class I18nl10nFrontend extends \Controller
         {
             foreach ($items as $item)
             {
-                if (!$blnUseFallback && $item['l10n_published'] == '') continue;
+                if (!$blnUseFallback && $item['i18nl10n_published'] == '') continue;
                 array_push($i18n_items, $item);
             }
         }

@@ -74,7 +74,7 @@ class ModuleI18nl10nLanguageSelection extends \Module
         $langNative = I18nl10n::getNativeLanguageNames();
 
         $sqlPublishedCondition = !BE_USER_LOGGED_IN
-            ? " AND (start = '' OR start < $time) AND (stop = '' OR stop > $time) AND l10n_published = 1 "
+            ? " AND (start = '' OR start < $time) AND (stop = '' OR stop > $time) AND i18nl10n_published = 1 "
             : '';
 
         // Get all possible languages for this page tree
@@ -108,7 +108,7 @@ class ModuleI18nl10nLanguageSelection extends \Module
             $this->loadLanguageFile('languages');
 
             // Add default language
-            if (!empty($objPage->l10n_published)) {
+            if (!empty($objPage->i18nl10n_published)) {
                 array_unshift(
                     $arrTranslations,
                     array(
@@ -125,7 +125,7 @@ class ModuleI18nl10nLanguageSelection extends \Module
             // only if page translation is found in database
             foreach ($arrLanguages['languages'] as $language) {
                 // check if current language has not to be shown
-                if ($language === $GLOBALS['TL_LANGUAGE'] && $this->i18nl10nLangHide === 1) {
+                if ($language === $GLOBALS['TL_LANGUAGE'] && $this->i18nl10n_langHide === 1) {
                     continue;
                 }
 
@@ -155,7 +155,7 @@ class ModuleI18nl10nLanguageSelection extends \Module
             $items[0]['class']     = trim($items[0]['class'] . ' first');
             $items[$last]['class'] = trim($items[$last]['class'] . ' last');
 
-            $objTemplate = new \BackendTemplate($this->i18nl10nLangTpl);
+            $objTemplate = new \BackendTemplate($this->i18nl10n_langTpl);
 
             $objTemplate->type      = get_class($this);
             $objTemplate->items     = $items;
@@ -163,13 +163,13 @@ class ModuleI18nl10nLanguageSelection extends \Module
         }
 
         // add stylesheets
-        if ($this->i18nl10nLangStyle != 'disable') {
+        if ($this->i18nl10n_langStyle != 'disable') {
             $assetsUrl = 'system/modules/i18nl10n/assets/';
 
             // global style
             $GLOBALS['TL_CSS'][] = $assetsUrl . 'css/i18nl10n_lang.css';
 
-            switch ($this->i18nl10nLangStyle) {
+            switch ($this->i18nl10n_langStyle) {
                 case 'text':
                     $GLOBALS['TL_CSS'][] = $assetsUrl . 'css/i18nl10n_lang_text.css';
                     break;

@@ -140,13 +140,13 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
                           . '{i18nl10n_timeLegend:hide},dateFormat,timeFormat,datimFormat;'
                           . '{i18nl10n_expertLegend:hide},cssClass;'
                           . '{publish_legend},start,stop;'
-                          . '{i18nl10n_legend},language,l10n_published',
+                          . '{i18nl10n_legend},language,i18nl10n_published',
         'redirect'     => '{i18nl10n_menuLegend},title,alias;'
                           . '{i18nl10n_metaLegend},pageTitle;'
                           . '{redirect_legend},url;'
                           . '{i18nl10n_expertLegend:hide},cssClass;'
                           . '{publish_legend},start,stop;'
-                          . '{i18nl10n_legend},language,l10n_published'
+                          . '{i18nl10n_legend},language,i18nl10n_published'
     ),
     // Fields
     'fields'   => array
@@ -180,7 +180,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         'start'          => $GLOBALS['TL_DCA']['tl_page']['fields']['start'],
         'stop'           => $GLOBALS['TL_DCA']['tl_page']['fields']['stop'],
         'language'       => $GLOBALS['TL_DCA']['tl_page']['fields']['language'],
-        'l10n_published' => $GLOBALS['TL_DCA']['tl_page']['fields']['l10n_published']
+        'i18nl10n_published' => $GLOBALS['TL_DCA']['tl_page']['fields']['i18nl10n_published']
     )
 );
 
@@ -192,7 +192,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['alias']['save_callback']      
 );
 $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['url']['eval']['mandatory']           = false;
 $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['url']['eval']['tl_class']            = 'long';
-$GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['l10n_published']['eval']['tl_class'] = 'w50 m12';
+$GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['i18nl10n_published']['eval']['tl_class'] = 'w50 m12';
 
 // Splice in localize all in case languages are available
 if (!$enableCreate) {
@@ -264,7 +264,7 @@ class tl_page_i18nl10n extends tl_page
     {
         $src = 'system/modules/i18nl10n/assets/img/flag_icons/' . $row['language'];
 
-        $src .= $row['l10n_published'] ? '.png' : '_invisible.png';
+        $src .= $row['i18nl10n_published'] ? '.png' : '_invisible.png';
 
         $label = '<span class="i18nl10n_page"><img class="i18nl10n_flag" src="%1$s"> %2$s [%3$s]</span>';
 
@@ -379,7 +379,7 @@ class tl_page_i18nl10n extends tl_page
                     tl_page_i18nl10n
                     (
                         pid, sorting, tstamp, language, title, type, pageTitle, description, cssClass,
-                        alias, l10n_published, start, stop, dateFormat, timeFormat, datimFormat
+                        alias, i18nl10n_published, start, stop, dateFormat, timeFormat, datimFormat
                     )
                   SELECT
                     p.id AS pid, p.sorting, p.tstamp, ? AS language,p.title, p.type, p.pageTitle,
@@ -481,8 +481,8 @@ class tl_page_i18nl10n extends tl_page
         $objVersions->initialize();
 
         // Trigger the save_callback
-        if (is_array($GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['l10n_published']['save_callback'])) {
-            foreach ($GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['l10n_published']['save_callback'] as $callback) {
+        if (is_array($GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['i18nl10n_published']['save_callback'])) {
+            foreach ($GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['i18nl10n_published']['save_callback'] as $callback) {
                 $this->import($callback[0]);
                 $blnVisible = $this->$callback[0]->$callback[1]($blnVisible, $this);
             }
@@ -490,7 +490,7 @@ class tl_page_i18nl10n extends tl_page
 
         $sql = "
             UPDATE tl_page_i18nl10n
-            SET tstamp = " . time() . ", l10n_published='" . ($blnVisible ? 1 : '') . "'
+            SET tstamp = " . time() . ", i18nl10n_published='" . ($blnVisible ? 1 : '') . "'
             WHERE id = ?
         ";
 
@@ -529,7 +529,7 @@ class tl_page_i18nl10n extends tl_page
 
         $href .= '&amp;tid=' . $row['id'] . '&amp;state=' . ($row['published'] ? '' : 1);
 
-        if (!$row['l10n_published']) {
+        if (!$row['i18nl10n_published']) {
             $icon = 'invisible.gif';
         }
 
@@ -593,13 +593,13 @@ class tl_page_i18nl10n extends tl_page
         }
 
         // Check permissions AFTER checking the tid, so hacking attempts are logged
-        if (!$this->User->isAdmin && !$this->User->hasAccess('tl_page::l10n_published', 'alexf')) {
+        if (!$this->User->isAdmin && !$this->User->hasAccess('tl_page::i18nl10n_published', 'alexf')) {
             return '';
         }
 
         $href .= '&amp;id=' . \Input::get('id') . '&amp;tid=' . $row['id'] . '&amp;state=' . $row[''];
 
-        if (!$row['l10n_published']) {
+        if (!$row['i18nl10n_published']) {
             $icon = 'invisible.gif';
         }
 
@@ -618,7 +618,7 @@ class tl_page_i18nl10n extends tl_page
         $strTable = 'tl_page_i18nl10n';
 
         // Check permissions to publish
-        if (!$this->User->isAdmin && !$this->User->hasAccess($strTable . '::l10n_published', 'alexf')) {
+        if (!$this->User->isAdmin && !$this->User->hasAccess($strTable . '::i18nl10n_published', 'alexf')) {
             $this->log(
                 'Not enough permissions to show/hide record ID "' . $intId . '"',
                 $strTable . ' toggleVisibility',
@@ -632,14 +632,14 @@ class tl_page_i18nl10n extends tl_page
         $objVersions->initialize();
 
         // Trigger the save_callback
-        if (is_array($GLOBALS['TL_DCA'][$strTable]['fields']['l10n_published']['save_callback'])) {
-            foreach ($GLOBALS['TL_DCA'][$strTable]['fields']['l10n_published']['save_callback'] as $callback) {
+        if (is_array($GLOBALS['TL_DCA'][$strTable]['fields']['i18nl10n_published']['save_callback'])) {
+            foreach ($GLOBALS['TL_DCA'][$strTable]['fields']['i18nl10n_published']['save_callback'] as $callback) {
                 $this->import($callback[0]);
                 $blnPublished = $this->$callback[0]->$callback[1]($blnPublished, $this);
             }
         }
 
-        $sql = "UPDATE " . $strTable . " SET tstamp = ?, l10n_published = ? WHERE id = ?";
+        $sql = "UPDATE " . $strTable . " SET tstamp = ?, i18nl10n_published = ? WHERE id = ?";
 
         // Update the database
         \Database::getInstance()

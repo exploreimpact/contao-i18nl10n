@@ -275,7 +275,7 @@ class I18nl10nHook extends \System
         $time = time();
 
         $sqlPublishedCondition = !BE_USER_LOGGED_IN
-            ? " AND (start = '' OR start < $time) AND (stop = '' OR stop > $time) AND l10n_published = 1 "
+            ? " AND (start = '' OR start < $time) AND (stop = '' OR stop > $time) AND i18nl10n_published = 1 "
             : '';
 
         $sql = "SELECT * FROM tl_page_i18nl10n WHERE pid IN ('" . implode(',', $arrPages) . "') AND language = ? $sqlPublishedCondition";

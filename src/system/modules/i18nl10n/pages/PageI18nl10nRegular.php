@@ -41,7 +41,7 @@ class PageI18nl10nRegular extends \PageRegular
 
         if ($GLOBALS['TL_LANGUAGE'] === $arrLanguages['default']) {
             // if default language is not published, give error
-            if (!$objPage->l10n_published) {
+            if (!$objPage->i18nl10n_published) {
                 $objError = new $GLOBALS['TL_PTY']['error_404']();
                 $objError->generate($objPage->id);
             }
@@ -54,7 +54,7 @@ class PageI18nl10nRegular extends \PageRegular
 
         if (!$objPage) {
             // if fallback is not published, show 404
-            if (!$objPage->l10n_published) {
+            if (!$objPage->i18nl10n_published) {
                 $objError = new $GLOBALS['TL_PTY']['error_404']();
                 $objError->generate($objPage->id);
 
@@ -136,7 +136,7 @@ class PageI18nl10nRegular extends \PageRegular
         $time = time();
 
         $sqlPublishedCondition = !BE_USER_LOGGED_IN
-            ? " AND (start = '' OR start < $time) AND (stop = '' OR stop > $time) AND l10n_published = 1 "
+            ? " AND (start = '' OR start < $time) AND (stop = '' OR stop > $time) AND i18nl10n_published = 1 "
             : '';
 
         $sql = "SELECT title FROM tl_page_i18nl10n WHERE pid = ? AND language = ? $sqlPublishedCondition";

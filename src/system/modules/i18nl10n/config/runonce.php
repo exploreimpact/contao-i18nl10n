@@ -59,38 +59,8 @@ class I18nl10nRunOnceJob extends \Controller
         }
 
         // If deprecated settings are used, move them to root page
-        if ($arrLanguages = $this->Config->get('i18nl10n_languages')) {
-
-            // Get first root page
-            $objRootPage = $this->Database
-                ->query('SELECT * FROM tl_page WHERE type = "root" ORDER BY id LIMIT 0,1');
-
-
-            if($objRootPage->first() && !$objRootPage->i18nl10n_languages) {
-                // Remove root language from languages
-                foreach ($arrLanguages as $key => $strLanguage) {
-                    if ($objRootPage->language === $strLanguage) {
-                        unset($arrLanguages[$key]);
-                    }
-                }
-
-                $arrMappedLanguages = array();
-
-                // Map to db format
-                foreach ($arrLanguages as $language) {
-                    $arrMappedLanguages[] = array
-                    (
-                        'language' => $language
-                    );
-                }
-
-                // Set localizations
-                $this->Database
-                    ->prepare('UPDATE tl_page SET i18nl10n = ? WHERE type = "root" ORDER BY id')
-                    ->limit(1)
-                    ->execute(serialize($arrMappedLanguages));
-            }
-        }
+        $this->moveI18nl10nLanguageSettings();
+        $this->renameTableFields();
 
         $this->removeL10nPageOrphans();
         $this->removeDeprecatedSettings();
@@ -148,6 +118,74 @@ class I18nl10nRunOnceJob extends \Controller
     {
         $this->Database
             ->query('DELETE FROM tl_page_i18nl10n WHERE NOT EXISTS (SELECT * FROM tl_page as p WHERE tl_page_i18nl10n.pid = p.id)');
+    }
+
+    /**
+     * Move i18nl10n language settings to first root page
+     */
+    private function moveI18nl10nLanguageSettings() {
+        if ($arrLanguages = $this->Config->get('i18nl10n_languages')) {
+
+            // Get first root page
+            $objRootPage = $this->Database
+                ->query('SELECT * FROM tl_page WHERE type = "root" ORDER BY id LIMIT 0,1');
+
+
+            if($objRootPage->first() && !$this->Database->fieldExists('i18nl10n_localizations', 'tl_page')) {
+
+                // Remove root language from languages
+                foreach ($arrLanguages as $key => $strLanguage) {
+                    if ($objRootPage->language === $strLanguage) {
+                        unset($arrLanguages[$key]);
+                    }
+                }
+
+                $arrMappedLanguages = array();
+
+                // Map to db format
+                foreach ($arrLanguages as $language) {
+                    $arrMappedLanguages[] = array
+                    (
+                        'language' => $language
+                    );
+                }
+
+                // Add new field
+                $this->Database->query('ALTER TABLE tl_page ADD i18nl10n_localizations BLOB');
+
+                // Set localizations
+                $this->Database
+                    ->prepare('UPDATE tl_page SET i18nl10n_localizations = ? WHERE type = "root" ORDER BY id')
+                    ->limit(1)
+                    ->execute(serialize($arrMappedLanguages));
+            }
+        }
+
+    }
+
+    /**
+     * Rename 'old' table fields
+     */
+    private function renameTableFields() {
+        if ($this->Database->fieldExists('l10n_published', 'tl_page')) {
+            $this->Database->query('ALTER TABLE tl_page CHANGE l10n_published i18nl10n_published char(1) NOT NULL default 1');
+        }
+
+        if ($this->Database->fieldExists('l10n_published', 'tl_page_i18nl10n')) {
+            $this->Database->query('ALTER TABLE tl_page_i18nl10n CHANGE l10n_published i18nl10n_published char(1) NOT NULL default 1');
+        }
+
+        if ($this->Database->fieldExists('i18nl10nLangTpl', 'tl_module')) {
+            $this->Database->query('ALTER TABLE tl_module CHANGE i18nl10nLangTpl i18nl10n_langTpl varchar(64) NOT NULL default ""');
+        }
+
+        if ($this->Database->fieldExists('i18nl10nLangStyle', 'tl_module')) {
+            $this->Database->query('ALTER TABLE tl_module CHANGE i18nl10nLangStyle i18nl10n_langStyle varchar(64) NOT NULL default ""');
+        }
+
+        if ($this->Database->fieldExists('i18nl10nLangHide', 'tl_module')) {
+            $this->Database->query('ALTER TABLE tl_module CHANGE i18nl10nLangHide i18nl10n_langHide char(1) NOT NULL default ""');
+        }
     }
 }
 

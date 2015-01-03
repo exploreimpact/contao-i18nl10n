@@ -20,9 +20,9 @@ $GLOBALS['TL_LANG']['tl_page']['i18nl10n_published'] = array
     'Publish this translation.'
 );
 
-$GLOBALS['TL_LANG']['tl_page']['i18nl10n_languages'] = array
+$GLOBALS['TL_LANG']['tl_page']['i18nl10n_localizations'] = array
 (
-    'Site languages',
+    'Site localizations',
     'Additional available languages/localizations for this page tree.'
 );
 

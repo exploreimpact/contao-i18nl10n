@@ -19,6 +19,14 @@ $GLOBALS['TL_LANG']['tl_page']['i18nl10n_published'] = array
     'Diese Übersetzung veröffentlichen.'
 );
 
+$GLOBALS['TL_LANG']['tl_page']['i18nl10n_localizations'] = array
+(
+    'Seiten Lokalisierungen',
+    'Alternative Sprachen/Lokalisierungen, die für diesen Seitenast zur Verfügung stehen.'
+);
+
+$GLOBALS['TL_LANG']['tl_page']['i18nl10n_language'] = 'Sprache';
+
 /**
  * Messages
  */
