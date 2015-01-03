@@ -98,6 +98,8 @@ class PageI18nl10nRegular extends \PageRegular
         // Try to get language from post (committed by language select) or get
         $selectedLanguage = \Input::get('language');
 
+        \FB::log($selectedLanguage);
+
         // If selected language is found already, use it
         if ($selectedLanguage) {
             $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selectedLanguage;

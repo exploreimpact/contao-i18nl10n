@@ -203,25 +203,25 @@ class I18nl10nHook extends \System
         $arrAlias = $this->findAliasByLocalizedAliases($arrFragments, $strLanguage);
 
         if (!empty($arrAlias)) {
+            // Remove first entry (should be part of alias)
+            array_shift($arrFragments);
 
             // if alias has folder, remove related entries
             if (strpos($arrAlias['alias'], '/') !== false || strpos($arrAlias['l10nAlias'], '/') !== false) {
                 $arrAliasFragments =
                     array_merge(explode('/', $arrAlias['alias']), explode('/', $arrAlias['l10nAlias']));
-                $arrAliasFragments = array_unique($arrAliasFragments);
 
                 // remove alias parts
                 foreach ($arrAliasFragments as $strAliasFragment) {
-
                     // if alias part is still part of arrFragments, remove it from there
                     if (($key = array_search($strAliasFragment, $arrFragments)) !== false) {
-                        unset($arrFragments[$key]);
+                        array_splice($arrFragments, $key, 1);
                     }
                 }
             }
 
-            // replace alias
-            $arrFragments[0] = $arrAlias['alias'];
+            // Insert alias
+            array_unshift($arrFragments, $arrAlias['alias']);
         }
 
         // Add the second fragment as auto_item if the number of fragments is even
@@ -371,49 +371,34 @@ class I18nl10nHook extends \System
                 WHERE
                   id = ? AND language = ?
                   OR alias IN('" . $strAlias . "') AND language = ?
-                ORDER BY " . $dataBase->findInSet('alias', $arrAliasGuess) . " LIMIT 0,1";
+                ORDER BY " . $dataBase->findInSet('alias', $arrAliasGuess);
 
-        $arrL10nItem = $dataBase
+        $objL10nPage = $dataBase
             ->prepare($sql)
+            ->limit(1)
             ->execute(
                 is_numeric($arrFragments[0]) ? $arrFragments[0] : 0,
                 $strLanguage,
                 $strLanguage
-            )
-            ->fetchAssoc();
+            );
 
-        // Set l10n alias, if item was found (is needed to be removed from url params later on)
-        if (!empty($arrL10nItem)) {
-            $arrAlias['l10nAlias'] = $arrL10nItem['alias'];
-        }
+        // If page was found, get l10n alias and related parent page
+        if ($objL10nPage->first()) {
+            $arrAlias['l10nAlias'] = $objL10nPage->alias;
 
-        $time = time();
+            // Get tl_page with details
+            $objPage = \PageModel::findWithDetails($objL10nPage->pid);
 
-        $sqlPublishedCondition = !BE_USER_LOGGED_IN
-            ? " AND (start = '' OR start < $time) AND (stop = '' OR stop > $time) AND published = 1 "
-            : '';
+            if ($objPage !== null) {
+                $strHost = \Environment::get('host');
 
-        // Try to find default language page by localized id or alias
-        $sql = "
-            SELECT alias
-            FROM tl_page
-            WHERE
-                (id = ? OR alias IN('" . $strAlias . "'))
-                $sqlPublishedCondition
-            ORDER BY " . $dataBase->findInSet('alias', $arrAliasGuess);
-
-        $objL10n = $dataBase
-            ->prepare($sql)
-            ->execute(empty($arrL10nItem) ? 0 : $arrL10nItem['pid']);
-
-        // Set alias if a page was found
-        if ($objL10n !== null) {
-            // best match is in first item
-            $arrPage           = $objL10n->row();
-            $arrAlias['alias'] = $arrPage['alias'];
+                // Save alias of page with related or empty domain
+                if (empty($objPage->domain) || $objPage->domain === $strHost) {
+                    $arrAlias['alias'] = $objPage->alias;
+                }
+            }
         }
 
         return $arrAlias;
-
     }
 }
