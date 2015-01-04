@@ -152,84 +152,59 @@ class I18nl10nHook extends \System
 
         // Get default language
         $strLanguage = $arrLanguages['default'];
-
-        // strip auto_item
-        if (\Config::get('useAutoItem') && $arrFragments[1] == 'auto_item') {
-            $arrFragments = array_delete($arrFragments, 1);
-        }
+        $arrMappedFragments = $this->mapUrlFragments($arrFragments);
 
         // try to get language by i18nl10n URL
         if (\Config::get('i18nl10n_urlParam') === 'url') {
             // First entry must be language
             $strLanguage = $arrFragments[0];
-
-            // remove old language entry
-            $arrFragments = array_delete($arrFragments, 0);
-
-            // append new language entry
-            array_push($arrFragments, 'language', $strLanguage);
-
         } // try to get language by suffix
         elseif (\Config::get('i18nl10n_urlParam') === 'alias' && !\Config::get('disableAlias')) {
 
+            $intLastIndex = count($arrFragments) - 1;
+            $strRegex = '@^([_\-\pL\pN\.]*(?=\.))?\.?([a-z]{2})$@u';
+
             // last element should contain language info
-            if (preg_match(
-                '@^([_\-\pL\pN\.]*(?=\.))?\.?([a-z]{2})$@u',
-                $arrFragments[count($arrFragments) - 1],
-                $matches
-            )) {
-
-                // define language and alias value
+            if (preg_match($strRegex, $arrFragments[$intLastIndex], $matches)) {
                 $strLanguage = strtolower($matches[2]);
-                $alias       = !empty($matches[1])
-                    ? $matches[1]
-                    : $arrFragments[count($arrFragments) - 1];
-
-                // if only language was found, pop it from array
-                if ($matches[1] === '') {
-                    array_pop($arrFragments);
-                } else {
-                    // else set alias
-                    $arrFragments[count($arrFragments) - 1] = $alias;
-                }
-
-                array_push($arrFragments, 'language', $strLanguage);
             }
         } elseif (\Input::get('language')) {
             $strLanguage = \Input::get('language');
         }
 
         // try to find localized page by alias
-        $arrAlias = $this->findAliasByLocalizedAliases($arrFragments, $strLanguage);
+        $arrAlias = $this->findAliasByLocalizedAliases($arrMappedFragments, $strLanguage);
 
         if (!empty($arrAlias)) {
-            // Remove first entry (should be part of alias)
-            array_shift($arrFragments);
+            // Remove first entry (will be replaced by alias further on)
+            array_shift($arrMappedFragments);
 
             // if alias has folder, remove related entries
             if (strpos($arrAlias['alias'], '/') !== false || strpos($arrAlias['l10nAlias'], '/') !== false) {
-                $arrAliasFragments =
-                    array_merge(explode('/', $arrAlias['alias']), explode('/', $arrAlias['l10nAlias']));
+                $arrAliasFragments = array_merge(explode('/', $arrAlias['alias']), explode('/', $arrAlias['l10nAlias']));
 
                 // remove alias parts
                 foreach ($arrAliasFragments as $strAliasFragment) {
                     // if alias part is still part of arrFragments, remove it from there
-                    if (($key = array_search($strAliasFragment, $arrFragments)) !== false) {
-                        $arrFragments = array_delete($arrFragments, $key);
+                    if (($key = array_search($strAliasFragment, $arrMappedFragments)) !== false) {
+                        $arrMappedFragments = array_delete($arrMappedFragments, $key);
                     }
                 }
             }
 
             // Insert alias
-            array_unshift($arrFragments, $arrAlias['alias']);
+            array_unshift($arrMappedFragments, $arrAlias['alias']);
         }
+
+        // Add language
+        array_push($arrMappedFragments, 'language', $strLanguage);
 
         // Add the second fragment as auto_item if the number of fragments is even
-        if (\Config::get('useAutoItem') && count($arrFragments) % 2 == 0) {
-            array_insert($arrFragments, 1, array('auto_item'));
+        if (\Config::get('useAutoItem') && count($arrMappedFragments) % 2 == 0) {
+            array_insert($arrMappedFragments, 1, array('auto_item'));
         }
 
-        return $arrFragments;
+        return $arrMappedFragments;
     }
 
     /**
@@ -345,12 +320,12 @@ class I18nl10nHook extends \System
         $strAlias      = $arrFragments[0];
         $dataBase      = \Database::getInstance();
 
-        if (\Config::get('folderUrl') && $arrFragments[count($arrFragments) - 2] === 'language') {
+        if (\Config::get('folderUrl')) {
             // glue together possible aliases
-            for ($i = 0; count($arrFragments) - 2 > $i; $i++) {
-                $arrAliasGuess[] = ($i == 0)
-                    ? $arrFragments[$i]
-                    : $arrAliasGuess[$i - 1] . '/' . $arrFragments[$i];
+            foreach ($arrFragments as $key => $fragment) {
+                $arrAliasGuess[] = !$key
+                    ? $fragment
+                    : $arrAliasGuess[$key - 1] . '/' . $fragment;
             }
 
             // Remove everything that is not an alias
@@ -363,12 +338,11 @@ class I18nl10nHook extends \System
                 )
             );
 
-            // reverse array to get specific entries first
+            // Reverse array to get more specific entries first
             $arrAliasGuess = array_reverse($arrAliasGuess);
 
             $strAlias = implode("','", $arrAliasGuess);
         }
-
 
         // Find alias usages by language from tl_page and tl_page_i18nl10n
         $sql = "(SELECT pid as pageId, alias, 'tl_page_i18nl10n' as 'source'
@@ -415,5 +389,40 @@ class I18nl10nHook extends \System
         }
 
         return $arrAlias;
+    }
+
+    /**
+     * Clean url fragments from language and auto_item
+     *
+     * @param $arrFragments
+     *
+     * @return array
+     */
+    private function mapUrlFragments($arrFragments)
+    {
+        foreach ($arrFragments as $key => $fragment) {
+
+            // Delete language if first part of url
+            if (\Config::get('i18nl10n_urlParam') === 'url') {
+                $arrFragments = array_delete($arrFragments, 0);
+            } // Delete language if part of alias
+            elseif (\Config::get('i18nl10n_urlParam') === 'alias' && !\Config::get('disableAlias')) {
+
+                $lastIndex = count($arrFragments) - 1;
+                $strRegex = '@^([_\-\pL\pN\.]*(?=\.))?\.?([a-z]{2})$@u';
+
+                // last element should contain language info
+                if (preg_match($strRegex, $arrFragments[$lastIndex], $matches)) {
+                    $arrFragments[$lastIndex] = $matches[1];
+                }
+            }
+
+            // Delete auto_item
+            if (\Config::get('useAutoItem') && $arrFragments[1] == 'auto_item') {
+                $arrFragments = array_delete($arrFragments, 1);
+            }
+        }
+
+        return $arrFragments;
     }
 }

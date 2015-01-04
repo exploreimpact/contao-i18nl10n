@@ -340,12 +340,6 @@ class I18nl10n extends \Controller
                     }
                 }
 
-                // @todo: check on save if duplicated entries
-                $arrLanguages[$objRootPage->dns]['localizations'] =
-                    array_unique($arrLanguages[$objRootPage->dns]['localizations']);
-                $arrLanguages[$objRootPage->dns]['languages']     =
-                    array_unique($arrLanguages[$objRootPage->dns]['languages']);
-
                 // Sort alphabetically
                 asort($arrLanguages[$objRootPage->dns]['localizations']);
                 asort($arrLanguages[$objRootPage->dns]['languages']);
