@@ -314,38 +314,20 @@ class I18nl10nHook extends \System
      */
     private function findAliasByLocalizedAliases($arrFragments, $strLanguage)
     {
-        $arrAlias      = array
+        $arrAlias = array
         (
             'alias'     => '',
             'l10nAlias' => ''
         );
-        $arrAliasGuess = array();
-        $strAlias      = $arrFragments[0];
-        $dataBase      = \Database::getInstance();
+        $dataBase = \Database::getInstance();
 
-        if (\Config::get('folderUrl')) {
-            // glue together possible aliases
-            foreach ($arrFragments as $key => $fragment) {
-                $arrAliasGuess[] = !$key
-                    ? $fragment
-                    : $arrAliasGuess[$key - 1] . '/' . $fragment;
-            }
+        $arrAliasGuess = \Config::get('folderUrl')
+            ? $this->createAliasGuessingArray($arrFragments)
+            : array();
 
-            // Remove everything that is not an alias
-            $arrAliasGuess = array_filter(
-                array_map(
-                    function ($v) {
-                        return preg_match('/^[\pN\pL\/\._-]+$/u', $v) ? $v : null;
-                    },
-                    $arrAliasGuess
-                )
-            );
-
-            // Reverse array to get more specific entries first
-            $arrAliasGuess = array_reverse($arrAliasGuess);
-
-            $strAlias = implode("','", $arrAliasGuess);
-        }
+        $strAlias = !empty($arrAliasGuess)
+            ? implode("','", $arrAliasGuess)
+            : $arrFragments[0];
 
         // Find alias usages by language from tl_page and tl_page_i18nl10n
         $sql = "(SELECT pid as pageId, alias, 'tl_page_i18nl10n' as 'source'
@@ -384,6 +366,43 @@ class I18nl10nHook extends \System
         }
 
         return $arrAlias;
+    }
+
+    /**
+     * Create an array of possible aliases
+     *
+     * @param $arrFragments
+     *
+     * @return array
+     */
+    private function createAliasGuessingArray($arrFragments)
+    {
+        $arrAliasGuess = array();
+
+        if (!empty($arrFragments)) {
+            // glue together possible aliases
+            foreach ($arrFragments as $key => $fragment) {
+                $arrAliasGuess[] = !$key
+                    ? $fragment
+                    : $arrAliasGuess[$key - 1] . '/' . $fragment;
+            }
+
+            // Remove everything that is not an alias
+            $arrAliasGuess = array_filter(
+                array_map(
+                    function ($v) {
+                        return preg_match('/^[\pN\pL\/\._-]+$/u', $v) ? $v : null;
+                    },
+                    $arrAliasGuess
+                )
+            );
+
+            // Reverse array to get more specific entries first
+            $arrAliasGuess = array_reverse($arrAliasGuess);
+        }
+
+        return $arrAliasGuess;
+
     }
 
     /**
