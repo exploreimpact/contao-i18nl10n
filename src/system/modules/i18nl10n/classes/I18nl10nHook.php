@@ -160,17 +160,17 @@ class I18nl10nHook extends \System
 
         // try to get language by i18nl10n URL
         if (\Config::get('i18nl10n_urlParam') === 'url') {
-            if (preg_match('@^([a-z]{2})$@', $arrFragments[0], $matches)) {
-                $strLanguage = strtolower($matches[1]);
+            // First entry must be language
+            $strLanguage = $arrFragments[0];
 
-                // remove old language entry
-                $arrFragments = array_delete($arrFragments, 0);
+            // remove old language entry
+            $arrFragments = array_delete($arrFragments, 0);
 
-                // append new language entry
-                array_push($arrFragments, 'language', $strLanguage);
-            }
-        } elseif (\Config::get('i18nl10n_urlParam') === 'alias' && !\Config::get('disableAlias')) {
-            // try to get language by suffix
+            // append new language entry
+            array_push($arrFragments, 'language', $strLanguage);
+
+        } // try to get language by suffix
+        elseif (\Config::get('i18nl10n_urlParam') === 'alias' && !\Config::get('disableAlias')) {
 
             // last element should contain language info
             if (preg_match(
@@ -181,7 +181,7 @@ class I18nl10nHook extends \System
 
                 // define language and alias value
                 $strLanguage = strtolower($matches[2]);
-                $alias       = $matches[1] != ''
+                $alias       = !empty($matches[1])
                     ? $matches[1]
                     : $arrFragments[count($arrFragments) - 1];
 
@@ -215,7 +215,7 @@ class I18nl10nHook extends \System
                 foreach ($arrAliasFragments as $strAliasFragment) {
                     // if alias part is still part of arrFragments, remove it from there
                     if (($key = array_search($strAliasFragment, $arrFragments)) !== false) {
-                        array_splice($arrFragments, $key, 1);
+                        $arrFragments = array_delete($arrFragments, $key);
                     }
                 }
             }
@@ -278,8 +278,7 @@ class I18nl10nHook extends \System
             ? " AND (start = '' OR start < $time) AND (stop = '' OR stop > $time) AND i18nl10n_published = 1 "
             : '';
 
-        $sql = "SELECT * FROM tl_page_i18nl10n WHERE pid IN ('" . implode(',', $arrPages)
-               . "') AND language = ? $sqlPublishedCondition";
+        $sql = "SELECT * FROM tl_page_i18nl10n WHERE pid IN ('" . implode(',', $arrPages) . "') AND language = ? $sqlPublishedCondition";
 
         $arrL10n = \Database::getInstance()
             ->prepare($sql)
@@ -346,7 +345,7 @@ class I18nl10nHook extends \System
         $strAlias      = $arrFragments[0];
         $dataBase      = \Database::getInstance();
 
-        if (\Config::get('folderUrl') && $arrFragments[count($arrFragments) - 2] == 'language') {
+        if (\Config::get('folderUrl') && $arrFragments[count($arrFragments) - 2] === 'language') {
             // glue together possible aliases
             for ($i = 0; count($arrFragments) - 2 > $i; $i++) {
                 $arrAliasGuess[] = ($i == 0)
@@ -370,12 +369,19 @@ class I18nl10nHook extends \System
             $strAlias = implode("','", $arrAliasGuess);
         }
 
-        // Try to find a localized content
-        $sql = "SELECT pid, alias
-                FROM tl_page_i18nl10n
-                WHERE
-                  id = ? AND language = ?
-                  OR alias IN('" . $strAlias . "') AND language = ?
+
+        // Find alias usages by language from tl_page and tl_page_i18nl10n
+        $sql = "(SELECT pid as pageId, alias, 'tl_page_i18nl10n' as 'source'
+                 FROM tl_page_i18nl10n
+                 WHERE
+                    id = ? AND language = ?
+                    OR alias IN('" . $strAlias . "') AND language = ?)
+                UNION
+                (SELECT id as pageId, alias, 'tl_page' as 'source'
+                 FROM tl_page
+                 WHERE
+                    id = ? AND language = ?
+                    OR alias IN('" . $strAlias . "') AND language = ?)
                 ORDER BY " . $dataBase->findInSet('alias', $arrAliasGuess);
 
         $objL10nPage = $dataBase
@@ -383,19 +389,22 @@ class I18nl10nHook extends \System
             ->execute(
                 is_numeric($arrFragments[0]) ? $arrFragments[0] : 0,
                 $strLanguage,
+                $strLanguage,
+                is_numeric($arrFragments[0]) ? $arrFragments[0] : 0,
+                $strLanguage,
                 $strLanguage
             );
+
+        $strHost = \Environment::get('host');
 
         // If page(s) where found, get l10n alias and related parent page
         while ($objL10nPage->next()) {
             $arrAlias['l10nAlias'] = $objL10nPage->alias;
 
             // Get tl_page with details
-            $objPage = \PageModel::findWithDetails($objL10nPage->pid);
+            $objPage = \PageModel::findWithDetails($objL10nPage->pageId);
 
             if ($objPage !== null) {
-
-                $strHost = \Environment::get('host');
 
                 // Save alias of page with related or empty domain
                 if (empty($objPage->domain) || $objPage->domain === $strHost) {

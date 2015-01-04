@@ -151,7 +151,7 @@ class I18nl10nRunOnceJob extends \Controller
                 }
 
                 // Add new field
-                $this->Database->query('ALTER TABLE tl_page ADD i18nl10n_localizations BLOB');
+                $this->Database->query('ALTER TABLE tl_page ADD i18nl10n_localizations BLOB NULL');
 
                 // Set localizations
                 $this->Database

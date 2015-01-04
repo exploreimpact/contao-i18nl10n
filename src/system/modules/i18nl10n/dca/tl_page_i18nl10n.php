@@ -771,5 +771,4 @@ class tl_page_i18nl10n extends tl_page
 
         return $arrOptions;
     }
-
 }

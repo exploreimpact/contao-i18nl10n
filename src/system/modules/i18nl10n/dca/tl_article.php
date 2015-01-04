@@ -21,7 +21,9 @@ $GLOBALS['TL_DCA']['tl_article']['list']['label']['label_callback'] = array
     'labelCallback'
 );
 
-
+/**
+ * Class tl_article_l10n
+ */
 class tl_article_l10n extends tl_article
 {
     /**
@@ -63,5 +65,4 @@ class tl_article_l10n extends tl_article
 
         return $label;
     }
-
 }
