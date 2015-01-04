@@ -197,7 +197,10 @@ class I18nl10nHook extends \System
         }
 
         // Add language
-        array_push($arrMappedFragments, 'language', $strLanguage);
+        // Contao doesn't like language as part of fragments, when language is a parameter
+        if (\Config::get('i18nl10n_urlParam') !== 'parameter') {
+            array_push($arrMappedFragments, 'language', $strLanguage);
+        }
 
         // Add the second fragment as auto_item if the number of fragments is even
         if (\Config::get('useAutoItem') && count($arrMappedFragments) % 2 == 0) {
@@ -347,24 +350,16 @@ class I18nl10nHook extends \System
         // Find alias usages by language from tl_page and tl_page_i18nl10n
         $sql = "(SELECT pid as pageId, alias, 'tl_page_i18nl10n' as 'source'
                  FROM tl_page_i18nl10n
-                 WHERE
-                    id = ? AND language = ?
-                    OR alias IN('" . $strAlias . "') AND language = ?)
+                 WHERE alias IN('" . $strAlias . "') AND language = ?)
                 UNION
                 (SELECT id as pageId, alias, 'tl_page' as 'source'
                  FROM tl_page
-                 WHERE
-                    id = ? AND language = ?
-                    OR alias IN('" . $strAlias . "') AND language = ?)
+                 WHERE alias IN('" . $strAlias . "') AND language = ?)
                 ORDER BY " . $dataBase->findInSet('alias', $arrAliasGuess);
 
         $objL10nPage = $dataBase
             ->prepare($sql)
             ->execute(
-                is_numeric($arrFragments[0]) ? $arrFragments[0] : 0,
-                $strLanguage,
-                $strLanguage,
-                is_numeric($arrFragments[0]) ? $arrFragments[0] : 0,
                 $strLanguage,
                 $strLanguage
             );
@@ -400,26 +395,23 @@ class I18nl10nHook extends \System
      */
     private function mapUrlFragments($arrFragments)
     {
-        foreach ($arrFragments as $key => $fragment) {
+        // Delete auto_item
+        if (\Config::get('useAutoItem') && $arrFragments[1] == 'auto_item') {
+            $arrFragments = array_delete($arrFragments, 1);
+        }
 
-            // Delete language if first part of url
-            if (\Config::get('i18nl10n_urlParam') === 'url') {
-                $arrFragments = array_delete($arrFragments, 0);
-            } // Delete language if part of alias
-            elseif (\Config::get('i18nl10n_urlParam') === 'alias' && !\Config::get('disableAlias')) {
+        // Delete language if first part of url
+        if (\Config::get('i18nl10n_urlParam') === 'url') {
+            $arrFragments = array_delete($arrFragments, 0);
+        } // Delete language if part of alias
+        elseif (\Config::get('i18nl10n_urlParam') === 'alias' && !\Config::get('disableAlias')) {
 
-                $lastIndex = count($arrFragments) - 1;
-                $strRegex = '@^([_\-\pL\pN\.]*(?=\.))?\.?([a-z]{2})$@u';
+            $lastIndex = count($arrFragments) - 1;
+            $strRegex = '@^([_\-\pL\pN\.]*(?=\.))?\.?([a-z]{2})$@u';
 
-                // last element should contain language info
-                if (preg_match($strRegex, $arrFragments[$lastIndex], $matches)) {
-                    $arrFragments[$lastIndex] = $matches[1];
-                }
-            }
-
-            // Delete auto_item
-            if (\Config::get('useAutoItem') && $arrFragments[1] == 'auto_item') {
-                $arrFragments = array_delete($arrFragments, 1);
+            // last element should contain language info
+            if (preg_match($strRegex, $arrFragments[$lastIndex], $matches)) {
+                $arrFragments[$lastIndex] = $matches[1];
             }
         }
 
