@@ -23,17 +23,21 @@ $this->loadDataContainer('tl_page');
 
 //determine if languages are available to endable/disable editing
 $enableCreate = false;
-$arrLanguages = I18nl10n::getAllLanguages();
 
-// Check if localizations are available, else the create option for the DCA will be disabled
-if (!count($arrLanguages)) {
-    foreach ($arrLanguages as $domain) {
-        if (count($domain['localizations'])) {
-            $enableCreate = true;
-            break;
+// Check if backend mode to prevent install issue
+if (\Input::get('do') === 'i18nl10n') {
+    $arrLanguages = I18nl10n::getAllLanguages();
+
+    // Check if localizations are available, else the create option for the DCA will be disabled
+    if (!count($arrLanguages)) {
+        foreach ($arrLanguages as $domain) {
+            if (count($domain['localizations'])) {
+                $enableCreate = true;
+                break;
+            }
         }
-    }
-};
+    };
+}
 
 /**
  * Table tl_page_i18nl10n
@@ -46,7 +50,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         'dataContainer'    => 'Table',
         'ptable'           => 'tl_page',
         'enableVersioning' => true,
-        'closed'           => $enableCreate,
+        'closed'           => !$enableCreate,
         'onload_callback'  => array
         (
             array('tl_page', 'addBreadcrumb'),

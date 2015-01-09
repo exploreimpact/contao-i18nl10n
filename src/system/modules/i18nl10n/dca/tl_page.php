@@ -30,7 +30,10 @@ $GLOBALS['TL_DCA']['tl_page']['list']['operations']['page_i18nl10n'] = array
 $onLoadCallback = array
 (
     array('tl_page_l10n', 'setDefaultLanguage'),
-    array('tl_page_l10n', 'displayDnsMessage')
+    array('tl_page_l10n', 'displayDnsMessage'),
+    array('tl_page_l10n', 'addI18nl10nPublishedField'),
+    array('tl_page_l10n', 'setDnsMandatory'),
+    array('tl_page_l10n', 'extendRootPalettes')
 );
 
 array_insert(
@@ -56,42 +59,6 @@ $GLOBALS['TL_DCA']['tl_page']['config']['ondelete_callback'][] = array
 (
     'tl_page_l10n',
     'onDelete'
-);
-
-/**
- * Modify tl_page field DCA
- */
-if (I18nl10n::countRootPages() > 1) {
-    // If there is already a root page, a domain name must be set
-    $GLOBALS['TL_DCA']['tl_page']['fields']['dns']['eval']['mandatory'] = true;
-}
-
-/**
- * Append l10n published field to palette (if NOT root page)
- */
-if (\Input::get('pid') === null || \Input::get('pid') != 0) {
-
-    // switch field splicing based on Contao version
-    if (isset($GLOBALS['TL_DCA']['tl_page']['subpalettes']['published'])) {
-        // is Contao 3.4+
-        $GLOBALS['TL_DCA']['tl_page']['subpalettes']['published'] =
-            'i18nl10n_published,' . $GLOBALS['TL_DCA']['tl_page']['subpalettes']['published'];
-    } else {
-        // is before Contao 3.4
-        foreach ($GLOBALS['TL_DCA']['tl_page']['palettes'] as $k => $v) {
-            $GLOBALS['TL_DCA']['tl_page']['palettes'][$k] = str_replace('published,', 'published,i18nl10n_published,', $v);
-        }
-    }
-
-    // update field class
-    $GLOBALS['TL_DCA']['tl_page']['fields']['published']['eval']['tl_class'] = 'w50';
-}
-
-// Extend root page palette
-$GLOBALS['TL_DCA']['tl_page']['palettes']['root'] = str_replace(
-    'language,fallback;',
-    'language,fallback;{module_i18nl10n},i18nl10n_localizations;',
-    $GLOBALS['TL_DCA']['tl_page']['palettes']['root']
 );
 
 /**
@@ -347,7 +314,7 @@ class tl_page_l10n extends tl_page
             ->execute($dc->activeRecord->id, $dc->activeRecord->language);
 
         // If first child has not same language, language needs to be updated on page tree
-        if(!$objFirstChildPage->count()) {
+        if($objFirstChildPage->count()) {
 
             $arrChildRecords = $this->Database
                 ->getChildRecords(array($dc->activeRecord->id), 'tl_page');
@@ -441,5 +408,68 @@ class tl_page_l10n extends tl_page
         }
 
         return serialize($arrValues);
+    }
+
+    /**
+     * Extend tl_page palette on onload_callback
+     *
+     * Extend palette with i18nl10n_published IF not a root page
+     *
+     * @see DC_File::__construct
+     */
+    public function addI18nl10nPublishedField()
+    {
+        $intId = \Input::get('id');
+
+        if ($intId) {
+            $arrResult = \Database::getInstance()
+                ->prepare('SELECT type FROM tl_page WHERE id = ?')
+                ->limit(1)
+                ->execute($intId)
+                ->fetchAssoc();
+
+            if (!empty($arrResult) && $arrResult['type'] !== 'root') {
+                // switch field splicing based on Contao version
+                if (isset($GLOBALS['TL_DCA']['tl_page']['subpalettes']['published'])) {
+                    // is Contao 3.4+
+                    $GLOBALS['TL_DCA']['tl_page']['subpalettes']['published'] =
+                        'i18nl10n_published,' . $GLOBALS['TL_DCA']['tl_page']['subpalettes']['published'];
+                } else {
+                    // is before Contao 3.4
+                    foreach ($GLOBALS['TL_DCA']['tl_page']['palettes'] as $k => $v) {
+                        $GLOBALS['TL_DCA']['tl_page']['palettes'][$k] = str_replace('published,', 'published,i18nl10n_published,', $v);
+                    }
+                }
+
+                // update field class
+                $GLOBALS['TL_DCA']['tl_page']['fields']['published']['eval']['tl_class'] = 'w50';
+            }
+        }
+    }
+
+    /**
+     * Set dns field eval to mandatory
+     *
+     * @see DC_File::__construct
+     */
+    public function setDnsMandatory()
+    {
+        if (I18nl10n::countRootPages() > 1) {
+            // If there is already a root page, a domain name must be set
+            $GLOBALS['TL_DCA']['tl_page']['fields']['dns']['eval']['mandatory'] = true;
+        }
+    }
+
+    /**
+     * Extend root palettes on onload_callback
+     *
+     * @see DC_File::__construct
+     */
+    public function extendRootPalettes() {
+        $GLOBALS['TL_DCA']['tl_page']['palettes']['root'] = str_replace(
+            'language,fallback;',
+            'language,fallback;{module_i18nl10n},i18nl10n_localizations;',
+            $GLOBALS['TL_DCA']['tl_page']['palettes']['root']
+        );
     }
 }

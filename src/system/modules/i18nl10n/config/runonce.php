@@ -116,7 +116,7 @@ class I18nl10nRunOnceJob extends \Controller
      */
     private function removeL10nPageOrphans()
     {
-        if ($this->tableExists('tl_page_i18nl10n')) {
+        if ($this->Database->tableExists('tl_page_i18nl10n')) {
             $this->Database->query('DELETE FROM tl_page_i18nl10n WHERE NOT EXISTS (SELECT * FROM tl_page as p WHERE tl_page_i18nl10n.pid = p.id)');
         }
     }
