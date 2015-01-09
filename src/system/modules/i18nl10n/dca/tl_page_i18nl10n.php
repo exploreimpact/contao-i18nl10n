@@ -321,7 +321,7 @@ class tl_page_i18nl10n extends tl_page
             $strDomainLanguages .= sprintf(
                 '<li class="i18nl10n_localize_domain"><img class="i18nl10n_flag" src="%1$s.png" /> %2$s<ul>%3$s</ul></li>',
                 $strFlagPath . $domain['default'],
-                $key,
+                $key ?: '*',
                 $strDomainLocalization
             );
         }
@@ -370,8 +370,14 @@ class tl_page_i18nl10n extends tl_page
         foreach ($arrLanguages as $domain) {
             $arrPageIds = $this->Database->getChildRecords(array($domain['rootId']), 'tl_page');
 
+            // Add root page to pageIds
+            array_push($arrPageIds, $domain['rootId']);
+
             foreach ($domain['localizations'] as $localization) {
-                $sql = '
+
+                $strPageIds = implode($arrPageIds, ',');
+
+                $sql = "
                   INSERT INTO
                     tl_page_i18nl10n
                     (
@@ -389,10 +395,10 @@ class tl_page_i18nl10n extends tl_page
                       ON p.id = i.pid
                       AND i.language = ?
                   WHERE
-                    p.id IN(' . implode($arrPageIds, ',') . ')
-                    AND (p.language = ? OR p.language = "")
+                    p.id IN($strPageIds)
+                    AND (p.language = ? OR p.language = '')
                     AND i.pid IS NULL
-                ';
+                ";
 
                 \Database::getInstance()
                     ->prepare($sql)

@@ -273,7 +273,7 @@ class I18nl10n extends \Controller
      */
     static public function getAllRootPages()
     {
-        return \Database::getInstance()->query('SELECT * FROM tl_page WHERE type = "root"');
+        return \Database::getInstance()->query('SELECT * FROM tl_page WHERE type = "root" AND tstamp > 0');
     }
 
     /**
@@ -289,8 +289,9 @@ class I18nl10n extends \Controller
             $strDomain = \Environment::get('host');
         }
 
+        // Find page with related dns or global dns
         return \Database::getInstance()
-            ->prepare('SELECT * FROM tl_page WHERE dns = ?')
+            ->prepare('SELECT * FROM tl_page WHERE dns = ? OR dns = ""')
             ->limit(1)
             ->execute($strDomain);
     }

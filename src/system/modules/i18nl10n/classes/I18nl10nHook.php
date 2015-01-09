@@ -175,26 +175,24 @@ class I18nl10nHook extends \System
         // try to find localized page by alias
         $arrAlias = $this->findAliasByLocalizedAliases($arrMappedFragments, $strLanguage);
 
-        if (!empty($arrAlias)) {
-            // Remove first entry (will be replaced by alias further on)
-            array_shift($arrMappedFragments);
+        // Remove first entry (will be replaced by alias further on)
+        array_shift($arrMappedFragments);
 
-            // if alias has folder, remove related entries
-            if (strpos($arrAlias['alias'], '/') !== false || strpos($arrAlias['l10nAlias'], '/') !== false) {
-                $arrAliasFragments = array_merge(explode('/', $arrAlias['alias']), explode('/', $arrAlias['l10nAlias']));
+        // if alias has folder, remove related entries
+        if (strpos($arrAlias['alias'], '/') !== false || strpos($arrAlias['l10nAlias'], '/') !== false) {
+            $arrAliasFragments = array_merge(explode('/', $arrAlias['alias']), explode('/', $arrAlias['l10nAlias']));
 
-                // remove alias parts
-                foreach ($arrAliasFragments as $strAliasFragment) {
-                    // if alias part is still part of arrFragments, remove it from there
-                    if (($key = array_search($strAliasFragment, $arrMappedFragments)) !== false) {
-                        $arrMappedFragments = array_delete($arrMappedFragments, $key);
-                    }
+            // remove alias parts
+            foreach ($arrAliasFragments as $strAliasFragment) {
+                // if alias part is still part of arrFragments, remove it from there
+                if (($key = array_search($strAliasFragment, $arrMappedFragments)) !== false) {
+                    $arrMappedFragments = array_delete($arrMappedFragments, $key);
                 }
             }
-
-            // Insert alias
-            array_unshift($arrMappedFragments, $arrAlias['alias']);
         }
+
+        // Insert alias
+        array_unshift($arrMappedFragments, $arrAlias['alias']);
 
         // Add language
         // Contao doesn't like language as part of fragments, when language is a parameter
@@ -316,7 +314,7 @@ class I18nl10nHook extends \System
     {
         $arrAlias = array
         (
-            'alias'     => '',
+            'alias'     => $arrFragments[0],
             'l10nAlias' => ''
         );
         $dataBase = \Database::getInstance();

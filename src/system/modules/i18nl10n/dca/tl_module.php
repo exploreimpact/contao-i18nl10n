@@ -16,7 +16,7 @@
 // Palettes
 $GLOBALS['TL_DCA']['tl_module']['palettes']['i18nl10nLanguageSelection'] = '
     {title_legend},name,headline,type;
-    {template_legend:hide},i18nl10n_langTpl,i18nl10n_langStyle,i18nl10n_langHide;
+    {template_legend},i18nl10n_langTpl,i18nl10n_langStyle,i18nl10n_langHide;
     {protected_legend:hide},protected;
     {expert_legend:hide},guests,cssID,space
 ';

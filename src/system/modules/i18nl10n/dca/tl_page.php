@@ -395,11 +395,13 @@ class tl_page_l10n extends tl_page
     {
         $arrLanguages = array();
         $arrValues = deserialize($strValue);
+        $strRootLanguage = $dc->activeRecord->language;
 
         foreach ($arrValues as $key => $value) {
-            // Remove duplicates OR root language
-            if (in_array($value['language'], $arrLanguages)
-                || $value['language'] === $dc->activeRecord->language) {
+            // Remove empty OR duplicates OR root language
+            if (empty($value['language'])
+                || in_array($value['language'], $arrLanguages)
+                || $value['language'] === $strRootLanguage) {
                 array_splice($arrValues, $key, 1);
                 continue;
             }
@@ -423,12 +425,13 @@ class tl_page_l10n extends tl_page
 
         if ($intId) {
             $arrResult = \Database::getInstance()
-                ->prepare('SELECT type FROM tl_page WHERE id = ?')
+                ->prepare('SELECT pid FROM tl_page WHERE id = ?')
                 ->limit(1)
                 ->execute($intId)
                 ->fetchAssoc();
 
-            if (!empty($arrResult) && $arrResult['type'] !== 'root') {
+            // Check if element has parent and therefore is no root page
+            if (!empty($arrResult) && intval($arrResult['pid']) !== 0) {
                 // switch field splicing based on Contao version
                 if (isset($GLOBALS['TL_DCA']['tl_page']['subpalettes']['published'])) {
                     // is Contao 3.4+
@@ -465,7 +468,8 @@ class tl_page_l10n extends tl_page
      *
      * @see DC_File::__construct
      */
-    public function extendRootPalettes() {
+    public function extendRootPalettes()
+    {
         $GLOBALS['TL_DCA']['tl_page']['palettes']['root'] = str_replace(
             'language,fallback;',
             'language,fallback;{module_i18nl10n},i18nl10n_localizations;',
