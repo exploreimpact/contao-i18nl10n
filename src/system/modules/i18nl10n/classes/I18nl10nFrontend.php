@@ -56,6 +56,12 @@ class I18nl10nFrontend extends \Controller
             return false;
         }
 
+        /**
+         * Info:
+         * Be aware that Contao 3.4.0 supports 'isActive' only for start pages
+         * with the alias 'index'. See ticket #7562 (https://github.com/contao/core/issues/7562)
+         */
+
         $arrLanguages = I18nl10n::getLanguagesByDomain();
 
         //get item ids
