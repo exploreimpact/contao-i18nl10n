@@ -14,6 +14,8 @@
 
 namespace Verstaerker\I18nl10n\Classes;
 
+use Verstaerker\I18nl10n\Pages\PageI18nl10nRegular;
+
 
 /**
  * Class I18nl10nHook

@@ -39,6 +39,7 @@ class PageI18nl10nRegular extends \PageRegular
 
         $arrLanguages = I18nl10n::getLanguagesByDomain();
 
+        // Check if default language
         if ($GLOBALS['TL_LANGUAGE'] === $arrLanguages['default']) {
             // if default language is not published, give error
             if (!$objPage->i18nl10n_published) {
@@ -50,34 +51,17 @@ class PageI18nl10nRegular extends \PageRegular
             return;
         }
 
-        $objPage = I18nl10n::findPublishedL10nPage($objPage, $GLOBALS['TL_LANGUAGE']);
+        // Try to get translated page
+        $objPage = I18nl10n::findPublishedL10nPage($objPage);
 
+        // If neither fallback nor localization are published and null
+        // was given, give error 404
         if (!$objPage) {
-            // if fallback is not published, show 404
-            if (!$objPage->i18nl10n_published) {
-                $objError = new $GLOBALS['TL_PTY']['error_404']();
-                $objError->generate($objPage->id);
+            $objError = new $GLOBALS['TL_PTY']['error_404']();
+            $objError->generate($objPage->id);
 
-                parent::generate($objPage);
-                return;
-            } else {
-                // else at least keep current language to prevent language change and set flag
-                $objPage->language            = $GLOBALS['TL_LANGUAGE'];
-                $objPage->useFallbackLanguage = true;
-            }
-
-        }
-
-        // update root information
-        $objL10nRootPage = self::getL10nRootPage($objPage);
-
-        if ($objL10nRootPage) {
-            $objPage->rootTitle = $objL10nRootPage->title;
-
-            if ($objPage->pid == $objPage->rootId) {
-                $objPage->parentTitle     = $objL10nRootPage->title;
-                $objPage->parentPageTitle = $objL10nRootPage->pageTitle;
-            }
+            parent::generate($objPage);
+            return;
         }
 
         parent::generate($objPage, $blnCheckRequest);
@@ -122,30 +106,5 @@ class PageI18nl10nRegular extends \PageRegular
 
         // If everything failed yet use session language
         $GLOBALS['TL_LANGUAGE'] = $_SESSION['TL_LANGUAGE'];
-    }
-
-    /**
-     * Get localized root page by page object
-     *
-     * @param $objPage
-     *
-     * @return \Database\Result|null
-     */
-    public function getL10nRootPage($objPage)
-    {
-        $time = time();
-
-        $sqlPublishedCondition = !BE_USER_LOGGED_IN
-            ? " AND (start = '' OR start < $time) AND (stop = '' OR stop > $time) AND i18nl10n_published = 1 "
-            : '';
-
-        $sql = "SELECT title FROM tl_page_i18nl10n WHERE pid = ? AND language = ? $sqlPublishedCondition";
-
-        $objL10nRootPage = \Database::getInstance()
-            ->prepare($sql)
-            ->limit(1)
-            ->execute($objPage->rootId, $GLOBALS['TL_LANGUAGE']);
-
-        return $objL10nRootPage->row() ? $objL10nRootPage : null;
     }
 }

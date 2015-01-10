@@ -146,17 +146,21 @@ class tl_page_l10n extends tl_page
      */
     public function editL10n($row, $href, $label, $title, $icon)
     {
-        $title = sprintf(
+        $strTitle = sprintf(
             $GLOBALS['TL_LANG']['MSC']['editL10n'],
             "\"{$row['title']}\""
         );
 
-        $buttonURL = $this->addToUrl($href . '&amp;node=' . $row['id']);
+        $strButtonUrl = $this->addToUrl($href . '&amp;node=' . $row['id']);
+
+        // Select icon by localization publishing status
+        $strImgName = $row['i18nl10n_published'] ? 'i18nl10n.png' : 'i18nl10n_invisible.png';
 
         return sprintf(
-            '<a href="%1$s" title="%2$s"><img src="system/modules/i18nl10n/assets/img/i18nl10n.png"></a>',
-            $buttonURL,
-            specialchars($title)
+            '<a href="%1$s" title="%2$s"><img src="system/modules/i18nl10n/assets/img/%3$s"></a>',
+            $strButtonUrl,
+            specialchars($strTitle),
+            $strImgName
         );
     }
 

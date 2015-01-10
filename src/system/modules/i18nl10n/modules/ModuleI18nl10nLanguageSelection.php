@@ -108,7 +108,7 @@ class ModuleI18nl10nLanguageSelection extends \Module
             $this->loadLanguageFile('languages');
 
             // Add default language
-            if (!empty($objPage->i18nl10n_published)) {
+            if ($objPage->i18nl10n_published) {
                 array_unshift(
                     $arrTranslations,
                     array(
