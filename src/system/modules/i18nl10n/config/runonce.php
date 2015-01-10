@@ -125,7 +125,10 @@ class I18nl10nRunOnceJob extends \Controller
      * Move i18nl10n language settings to first root page
      */
     private function moveI18nl10nLanguageSettings() {
-        if ($arrLanguages = $this->Config->get('i18nl10n_languages')) {
+
+        $arrLanguages = deserialize($this->Config->get('i18nl10n_languages'));
+
+        if (!empty($arrLanguages)) {
 
             // Get first root page
             $objRootPage = $this->Database
