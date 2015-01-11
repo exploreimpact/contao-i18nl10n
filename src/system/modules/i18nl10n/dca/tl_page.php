@@ -5,9 +5,10 @@
  * The i18nl10n module for Contao allows you to manage multilingual content
  * on the element level rather than with page trees.
  *
- * @copyright   2015 Verstärker, Patric Eberle
+ * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
- * @package     i18nl10n
+ * @package     i18nl10n dca
+ * @version     1.2.0.rc
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
@@ -123,7 +124,7 @@ array_insert(
 /**
  * Class tl_page_l10n
  *
- * @copyright   2015 Verstärker, Patric Eberle
+ * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     tl_page
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
