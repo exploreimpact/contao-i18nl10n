@@ -124,14 +124,14 @@ class I18nl10n extends \Controller
     {
         //get language specific page properties
         $time   = time();
-        $fields = 'title,language,pageTitle,description,url,cssClass,dateFormat,timeFormat,datimFormat,i18nl10n_published,start,stop';
+        $fields = 'title,language,pageTitle,description,url,cssClass,dateFormat,timeFormat,datimFormat,start,stop';
 
         if (!$blnTranslateOnly) {
-            $fields .= ',id,pid,sorting,tstamp,alias';
+            $fields .= ',id,pid,sorting,tstamp,alias,i18nl10n_published';
         }
 
         $sqlPublishedCondition = !BE_USER_LOGGED_IN
-            ? " AND (start='' OR start < $time) AND (stop='' OR stop > $time) AND i18nl10n_published = 1 "
+            ? "AND (start='' OR start < $time) AND (stop='' OR stop > $time) AND i18nl10n_published = 1"
             : '';
 
         $sql = "SELECT $fields FROM tl_page_i18nl10n WHERE pid = ? AND language = ? $sqlPublishedCondition";
@@ -142,14 +142,14 @@ class I18nl10n extends \Controller
             ->execute($objPage->id, $GLOBALS['TL_LANGUAGE']);
 
         // If fallback and localization are not published, return null
-        if (!$objPage->i18nl10n_published && (!$objL10nPage->count() || !$objL10nPage->i18nl10n_published)) {
+        if (!$objPage->i18nl10n_published && !$objL10nPage->count()) {
             return null;
         }
 
         if ($objL10nPage->first()) {
             // Replace strings with localized content
             foreach (explode(',', $fields) as $field) {
-                if ($field !== 'i18nl10n_published' && $objL10nPage->$field) {
+                if ($objL10nPage->$field) {
                     $objPage->$field = $objL10nPage->$field;
                 }
             }
