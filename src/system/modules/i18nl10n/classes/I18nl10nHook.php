@@ -135,7 +135,9 @@ class I18nl10nHook extends \System
     }
 
     /**
-     * Get page id from url, based on current contao settings
+     * Get page id from url, based on current Contao settings
+     *
+     * Note: In some cases this will never be called...
      *
      * @param array $arrFragments
      *

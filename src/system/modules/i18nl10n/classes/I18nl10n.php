@@ -102,7 +102,7 @@ class I18nl10n extends \Controller
      * @param $intId
      * @param $strLang
      *
-     * @return object
+     * @return object|null
      */
     public static function findL10nWithDetails($intId, $strLang)
     {
@@ -309,7 +309,7 @@ class I18nl10n extends \Controller
 
         // Find page with related dns or global dns
         return \Database::getInstance()
-            ->prepare('SELECT * FROM tl_page WHERE dns = ? OR dns = ""')
+            ->prepare('(SELECT * FROM tl_page WHERE type = "root" AND dns = ?) UNION (SELECT * FROM tl_page WHERE type = "root" AND dns = "")')
             ->limit(1)
             ->execute($strDomain);
     }

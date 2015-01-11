@@ -706,7 +706,7 @@ class tl_page_i18nl10n extends tl_page
                 $objL10nParentPage = I18nl10n::findL10nWithDetails($objBaseLangPage->pid, $strLanguage);
 
                 // Only create folder url if parent is not root
-                if ($objL10nParentPage->type !== 'root') {
+                if ($objL10nParentPage && $objL10nParentPage->type !== 'root') {
                     // Create folder url
                     $varValue = $objL10nParentPage->alias . '/' . $varValue;
                 }
