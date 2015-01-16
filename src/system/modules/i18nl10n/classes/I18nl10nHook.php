@@ -155,7 +155,7 @@ class I18nl10nHook extends \System
         }
 
         // Get default language
-        $strLanguage = $arrLanguages['default'];
+        $strLanguage        = $arrLanguages['default'];
         $arrMappedFragments = $this->mapUrlFragments($arrFragments);
 
         // try to get language by i18nl10n URL
@@ -166,7 +166,7 @@ class I18nl10nHook extends \System
         elseif (\Config::get('i18nl10n_urlParam') === 'alias' && !\Config::get('disableAlias')) {
 
             $intLastIndex = count($arrFragments) - 1;
-            $strRegex = '@^([_\-\pL\pN\.]*(?=\.))?\.?([a-z]{2})$@u';
+            $strRegex     = '@^([_\-\pL\pN\.]*(?=\.))?\.?([a-z]{2})$@u';
 
             // last element should contain language info
             if (preg_match($strRegex, $arrFragments[$intLastIndex], $matches)) {
@@ -258,7 +258,8 @@ class I18nl10nHook extends \System
             ? " AND (start = '' OR start < $time) AND (stop = '' OR stop > $time) AND i18nl10n_published = 1 "
             : '';
 
-        $sql = "SELECT * FROM tl_page_i18nl10n WHERE pid IN ('" . implode(',', $arrPages) . "') AND language = ? $sqlPublishedCondition";
+        $sql = "SELECT * FROM tl_page_i18nl10n WHERE pid IN ('" . implode(',', $arrPages)
+               . "') AND language = ? $sqlPublishedCondition";
 
         $arrL10n = \Database::getInstance()
             ->prepare($sql)
@@ -301,7 +302,8 @@ class I18nl10nHook extends \System
     public function setLanguageInputAppendingCallback($strName)
     {
         if ($strName == 'tl_content' && \Input::get('do') == 'article') {
-            $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] = array('tl_content_l10n', 'appendLanguageInput');
+            $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] =
+                array('tl_content_l10n', 'appendLanguageInput');
         }
     }
 
@@ -313,39 +315,77 @@ class I18nl10nHook extends \System
      *
      * @param $strName
      */
-    public function setPermissionBasedButtonCallback($strName) {
+    public function setPermissionBasedButtonCallback($strName)
+    {
         if ($strName == 'tl_content' && \Input::get('do') == 'article') {
             // Edit button
-            $this->setButtonCallback('tl_content', 'edit', array('tl_content_l10n', 'hideButton'));
+            $this->setButtonCallback(
+                'tl_content',
+                'edit',
+                array('tl_content_l10n', 'hideButton'),
+                array('tl_content_l10n', 'hideButtonVendorSupport')
+            );
 
             // Copy button
-            $this->setButtonCallback('tl_content', 'copy', array('tl_content_l10n', 'hideButton'));
+            $this->setButtonCallback(
+                'tl_content',
+                'copy',
+                array('tl_content_l10n', 'hideButton'),
+                array('tl_content_l10n', 'hideButtonVendorSupport')
+            );
 
             // Cut button
-            $this->setButtonCallback('tl_content', 'cut', array('tl_content_l10n', 'hideButton'));
+            $this->setButtonCallback(
+                'tl_content',
+                'cut',
+                array('tl_content_l10n', 'hideButton')
+            );
 
             // Delete button
-            $this->setButtonCallback('tl_content', 'delete', array('tl_content_l10n', 'deleteButton'));
+            $this->setButtonCallback(
+                'tl_content',
+                'delete',
+                array('tl_content_l10n', 'deleteButton')
+            );
 
             // Toggle button
-            $this->setButtonCallback('tl_content', 'toggle', array('tl_content_l10n', 'toggleButton'));
+            $this->setButtonCallback(
+                'tl_content',
+                'toggle',
+                array('tl_content_l10n', 'toggleButton')
+            );
         }
     }
 
     private function setButtonCallback($strTable, $strOperation, $arrCallback)
     {
-        $arrButtonCallback = $GLOBALS['TL_DCA'][$strTable]['list']['operations'][$strOperation]['button_callback'];
+        $arrVendorCallback = $GLOBALS['TL_DCA'][$strTable]['list']['operations'][$strOperation]['button_callback'];
 
-        if (is_array($arrButtonCallback)) {
-            // Make backup of original callback
-            $GLOBALS['TL_DCA'][$strTable]['list']['operations'][$strOperation]['i18nl10n_' . 'button_callback'] = $arrButtonCallback;
+        // Create an anonymous function to handle callback from difference DCAs
+        $GLOBALS['TL_DCA'][$strTable]['list']['operations'][$strOperation]['button_callback'] =
+            function () use ($strTable, $strOperation, $arrCallback, $arrVendorCallback) {
 
-            // Replace callback definition
-            $arrCallback = array('tl_content_l10n', 'hideButtonVendorSupport');
-        }
+                // Get callback arguments
+                $arrArgs = func_get_args();
+                $tl_content_l10n = new \tl_content_l10n();
 
-        // Set or replace button callback
-        $GLOBALS['TL_DCA'][$strTable]['list']['operations'][$strOperation]['button_callback'] = $arrCallback;
+                // Switch by the type of operation
+                switch ($strOperation) {
+                    case 'delete':
+                        $return = call_user_func_array(array($tl_content_l10n, 'deleteButton'), array($arrVendorCallback, $arrArgs));
+                        break;
+
+                    case 'toggle':
+                        $return = call_user_func_array(array($tl_content_l10n, 'toggleButton'), array($arrVendorCallback, $arrArgs));
+                        break;
+
+                    default:
+                        $return = call_user_func_array(array($tl_content_l10n, 'hideButton'), array($arrVendorCallback, $arrArgs));
+                        break;
+                }
+
+                return $return;
+            };
     }
 
     /**
@@ -470,7 +510,7 @@ class I18nl10nHook extends \System
         elseif (\Config::get('i18nl10n_urlParam') === 'alias' && !\Config::get('disableAlias')) {
 
             $lastIndex = count($arrFragments) - 1;
-            $strRegex = '@^([_\-\pL\pN\.]*(?=\.))?\.?([a-z]{2})$@u';
+            $strRegex  = '@^([_\-\pL\pN\.]*(?=\.))?\.?([a-z]{2})$@u';
 
             // last element should contain language info
             if (preg_match($strRegex, $arrFragments[$lastIndex], $matches)) {
