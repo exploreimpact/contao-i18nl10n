@@ -149,19 +149,255 @@ class tl_content_l10n extends tl_content
         return $i18nl10nLanguages['languages'];
     }
 
-    public function hideButton($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes, $strTable, $arrRootIds, $arrChildRecordIds, $blnCircularReference, $strPrevious, $strNext, $dc) {
+    /**
+     * Create buttons for languages with user/group permission
+     *
+     * @param $arrRow
+     * @param $strHref
+     * @param $strLabel
+     * @param $strTitle
+     * @param $strIcon
+     * @param $arrAttributes
+     *
+     * @return string
+     */
+    public function hideButton($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes) {
+        $strLanguageIdentifier = $this->getLanguageIdentifierByElementRow($arrRow);
+
+        return $this->User->isAdmin || in_array($strLanguageIdentifier, (array) $this->User->i18nl10n_languages)
+            ? $this->createListButton($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes)
+            : '';
     }
 
-    public function hideButtonVendorSupport($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes, $strTable, $arrRootIds, $arrChildRecordIds, $blnCircularReference, $strPrevious, $strNext, $dc) {
-        $objCeAccess = new CeAccess;
-        $strButton = $objCeAccess->hideButton($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes, $strTable, $arrRootIds, $arrChildRecordIds, $blnCircularReference, $strPrevious, $strNext, $dc);
+    /**
+     * Create delete button for languages with user/group permission
+     *
+     * @param $arrRow
+     * @param $strHref
+     * @param $strLabel
+     * @param $strTitle
+     * @param $strIcon
+     * @param $arrAttributes
+     *
+     * @return string
+     */
+    public function deleteButton($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes)
+    {
+        $strLanguageIdentifier = $this->getLanguageIdentifierByElementRow($arrRow);
 
-        \FB::log($dc);
+        if ($this->User->isAdmin || in_array($strLanguageIdentifier, (array) $this->User->i18nl10n_languages)) {
+            $objCallback = new tl_content();
+            return $objCallback->deleteElement($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes);
+        }
 
-        // IF visible, send to CeAccess
-        // IF not, hide button without sending to CeAccess
+        return '';
+    }
 
-        return $strButton;
+    /**
+     * Create toggle button for languages with user/group permission
+     *
+     * @param $arrRow
+     * @param $strHref
+     * @param $strLabel
+     * @param $strTitle
+     * @param $strIcon
+     * @param $arrAttributes
+     *
+     * @return string
+     */
+    public function toggleButton($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes)
+    {
+        $strLanguageIdentifier = $this->getLanguageIdentifierByElementRow($arrRow);
+
+        if ($this->User->isAdmin || in_array($strLanguageIdentifier, (array) $this->User->i18nl10n_languages)) {
+            $objCallback = new tl_content();
+            return $objCallback->toggleIcon($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes);
+        }
+
+        return '';
+    }
+
+    /**
+     * Create buttons for languages with user/group permission with vendor module support
+     *
+     * @param $arrRow
+     * @param $strHref
+     * @param $strLabel
+     * @param $strTitle
+     * @param $strIcon
+     * @param $arrAttributes
+     * @param $strTable
+     * @param $arrRootIds
+     * @param $arrChildRecordIds
+     * @param $blnCircularReference
+     * @param $strPrevious
+     * @param $strNext
+     * @param $dc
+     *
+     * @return string
+     */
+    public function hideButtonVendorSupport($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes, $strTable, $arrRootIds, $arrChildRecordIds, $blnCircularReference, $strPrevious, $strNext, $dc)
+    {
+        $strLanguageIdentifier = $this->getLanguageIdentifierByElementRow($arrRow);
+        $return = '';
+
+        // If is allowed to edit language, create icon string
+        if ($this->User->isAdmin || in_array($strLanguageIdentifier, (array) $this->User->i18nl10n_languages)) {
+            $strButton = $this->createVendorListButton($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes, $strTable, $arrRootIds, $arrChildRecordIds, $blnCircularReference, $strPrevious, $strNext, $dc);
+
+            $return = $strButton !== false
+                ? $strButton
+                : $this->createListButton($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes);
+        }
+
+        return $return;
+    }
+
+    /**
+     * Create delete button for languages with user/group permission with vendor module support
+     *
+     * @param $arrRow
+     * @param $strHref
+     * @param $strLabel
+     * @param $strTitle
+     * @param $strIcon
+     * @param $arrAttributes
+     * @param $strTable
+     * @param $arrRootIds
+     * @param $arrChildRecordIds
+     * @param $blnCircularReference
+     * @param $strPrevious
+     * @param $strNext
+     * @param $dc
+     *
+     * @return bool|string
+     */
+    public function deleteButtonVendorSupport($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes, $strTable, $arrRootIds, $arrChildRecordIds, $blnCircularReference, $strPrevious, $strNext, $dc)
+    {
+        $strLanguageIdentifier = $this->getLanguageIdentifierByElementRow($arrRow);
+        $return = '';
+
+        // If is allowed to edit language, create icon string
+        if ($this->User->isAdmin || in_array($strLanguageIdentifier, (array) $this->User->i18nl10n_languages)) {
+            $return = $this->createVendorListButton($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes, $strTable, $arrRootIds, $arrChildRecordIds, $blnCircularReference, $strPrevious, $strNext, $dc);
+
+            // If button create failed, create it now
+            if ($return === false) {
+                $objCallback = new tl_content();
+                $return = $objCallback->deleteElement($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes);
+            }
+        }
+
+        return $return;
+    }
+
+    /**
+     * Create toggle button for languages with user/group permission with vendor module support
+     *
+     * @param $arrRow
+     * @param $strHref
+     * @param $strLabel
+     * @param $strTitle
+     * @param $strIcon
+     * @param $arrAttributes
+     * @param $strTable
+     * @param $arrRootIds
+     * @param $arrChildRecordIds
+     * @param $blnCircularReference
+     * @param $strPrevious
+     * @param $strNext
+     * @param $dc
+     *
+     * @return bool|string
+     */
+    public function toggleButtonVendorSupport($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes, $strTable, $arrRootIds, $arrChildRecordIds, $blnCircularReference, $strPrevious, $strNext, $dc)
+    {
+        $strLanguageIdentifier = $this->getLanguageIdentifierByElementRow($arrRow);
+        $return = '';
+
+        // If is allowed to edit language, create icon string
+        if ($this->User->isAdmin || in_array($strLanguageIdentifier, (array) $this->User->i18nl10n_languages)) {
+            $return = $this->createVendorListButton($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes, $strTable, $arrRootIds, $arrChildRecordIds, $blnCircularReference, $strPrevious, $strNext, $dc);
+
+            if ($return === false) {
+                $objCallback = new tl_content();
+                $return = $objCallback->toggleIcon($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes);
+            }
+        }
+
+        return $return;
+    }
+
+    /**
+     * Create language identifier
+     *
+     * Get an identifier string of combined root page id and language
+     * based on content element
+     *
+     * @param $arrRow
+     *
+     * @return string
+     */
+    private function getLanguageIdentifierByElementRow($arrRow)
+    {
+        $objArticle = \ArticleModel::findByPk($arrRow['pid']);
+        $objPage = \PageModel::findWithDetails($objArticle->pid);
+
+        return $objPage->rootId . '::' . $arrRow['language'];
+    }
+
+    /**
+     * Create button
+     *
+     * @param $arrRow
+     * @param $strHref
+     * @param $strLabel
+     * @param $strTitle
+     * @param $strIcon
+     * @param $arrAttributes
+     *
+     * @return string
+     */
+    private function createListButton($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes)
+    {
+        return '<a href="' . $this->addToUrl($strHref . '&amp;id=' . $arrRow['id']) . '" title="' . specialchars($strTitle) . '"' . $arrAttributes . '>' . \Image::getHtml($strIcon, $strLabel) . '</a> ';
+    }
+
+    /**
+     * Call a the vendor callback backup
+     *
+     * @param $arrRow
+     * @param $strHref
+     * @param $strLabel
+     * @param $strTitle
+     * @param $strIcon
+     * @param $arrAttributes
+     * @param $strTable
+     * @param $arrRootIds
+     * @param $arrChildRecordIds
+     * @param $blnCircularReference
+     * @param $strPrevious
+     * @param $strNext
+     * @param $dc
+     *
+     * @return string|bool  If something went wrong, 'false' is returned
+     */
+    private function createVendorListButton($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes, $strTable, $arrRootIds, $arrChildRecordIds, $blnCircularReference, $strPrevious, $strNext, $dc)
+    {
+        $arrAct = explode('=', $strHref);
+        $return = false;
+
+        $arrVendorCallback = $GLOBALS['TL_DCA'][$strTable]['list']['operations'][$arrAct[1]]['i18nl10n_button_callback'];
+
+        // Call vendor callback
+        if (is_array($arrVendorCallback)) {
+            $this->import($arrVendorCallback[0]);
+            $return = $this->$arrVendorCallback[0]->$arrVendorCallback[1]($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes, $strTable, $arrRootIds, $arrChildRecordIds, $blnCircularReference, $strPrevious, $strNext, $dc);
+        } elseif (is_callable($arrVendorCallback)) {
+            $return = $arrVendorCallback($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes, $strTable, $arrRootIds, $arrChildRecordIds, $blnCircularReference, $strPrevious, $strNext, $dc);
+        }
+
+        return $return;
     }
 
 }

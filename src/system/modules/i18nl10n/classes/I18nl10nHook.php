@@ -315,20 +315,37 @@ class I18nl10nHook extends \System
      */
     public function setPermissionBasedButtonCallback($strName) {
         if ($strName == 'tl_content' && \Input::get('do') == 'article') {
-            $arrButtonCallback = $GLOBALS['TL_DCA']['tl_content']['list']['operations']['edit']['button_callback'];
-            $arrCallback = array('tl_content_l10n', 'hideButton');
+            // Edit button
+            $this->setButtonCallback('tl_content', 'edit', array('tl_content_l10n', 'hideButton'));
 
-            if (is_array($arrButtonCallback)) {
-                // Make backup of original callback
-                $GLOBALS['TL_DCA']['tl_content']['list']['operations']['edit']['i18nl10n_button_callback'] = $arrButtonCallback;
+            // Copy button
+            $this->setButtonCallback('tl_content', 'copy', array('tl_content_l10n', 'hideButton'));
 
-                // Replace callback definition
-                $arrCallback = array('tl_content_l10n', 'hideButtonVendorSupport');
-            }
+            // Cut button
+            $this->setButtonCallback('tl_content', 'cut', array('tl_content_l10n', 'hideButton'));
 
-            // Set or replace button callback
-            $GLOBALS['TL_DCA']['tl_content']['list']['operations']['edit']['button_callback'] = $arrCallback;
+            // Delete button
+            $this->setButtonCallback('tl_content', 'delete', array('tl_content_l10n', 'deleteButton'));
+
+            // Toggle button
+            $this->setButtonCallback('tl_content', 'toggle', array('tl_content_l10n', 'toggleButton'));
         }
+    }
+
+    private function setButtonCallback($strTable, $strOperation, $arrCallback)
+    {
+        $arrButtonCallback = $GLOBALS['TL_DCA'][$strTable]['list']['operations'][$strOperation]['button_callback'];
+
+        if (is_array($arrButtonCallback)) {
+            // Make backup of original callback
+            $GLOBALS['TL_DCA'][$strTable]['list']['operations'][$strOperation]['i18nl10n_' . 'button_callback'] = $arrButtonCallback;
+
+            // Replace callback definition
+            $arrCallback = array('tl_content_l10n', 'hideButtonVendorSupport');
+        }
+
+        // Set or replace button callback
+        $GLOBALS['TL_DCA'][$strTable]['list']['operations'][$strOperation]['button_callback'] = $arrCallback;
     }
 
     /**

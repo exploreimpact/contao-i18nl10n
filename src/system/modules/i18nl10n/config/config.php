@@ -84,3 +84,8 @@ $GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('\I18nl10n\Classes\I18nl10nH
  * PAGE TYPES
  */
 $GLOBALS['TL_PTY']['regular'] = '\I18nl10n\Pages\PageI18nl10nRegular';
+
+/**
+ * Inherit language permissions
+ */
+$GLOBALS['TL_PERMISSIONS'][] = 'i18nl10n_languages';
