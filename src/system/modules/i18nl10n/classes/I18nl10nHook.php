@@ -26,6 +26,7 @@ namespace Verstaerker\I18nl10n\Classes;
  */
 class I18nl10nHook extends \System
 {
+
     /**
      * Generates url for the site according to settings from the backend
      *
@@ -297,11 +298,36 @@ class I18nl10nHook extends \System
      *
      * @param $strName
      */
-    public function loadDataContainer($strName)
+    public function setLanguageInputAppendingCallback($strName)
     {
         if ($strName == 'tl_content' && \Input::get('do') == 'article') {
-            $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] =
-                array('tl_content_l10n', 'onLoadCallback');
+            $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] = array('tl_content_l10n', 'appendLanguageInput');
+        }
+    }
+
+    /**
+     * loadDataContainerHook
+     *
+     * Redefine button_callback for tl_content elements to allow permission
+     * based display/hide.
+     *
+     * @param $strName
+     */
+    public function setPermissionBasedButtonCallback($strName) {
+        if ($strName == 'tl_content' && \Input::get('do') == 'article') {
+            $arrButtonCallback = $GLOBALS['TL_DCA']['tl_content']['list']['operations']['edit']['button_callback'];
+            $arrCallback = array('tl_content_l10n', 'hideButton');
+
+            if (is_array($arrButtonCallback)) {
+                // Make backup of original callback
+                $GLOBALS['TL_DCA']['tl_content']['list']['operations']['edit']['i18nl10n_button_callback'] = $arrButtonCallback;
+
+                // Replace callback definition
+                $arrCallback = array('tl_content_l10n', 'hideButtonVendorSupport');
+            }
+
+            // Set or replace button callback
+            $GLOBALS['TL_DCA']['tl_content']['list']['operations']['edit']['button_callback'] = $arrCallback;
         }
     }
 

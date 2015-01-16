@@ -368,7 +368,10 @@ class I18nl10n extends \Controller
         if ($objRootPage->count()) {
             // Loop root pages and collect languages
             while ($objRootPage->next()) {
-                $arrLanguages[$objRootPage->dns] = array
+
+                $strDns = $objRootPage->dns ?: '*';
+
+                $arrLanguages[$strDns] = array
                 (
                     'rootId'        => $objRootPage->id,
                     'default'       => $objRootPage->language,
@@ -379,14 +382,14 @@ class I18nl10n extends \Controller
                 foreach (deserialize($objRootPage->i18nl10n_localizations) as $localization) {
 
                     if (!empty($localization['language'])) {
-                        $arrLanguages[$objRootPage->dns]['localizations'][] = $localization['language'];
-                        $arrLanguages[$objRootPage->dns]['languages'][]     = $localization['language'];
+                        $arrLanguages[$strDns]['localizations'][] = $localization['language'];
+                        $arrLanguages[$strDns]['languages'][]     = $localization['language'];
                     }
                 }
 
                 // Sort alphabetically
-                asort($arrLanguages[$objRootPage->dns]['localizations']);
-                asort($arrLanguages[$objRootPage->dns]['languages']);
+                asort($arrLanguages[$strDns]['localizations']);
+                asort($arrLanguages[$strDns]['languages']);
             }
         }
 

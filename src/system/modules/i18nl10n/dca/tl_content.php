@@ -90,7 +90,7 @@ class tl_content_l10n extends tl_content
      *
      * @param DataContainer $dc
      */
-    public function onLoadCallback(DataContainer $dc = null)
+    public function appendLanguageInput(DataContainer $dc = null)
     {
         $this->loadLanguageFile('tl_content');
         $dc->loadDataContainer('tl_page');
@@ -147,6 +147,21 @@ class tl_content_l10n extends tl_content
         $i18nl10nLanguages = I18nl10n::getLanguagesByPageId($arrPageId['id'], 'tl_page');
 
         return $i18nl10nLanguages['languages'];
+    }
+
+    public function hideButton($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes, $strTable, $arrRootIds, $arrChildRecordIds, $blnCircularReference, $strPrevious, $strNext, $dc) {
+    }
+
+    public function hideButtonVendorSupport($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes, $strTable, $arrRootIds, $arrChildRecordIds, $blnCircularReference, $strPrevious, $strNext, $dc) {
+        $objCeAccess = new CeAccess;
+        $strButton = $objCeAccess->hideButton($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes, $strTable, $arrRootIds, $arrChildRecordIds, $blnCircularReference, $strPrevious, $strNext, $dc);
+
+        \FB::log($dc);
+
+        // IF visible, send to CeAccess
+        // IF not, hide button without sending to CeAccess
+
+        return $strButton;
     }
 
 }
