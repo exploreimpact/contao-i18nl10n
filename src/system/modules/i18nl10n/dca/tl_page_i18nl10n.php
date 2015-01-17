@@ -56,7 +56,8 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         (
             array('tl_page', 'addBreadcrumb'),
             array('tl_page_i18nl10n', 'displayLanguageMessage'),
-            array('tl_page_i18nl10n', 'localizeAllHandler')
+            array('tl_page_i18nl10n', 'localizeAllHandler'),
+            array('tl_page_i18nl10n', 'checkPermission')
         ),
         'sql'              => array
         (
@@ -170,21 +171,21 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
             )
         ),
         // copy settings from tl_page dca
-        'sorting'        => $GLOBALS['TL_DCA']['tl_page']['fields']['sorting'],
-        'tstamp'         => $GLOBALS['TL_DCA']['tl_page']['fields']['tstamp'],
-        'title'          => $GLOBALS['TL_DCA']['tl_page']['fields']['title'],
-        'alias'          => $GLOBALS['TL_DCA']['tl_page']['fields']['alias'],
-        'type'           => $GLOBALS['TL_DCA']['tl_page']['fields']['type'],
-        'pageTitle'      => $GLOBALS['TL_DCA']['tl_page']['fields']['pageTitle'],
-        'description'    => $GLOBALS['TL_DCA']['tl_page']['fields']['description'],
-        'url'            => $GLOBALS['TL_DCA']['tl_page']['fields']['url'],
-        'cssClass'       => $GLOBALS['TL_DCA']['tl_page']['fields']['cssClass'],
-        'dateFormat'     => $GLOBALS['TL_DCA']['tl_page']['fields']['dateFormat'],
-        'timeFormat'     => $GLOBALS['TL_DCA']['tl_page']['fields']['timeFormat'],
-        'datimFormat'    => $GLOBALS['TL_DCA']['tl_page']['fields']['datimFormat'],
-        'start'          => $GLOBALS['TL_DCA']['tl_page']['fields']['start'],
-        'stop'           => $GLOBALS['TL_DCA']['tl_page']['fields']['stop'],
-        'language'       => $GLOBALS['TL_DCA']['tl_page']['fields']['language'],
+        'sorting'            => $GLOBALS['TL_DCA']['tl_page']['fields']['sorting'],
+        'tstamp'             => $GLOBALS['TL_DCA']['tl_page']['fields']['tstamp'],
+        'title'              => $GLOBALS['TL_DCA']['tl_page']['fields']['title'],
+        'alias'              => $GLOBALS['TL_DCA']['tl_page']['fields']['alias'],
+        'type'               => $GLOBALS['TL_DCA']['tl_page']['fields']['type'],
+        'pageTitle'          => $GLOBALS['TL_DCA']['tl_page']['fields']['pageTitle'],
+        'description'        => $GLOBALS['TL_DCA']['tl_page']['fields']['description'],
+        'url'                => $GLOBALS['TL_DCA']['tl_page']['fields']['url'],
+        'cssClass'           => $GLOBALS['TL_DCA']['tl_page']['fields']['cssClass'],
+        'dateFormat'         => $GLOBALS['TL_DCA']['tl_page']['fields']['dateFormat'],
+        'timeFormat'         => $GLOBALS['TL_DCA']['tl_page']['fields']['timeFormat'],
+        'datimFormat'        => $GLOBALS['TL_DCA']['tl_page']['fields']['datimFormat'],
+        'start'              => $GLOBALS['TL_DCA']['tl_page']['fields']['start'],
+        'stop'               => $GLOBALS['TL_DCA']['tl_page']['fields']['stop'],
+        'language'           => $GLOBALS['TL_DCA']['tl_page']['fields']['language'],
         'i18nl10n_published' => $GLOBALS['TL_DCA']['tl_page']['fields']['i18nl10n_published']
     )
 );
@@ -781,5 +782,18 @@ class tl_page_i18nl10n extends tl_page
         }
 
         return $arrOptions;
+    }
+
+    /**
+     * Check permissions to edit table tl_page_i18nl10n
+     */
+    public function checkPermission()
+    {
+        if ($this->User->isAdmin) {
+            return;
+        }
+
+        // Restrict the page tree
+        $GLOBALS['TL_DCA']['tl_page']['list']['sorting']['root'] = $this->User->pagemounts;
     }
 }
