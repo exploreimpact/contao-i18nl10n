@@ -530,7 +530,10 @@ class tl_page_i18nl10n extends tl_page
         }
 
         // Check permissions AFTER checking the tid, so hacking attempts are logged
-        if (!$this->User->isAdmin && !$this->User->hasAccess('tl_page_i18nl10n::i18nl10n_published', 'alexf')) {
+        if (!$this->User->isAdmin
+            && (!$this->User->hasAccess('tl_page_i18nl10n::i18nl10n_published', 'alexf')
+                || !$this->userHasPermissionToEditLanguage($row)))
+        {
             return '';
         }
 
@@ -807,10 +810,7 @@ class tl_page_i18nl10n extends tl_page
     }
 
     public function createButton($row, $href, $label, $title, $icon, $attributes) {
-
-        $strLanguageIdentifier = $this->getLanguageIdentifierByLocalizationRow($row);
-
-        return ($this->User->isAdmin || in_array($strLanguageIdentifier, (array) $this->User->i18nl10n_languages))
+        return ($this->User->isAdmin || $this->userHasPermissionToEditLanguage($row))
             ? '<a href="' . $this->addToUrl($href . '&amp;id=' . $row['id']) . '" title="' . specialchars($title) . '"' . $attributes . '>' . \Image::getHtml($icon, $label) . '</a> '
             : '';
     }
@@ -823,12 +823,13 @@ class tl_page_i18nl10n extends tl_page
      *
      * @param $arrRow
      *
-     * @return string
+     * @return boolean
      */
-    private function getLanguageIdentifierByLocalizationRow($arrRow)
+    private function userHasPermissionToEditLanguage($arrRow)
     {
         $objPage = \PageModel::findWithDetails($arrRow['pid']);
+        $strLanguageIdentifier = $objPage->rootId . '::' . $arrRow['language'];
 
-        return $objPage->rootId . '::' . $arrRow['language'];
+        return in_array($strLanguageIdentifier, (array) $this->User->i18nl10n_languages);
     }
 }

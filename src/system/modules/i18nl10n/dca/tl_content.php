@@ -177,11 +177,10 @@ class tl_content_l10n extends tl_content
      */
     public function createButton($strOperation, $arrVendorCallback = null, $arrArgs)
     {
-        $strLanguageIdentifier = $this->getLanguageIdentifierByElementRow($arrArgs[0]);
         $return = '';
 
         // If is allowed to edit language, create icon string
-        if ($this->User->isAdmin || in_array($strLanguageIdentifier, (array) $this->User->i18nl10n_languages)) {
+        if ($this->User->isAdmin || $this->userHasPermissionToEditLanguage($arrArgs[0])) {
             $strButton = $this->createVendorListButton($arrVendorCallback, $arrArgs);
 
             switch ($strOperation) {
@@ -256,9 +255,9 @@ class tl_content_l10n extends tl_content
      *
      * @param $arrRow
      *
-     * @return string
+     * @return boolean
      */
-    private function getLanguageIdentifierByElementRow($arrRow)
+    private function userHasPermissionToEditLanguage($arrRow)
     {
         $objArticle = \ArticleModel::findByPk($arrRow['pid']);
         $objPage = \PageModel::findWithDetails($objArticle->pid);
@@ -266,7 +265,9 @@ class tl_content_l10n extends tl_content
             ? $arrRow['language']
             : '*';
 
-        return $objPage->rootId . '::' . $strLanguage;
+        $strLanguageIdentifier = $objPage->rootId . '::' . $strLanguage;
+
+        return in_array($strLanguageIdentifier, (array) $this->User->i18nl10n_languages);
     }
 
 }
