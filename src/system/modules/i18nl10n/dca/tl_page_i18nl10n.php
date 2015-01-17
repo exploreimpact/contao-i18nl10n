@@ -106,21 +106,23 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
             (
                 'label' => &$GLOBALS['TL_LANG']['tl_page_i18nl10n']['edit'],
                 'href'  => 'act=edit',
-                'icon'  => 'edit.gif'
+                'icon'  => 'edit.gif',
+                'button_callback' => array('tl_page_i18nl10n', 'createButton')
             ),
             'copy'        => array
             (
                 'label' => &$GLOBALS['TL_LANG']['tl_page_i18nl10n']['copy'],
                 'href'  => 'act=copy',
-                'icon'  => 'copy.gif'
+                'icon'  => 'copy.gif',
+                'button_callback' => array('tl_page_i18nl10n', 'createButton')
             ),
             'delete'      => array
             (
                 'label'      => &$GLOBALS['TL_LANG']['tl_page_i18nl10n']['delete'],
                 'href'       => 'act=delete',
                 'icon'       => 'delete.gif',
-                'attributes' => 'onclick="if(!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['deleteConfirm']
-                                . '\')) return false; Backend.getScrollOffset();"'
+                'attributes' => 'onclick="if(!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['deleteConfirm'] . '\')) return false; Backend.getScrollOffset();"',
+                'button_callback' => array('tl_page_i18nl10n', 'createButton')
             ),
             'toggle_l10n' => array
             (
@@ -170,6 +172,25 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
                 'load' => 'eager'
             )
         ),
+        'language'      => array(
+            'label'            => &$GLOBALS['TL_LANG']['MSC']['i18nl10n_fields']['language']['label'],
+            'exclude'          => true,
+            'filter'           => true,
+            'inputType'        => 'select',
+            'search'           => true,
+            'options_callback' => array('tl_page_i18nl10n', 'languageOptions'),
+            'reference'        => &$GLOBALS['TL_LANG']['LNG'],
+            'eval'             => array(
+                'mandatory'          => true,
+                'rgxp'               => 'language',
+                'maxlength'          => 5,
+                'nospace'            => true,
+                'doNotCopy'          => true,
+                'tl_class'           => 'w50 clr',
+                'includeBlankOption' => true
+            ),
+            'sql'                     => "varchar(5) NOT NULL default ''"
+        ),
         // copy settings from tl_page dca
         'sorting'            => $GLOBALS['TL_DCA']['tl_page']['fields']['sorting'],
         'tstamp'             => $GLOBALS['TL_DCA']['tl_page']['fields']['tstamp'],
@@ -185,7 +206,6 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         'datimFormat'        => $GLOBALS['TL_DCA']['tl_page']['fields']['datimFormat'],
         'start'              => $GLOBALS['TL_DCA']['tl_page']['fields']['start'],
         'stop'               => $GLOBALS['TL_DCA']['tl_page']['fields']['stop'],
-        'language'           => $GLOBALS['TL_DCA']['tl_page']['fields']['language'],
         'i18nl10n_published' => $GLOBALS['TL_DCA']['tl_page']['fields']['i18nl10n_published']
     )
 );
@@ -219,24 +239,6 @@ if ($enableCreate) {
         $additionalFunctions
     );
 };
-
-// merge language selection into tl_page_i18nl10n fields
-$GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['language'] = array_merge(
-    $GLOBALS['TL_DCA']['tl_page']['fields']['language'],
-    array(
-        'label'            => &$GLOBALS['TL_LANG']['MSC']['i18nl10n_fields']['language']['label'],
-        'filter'           => true,
-        'inputType'        => 'select',
-        'options_callback' => array('tl_page_i18nl10n', 'languageOptions'),
-        'reference'        => &$GLOBALS['TL_LANG']['LNG'],
-        'eval'             => array_merge(
-            $GLOBALS['TL_DCA']['tl_page']['fields']['language']['eval'],
-            array(
-                'includeBlankOption' => true
-            )
-        )
-    )
-);
 
 
 /**
@@ -528,7 +530,7 @@ class tl_page_i18nl10n extends tl_page
         }
 
         // Check permissions AFTER checking the tid, so hacking attempts are logged
-        if (!$this->User->isAdmin && !$this->User->hasAccess('tl_page_i18nl10n::published', 'alexf')) {
+        if (!$this->User->isAdmin && !$this->User->hasAccess('tl_page_i18nl10n::i18nl10n_published', 'alexf')) {
             return '';
         }
 
@@ -752,7 +754,7 @@ class tl_page_i18nl10n extends tl_page
     }
 
     /**
-     * Create language options based on root page and already used languages
+     * Create language options based on root page, already used languages and user permissions
      *
      * @param DataContainer $dc
      *
@@ -760,9 +762,15 @@ class tl_page_i18nl10n extends tl_page
      */
     public function languageOptions(DataContainer $dc)
     {
-        $id           = $dc->activeRecord->id;
-        $arrLanguages = $GLOBALS['TL_LANG']['LNG'];
-        $arrOptions   = array();
+        // Create identifier string for permission test
+        $objFallbackPage = \PageModel::findWithDetails($dc->activeRecord->pid);
+        $rootId          = $objFallbackPage->rootId;
+        $strIdentifier   = $rootId . '::';
+
+        // Set variables
+        $arrLanguages    = $GLOBALS['TL_LANG']['LNG'];
+        $arrOptions      = array();
+        $id              = $dc->activeRecord->id;
 
         $i18nl10nLanguages = I18nl10n::getLanguagesByPageId($id, 'tl_page_i18nl10n', false);
 
@@ -774,9 +782,10 @@ class tl_page_i18nl10n extends tl_page
 
         $arrSiblingLanguages = explode(',', $arrSiblingLanguages['language']);
 
-        // Create options array base on root page languages
+        // Create options array base on root page languages and user permission
         foreach ($i18nl10nLanguages['localizations'] as $language) {
-            if (!in_array($language, $arrSiblingLanguages)) {
+            if (!in_array($language, $arrSiblingLanguages)
+                && ($this->User->isAdmin || in_array($strIdentifier . $language, (array) $this->User->i18nl10n_languages))) {
                 $arrOptions[$language] = $arrLanguages[$language];
             }
         }
@@ -795,5 +804,31 @@ class tl_page_i18nl10n extends tl_page
 
         // Restrict the page tree
         $GLOBALS['TL_DCA']['tl_page']['list']['sorting']['root'] = $this->User->pagemounts;
+    }
+
+    public function createButton($row, $href, $label, $title, $icon, $attributes) {
+
+        $strLanguageIdentifier = $this->getLanguageIdentifierByLocalizationRow($row);
+
+        return ($this->User->isAdmin || in_array($strLanguageIdentifier, (array) $this->User->i18nl10n_languages))
+            ? '<a href="' . $this->addToUrl($href . '&amp;id=' . $row['id']) . '" title="' . specialchars($title) . '"' . $attributes . '>' . \Image::getHtml($icon, $label) . '</a> '
+            : '';
+    }
+
+    /**
+     * Create language identifier
+     *
+     * Get an identifier string of combined root page id and language
+     * based on localization page row
+     *
+     * @param $arrRow
+     *
+     * @return string
+     */
+    private function getLanguageIdentifierByLocalizationRow($arrRow)
+    {
+        $objPage = \PageModel::findWithDetails($arrRow['pid']);
+
+        return $objPage->rootId . '::' . $arrRow['language'];
     }
 }
