@@ -225,10 +225,16 @@ class tl_page_l10n extends tl_page
         }
 
         if ($dc->activeRecord->type !== 'root') {
-            $i18nl10nLanguages = I18nl10n::getLanguagesByPageId($dc->activeRecord->pid, 'tl_page');
-            $i18nl10nLanguages = $i18nl10nLanguages['localizations'];
+            $arrI18nl10nLanguages = I18nl10n::getLanguagesByPageId($dc->activeRecord->pid, 'tl_page');
+            $arrLocalizations = $arrI18nl10nLanguages['localizations'];
         } else {
-            $i18nl10nLanguages = deserialize($dc->activeRecord->i18nl10n_localizations);
+            // Flatten localizations
+            $arrLocalizations = array_map(
+                function($value) {
+                    return $value['language'];
+                },
+                deserialize($dc->activeRecord->i18nl10n_localizations)
+            );
         }
 
         // If folder urls are enabled, get only last part from alias
@@ -257,7 +263,7 @@ class tl_page_l10n extends tl_page
         );
 
         // Now make copies in each language
-        foreach ($i18nl10nLanguages as $language) {
+        foreach ($arrLocalizations as $language) {
             $strFolderUrl = '';
             $fields['sorting'] += 128;
             $fields['language'] = $language;
