@@ -37,8 +37,6 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['language'] = array_merge(
         'reference'        => &$GLOBALS['TL_LANG']['LNG'],
         'eval'             => array(
             'mandatory'          => false,
-            'includeBlankOption' => true,
-            'blankOptionLabel'   => $GLOBALS['TL_LANG']['tl_content']['i18nl10n_blankOptionLabel'],
             'rgxp'               => 'alpha',
             'maxlength'          => 2,
             'nospace'            => true,
@@ -132,6 +130,9 @@ class tl_content_l10n extends tl_content
     /**
      * Get available languages by content element id
      *
+     * - Filter by permission
+     * - Add a blank option (by permission)
+     *
      * @param $id
      *
      * @return array
@@ -145,8 +146,25 @@ class tl_content_l10n extends tl_content
             ->fetchAssoc();
 
         $i18nl10nLanguages = I18nl10n::getLanguagesByPageId($arrPageId['id'], 'tl_page');
+        $strIdentifier = $i18nl10nLanguages['rootId'] . '::';
 
-        return $i18nl10nLanguages['languages'];
+        // Create base and add neutral (*) language if admin or has permission
+        $arrOptions = $this->User->isAdmin || in_array($strIdentifier . '*', (array) $this->User->i18nl10n_languages)
+              ? array('')
+              : array();
+
+        // Add languages based on permissions
+        if ($this->User->isAdmin) {
+            array_insert($arrOptions, 1, $i18nl10nLanguages['languages']);
+        } else {
+            foreach ($i18nl10nLanguages['languages'] as $language) {
+                if (in_array($strIdentifier . $language, (array) $this->User->i18nl10n_languages)) {
+                    $arrOptions[] = $language;
+                }
+            }
+        }
+
+        return $arrOptions;
     }
 
     /**

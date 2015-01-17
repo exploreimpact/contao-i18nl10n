@@ -68,7 +68,7 @@ class tl_user_group_i18nl10n extends tl_user_group
         foreach ($arrLanguages as $domain => $config) {
 
             $arrLanguages = array(
-                $config['rootId'] . '::neutral' => ''
+                $config['rootId'] . '::*' => ''
             );
 
             // Loop languages
