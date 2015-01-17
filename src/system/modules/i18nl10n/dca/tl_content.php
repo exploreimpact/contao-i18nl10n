@@ -259,6 +259,8 @@ class tl_content_l10n extends tl_content
      */
     private function userHasPermissionToEditLanguage($arrRow)
     {
+        // @todo: check for tid like tl_page_i18nl10n.605
+
         $objArticle = \ArticleModel::findByPk($arrRow['pid']);
         $objPage = \PageModel::findWithDetails($objArticle->pid);
         $strLanguage = !empty($arrRow['language'])

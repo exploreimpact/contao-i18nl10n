@@ -487,4 +487,88 @@ class tl_page_l10n extends tl_page
             $GLOBALS['TL_DCA']['tl_page']['palettes']['root']
         );
     }
+
+    public function createButton($strOperation, $arrVendorCallback = null, $arrArgs)
+    {
+        $return = '';
+
+        // If is allowed to edit language, create icon string
+        if ($this->User->isAdmin || $this->userHasPermissionToEditLanguage($arrArgs[0])) {
+            $strButton = $this->createVendorListButton($arrVendorCallback, $arrArgs);
+
+            // @todo: check if field permission check is needed
+
+            switch ($strOperation) {
+                case 'delete':
+                    $return = $strButton === false
+                        ? call_user_func_array(array($this, 'deleteElement'), $arrArgs)
+                        : $strButton;
+                    break;
+
+                case 'toggle':
+                    $return = $strButton === false
+                        ? call_user_func_array(array($this, 'toggleIcon'), $arrArgs)
+                        : $strButton;
+                    break;
+
+                default:
+                    $return = $strButton === false
+                        ? call_user_func_array(array($this, 'createListButton'), $arrArgs)
+                        : $strButton;
+            }
+
+        }
+
+        return $return;
+    }
+
+    /**
+     * Create button
+     *
+     * @param $arrRow
+     * @param $strHref
+     * @param $strLabel
+     * @param $strTitle
+     * @param $strIcon
+     * @param $arrAttributes
+     *
+     * @return string
+     */
+    private function createListButton($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes)
+    {
+        return '<a href="' . $this->addToUrl($strHref . '&amp;id=' . $arrRow['id']) . '" title="' . specialchars($strTitle) . '"' . $arrAttributes . '>' . \Image::getHtml($strIcon, $strLabel) . '</a> ';
+    }
+
+    /**
+     * Call a the vendor callback backup
+     *
+     * @param   $arrVendorCallback
+     * @param   $arrArgs            {row, href, label, title, icon, attributes, table, rootIds, childRecordIds, circularReference, previous, next, dc}
+     *
+     * @return string|bool  If something went wrong, 'false' is returned
+     */
+    private function createVendorListButton($arrVendorCallback = null, $arrArgs)
+    {
+        $return = false;
+
+        // Call vendor callback
+        if (is_array($arrVendorCallback)) {
+            $vendorClass = new $arrVendorCallback[0];
+            $return = call_user_func_array(array($vendorClass, $arrVendorCallback[1]), $arrArgs);
+        } elseif (is_callable($arrVendorCallback)) {
+            $return = call_user_func_array($arrVendorCallback, $arrArgs);
+        }
+
+        return $return;
+    }
+
+    private function userHasPermissionToEditLanguage($arrRow)
+    {
+        // @todo: check for tid like tl_page_i18nl10n.605
+
+        $objPage = \PageModel::findWithDetails($arrRow['id']);
+        $strLanguageIdentifier = $objPage->rootId . '::' . $arrRow['language'];
+
+        return in_array($strLanguageIdentifier, (array) $this->User->i18nl10n_languages);
+    }
 }

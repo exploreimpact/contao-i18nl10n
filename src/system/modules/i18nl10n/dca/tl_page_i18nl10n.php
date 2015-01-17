@@ -827,6 +827,8 @@ class tl_page_i18nl10n extends tl_page
      */
     private function userHasPermissionToEditLanguage($arrRow)
     {
+        // @todo: check for tid like tl_page_i18nl10n.605
+
         $objPage = \PageModel::findWithDetails($arrRow['pid']);
         $strLanguageIdentifier = $objPage->rootId . '::' . $arrRow['language'];
 

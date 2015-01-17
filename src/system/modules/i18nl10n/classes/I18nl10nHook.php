@@ -299,7 +299,7 @@ class I18nl10nHook extends \System
      *
      * @param $strName
      */
-    public function setLanguageInputAppendingCallback($strName)
+    public function appendLanguageSelectCallback($strName)
     {
         if ($strName == 'tl_content' && \Input::get('do') == 'article') {
             $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] =
@@ -308,16 +308,17 @@ class I18nl10nHook extends \System
     }
 
     /**
-     * loadDataContainerHook
+     * loadDataContainer hook
      *
      * Redefine button_callback for tl_content elements to allow permission
      * based display/hide.
      *
      * @param $strName
      */
-    public function setPermissionBasedButtonCallback($strName)
+    public function appendButtonCallback($strName)
     {
-        if ($strName == 'tl_content' && \Input::get('do') == 'article') {
+        // Append tl_content callbacks
+        if ($strName === 'tl_content' && \Input::get('do') === 'article') {
             // Edit button
             $this->setButtonCallback(
                 'tl_content',
@@ -348,22 +349,79 @@ class I18nl10nHook extends \System
                 'toggle'
             );
         }
+
+        // Append tl_page callbacks
+        if ($strName === 'tl_page' && \Input::get('do') === 'page') {
+            // Edit button
+            $this->setButtonCallback(
+                'tl_page',
+                'edit'
+            );
+
+            // Copy button
+            $this->setButtonCallback(
+                'tl_page',
+                'copy'
+            );
+
+            // Copy children button
+            $this->setButtonCallback(
+                'tl_page',
+                'copyChilds'
+            );
+
+            // Cut button
+            $this->setButtonCallback(
+                'tl_page',
+                'cut'
+            );
+
+            // Delete button
+            $this->setButtonCallback(
+                'tl_page',
+                'delete'
+            );
+
+            // Toggle button
+            $this->setButtonCallback(
+                'tl_page',
+                'toggle'
+            );
+        }
     }
 
+    /**
+     * Set button callback for given table and operation
+     *
+     * @param $strTable
+     * @param $strOperation
+     */
     private function setButtonCallback($strTable, $strOperation)
     {
         $arrVendorCallback = $GLOBALS['TL_DCA'][$strTable]['list']['operations'][$strOperation]['button_callback'];
 
-        // Create an anonymous function to handle callback from difference DCAs
+        switch ($strTable) {
+            case 'tl_page':
+                $objCallback = new \tl_page_l10n();
+                break;
+
+            case 'tl_content':
+                $objCallback = new \tl_content_l10n();
+                break;
+
+            default:
+                return;
+        }
+
+        // Create an anonymous function to handle callback from different DCAs
         $GLOBALS['TL_DCA'][$strTable]['list']['operations'][$strOperation]['button_callback'] =
-            function () use ($strTable, $strOperation, $arrVendorCallback) {
+            function () use ($strTable, $objCallback, $strOperation, $arrVendorCallback) {
 
                 // Get callback arguments
                 $arrArgs = func_get_args();
-                $tl_content_l10n = new \tl_content_l10n();
 
                 return call_user_func_array(
-                    array($tl_content_l10n, 'createButton'),
+                    array($objCallback, 'createButton'),
                     array($strOperation, $arrVendorCallback, $arrArgs)
                 );
             };
