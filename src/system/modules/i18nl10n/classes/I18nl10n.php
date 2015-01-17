@@ -187,7 +187,7 @@ class I18nl10n extends \Controller
     {
         switch ($strTable) {
             case 'tl_page_i18nl10n':
-                // no break
+                // fall trough
 
             case 'tl_page':
                 $rootId = self::getRootIdByPageId($intId, $strTable);
