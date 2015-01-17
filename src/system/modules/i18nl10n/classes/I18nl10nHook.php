@@ -321,70 +321,51 @@ class I18nl10nHook extends \System
             // Edit button
             $this->setButtonCallback(
                 'tl_content',
-                'edit',
-                array('tl_content_l10n', 'hideButton'),
-                array('tl_content_l10n', 'hideButtonVendorSupport')
+                'edit'
             );
 
             // Copy button
             $this->setButtonCallback(
                 'tl_content',
-                'copy',
-                array('tl_content_l10n', 'hideButton'),
-                array('tl_content_l10n', 'hideButtonVendorSupport')
+                'copy'
             );
 
             // Cut button
             $this->setButtonCallback(
                 'tl_content',
-                'cut',
-                array('tl_content_l10n', 'hideButton')
+                'cut'
             );
 
             // Delete button
             $this->setButtonCallback(
                 'tl_content',
-                'delete',
-                array('tl_content_l10n', 'deleteButton')
+                'delete'
             );
 
             // Toggle button
             $this->setButtonCallback(
                 'tl_content',
-                'toggle',
-                array('tl_content_l10n', 'toggleButton')
+                'toggle'
             );
         }
     }
 
-    private function setButtonCallback($strTable, $strOperation, $arrCallback)
+    private function setButtonCallback($strTable, $strOperation)
     {
         $arrVendorCallback = $GLOBALS['TL_DCA'][$strTable]['list']['operations'][$strOperation]['button_callback'];
 
         // Create an anonymous function to handle callback from difference DCAs
         $GLOBALS['TL_DCA'][$strTable]['list']['operations'][$strOperation]['button_callback'] =
-            function () use ($strTable, $strOperation, $arrCallback, $arrVendorCallback) {
+            function () use ($strTable, $strOperation, $arrVendorCallback) {
 
                 // Get callback arguments
                 $arrArgs = func_get_args();
                 $tl_content_l10n = new \tl_content_l10n();
 
-                // Switch by the type of operation
-                switch ($strOperation) {
-                    case 'delete':
-                        $return = call_user_func_array(array($tl_content_l10n, 'deleteButton'), array($arrVendorCallback, $arrArgs));
-                        break;
-
-                    case 'toggle':
-                        $return = call_user_func_array(array($tl_content_l10n, 'toggleButton'), array($arrVendorCallback, $arrArgs));
-                        break;
-
-                    default:
-                        $return = call_user_func_array(array($tl_content_l10n, 'hideButton'), array($arrVendorCallback, $arrArgs));
-                        break;
-                }
-
-                return $return;
+                return call_user_func_array(
+                    array($tl_content_l10n, 'createButton'),
+                    array($strOperation, $arrVendorCallback, $arrArgs)
+                );
             };
     }
 

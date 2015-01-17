@@ -157,72 +157,34 @@ class tl_content_l10n extends tl_content
      *
      * @return  string
      */
-    public function hideButton($arrVendorCallback = null, $arrArgs)
+    public function createButton($strOperation, $arrVendorCallback = null, $arrArgs)
     {
         $strLanguageIdentifier = $this->getLanguageIdentifierByElementRow($arrArgs[0]);
         $return = '';
-
 
         // If is allowed to edit language, create icon string
         if ($this->User->isAdmin || in_array($strLanguageIdentifier, (array) $this->User->i18nl10n_languages)) {
             $strButton = $this->createVendorListButton($arrVendorCallback, $arrArgs);
 
-            $return = $strButton !== false
-                ? $strButton
-                : call_user_func_array(array($this, 'createListButton'), $arrArgs);
-        }
+            switch ($strOperation) {
+                case 'delete':
+                    $return = $strButton === false
+                        ? call_user_func_array(array($this, 'deleteElement'), $arrArgs)
+                        : $strButton;
+                    break;
 
-        return $return;
-    }
+                case 'toggle':
+                    $return = $strButton === false
+                        ? call_user_func_array(array($this, 'toggleIcon'), $arrArgs)
+                        : $strButton;
+                    break;
 
-    /**
-     * Create delete button for languages with user/group permission with vendor module support
-     *
-     * @param   $arrVendorCallback
-     * @param   $arrArgs            {row, href, label, title, icon, attributes, table, rootIds, childRecordIds, circularReference, previous, next, dc}
-     *
-     * @return bool|string
-     */
-    public function deleteButton($arrVendorCallback = null, $arrArgs)
-    {
-        $strLanguageIdentifier = $this->getLanguageIdentifierByElementRow($arrArgs[0]);
-        $return = '';
-
-        // If is allowed to edit language, create icon string
-        if ($this->User->isAdmin || in_array($strLanguageIdentifier, (array) $this->User->i18nl10n_languages)) {
-            $return = $this->createVendorListButton($arrVendorCallback, $arrArgs);
-
-            // If button create failed, create it now
-            if ($return === false) {
-                $objCallback = new tl_content();
-                $return = call_user_func_array(array($objCallback, 'deleteElement'), $arrArgs);
+                default:
+                    $return = $strButton === false
+                        ? call_user_func_array(array($this, 'createListButton'), $arrArgs)
+                        : $strButton;
             }
-        }
 
-        return $return;
-    }
-
-    /**
-     * Create toggle button for languages with user/group permission with vendor module support
-     *
-     * @param   $arrVendorCallback
-     * @param   $arrArgs            {row, href, label, title, icon, attributes, table, rootIds, childRecordIds, circularReference, previous, next, dc}
-     *
-     * @return bool|string
-     */
-    public function toggleButton($arrVendorCallback = null, $arrArgs)
-    {
-        $strLanguageIdentifier = $this->getLanguageIdentifierByElementRow($arrArgs[0]);
-        $return = '';
-
-        // If is allowed to edit language, create icon string
-        if ($this->User->isAdmin || in_array($strLanguageIdentifier, (array) $this->User->i18nl10n_languages)) {
-            $return = $this->createVendorListButton($arrVendorCallback, $arrArgs);
-
-            if ($return === false) {
-                $objCallback = new tl_content();
-                $return = call_user_func_array(array($objCallback, 'toggleIcon'), $arrArgs);
-            }
         }
 
         return $return;
