@@ -527,7 +527,7 @@ class tl_page_i18nl10n extends tl_page
         }
 
         // Check permissions AFTER checking the tid, so hacking attempts are logged
-        if (!$this->User->isAdmin && !$this->User->hasAccess('tl_page_i18nl10n::published', 'alexf')) {
+        if (!$this->User->isAdmin && !$this->User->hasAccess('tl_page_i18nl10n::i18nl10n_published', 'alexf')) {
             return '';
         }
 
