@@ -29,7 +29,7 @@ if (\Input::get('do') === 'i18nl10n') {
     $arrLanguages = I18nl10n::getAllLanguages();
 
     // Check if localizations are available, else the create option for the DCA will be disabled
-    if (!count($arrLanguages)) {
+    if (count($arrLanguages)) {
         foreach ($arrLanguages as $domain) {
             if (count($domain['localizations'])) {
                 $enableCreate = true;
@@ -199,7 +199,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['url']['eval']['tl_class']     
 $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['i18nl10n_published']['eval']['tl_class'] = 'w50 m12';
 
 // Splice in localize all in case languages are available
-if (!$enableCreate) {
+if ($enableCreate) {
     $additionalFunctions = array(
         'localize_all' => array
         (
