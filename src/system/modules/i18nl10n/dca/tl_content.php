@@ -80,7 +80,6 @@ class tl_content_l10n extends tl_content
         return $strElement;
     }
 
-
     /**
      * Onload callback for tl_content
      *
@@ -170,8 +169,9 @@ class tl_content_l10n extends tl_content
     /**
      * Create buttons for languages with user/group permission with vendor module support
      *
-     * @param   $arrVendorCallback
-     * @param   $arrArgs            {row, href, label, title, icon, attributes, table, rootIds, childRecordIds, circularReference, previous, next, dc}
+     * @param   array   $strOperation      operation name of button
+     * @param   array   $arrVendorCallback
+     * @param   array   $arrArgs           {row, href, label, title, icon, attributes, table, rootIds, childRecordIds, circularReference, previous, next, dc}
      *
      * @return  string
      */
@@ -262,8 +262,11 @@ class tl_content_l10n extends tl_content
     {
         $objArticle = \ArticleModel::findByPk($arrRow['pid']);
         $objPage = \PageModel::findWithDetails($objArticle->pid);
+        $strLanguage = !empty($arrRow['language'])
+            ? $arrRow['language']
+            : '*';
 
-        return $objPage->rootId . '::' . $arrRow['language'];
+        return $objPage->rootId . '::' . $strLanguage;
     }
 
 }

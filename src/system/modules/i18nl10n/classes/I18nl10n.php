@@ -407,4 +407,46 @@ class I18nl10n extends \Controller
 
         return $objRootPages->count();
     }
+
+    /**
+     * Get language options for user and group permission
+     *
+     * @return array
+     */
+    public function getLanguageOptionsForUserAndGroup()
+    {
+        return $this->mapLanguageOptionsForUserAndGroup($this->getAllLanguages());
+    }
+
+    /**
+     * Create domain related language array for user and group permission
+     *
+     * @param $arrLanguages
+     *
+     * @return array
+     */
+    private function mapLanguageOptionsForUserAndGroup($arrLanguages) {
+        $arrMappedLanguages = array();
+
+        // Loop Domains
+        foreach ($arrLanguages as $domain => $config) {
+
+            $arrLanguages = array(
+                $config['rootId'] . '::*' => ''
+            );
+
+            // Loop languages
+            foreach ($config['languages'] as $language) {
+                // Create unique key by combining root id and language
+                $strKey = $config['rootId'] . '::' . $language;
+
+                // Add rootId to make unique
+                $arrLanguages[$strKey] = $language;
+            }
+
+            $arrMappedLanguages[$domain] = $arrLanguages;
+        }
+
+        return $arrMappedLanguages;
+    }
 }
