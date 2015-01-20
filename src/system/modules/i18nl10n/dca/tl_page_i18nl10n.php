@@ -555,7 +555,7 @@ class tl_page_i18nl10n extends tl_page
 
         // only return image element for icon
         if (!$this->User->isAdmin && !$this->User->isAllowed(2, $objPage->row())) {
-            return \Image::getHtml($icon);
+            return '';
         }
 
         // return linked image element for icon
