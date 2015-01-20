@@ -488,6 +488,15 @@ class tl_page_l10n extends tl_page
         );
     }
 
+    /**
+     * Create list button on button_callback
+     *
+     * @param      $strOperation
+     * @param null $arrVendorCallback
+     * @param      $arrArgs
+     *
+     * @return string
+     */
     public function createButton($strOperation, $arrVendorCallback = null, $arrArgs)
     {
         $return = '';
@@ -562,6 +571,13 @@ class tl_page_l10n extends tl_page
         return $return;
     }
 
+    /**
+     * Check if current user has permission to edit given page
+     *
+     * @param $arrRow
+     *
+     * @return bool
+     */
     private function userHasPermissionToEditLanguage($arrRow)
     {
         // @todo: check for tid like tl_page_i18nl10n.605
