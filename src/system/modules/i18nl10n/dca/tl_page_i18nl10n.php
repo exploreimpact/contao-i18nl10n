@@ -8,7 +8,7 @@
  * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n dca
- * @version     1.2.0.rc
+ * @version     1.2.1
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
@@ -389,7 +389,7 @@ class tl_page_i18nl10n extends tl_page
                         alias, i18nl10n_published, start, stop, dateFormat, timeFormat, datimFormat
                     )
                   SELECT
-                    p.id AS pid, p.sorting, p.tstamp, ? AS language,p.title, p.type, p.pageTitle,
+                    p.id AS pid, p.sorting, p.tstamp, ? AS language, p.title, p.type, p.pageTitle,
                     p.description, p.cssClass, p.alias, p.published, p.start, p.stop,
                     p.dateFormat, p.timeFormat, p.datimFormat
                   FROM
@@ -400,7 +400,6 @@ class tl_page_i18nl10n extends tl_page
                       AND i.language = ?
                   WHERE
                     p.id IN($strPageIds)
-                    AND (p.language = ? OR p.language = '')
                     AND i.pid IS NULL
                 ";
 
@@ -561,7 +560,7 @@ class tl_page_i18nl10n extends tl_page
 
         // only return image element for icon
         if (!$this->User->isAdmin && !$this->User->isAllowed(2, $objPage->row())) {
-            return \Image::getHtml($icon);
+            return '';
         }
 
         // return linked image element for icon

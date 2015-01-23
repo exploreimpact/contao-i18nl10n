@@ -9,7 +9,7 @@
  * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n classes
- * @version     1.2.0.rc
+ * @version     1.2.1
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
@@ -105,7 +105,8 @@ class I18nl10nFrontend extends \Controller
                 foreach ($arrLocalizedPages as $row)
                 {
 
-                    if ($row['pid'] == $item['id'])
+                    // Update navigation items with localization values
+                    if ($row['pid'] === $item['id'])
                     {
 
                         $foundItem = true;
@@ -118,7 +119,8 @@ class I18nl10nFrontend extends \Controller
                         switch ($item['type'])
                         {
                             case 'forward':
-                                $forwardRow = self::getI18nForward($item, $row['language']);
+                                // Get localized target identifier
+                                $forwardRow = self::getI18nForward($item, $item['language']);
                                 $forwardRow['alias'] = $item['alias'] = $forwardRow['alias'] ? : $item['alias'];
                                 $item['href'] = $this->generateFrontendUrl($forwardRow);
                                 break;

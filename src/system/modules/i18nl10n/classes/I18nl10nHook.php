@@ -9,7 +9,7 @@
  * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n classes
- * @version     1.2.0.rc
+ * @version     1.2.1
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
@@ -459,7 +459,7 @@ class I18nl10nHook extends \System
                 UNION
                 (SELECT id as pageId, alias, 'tl_page' as 'source'
                  FROM tl_page
-                 WHERE alias IN('" . $strAlias . "') AND language = ?)
+                 WHERE alias IN('" . $strAlias . "'))
                 ORDER BY " . $dataBase->findInSet('alias', $arrAliasGuess);
 
         $objL10nPage = $dataBase
@@ -538,7 +538,7 @@ class I18nl10nHook extends \System
     private function mapUrlFragments($arrFragments)
     {
         // Delete auto_item
-        if (\Config::get('useAutoItem') && $arrFragments[1] == 'auto_item') {
+        if (\Config::get('useAutoItem') && $arrFragments[1] === 'auto_item') {
             $arrFragments = array_delete($arrFragments, 1);
         }
 
