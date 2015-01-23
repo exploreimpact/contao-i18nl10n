@@ -309,7 +309,7 @@ class tl_page_l10n extends tl_page
     }
 
     /**
-     * Set root page language as default language and update available languages
+     * Update child pages of saved root with default language
      *
      * @param DataContainer $dc
      */
@@ -320,21 +320,12 @@ class tl_page_l10n extends tl_page
             return;
         }
 
-        $objFirstChildPage = $this->Database
-            ->prepare('SELECT * FROM tl_page WHERE pid = ? && language = ?')
-            ->execute($dc->activeRecord->id, $dc->activeRecord->language);
+        $arrChildRecords = $this->Database
+            ->getChildRecords(array($dc->activeRecord->id), 'tl_page');
 
-        // If first child has not same language, language needs to be updated on page tree
-        if($objFirstChildPage->count()) {
-
-            $arrChildRecords = $this->Database
-                ->getChildRecords(array($dc->activeRecord->id), 'tl_page');
-
-            $this->Database
-                ->prepare('UPDATE tl_page SET language = ? WHERE id IN(' . implode(',', $arrChildRecords) . ')')
-                ->execute($dc->activeRecord->language);
-
-        }
+        $this->Database
+            ->prepare('UPDATE tl_page SET language = ? WHERE id IN(' . implode(',', $arrChildRecords) . ')')
+            ->execute($dc->activeRecord->language);
     }
 
     /**

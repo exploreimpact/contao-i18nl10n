@@ -337,7 +337,7 @@ class I18nl10nHook extends \System
                 UNION
                 (SELECT id as pageId, alias, 'tl_page' as 'source'
                  FROM tl_page
-                 WHERE alias IN('" . $strAlias . "') AND language = ?)
+                 WHERE alias IN('" . $strAlias . "'))
                 ORDER BY " . $dataBase->findInSet('alias', $arrAliasGuess);
 
         $objL10nPage = $dataBase
@@ -416,7 +416,7 @@ class I18nl10nHook extends \System
     private function mapUrlFragments($arrFragments)
     {
         // Delete auto_item
-        if (\Config::get('useAutoItem') && $arrFragments[1] == 'auto_item') {
+        if (\Config::get('useAutoItem') && $arrFragments[1] === 'auto_item') {
             $arrFragments = array_delete($arrFragments, 1);
         }
 

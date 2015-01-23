@@ -105,7 +105,8 @@ class I18nl10nFrontend extends \Controller
                 foreach ($arrLocalizedPages as $row)
                 {
 
-                    if ($row['pid'] == $item['id'])
+                    // Update navigation items with localization values
+                    if ($row['pid'] === $item['id'])
                     {
 
                         $foundItem = true;
@@ -118,7 +119,8 @@ class I18nl10nFrontend extends \Controller
                         switch ($item['type'])
                         {
                             case 'forward':
-                                $forwardRow = self::getI18nForward($item, $row['language']);
+                                // Get localized target identifier
+                                $forwardRow = self::getI18nForward($item, $item['language']);
                                 $forwardRow['alias'] = $item['alias'] = $forwardRow['alias'] ? : $item['alias'];
                                 $item['href'] = $this->generateFrontendUrl($forwardRow);
                                 break;

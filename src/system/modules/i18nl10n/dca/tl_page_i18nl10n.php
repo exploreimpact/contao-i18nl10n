@@ -386,7 +386,7 @@ class tl_page_i18nl10n extends tl_page
                         alias, i18nl10n_published, start, stop, dateFormat, timeFormat, datimFormat
                     )
                   SELECT
-                    p.id AS pid, p.sorting, p.tstamp, ? AS language,p.title, p.type, p.pageTitle,
+                    p.id AS pid, p.sorting, p.tstamp, ? AS language, p.title, p.type, p.pageTitle,
                     p.description, p.cssClass, p.alias, p.published, p.start, p.stop,
                     p.dateFormat, p.timeFormat, p.datimFormat
                   FROM
@@ -397,7 +397,6 @@ class tl_page_i18nl10n extends tl_page
                       AND i.language = ?
                   WHERE
                     p.id IN($strPageIds)
-                    AND (p.language = ? OR p.language = '')
                     AND i.pid IS NULL
                 ";
 

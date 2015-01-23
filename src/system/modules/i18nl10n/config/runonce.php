@@ -65,6 +65,8 @@ class I18nl10nRunOnceJob extends \Controller
 
         $this->removeL10nPageOrphans();
         $this->removeDeprecatedSettings();
+
+        $this->updateChildPageLanguage();
     }
 
     /**
@@ -125,7 +127,8 @@ class I18nl10nRunOnceJob extends \Controller
     /**
      * Move i18nl10n language settings to first root page
      */
-    private function moveI18nl10nLanguageSettings() {
+    private function moveI18nl10nLanguageSettings()
+    {
 
         $arrLanguages = deserialize($this->Config->get('i18nl10n_languages'));
 
@@ -171,7 +174,8 @@ class I18nl10nRunOnceJob extends \Controller
     /**
      * Rename 'old' table fields
      */
-    private function renameTableFields() {
+    private function renameTableFields()
+    {
         if ($this->Database->fieldExists('l10n_published', 'tl_page')) {
             $this->Database->query('ALTER TABLE tl_page CHANGE l10n_published i18nl10n_published char(1) NOT NULL default 1');
         }
@@ -190,6 +194,23 @@ class I18nl10nRunOnceJob extends \Controller
 
         if ($this->Database->fieldExists('i18nl10nLangHide', 'tl_module')) {
             $this->Database->query('ALTER TABLE tl_module CHANGE i18nl10nLangHide i18nl10n_langHide char(1) NOT NULL default ""');
+        }
+    }
+
+    /**
+     * Set same languages for all pages inside domain
+     */
+    private function updateChildPageLanguage()
+    {
+        $objRootPage = $this->Database
+            ->query('SELECT * FROM tl_page WHERE type = "root"');
+
+        while ($objRootPage->next()) {
+            $arrChildPages = $this->Database->getChildRecords(array($objRootPage->id), 'tl_page');
+
+            $this->Database
+                ->prepare('UPDATE tl_page SET language = ? WHERE id IN(' . implode(',', $arrChildPages) . ')')
+                ->execute($objRootPage->language);
         }
     }
 }
