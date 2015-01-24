@@ -460,7 +460,9 @@ class I18nl10nHook extends \System
                 (SELECT id as pageId, alias, 'tl_page' as 'source'
                  FROM tl_page
                  WHERE alias IN('" . $strAlias . "'))
-                ORDER BY " . $dataBase->findInSet('alias', $arrAliasGuess);
+                ORDER BY "
+                . $dataBase->findInSet('alias', $arrAliasGuess) . ", "
+                . $dataBase->findInSet('source', array('tl_page_i18nl10n', 'tl_page'));
 
         $objL10nPage = $dataBase
             ->prepare($sql)
