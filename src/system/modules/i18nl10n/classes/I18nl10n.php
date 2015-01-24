@@ -167,22 +167,22 @@ class I18nl10n extends \Controller
     /**
      * Get language definition for given page id and table
      *
-     * @param      $intId
-     * @param      $strTable
-     * @param bool $blnIncludeDefault Include default language
+     * @param   $intId
+     * @param   $strTable
+     * @param   $blnForCurrentUserOnly  boolean Get only languages for current be users permission
      *
      * @return array
      */
-    public function getLanguagesByPageId($intId, $strTable, $blnIncludeDefault = true)
+    public function getLanguagesByPageId($intId, $strTable, $blnForCurrentUserOnly = false)
     {
         switch ($strTable) {
             case 'tl_page_i18nl10n':
-                // fall trough
+                // fall through
 
             case 'tl_page':
                 $rootId = $this->getRootIdByPageId($intId, $strTable);
 
-                $arrLanguages = $this->getLanguagesByRootId($rootId, $blnIncludeDefault);
+                $arrLanguages = $this->getLanguagesByRootId($rootId, $blnForCurrentUserOnly);
                 break;
 
             default:
@@ -228,18 +228,18 @@ class I18nl10n extends \Controller
     /**
      * Get language definition by root page id
      *
-     * @param      $intId
-     * @param bool $blnIncludeDefault
+     * @param   $intId                  integer
+     * @param   $blnForCurrentUserOnly  boolean     Get only languages based on current be user permissions
      *
      * @return array
      */
-    public function getLanguagesByRootId($intId, $blnIncludeDefault = true)
+    public function getLanguagesByRootId($intId, $blnForCurrentUserOnly = false)
     {
         $objRootPage = \Database::getInstance()
             ->prepare('SELECT * FROM tl_page WHERE id = ?')
             ->execute($intId);
 
-        $arrLanguage = $this->mapLanguagesFromDatabaseRootPageResult($objRootPage);
+        $arrLanguage = $this->mapLanguagesFromDatabaseRootPageResult($objRootPage, $blnForCurrentUserOnly);
 
         return array_shift($arrLanguage);
     }
@@ -267,7 +267,7 @@ class I18nl10n extends \Controller
      *
      * @return array
      */
-    public function getAllLanguages($blnForCurrentUserOnly = false)
+    public function getAvailableLanguages($blnForCurrentUserOnly = false)
     {
         // Get root pages
         $objRootPages = $this->getAllRootPages();
@@ -413,7 +413,7 @@ class I18nl10n extends \Controller
      */
     public function getLanguageOptionsForUserOrGroup()
     {
-        return $this->mapLanguageOptionsForUserOrGroup($this->getAllLanguages());
+        return $this->mapLanguageOptionsForUserOrGroup($this->getAvailableLanguages());
     }
 
     /**
@@ -459,6 +459,6 @@ class I18nl10n extends \Controller
     private function userHasLanguagePermission($intRootPageId, $strLanguage)
     {
         $arrUserData = \BackendUser::getInstance()->getData();
-        return $arrUserData['isAdmin'] || in_array($intRootPageId . '::' . $strLanguage, (array) $arrUserData['i18nl10n_languages']);
+        return (int) $arrUserData['admin'] === 1 || in_array($intRootPageId . '::' . $strLanguage, (array) $arrUserData['i18nl10n_languages']);
     }
 }

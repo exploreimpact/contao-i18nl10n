@@ -225,7 +225,7 @@ class tl_page_l10n extends tl_page
         }
 
         if ($dc->activeRecord->type !== 'root') {
-            $arrI18nl10nLanguages = I18nl10n::getInstance()->getLanguagesByPageId($dc->activeRecord->pid, 'tl_page');
+            $arrI18nl10nLanguages = I18nl10n::getInstance()->getLanguagesByPageId($dc->activeRecord->pid, 'tl_page', true);
             $arrLocalizations = $arrI18nl10nLanguages['localizations'];
         } else {
             // Flatten localizations

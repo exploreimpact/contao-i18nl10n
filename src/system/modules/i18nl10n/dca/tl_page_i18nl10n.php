@@ -27,7 +27,7 @@ $enableCreate = false;
 
 // Check if backend mode to prevent install issue
 if (\Input::get('do') === 'i18nl10n') {
-    $arrLanguages = I18nl10n::getInstance()->getAllLanguages();
+    $arrLanguages = I18nl10n::getInstance()->getAvailableLanguages();
 
     // Check if localizations are available, else the create option for the DCA will be disabled
     if (count($arrLanguages)) {
@@ -299,7 +299,7 @@ class tl_page_i18nl10n extends tl_page
      */
     private function localizeAllMessage()
     {
-        $arrLanguages       = I18nl10n::getInstance()->getAllLanguages(true);
+        $arrLanguages       = I18nl10n::getInstance()->getAvailableLanguages(true);
         $strFlagPath        = 'system/modules/i18nl10n/assets/img/flag_icons/';
         $strMessage         = $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_localize_all'];
         $strDomainLanguages = '';
@@ -369,7 +369,7 @@ class tl_page_i18nl10n extends tl_page
      */
     private function localizeAllAction()
     {
-        $arrLanguages = I18nl10n::getInstance()->getAllLanguages(true);
+        $arrLanguages = I18nl10n::getInstance()->getAvailableLanguages(true);
 
         foreach ($arrLanguages as $domain) {
             $arrPageIds = $this->Database->getChildRecords(array($domain['rootId']), 'tl_page');
@@ -418,7 +418,7 @@ class tl_page_i18nl10n extends tl_page
      */
     public function displayLanguageMessage()
     {
-        $arrLanguages = I18nl10n::getInstance()->getAllLanguages();
+        $arrLanguages = I18nl10n::getInstance()->getAvailableLanguages();
         $info         = false;
         $error        = false;
 
