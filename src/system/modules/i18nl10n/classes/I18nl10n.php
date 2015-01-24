@@ -25,12 +25,17 @@ namespace Verstaerker\I18nl10n\Classes;
 class I18nl10n extends \Controller
 {
 
+    /**
+     * Class instance
+     *
+     * @var object
+     */
     protected static $instance = null;
 
     /**
-     * Create and return object instance
+     * Create instance of i18nl10n class
      *
-     * @return null
+     * @return I18nl10n
      */
     public static function getInstance()
     {
@@ -258,14 +263,16 @@ class I18nl10n extends \Controller
     /**
      * Get all available languages
      *
+     * @param bool $blnForCurrentUserOnly   Only languages for current logged in user will be returned
+     *
      * @return array
      */
-    public function getAllLanguages()
+    public function getAllLanguages($blnForCurrentUserOnly = false)
     {
         // Get root pages
         $objRootPages = $this->getAllRootPages();
 
-        return $this->mapLanguagesFromDatabaseRootPageResult($objRootPages);
+        return $this->mapLanguagesFromDatabaseRootPageResult($objRootPages, $blnForCurrentUserOnly);
     }
 
     /**
@@ -342,10 +349,11 @@ class I18nl10n extends \Controller
      * Map all default and localized languages from a database result and return as array
      *
      * @param \Database\Mysqli\Result $objRootPage
+     * @param bool                    $blnForCurrentUserOnly    Will only return languages for which the current user has permissions
      *
      * @return array
      */
-    private function mapLanguagesFromDatabaseRootPageResult(\Database\Mysqli\Result $objRootPage)
+    private function mapLanguagesFromDatabaseRootPageResult(\Database\Mysqli\Result $objRootPage, $blnForCurrentUserOnly = false)
     {
         $arrLanguages = array();
 
@@ -360,14 +368,20 @@ class I18nl10n extends \Controller
                     'rootId'        => $objRootPage->id,
                     'default'       => $objRootPage->language,
                     'localizations' => array(),
-                    'languages'     => array($objRootPage->language)
+                    'languages'     => array()
                 );
+
+                if (!$blnForCurrentUserOnly || $this->userHasLanguagePermission($objRootPage->id, '*')) {
+                    $arrLanguages[$strDns]['languages'][] = $objRootPage->language;
+                }
 
                 foreach (deserialize($objRootPage->i18nl10n_localizations) as $localization) {
 
                     if (!empty($localization['language'])) {
-                        $arrLanguages[$strDns]['localizations'][] = $localization['language'];
-                        $arrLanguages[$strDns]['languages'][]     = $localization['language'];
+                        if (!$blnForCurrentUserOnly || $this->userHasLanguagePermission($objRootPage->id, $localization['language'])) {
+                            $arrLanguages[$strDns]['localizations'][] = $localization['language'];
+                            $arrLanguages[$strDns]['languages'][]     = $localization['language'];
+                        }
                     }
                 }
 
@@ -432,5 +446,19 @@ class I18nl10n extends \Controller
         }
 
         return $arrMappedLanguages;
+    }
+
+    /**
+     * Check if an user has permission to handle given language by root id
+     *
+     * @param $intRootPageId
+     * @param $strLanguage
+     *
+     * @return bool
+     */
+    private function userHasLanguagePermission($intRootPageId, $strLanguage)
+    {
+        $arrUserData = \BackendUser::getInstance()->getData();
+        return $arrUserData['isAdmin'] || in_array($intRootPageId . '::' . $strLanguage, (array) $arrUserData['i18nl10n_languages']);
     }
 }

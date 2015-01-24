@@ -299,7 +299,7 @@ class tl_page_i18nl10n extends tl_page
      */
     private function localizeAllMessage()
     {
-        $arrLanguages       = I18nl10n::getInstance()->getAllLanguages();
+        $arrLanguages       = I18nl10n::getInstance()->getAllLanguages(true);
         $strFlagPath        = 'system/modules/i18nl10n/assets/img/flag_icons/';
         $strMessage         = $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_localize_all'];
         $strDomainLanguages = '';
@@ -369,7 +369,7 @@ class tl_page_i18nl10n extends tl_page
      */
     private function localizeAllAction()
     {
-        $arrLanguages = I18nl10n::getInstance()->getAllLanguages();
+        $arrLanguages = I18nl10n::getInstance()->getAllLanguages(true);
 
         foreach ($arrLanguages as $domain) {
             $arrPageIds = $this->Database->getChildRecords(array($domain['rootId']), 'tl_page');
