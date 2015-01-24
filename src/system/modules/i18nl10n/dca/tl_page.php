@@ -495,8 +495,6 @@ class tl_page_l10n extends tl_page
         if ($this->User->isAdmin || $this->userHasPermissionToEditLanguage($arrArgs[0])) {
             $strButton = $this->createVendorListButton($arrVendorCallback, $arrArgs);
 
-            // @todo: check if field permission check is needed
-
             switch ($strOperation) {
                 case 'delete':
                     $return = $strButton === false
@@ -570,8 +568,6 @@ class tl_page_l10n extends tl_page
      */
     private function userHasPermissionToEditLanguage($arrRow)
     {
-        // @todo: check for tid like tl_page_i18nl10n.605
-
         $objPage = \PageModel::findWithDetails($arrRow['id']);
         $strLanguageIdentifier = $objPage->rootId . '::' . $arrRow['language'];
 

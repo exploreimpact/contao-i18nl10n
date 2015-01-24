@@ -75,8 +75,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         'sorting'           => array
         (
             'mode' => 6,
-            'paste_button_callback'   => array('tl_page_i18nl10n', 'pastePage'),
-// TODO: Sorting by language is not possible in mode 6?
+            'paste_button_callback'   => array('tl_page_i18nl10n', 'pastePage')
         ),
         'label'             => array
         (
@@ -855,8 +854,6 @@ class tl_page_i18nl10n extends tl_page
      */
     private function userHasPermissionToEditLanguage($arrRow)
     {
-        // @todo: check for tid like tl_page_i18nl10n.605
-
         $objPage = \PageModel::findWithDetails($arrRow['pid']);
         $strLanguageIdentifier = $objPage->rootId . '::' . $arrRow['language'];
 
