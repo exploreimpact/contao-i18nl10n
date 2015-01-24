@@ -250,7 +250,6 @@ class tl_page_l10n extends tl_page
             'sorting'        => 0,
             'tstamp'         => time(),
             'title'          => $dc->activeRecord->title,
-            'type'           => $dc->activeRecord->type,
             'pageTitle'      => $dc->activeRecord->pageTitle,
             'description'    => $dc->activeRecord->description,
             'cssClass'       => $dc->activeRecord->cssClass,
