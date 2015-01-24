@@ -74,8 +74,9 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
     (
         'sorting'           => array
         (
-            'mode' => 6
-            // TODO: Sorting by language is not possible in mode 6?
+            'mode' => 6,
+            'paste_button_callback'   => array('tl_page_i18nl10n', 'pastePage'),
+// TODO: Sorting by language is not possible in mode 6?
         ),
         'label'             => array
         (
@@ -196,7 +197,6 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         'tstamp'             => $GLOBALS['TL_DCA']['tl_page']['fields']['tstamp'],
         'title'              => $GLOBALS['TL_DCA']['tl_page']['fields']['title'],
         'alias'              => $GLOBALS['TL_DCA']['tl_page']['fields']['alias'],
-        'type'               => $GLOBALS['TL_DCA']['tl_page']['fields']['type'],
         'pageTitle'          => $GLOBALS['TL_DCA']['tl_page']['fields']['pageTitle'],
         'description'        => $GLOBALS['TL_DCA']['tl_page']['fields']['description'],
         'url'                => $GLOBALS['TL_DCA']['tl_page']['fields']['url'],
@@ -380,16 +380,17 @@ class tl_page_i18nl10n extends tl_page
             foreach ($domain['localizations'] as $localization) {
 
                 $strPageIds = implode($arrPageIds, ',');
+                $strPageTypes = implode((array) $this->User->alpty, "','");
 
                 $sql = "
                   INSERT INTO
                     tl_page_i18nl10n
                     (
-                        pid, sorting, tstamp, language, title, type, pageTitle, description, cssClass,
+                        pid, sorting, tstamp, language, title, pageTitle, description, cssClass,
                         alias, i18nl10n_published, start, stop, dateFormat, timeFormat, datimFormat
                     )
                   SELECT
-                    p.id AS pid, p.sorting, p.tstamp, ? AS language, p.title, p.type, p.pageTitle,
+                    p.id AS pid, p.sorting, p.tstamp, ? AS language, p.title, p.pageTitle,
                     p.description, p.cssClass, p.alias, p.published, p.start, p.stop,
                     p.dateFormat, p.timeFormat, p.datimFormat
                   FROM
@@ -401,6 +402,7 @@ class tl_page_i18nl10n extends tl_page
                   WHERE
                     p.id IN($strPageIds)
                     AND i.pid IS NULL
+                    AND p.type IN('$strPageTypes')
                 ";
 
                 \Database::getInstance()
@@ -531,7 +533,7 @@ class tl_page_i18nl10n extends tl_page
         // Check permissions AFTER checking the tid, so hacking attempts are logged
         if (!$this->User->isAdmin
             && (!$this->User->hasAccess('tl_page_i18nl10n::i18nl10n_published', 'alexf')
-                || !$this->userHasPermissionToEditLanguage($row)))
+                || !$this->userHasPermissionToEditPage($row)))
         {
             return '';
         }
@@ -808,17 +810,44 @@ class tl_page_i18nl10n extends tl_page
         $GLOBALS['TL_DCA']['tl_page']['list']['sorting']['root'] = $this->User->pagemounts;
     }
 
+    /**
+     * Create list button based on language and page type permissions
+     *
+     * @param $row
+     * @param $href
+     * @param $label
+     * @param $title
+     * @param $icon
+     * @param $attributes
+     *
+     * @return string
+     */
     public function createButton($row, $href, $label, $title, $icon, $attributes) {
-        return ($this->User->isAdmin || $this->userHasPermissionToEditLanguage($row))
+        return ($this->User->isAdmin || $this->userHasPermissionToEditPage($row))
             ? '<a href="' . $this->addToUrl($href . '&amp;id=' . $row['id']) . '" title="' . specialchars($title) . '"' . $attributes . '>' . \Image::getHtml($icon, $label) . '</a> '
             : '';
     }
 
     /**
-     * Create language identifier
+     * Create based button based on language and page type permissions
      *
-     * Get an identifier string of combined root page id and language
-     * based on localization page row
+     * @param DataContainer $dc
+     * @param               $row
+     * @param               $table
+     * @param               $cr
+     * @param null          $arrClipboard
+     *
+     * @return string
+     */
+    public function pastePage(DataContainer $dc, $row, $table, $cr, $arrClipboard = null)
+    {
+        return $this->User->isAdmin || $this->userHasPermissionToEditPageType($row, $table)
+            ? parent::pastePage($dc, $row, $table, $cr, $arrClipboard)
+            : \Image::getHtml('pasteafter_.gif') . ' ' . \Image::getHtml('pasteinto_.gif');
+    }
+
+    /**
+     * Check if user has permission to edit language of given row
      *
      * @param $arrRow
      *
@@ -832,5 +861,35 @@ class tl_page_i18nl10n extends tl_page
         $strLanguageIdentifier = $objPage->rootId . '::' . $arrRow['language'];
 
         return in_array($strLanguageIdentifier, (array) $this->User->i18nl10n_languages);
+    }
+
+    /**
+     * Check if current be user has permission to edit the given page type
+     *
+     * @param $arrRow
+     * @param $strTable
+     *
+     * @return boolean
+     */
+    private function userHasPermissionToEditPageType($arrRow, $strTable = 'tl_page_i18nl10n') {
+        $strType = $strTable === 'tl_page_i18nl10n'
+            ? \PageModel::findByIdOrAlias($arrRow['pid'])->type
+            : $arrRow['type'];
+
+        return in_array($strType, (array) $this->User->alpty);
+    }
+
+    /**
+     * Check if current be user has permission to edit language and page type of given row
+     *
+     * @param        $arrRow
+     * @param string $strTable
+     *
+     * @return bool
+     */
+    private function userHasPermissionToEditPage($arrRow, $strTable = 'tl_page_i18nl10n')
+    {
+        return $this->User->isAdmin
+               || ($this->userHasPermissionToEditLanguage($arrRow) && $this->userHasPermissionToEditPageType($arrRow, $strTable));
     }
 }
