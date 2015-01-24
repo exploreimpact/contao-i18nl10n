@@ -48,7 +48,7 @@ class I18nl10nHook extends \System
             ? $GLOBALS['TL_LANGUAGE']
             : $arrRow['language'];
 
-        $arrLanguages = I18nl10n::getLanguagesByDomain();
+        $arrLanguages = I18nl10n::getInstance()->getLanguagesByDomain();
         $arrL10nAlias = null;
 
         // try to get l10n alias by language and pid
@@ -147,7 +147,7 @@ class I18nl10nHook extends \System
     public function getPageIdFromUrl(Array $arrFragments)
     {
         $arrFragments = array_map('urldecode', $arrFragments);
-        $arrLanguages = I18nl10n::getLanguagesByDomain();
+        $arrLanguages = I18nl10n::getInstance()->getLanguagesByDomain();
 
         // If no root pages found, return
         if (!count($arrLanguages)) {

@@ -38,7 +38,7 @@ class PageI18nl10nRegular extends \PageRegular
     {
         self::fixupCurrentLanguage();
 
-        $arrLanguages = I18nl10n::getLanguagesByDomain();
+        $arrLanguages = I18nl10n::getInstance()->getLanguagesByDomain();
 
         // Check if default language
         if ($GLOBALS['TL_LANGUAGE'] === $arrLanguages['default']) {
@@ -53,7 +53,7 @@ class PageI18nl10nRegular extends \PageRegular
         }
 
         // Try to get translated page
-        $objPage = I18nl10n::findPublishedL10nPage($objPage);
+        $objPage = I18nl10n::getInstance()->findPublishedL10nPage($objPage);
 
         // If neither fallback nor localization are published and null
         // was given, give error 404

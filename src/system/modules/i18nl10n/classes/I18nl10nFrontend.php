@@ -63,7 +63,7 @@ class I18nl10nFrontend extends \Controller
          * with the alias 'index'. See ticket #7562 (https://github.com/contao/core/issues/7562)
          */
 
-        $arrLanguages = I18nl10n::getLanguagesByDomain();
+        $arrLanguages = I18nl10n::getInstance()->getLanguagesByDomain();
 
         //get item ids
         $item_ids = array();
@@ -201,7 +201,7 @@ class I18nl10nFrontend extends \Controller
         else
         {
             // If jumpTo is not set, get first published subpage
-            $i18nl = I18nl10n::findFirstPublishedL10nRegularPageByPid($item['id'], $lang);
+            $i18nl = I18nl10n::getInstance()->findFirstPublishedL10nRegularPageByPid($item['id'], $lang);
         }
 
         return $i18nl;

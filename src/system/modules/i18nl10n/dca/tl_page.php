@@ -190,8 +190,8 @@ class tl_page_l10n extends tl_page
     public function displayDnsMessage()
     {
         // Only apply if multiple root pages
-        if (I18nl10n::countRootPages() > 1) {
-            $objRootPages = I18nl10n::getAllRootPages();
+        if (I18nl10n::getInstance()->countRootPages() > 1) {
+            $objRootPages = I18nl10n::getInstance()->getAllRootPages();
             $arrDns = array();
 
             while ($objRootPages->next()) {
@@ -225,7 +225,7 @@ class tl_page_l10n extends tl_page
         }
 
         if ($dc->activeRecord->type !== 'root') {
-            $arrI18nl10nLanguages = I18nl10n::getLanguagesByPageId($dc->activeRecord->pid, 'tl_page');
+            $arrI18nl10nLanguages = I18nl10n::getInstance()->getLanguagesByPageId($dc->activeRecord->pid, 'tl_page');
             $arrLocalizations = $arrI18nl10nLanguages['localizations'];
         } else {
             // Flatten localizations
@@ -271,7 +271,7 @@ class tl_page_l10n extends tl_page
             // Create alias based on folder url setting
             if (Config::get('folderUrl')) {
                 // Get translation for parent page
-                $objL10nParentPage = I18nl10n::findL10nWithDetails($dc->activeRecord->pid, $language);
+                $objL10nParentPage = I18nl10n::getInstance()->findL10nWithDetails($dc->activeRecord->pid, $language);
 
                 if ($objL10nParentPage->type !== 'root') {
                     // Create folder url
@@ -459,7 +459,7 @@ class tl_page_l10n extends tl_page
      */
     public function setDnsMandatory()
     {
-        if (I18nl10n::countRootPages() > 1) {
+        if (I18nl10n::getInstance()->countRootPages() > 1) {
             // If there is already a root page, a domain name must be set
             $GLOBALS['TL_DCA']['tl_page']['fields']['dns']['eval']['mandatory'] = true;
         }

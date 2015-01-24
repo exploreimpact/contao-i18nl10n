@@ -27,7 +27,7 @@ $enableCreate = false;
 
 // Check if backend mode to prevent install issue
 if (\Input::get('do') === 'i18nl10n') {
-    $arrLanguages = I18nl10n::getAllLanguages();
+    $arrLanguages = I18nl10n::getInstance()->getAllLanguages();
 
     // Check if localizations are available, else the create option for the DCA will be disabled
     if (count($arrLanguages)) {
@@ -299,7 +299,7 @@ class tl_page_i18nl10n extends tl_page
      */
     private function localizeAllMessage()
     {
-        $arrLanguages       = I18nl10n::getAllLanguages();
+        $arrLanguages       = I18nl10n::getInstance()->getAllLanguages();
         $strFlagPath        = 'system/modules/i18nl10n/assets/img/flag_icons/';
         $strMessage         = $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_localize_all'];
         $strDomainLanguages = '';
@@ -369,7 +369,7 @@ class tl_page_i18nl10n extends tl_page
      */
     private function localizeAllAction()
     {
-        $arrLanguages = I18nl10n::getAllLanguages();
+        $arrLanguages = I18nl10n::getInstance()->getAllLanguages();
 
         foreach ($arrLanguages as $domain) {
             $arrPageIds = $this->Database->getChildRecords(array($domain['rootId']), 'tl_page');
@@ -418,7 +418,7 @@ class tl_page_i18nl10n extends tl_page
      */
     public function displayLanguageMessage()
     {
-        $arrLanguages = I18nl10n::getAllLanguages();
+        $arrLanguages = I18nl10n::getInstance()->getAllLanguages();
         $info         = false;
         $error        = false;
 
@@ -708,7 +708,7 @@ class tl_page_i18nl10n extends tl_page
                 $objBaseLangPage = \PageModel::findWithDetails($dc->activeRecord->pid);
 
                 // Get translation for parent page
-                $objL10nParentPage = I18nl10n::findL10nWithDetails($objBaseLangPage->pid, $strLanguage);
+                $objL10nParentPage = I18nl10n::getInstance()->findL10nWithDetails($objBaseLangPage->pid, $strLanguage);
 
                 // Only create folder url if parent is not root
                 if ($objL10nParentPage && $objL10nParentPage->type !== 'root') {
@@ -774,7 +774,7 @@ class tl_page_i18nl10n extends tl_page
         $arrOptions      = array();
         $id              = $dc->activeRecord->id;
 
-        $i18nl10nLanguages = I18nl10n::getLanguagesByPageId($id, 'tl_page_i18nl10n', false);
+        $i18nl10nLanguages = I18nl10n::getInstance()->getLanguagesByPageId($id, 'tl_page_i18nl10n', false);
 
         // Get already used languages
         $arrSiblingLanguages = $this->Database

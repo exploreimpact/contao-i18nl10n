@@ -144,7 +144,7 @@ class tl_content_l10n extends tl_content
             ->execute($id)
             ->fetchAssoc();
 
-        $i18nl10nLanguages = I18nl10n::getLanguagesByPageId($arrPageId['id'], 'tl_page');
+        $i18nl10nLanguages = I18nl10n::getInstance()->getLanguagesByPageId($arrPageId['id'], 'tl_page');
         $strIdentifier = $i18nl10nLanguages['rootId'] . '::';
 
         // Create base and add neutral (*) language if admin or has permission

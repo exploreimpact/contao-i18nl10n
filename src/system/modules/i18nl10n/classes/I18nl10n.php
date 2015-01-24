@@ -24,37 +24,21 @@ namespace Verstaerker\I18nl10n\Classes;
  */
 class I18nl10n extends \Controller
 {
+
+    protected static $instance = null;
+
     /**
-     * vsprintf with array argument support
+     * Create and return object instance
      *
-     * @param       $format
-     * @param array $data
-     *
-     * @return string
+     * @return null
      */
-    public static function vnsprintf($format, array $data)
+    public static function getInstance()
     {
-        preg_match_all(
-            '/ (?<!%) % ( (?: [[:alpha:]_-][[:alnum:]_-]* | ([-+])? [0-9]+ (?(2) (?:\.[0-9]+)? | \.[0-9]+ ) ) ) \$ [-+]? \'? .? -? [0-9]* (\.[0-9]+)? \w/x',
-            $format,
-            $match,
-            PREG_SET_ORDER | PREG_OFFSET_CAPTURE
-        );
-
-        $offset = 0;
-        $keys   = array_keys($data);
-
-        foreach ($match as &$value) {
-            if (($key = array_search($value[1][0], $keys, true)) !== false || (is_numeric($value[1][0]) && ($key =
-                        array_search((int) $value[1][0], $keys, true)) !== false)
-            ) {
-                $len    = strlen($value[1][0]);
-                $format = substr_replace($format, 1 + $key, $offset + $value[1][1], $len);
-                $offset -= $len - strlen(1 + $key);
-            }
+        if (empty(static::$instance)) {
+            static::$instance = new I18nl10n();
         }
 
-        return vsprintf($format, $data);
+        return static::$instance;
     }
 
     /**
@@ -65,7 +49,7 @@ class I18nl10n extends \Controller
      *
      * @return array|false
      */
-    public static function findFirstPublishedL10nRegularPageByPid($intId, $strLang)
+    public function findFirstPublishedL10nRegularPageByPid($intId, $strLang)
     {
         $time                  = time();
         $sqlPublishedCondition = !BE_USER_LOGGED_IN
@@ -104,13 +88,13 @@ class I18nl10n extends \Controller
      *
      * @return object|null
      */
-    public static function findL10nWithDetails($intId, $strLang)
+    public function findL10nWithDetails($intId, $strLang)
     {
         // Get page by id
         $objCurrentPage = \PageModel::findWithDetails($intId);
 
         // Get localization
-        return I18nl10n::findPublishedL10nPage($objCurrentPage, $strLang, false);
+        return $this->findPublishedL10nPage($objCurrentPage, $strLang, false);
     }
 
     /**
@@ -121,7 +105,7 @@ class I18nl10n extends \Controller
      *
      * @return object|null
      */
-    public static function findPublishedL10nPage($objPage, $blnTranslateOnly = true)
+    public function findPublishedL10nPage($objPage, $blnTranslateOnly = true)
     {
         //get language specific page properties
         $time   = time();
@@ -161,7 +145,7 @@ class I18nl10n extends \Controller
         }
 
         // update root information
-        $objL10nRootPage = self::getL10nRootPage($objPage);
+        $objL10nRootPage = $this->getL10nRootPage($objPage);
 
         if ($objL10nRootPage) {
             $objPage->rootTitle = $objL10nRootPage->title;
@@ -184,16 +168,16 @@ class I18nl10n extends \Controller
      *
      * @return array
      */
-    static public function getLanguagesByPageId($intId, $strTable, $blnIncludeDefault = true)
+    public function getLanguagesByPageId($intId, $strTable, $blnIncludeDefault = true)
     {
         switch ($strTable) {
             case 'tl_page_i18nl10n':
                 // fall trough
 
             case 'tl_page':
-                $rootId = self::getRootIdByPageId($intId, $strTable);
+                $rootId = $this->getRootIdByPageId($intId, $strTable);
 
-                $arrLanguages = self::getLanguagesByRootId($rootId, $blnIncludeDefault);
+                $arrLanguages = $this->getLanguagesByRootId($rootId, $blnIncludeDefault);
                 break;
 
             default:
@@ -212,7 +196,7 @@ class I18nl10n extends \Controller
      *
      * @return mixed|null
      */
-    static public function getRootIdByPageId($intId, $strTable)
+    public function getRootIdByPageId($intId, $strTable)
     {
         switch ($strTable) {
             case 'tl_page':
@@ -244,13 +228,13 @@ class I18nl10n extends \Controller
      *
      * @return array
      */
-    static public function getLanguagesByRootId($intId, $blnIncludeDefault = true)
+    public function getLanguagesByRootId($intId, $blnIncludeDefault = true)
     {
         $objRootPage = \Database::getInstance()
             ->prepare('SELECT * FROM tl_page WHERE id = ?')
             ->execute($intId);
 
-        $arrLanguage = self::mapLanguagesFromDatabaseRootPageResult($objRootPage);
+        $arrLanguage = $this->mapLanguagesFromDatabaseRootPageResult($objRootPage);
 
         return array_shift($arrLanguage);
     }
@@ -262,11 +246,11 @@ class I18nl10n extends \Controller
      *
      * @return array
      */
-    static public function getLanguagesByDomain($strDomain = null)
+    public function getLanguagesByDomain($strDomain = null)
     {
-        $objRootPage = self::getRootPageByDomain($strDomain);
+        $objRootPage = $this->getRootPageByDomain($strDomain);
 
-        $arrLanguage = self::mapLanguagesFromDatabaseRootPageResult($objRootPage);
+        $arrLanguage = $this->mapLanguagesFromDatabaseRootPageResult($objRootPage);
 
         return array_shift($arrLanguage);
     }
@@ -276,12 +260,12 @@ class I18nl10n extends \Controller
      *
      * @return array
      */
-    static public function getAllLanguages()
+    public function getAllLanguages()
     {
         // Get root pages
-        $objRootPages = self::getAllRootPages();
+        $objRootPages = $this->getAllRootPages();
 
-        return self::mapLanguagesFromDatabaseRootPageResult($objRootPages);
+        return $this->mapLanguagesFromDatabaseRootPageResult($objRootPages);
     }
 
     /**
@@ -289,7 +273,7 @@ class I18nl10n extends \Controller
      *
      * @return \Database\Result
      */
-    static public function getAllRootPages()
+    public function getAllRootPages()
     {
         return \Database::getInstance()->query('SELECT * FROM tl_page WHERE type = "root" AND tstamp > 0');
     }
@@ -301,7 +285,7 @@ class I18nl10n extends \Controller
      *
      * @return \Database\Result
      */
-    static public function getRootPageByDomain($strDomain = null)
+    public function getRootPageByDomain($strDomain = null)
     {
         if (empty($strDomain)) {
             $strDomain = \Environment::get('host');
@@ -321,7 +305,7 @@ class I18nl10n extends \Controller
      *
      * @return \Database\Result|null
      */
-    static public function getL10nRootPage($objPage)
+    public function getL10nRootPage($objPage)
     {
         $time = time();
 
@@ -344,7 +328,7 @@ class I18nl10n extends \Controller
      *
      * @return array
      */
-    static public function getNativeLanguageNames()
+    public function getNativeLanguageNames()
     {
         $langsNative = array();
 
@@ -361,7 +345,7 @@ class I18nl10n extends \Controller
      *
      * @return array
      */
-    static private function mapLanguagesFromDatabaseRootPageResult(\Database\Mysqli\Result $objRootPage)
+    private function mapLanguagesFromDatabaseRootPageResult(\Database\Mysqli\Result $objRootPage)
     {
         $arrLanguages = array();
 
@@ -401,9 +385,9 @@ class I18nl10n extends \Controller
      *
      * @return int
      */
-    static public function countRootPages()
+    public function countRootPages()
     {
-        $objRootPages = I18nl10n::getAllRootPages();
+        $objRootPages = $this->getAllRootPages();
 
         return $objRootPages->count();
     }
@@ -413,9 +397,9 @@ class I18nl10n extends \Controller
      *
      * @return array
      */
-    public function getLanguageOptionsForUserAndGroup()
+    public function getLanguageOptionsForUserOrGroup()
     {
-        return $this->mapLanguageOptionsForUserAndGroup($this->getAllLanguages());
+        return $this->mapLanguageOptionsForUserOrGroup($this->getAllLanguages());
     }
 
     /**
@@ -425,7 +409,7 @@ class I18nl10n extends \Controller
      *
      * @return array
      */
-    private function mapLanguageOptionsForUserAndGroup($arrLanguages) {
+    private function mapLanguageOptionsForUserOrGroup($arrLanguages) {
         $arrMappedLanguages = array();
 
         // Loop Domains
