@@ -375,7 +375,7 @@ class I18nl10n extends \Controller
                     $arrLanguages[$strDns]['languages'][] = $objRootPage->language;
                 }
 
-                foreach (deserialize($objRootPage->i18nl10n_localizations) as $localization) {
+                foreach ((array) deserialize($objRootPage->i18nl10n_localizations) as $localization) {
 
                     if (!empty($localization['language'])) {
                         if (!$blnForCurrentUserOnly || $this->userHasLanguagePermission($objRootPage->id, $localization['language'])) {

@@ -371,16 +371,34 @@ class tl_page_i18nl10n extends tl_page
         $arrLanguages = I18nl10n::getInstance()->getAvailableLanguages(true);
 
         foreach ($arrLanguages as $domain) {
-            $arrPageIds = $this->Database->getChildRecords(array($domain['rootId']), 'tl_page');
 
-            // Add root page to pageIds
-            array_push($arrPageIds, $domain['rootId']);
+            // Get pages that will be localized based on user role and permissions
+            if ($this->User->isAdmin) {
+                $arrPageIds = $this->Database->getChildRecords(array($domain['rootId']), 'tl_page');
+
+                // Add root page to pageIds
+                array_push($arrPageIds, $domain['rootId']);
+            } else {
+                $arrPageMounts = $this->User->pagemounts;
+                $arrPageIds = $arrPageMounts;
+
+                // Get child records for every page mount
+                foreach ($arrPageMounts as $pageMount) {
+                    array_insert(
+                        $arrPageIds,
+                        count($arrPageIds),
+                        $this->Database->getChildRecords($pageMount, 'tl_page')
+                    );
+                }
+            }
+
+            // Create strings for sql statement
+            $strPageIds = implode($arrPageIds, ',');
+            $strTypeCondition = !$this->User->isAdmin
+            ? 'AND p.type IN("' . implode((array) $this->User->alpty, '","') . '")'
+            : '';
 
             foreach ($domain['localizations'] as $localization) {
-
-                $strPageIds = implode($arrPageIds, ',');
-                $strPageTypes = implode((array) $this->User->alpty, "','");
-
                 $sql = "
                   INSERT INTO
                     tl_page_i18nl10n
@@ -401,7 +419,7 @@ class tl_page_i18nl10n extends tl_page
                   WHERE
                     p.id IN($strPageIds)
                     AND i.pid IS NULL
-                    AND p.type IN('$strPageTypes')
+                    $strTypeCondition
                 ";
 
                 \Database::getInstance()
