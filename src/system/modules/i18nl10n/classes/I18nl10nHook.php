@@ -561,4 +561,9 @@ class I18nl10nHook extends \System
 
         return $arrFragments;
     }
+
+    public function indexPage($strContent, $arrData, $arrSet)
+    {
+
+    }
 }
