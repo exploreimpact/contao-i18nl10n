@@ -352,6 +352,8 @@ class I18nl10nHook extends \System
     /**
      * Add current language selector to search keywords
      *
+     * Contao 3.3.5 +
+     *
      * @param $arrPages
      * @param $strKeywords
      * @param $strQueryType
