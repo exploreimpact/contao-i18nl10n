@@ -78,6 +78,9 @@ $GLOBALS['TL_HOOKS']['executePostActions'][] = array('tl_page_i18nl10n', 'execut
 $GLOBALS['TL_HOOKS']['isVisibleElement'][] = array('\I18nl10n\Classes\I18nl10nHook', 'isVisibleElement');
 $GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('\I18nl10n\Classes\I18nl10nHook', 'appendLanguageSelectCallback');
 $GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('\I18nl10n\Classes\I18nl10nHook', 'appendButtonCallback');
+$GLOBALS['TL_HOOKS']['indexPage'][] = array('\I18nl10n\Classes\I18nl10nHook', 'indexPage');
+$GLOBALS['TL_HOOKS']['getSearchablePages'][] = array('\I18nl10n\Classes\I18nl10nHook', 'getSearchablePages');
+$GLOBALS['TL_HOOKS']['customizeSearch'][] = array('\I18nl10n\Classes\I18nl10nHook', 'customizeSearch');
 
 
 /**
