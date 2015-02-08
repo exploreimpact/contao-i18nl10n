@@ -322,9 +322,11 @@ class tl_page_l10n extends tl_page
         $arrChildRecords = $this->Database
             ->getChildRecords(array($dc->activeRecord->id), 'tl_page');
 
-        $this->Database
-            ->prepare('UPDATE tl_page SET language = ? WHERE id IN(' . implode(',', $arrChildRecords) . ')')
-            ->execute($dc->activeRecord->language);
+        if (count($arrChildRecords)) {
+            $this->Database
+                ->prepare('UPDATE tl_page SET language = ? WHERE id IN(' . implode(',', $arrChildRecords) . ')')
+                ->execute($dc->activeRecord->language);
+        }
     }
 
     /**
