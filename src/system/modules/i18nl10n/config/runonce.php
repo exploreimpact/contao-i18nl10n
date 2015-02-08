@@ -208,9 +208,11 @@ class I18nl10nRunOnceJob extends \Controller
         while ($objRootPage->next()) {
             $arrChildPages = $this->Database->getChildRecords(array($objRootPage->id), 'tl_page');
 
-            $this->Database
-                ->prepare('UPDATE tl_page SET language = ? WHERE id IN(' . implode(',', $arrChildPages) . ')')
-                ->execute($objRootPage->language);
+            if (count($arrChildPages)) {
+                $this->Database
+                    ->prepare('UPDATE tl_page SET language = ? WHERE id IN(' . implode(',', $arrChildPages) . ')')
+                    ->execute($objRootPage->language);
+            }
         }
     }
 }
