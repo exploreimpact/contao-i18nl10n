@@ -2,8 +2,6 @@
 /**
  * i18nl10n Contao Module
  *
- * PHP version 5
- *
  * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n
@@ -94,5 +92,5 @@ $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_no_languages'] =
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_some_languages'] =
     'Einige Root-Seiten besitzen keine alternativen Sprachen.';
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_localize_all'] =
-    'Ich werde für jede fehlenden Übersetzung eine lokalisierte Seite gemäss der angezeigten Liste anlegen. Möchtest du wirklich fortfahren?';
+    'Ich werde für jede fehlenden Übersetzung eine lokalisierte Seite gemäss der angezeigten Liste anlegen (basierend auf Benutzerrechten). Möchtest du wirklich fortfahren?';
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['no_languages'] = 'Keine Sprachen';

@@ -27,7 +27,7 @@ $enableCreate = false;
 
 // Check if backend mode to prevent install issue
 if (\Input::get('do') === 'i18nl10n') {
-    $arrLanguages = I18nl10n::getAllLanguages();
+    $arrLanguages = I18nl10n::getInstance()->getAvailableLanguages();
 
     // Check if localizations are available, else the create option for the DCA will be disabled
     if (count($arrLanguages)) {
@@ -56,7 +56,8 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         (
             array('tl_page', 'addBreadcrumb'),
             array('tl_page_i18nl10n', 'displayLanguageMessage'),
-            array('tl_page_i18nl10n', 'localizeAllHandler')
+            array('tl_page_i18nl10n', 'localizeAllHandler'),
+            array('tl_page_i18nl10n', 'checkPermission')
         ),
         'sql'              => array
         (
@@ -73,8 +74,8 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
     (
         'sorting'           => array
         (
-            'mode' => 6
-            // TODO: Sorting by language is not possible in mode 6?
+            'mode' => 6,
+            'paste_button_callback'   => array('tl_page_i18nl10n', 'pastePage')
         ),
         'label'             => array
         (
@@ -105,21 +106,23 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
             (
                 'label' => &$GLOBALS['TL_LANG']['tl_page_i18nl10n']['edit'],
                 'href'  => 'act=edit',
-                'icon'  => 'edit.gif'
+                'icon'  => 'edit.gif',
+                'button_callback' => array('tl_page_i18nl10n', 'createButton')
             ),
             'copy'        => array
             (
                 'label' => &$GLOBALS['TL_LANG']['tl_page_i18nl10n']['copy'],
                 'href'  => 'act=copy',
-                'icon'  => 'copy.gif'
+                'icon'  => 'copy.gif',
+                'button_callback' => array('tl_page_i18nl10n', 'createButton')
             ),
             'delete'      => array
             (
                 'label'      => &$GLOBALS['TL_LANG']['tl_page_i18nl10n']['delete'],
                 'href'       => 'act=delete',
                 'icon'       => 'delete.gif',
-                'attributes' => 'onclick="if(!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['deleteConfirm']
-                                . '\')) return false; Backend.getScrollOffset();"'
+                'attributes' => 'onclick="if(!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['deleteConfirm'] . '\')) return false; Backend.getScrollOffset();"',
+                'button_callback' => array('tl_page_i18nl10n', 'createButton')
             ),
             'toggle_l10n' => array
             (
@@ -169,22 +172,39 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
                 'load' => 'eager'
             )
         ),
+        'language'      => array(
+            'label'            => &$GLOBALS['TL_LANG']['MSC']['i18nl10n_fields']['language']['label'],
+            'exclude'          => true,
+            'filter'           => true,
+            'inputType'        => 'select',
+            'search'           => true,
+            'options_callback' => array('tl_page_i18nl10n', 'languageOptions'),
+            'reference'        => &$GLOBALS['TL_LANG']['LNG'],
+            'eval'             => array(
+                'mandatory'          => true,
+                'rgxp'               => 'language',
+                'maxlength'          => 5,
+                'nospace'            => true,
+                'doNotCopy'          => true,
+                'tl_class'           => 'w50 clr',
+                'includeBlankOption' => true
+            ),
+            'sql'                     => "varchar(5) NOT NULL default ''"
+        ),
         // copy settings from tl_page dca
-        'sorting'        => $GLOBALS['TL_DCA']['tl_page']['fields']['sorting'],
-        'tstamp'         => $GLOBALS['TL_DCA']['tl_page']['fields']['tstamp'],
-        'title'          => $GLOBALS['TL_DCA']['tl_page']['fields']['title'],
-        'alias'          => $GLOBALS['TL_DCA']['tl_page']['fields']['alias'],
-        'type'           => $GLOBALS['TL_DCA']['tl_page']['fields']['type'],
-        'pageTitle'      => $GLOBALS['TL_DCA']['tl_page']['fields']['pageTitle'],
-        'description'    => $GLOBALS['TL_DCA']['tl_page']['fields']['description'],
-        'url'            => $GLOBALS['TL_DCA']['tl_page']['fields']['url'],
-        'cssClass'       => $GLOBALS['TL_DCA']['tl_page']['fields']['cssClass'],
-        'dateFormat'     => $GLOBALS['TL_DCA']['tl_page']['fields']['dateFormat'],
-        'timeFormat'     => $GLOBALS['TL_DCA']['tl_page']['fields']['timeFormat'],
-        'datimFormat'    => $GLOBALS['TL_DCA']['tl_page']['fields']['datimFormat'],
-        'start'          => $GLOBALS['TL_DCA']['tl_page']['fields']['start'],
-        'stop'           => $GLOBALS['TL_DCA']['tl_page']['fields']['stop'],
-        'language'       => $GLOBALS['TL_DCA']['tl_page']['fields']['language'],
+        'sorting'            => $GLOBALS['TL_DCA']['tl_page']['fields']['sorting'],
+        'tstamp'             => $GLOBALS['TL_DCA']['tl_page']['fields']['tstamp'],
+        'title'              => $GLOBALS['TL_DCA']['tl_page']['fields']['title'],
+        'alias'              => $GLOBALS['TL_DCA']['tl_page']['fields']['alias'],
+        'pageTitle'          => $GLOBALS['TL_DCA']['tl_page']['fields']['pageTitle'],
+        'description'        => $GLOBALS['TL_DCA']['tl_page']['fields']['description'],
+        'url'                => $GLOBALS['TL_DCA']['tl_page']['fields']['url'],
+        'cssClass'           => $GLOBALS['TL_DCA']['tl_page']['fields']['cssClass'],
+        'dateFormat'         => $GLOBALS['TL_DCA']['tl_page']['fields']['dateFormat'],
+        'timeFormat'         => $GLOBALS['TL_DCA']['tl_page']['fields']['timeFormat'],
+        'datimFormat'        => $GLOBALS['TL_DCA']['tl_page']['fields']['datimFormat'],
+        'start'              => $GLOBALS['TL_DCA']['tl_page']['fields']['start'],
+        'stop'               => $GLOBALS['TL_DCA']['tl_page']['fields']['stop'],
         'i18nl10n_published' => $GLOBALS['TL_DCA']['tl_page']['fields']['i18nl10n_published']
     )
 );
@@ -218,24 +238,6 @@ if ($enableCreate) {
         $additionalFunctions
     );
 };
-
-// merge language selection into tl_page_i18nl10n fields
-$GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['language'] = array_merge(
-    $GLOBALS['TL_DCA']['tl_page']['fields']['language'],
-    array(
-        'label'            => &$GLOBALS['TL_LANG']['MSC']['i18nl10n_fields']['language']['label'],
-        'filter'           => true,
-        'inputType'        => 'select',
-        'options_callback' => array('tl_page_i18nl10n', 'languageOptions'),
-        'reference'        => &$GLOBALS['TL_LANG']['LNG'],
-        'eval'             => array_merge(
-            $GLOBALS['TL_DCA']['tl_page']['fields']['language']['eval'],
-            array(
-                'includeBlankOption' => true
-            )
-        )
-    )
-);
 
 
 /**
@@ -296,7 +298,7 @@ class tl_page_i18nl10n extends tl_page
      */
     private function localizeAllMessage()
     {
-        $arrLanguages       = I18nl10n::getAllLanguages();
+        $arrLanguages       = I18nl10n::getInstance()->getAvailableLanguages(true);
         $strFlagPath        = 'system/modules/i18nl10n/assets/img/flag_icons/';
         $strMessage         = $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_localize_all'];
         $strDomainLanguages = '';
@@ -366,27 +368,46 @@ class tl_page_i18nl10n extends tl_page
      */
     private function localizeAllAction()
     {
-        $arrLanguages = I18nl10n::getAllLanguages();
+        $arrLanguages = I18nl10n::getInstance()->getAvailableLanguages(true);
 
         foreach ($arrLanguages as $domain) {
-            $arrPageIds = $this->Database->getChildRecords(array($domain['rootId']), 'tl_page');
 
-            // Add root page to pageIds
-            array_push($arrPageIds, $domain['rootId']);
+            // Get pages that will be localized based on user role and permissions
+            if ($this->User->isAdmin) {
+                $arrPageIds = $this->Database->getChildRecords(array($domain['rootId']), 'tl_page');
+
+                // Add root page to pageIds
+                array_push($arrPageIds, $domain['rootId']);
+            } else {
+                $arrPageMounts = $this->User->pagemounts;
+                $arrPageIds = $arrPageMounts;
+
+                // Get child records for every page mount
+                foreach ($arrPageMounts as $pageMount) {
+                    array_insert(
+                        $arrPageIds,
+                        count($arrPageIds),
+                        $this->Database->getChildRecords($pageMount, 'tl_page')
+                    );
+                }
+            }
+
+            // Create strings for sql statement
+            $strPageIds = implode($arrPageIds, ',');
+            $strTypeCondition = !$this->User->isAdmin
+            ? 'AND p.type IN("' . implode((array) $this->User->alpty, '","') . '")'
+            : '';
 
             foreach ($domain['localizations'] as $localization) {
-
-                $strPageIds = implode($arrPageIds, ',');
-
                 $sql = "
                   INSERT INTO
                     tl_page_i18nl10n
                     (
-                        pid, sorting, tstamp, language, title, type, pageTitle, description, cssClass,
+                        pid, sorting, tstamp, language, title, pageTitle, description, cssClass,
                         alias, i18nl10n_published, start, stop, dateFormat, timeFormat, datimFormat
                     )
                   SELECT
-                    p.id AS pid, p.sorting, p.tstamp, ? AS language, p.title, p.type, p.pageTitle,
+                    p.id AS pid, p.sorting, p.tstamp, ? AS language, p.title, p.pageTitle,
                     p.description, p.cssClass, p.alias, p.published, p.start, p.stop,
                     p.dateFormat, p.timeFormat, p.datimFormat
                   FROM
@@ -398,6 +419,7 @@ class tl_page_i18nl10n extends tl_page
                   WHERE
                     p.id IN($strPageIds)
                     AND i.pid IS NULL
+                    $strTypeCondition
                 ";
 
                 \Database::getInstance()
@@ -415,7 +437,7 @@ class tl_page_i18nl10n extends tl_page
      */
     public function displayLanguageMessage()
     {
-        $arrLanguages = I18nl10n::getAllLanguages();
+        $arrLanguages = I18nl10n::getInstance()->getAvailableLanguages();
         $info         = false;
         $error        = false;
 
@@ -526,7 +548,10 @@ class tl_page_i18nl10n extends tl_page
         }
 
         // Check permissions AFTER checking the tid, so hacking attempts are logged
-        if (!$this->User->isAdmin && !$this->User->hasAccess('tl_page_i18nl10n::i18nl10n_published', 'alexf')) {
+        if (!$this->User->isAdmin
+            && (!$this->User->hasAccess('tl_page_i18nl10n::i18nl10n_published', 'alexf')
+                || !$this->userHasPermissionToEditPage($row)))
+        {
             return '';
         }
 
@@ -682,7 +707,7 @@ class tl_page_i18nl10n extends tl_page
                 $objBaseLangPage = \PageModel::findWithDetails($dc->activeRecord->pid);
 
                 // Get translation for parent page
-                $objL10nParentPage = I18nl10n::findL10nWithDetails($objBaseLangPage->pid, $strLanguage);
+                $objL10nParentPage = I18nl10n::getInstance()->findL10nWithDetails($objBaseLangPage->pid, $strLanguage);
 
                 // Only create folder url if parent is not root
                 if ($objL10nParentPage && $objL10nParentPage->type !== 'root') {
@@ -730,7 +755,7 @@ class tl_page_i18nl10n extends tl_page
     }
 
     /**
-     * Create language options based on root page and already used languages
+     * Create language options based on root page, already used languages and user permissions
      *
      * @param DataContainer $dc
      *
@@ -738,11 +763,17 @@ class tl_page_i18nl10n extends tl_page
      */
     public function languageOptions(DataContainer $dc)
     {
-        $id           = $dc->activeRecord->id;
-        $arrLanguages = $GLOBALS['TL_LANG']['LNG'];
-        $arrOptions   = array();
+        // Create identifier string for permission test
+        $objFallbackPage = \PageModel::findWithDetails($dc->activeRecord->pid);
+        $rootId          = $objFallbackPage->rootId;
+        $strIdentifier   = $rootId . '::';
 
-        $i18nl10nLanguages = I18nl10n::getLanguagesByPageId($id, 'tl_page_i18nl10n', false);
+        // Set variables
+        $arrLanguages    = $GLOBALS['TL_LANG']['LNG'];
+        $arrOptions      = array();
+        $id              = $dc->activeRecord->id;
+
+        $i18nl10nLanguages = I18nl10n::getInstance()->getLanguagesByPageId($id, 'tl_page_i18nl10n', false);
 
         // Get already used languages
         $arrSiblingLanguages = $this->Database
@@ -752,13 +783,108 @@ class tl_page_i18nl10n extends tl_page
 
         $arrSiblingLanguages = explode(',', $arrSiblingLanguages['language']);
 
-        // Create options array base on root page languages
+        // Create options array base on root page languages and user permission
         foreach ($i18nl10nLanguages['localizations'] as $language) {
-            if (!in_array($language, $arrSiblingLanguages)) {
+            if (!in_array($language, $arrSiblingLanguages)
+                && ($this->User->isAdmin || in_array($strIdentifier . $language, (array) $this->User->i18nl10n_languages))) {
                 $arrOptions[$language] = $arrLanguages[$language];
             }
         }
 
         return $arrOptions;
+    }
+
+    /**
+     * Check permissions to edit table tl_page_i18nl10n
+     */
+    public function checkPermission()
+    {
+        if ($this->User->isAdmin) {
+            return;
+        }
+
+        // Restrict the page tree
+        $GLOBALS['TL_DCA']['tl_page']['list']['sorting']['root'] = $this->User->pagemounts;
+    }
+
+    /**
+     * Create list button based on language and page type permissions
+     *
+     * @param $row
+     * @param $href
+     * @param $label
+     * @param $title
+     * @param $icon
+     * @param $attributes
+     *
+     * @return string
+     */
+    public function createButton($row, $href, $label, $title, $icon, $attributes) {
+        return ($this->User->isAdmin || $this->userHasPermissionToEditPage($row))
+            ? '<a href="' . $this->addToUrl($href . '&amp;id=' . $row['id']) . '" title="' . specialchars($title) . '"' . $attributes . '>' . \Image::getHtml($icon, $label) . '</a> '
+            : '';
+    }
+
+    /**
+     * Create based button based on language and page type permissions
+     *
+     * @param DataContainer $dc
+     * @param               $row
+     * @param               $table
+     * @param               $cr
+     * @param null          $arrClipboard
+     *
+     * @return string
+     */
+    public function pastePage(DataContainer $dc, $row, $table, $cr, $arrClipboard = null)
+    {
+        return $this->User->isAdmin || $this->userHasPermissionToEditPageType($row, $table)
+            ? parent::pastePage($dc, $row, $table, $cr, $arrClipboard)
+            : \Image::getHtml('pasteafter_.gif') . ' ' . \Image::getHtml('pasteinto_.gif');
+    }
+
+    /**
+     * Check if user has permission to edit language of given row
+     *
+     * @param $arrRow
+     *
+     * @return boolean
+     */
+    private function userHasPermissionToEditLanguage($arrRow)
+    {
+        $objPage = \PageModel::findWithDetails($arrRow['pid']);
+        $strLanguageIdentifier = $objPage->rootId . '::' . $arrRow['language'];
+
+        return in_array($strLanguageIdentifier, (array) $this->User->i18nl10n_languages);
+    }
+
+    /**
+     * Check if current be user has permission to edit the given page type
+     *
+     * @param $arrRow
+     * @param $strTable
+     *
+     * @return boolean
+     */
+    private function userHasPermissionToEditPageType($arrRow, $strTable = 'tl_page_i18nl10n') {
+        $strType = $strTable === 'tl_page_i18nl10n'
+            ? \PageModel::findByIdOrAlias($arrRow['pid'])->type
+            : $arrRow['type'];
+
+        return in_array($strType, (array) $this->User->alpty);
+    }
+
+    /**
+     * Check if current be user has permission to edit language and page type of given row
+     *
+     * @param        $arrRow
+     * @param string $strTable
+     *
+     * @return bool
+     */
+    private function userHasPermissionToEditPage($arrRow, $strTable = 'tl_page_i18nl10n')
+    {
+        return $this->User->isAdmin
+               || ($this->userHasPermissionToEditLanguage($arrRow) && $this->userHasPermissionToEditPageType($arrRow, $strTable));
     }
 }

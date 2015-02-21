@@ -26,6 +26,7 @@ namespace Verstaerker\I18nl10n\Classes;
  */
 class I18nl10nHook extends \System
 {
+
     /**
      * Generates url for the site according to settings from the backend
      *
@@ -43,11 +44,11 @@ class I18nl10nHook extends \System
             throw new \Exception('not an associative array.');
         }
 
-        $language = !empty($arrRow['robots']) || empty($arrRow['language'])
+        $language = empty($arrRow['language'])
             ? $GLOBALS['TL_LANGUAGE']
             : $arrRow['language'];
 
-        $arrLanguages = I18nl10n::getLanguagesByDomain();
+        $arrLanguages = I18nl10n::getInstance()->getLanguagesByDomain();
         $arrL10nAlias = null;
 
         // try to get l10n alias by language and pid
@@ -146,7 +147,7 @@ class I18nl10nHook extends \System
     public function getPageIdFromUrl(Array $arrFragments)
     {
         $arrFragments = array_map('urldecode', $arrFragments);
-        $arrLanguages = I18nl10n::getLanguagesByDomain();
+        $arrLanguages = I18nl10n::getInstance()->getLanguagesByDomain();
 
         // If no root pages found, return
         if (!count($arrLanguages)) {
@@ -154,7 +155,7 @@ class I18nl10nHook extends \System
         }
 
         // Get default language
-        $strLanguage = $arrLanguages['default'];
+        $strLanguage        = $arrLanguages['default'];
         $arrMappedFragments = $this->mapUrlFragments($arrFragments);
 
         // try to get language by i18nl10n URL
@@ -165,7 +166,7 @@ class I18nl10nHook extends \System
         elseif (\Config::get('i18nl10n_urlParam') === 'alias' && !\Config::get('disableAlias')) {
 
             $intLastIndex = count($arrFragments) - 1;
-            $strRegex = '@^([_\-\pL\pN\.]*(?=\.))?\.?([a-z]{2})$@u';
+            $strRegex     = '@^([_\-\pL\pN\.]*(?=\.))?\.?([a-z]{2})$@u';
 
             // last element should contain language info
             if (preg_match($strRegex, $arrFragments[$intLastIndex], $matches)) {
@@ -277,7 +278,8 @@ class I18nl10nHook extends \System
             ? " AND (start = '' OR start < $time) AND (stop = '' OR stop > $time) AND i18nl10n_published = 1 "
             : '';
 
-        $sql = "SELECT * FROM tl_page_i18nl10n WHERE pid IN ('" . implode(',', $arrPages) . "') AND language = ? $sqlPublishedCondition";
+        $sql = "SELECT * FROM tl_page_i18nl10n WHERE pid IN ('" . implode(',', $arrPages)
+               . "') AND language = ? $sqlPublishedCondition";
 
         $arrL10n = \Database::getInstance()
             ->prepare($sql)
@@ -310,6 +312,80 @@ class I18nl10nHook extends \System
     }
 
     /**
+     * Add language selector to page indexing string
+     *
+     * @param $strContent
+     * @param $arrData
+     * @param $arrSet
+     */
+    public function indexPage(&$strContent, $arrData, $arrSet)
+    {
+        $strContent = $strContent . ' i18nl10n::' . $arrData['language'] . ' ';
+    }
+
+    /**
+     * Add localized urls to search indexing
+     *
+     * @param $arrPages
+     *
+     * @return array
+     */
+    public function getSearchablePages($arrPages)
+    {
+        $time = time();
+        $arrL10nPages = array();
+        $objPages = \Database::getInstance()
+            ->query("
+              SELECT p.*, i.alias as i18nl10n_alias, i.language as i18nl10n_language, i.title as i18nl10n_title
+              FROM tl_page as p
+              LEFT JOIN tl_page_i18nl10n as i ON p.id = i.pid
+              WHERE (p.start = '' OR p.start < $time)
+                AND (p.stop = '' OR p.stop > $time)
+                AND p.published = 1
+                AND i.i18nl10n_published
+                AND p.noSearch != 1
+                AND p.guests != 1
+                AND p.type = 'regular'
+              ORDER BY p.sorting;
+            ");
+
+        while ($objPages->next()) {
+
+            $objPageWithDetails = \PageModel::findWithDetails($objPages->id);
+
+            // Replace tl_page values with localized information
+            $objPages->language = $objPages->i18nl10n_language;
+            $objPages->alias = $objPages->i18nl10n_alias;
+            $objPages->title = $objPages->i18nl10n_title;
+
+            // Create url
+            $strUrl = \Controller::generateFrontendUrl($objPages->row());
+            $strUrl = ($objPageWithDetails->rootUseSSL ? 'https://' : 'http://') . ($objPageWithDetails->domain ?: \Environment::get('host')) . '/' . $strUrl;
+
+            // Append url
+            $arrL10nPages[] = $strUrl;
+        }
+
+        return array_merge($arrPages, $arrL10nPages);
+    }
+
+    /**
+     * Add current language selector to search keywords
+     *
+     * Contao 3.3.5 +
+     *
+     * @param $arrPages
+     * @param $strKeywords
+     * @param $strQueryType
+     * @param $blnFuzzy
+     */
+    public function customizeSearch($arrPages, &$strKeywords, $strQueryType, $blnFuzzy)
+    {
+        $strLanguage = $GLOBALS['TL_LANGUAGE'];
+        $strKeywords = $strKeywords . " i18nl10n::$strLanguage";
+    }
+
+    /**
      * loadDataContainer hook
      *
      * Add onload_callback definition when loadDataContainer hook is
@@ -317,12 +393,132 @@ class I18nl10nHook extends \System
      *
      * @param $strName
      */
-    public function loadDataContainer($strName)
+    public function appendLanguageSelectCallback($strName)
     {
         if ($strName == 'tl_content' && \Input::get('do') == 'article') {
             $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] =
-                array('tl_content_l10n', 'onLoadCallback');
+                array('tl_content_l10n', 'appendLanguageInput');
         }
+    }
+
+    /**
+     * loadDataContainer hook
+     *
+     * Redefine button_callback for tl_content elements to allow permission
+     * based display/hide.
+     *
+     * @param $strName
+     */
+    public function appendButtonCallback($strName)
+    {
+        // Append tl_content callbacks
+        if ($strName === 'tl_content' && \Input::get('do') === 'article') {
+            // Edit button
+            $this->setButtonCallback(
+                'tl_content',
+                'edit'
+            );
+
+            // Copy button
+            $this->setButtonCallback(
+                'tl_content',
+                'copy'
+            );
+
+            // Cut button
+            $this->setButtonCallback(
+                'tl_content',
+                'cut'
+            );
+
+            // Delete button
+            $this->setButtonCallback(
+                'tl_content',
+                'delete'
+            );
+
+            // Toggle button
+            $this->setButtonCallback(
+                'tl_content',
+                'toggle'
+            );
+        }
+
+        // Append tl_page callbacks
+        if ($strName === 'tl_page' && \Input::get('do') === 'page') {
+            // Edit button
+            $this->setButtonCallback(
+                'tl_page',
+                'edit'
+            );
+
+            // Copy button
+            $this->setButtonCallback(
+                'tl_page',
+                'copy'
+            );
+
+            // Copy children button
+            $this->setButtonCallback(
+                'tl_page',
+                'copyChilds'
+            );
+
+            // Cut button
+            $this->setButtonCallback(
+                'tl_page',
+                'cut'
+            );
+
+            // Delete button
+            $this->setButtonCallback(
+                'tl_page',
+                'delete'
+            );
+
+            // Toggle button
+            $this->setButtonCallback(
+                'tl_page',
+                'toggle'
+            );
+        }
+    }
+
+    /**
+     * Set button callback for given table and operation
+     *
+     * @param $strTable
+     * @param $strOperation
+     */
+    private function setButtonCallback($strTable, $strOperation)
+    {
+        $arrVendorCallback = $GLOBALS['TL_DCA'][$strTable]['list']['operations'][$strOperation]['button_callback'];
+
+        switch ($strTable) {
+            case 'tl_page':
+                $objCallback = new \tl_page_l10n();
+                break;
+
+            case 'tl_content':
+                $objCallback = new \tl_content_l10n();
+                break;
+
+            default:
+                return;
+        }
+
+        // Create an anonymous function to handle callback from different DCAs
+        $GLOBALS['TL_DCA'][$strTable]['list']['operations'][$strOperation]['button_callback'] =
+            function () use ($strTable, $objCallback, $strOperation, $arrVendorCallback) {
+
+                // Get callback arguments
+                $arrArgs = func_get_args();
+
+                return call_user_func_array(
+                    array($objCallback, 'createButton'),
+                    array($strOperation, $arrVendorCallback, $arrArgs)
+                );
+            };
     }
 
     /**
@@ -358,7 +554,9 @@ class I18nl10nHook extends \System
                 (SELECT id as pageId, alias, 'tl_page' as 'source'
                  FROM tl_page
                  WHERE alias IN('" . $strAlias . "'))
-                ORDER BY " . $dataBase->findInSet('alias', $arrAliasGuess);
+                ORDER BY "
+                . $dataBase->findInSet('alias', $arrAliasGuess) . ", "
+                . $dataBase->findInSet('source', array('tl_page_i18nl10n', 'tl_page'));
 
         $objL10nPage = $dataBase
             ->prepare($sql)
@@ -447,7 +645,7 @@ class I18nl10nHook extends \System
         elseif (\Config::get('i18nl10n_urlParam') === 'alias' && !\Config::get('disableAlias')) {
 
             $lastIndex = count($arrFragments) - 1;
-            $strRegex = '@^([_\-\pL\pN\.]*(?=\.))?\.?([a-z]{2})$@u';
+            $strRegex  = '@^([_\-\pL\pN\.]*(?=\.))?\.?([a-z]{2})$@u';
 
             // last element should contain language info
             if (preg_match($strRegex, $arrFragments[$lastIndex], $matches)) {

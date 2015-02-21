@@ -2,8 +2,6 @@
 /**
  * i18nl10n Contao Module
  *
- * PHP version 5
- *
  * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n
@@ -24,6 +22,6 @@ $GLOBALS['TL_LANG']['MSC']['i18nl10n_fields']['language']['label'] = array
 $GLOBALS['TL_LANG']['MSC']['editL10n'] = 'Edit localizations for page %s';
 $GLOBALS['TL_LANG']['MSC']['language'] = 'language';
 
-$GLOBALS['TL_LANG']['LNG'][''] = 'Any';
+$GLOBALS['TL_LANG']['LNG'][''] = 'Neutral';
 
 $GLOBALS['TL_LANG']['ERR']['i18nl10n_aliasExists'] = 'The alias "%s" already exists for the selected language.';

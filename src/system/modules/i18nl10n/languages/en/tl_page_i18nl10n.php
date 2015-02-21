@@ -2,8 +2,6 @@
 /**
  * i18nl10n Contao Module
  *
- * PHP version 5
- *
  * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n
@@ -93,5 +91,5 @@ $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_no_languages'] =
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_some_languages'] =
     'Some root pages have no language alternatives.';
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_localize_all'] =
-    'I will create localizations for all missing translations based on the following list. Are you sure you want to continue?';
+    'I will create localizations for all missing translations based on the following list (based on user permissions). Are you sure you want to continue?';
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['no_languages'] = 'No languages';

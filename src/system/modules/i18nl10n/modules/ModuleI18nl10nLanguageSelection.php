@@ -72,14 +72,14 @@ class ModuleI18nl10nLanguageSelection extends \Module
 
         $time       = time();
         $items      = array();
-        $langNative = I18nl10n::getNativeLanguageNames();
+        $langNative = I18nl10n::getInstance()->getNativeLanguageNames();
 
         $sqlPublishedCondition = !BE_USER_LOGGED_IN
             ? " AND (start = '' OR start < $time) AND (stop = '' OR stop > $time) AND i18nl10n_published = 1 "
             : '';
 
         // Get all possible languages for this page tree
-        $arrLanguages = I18nl10n::getLanguagesByRootId($objPage->rootId);
+        $arrLanguages = I18nl10n::getInstance()->getLanguagesByRootId($objPage->rootId);
 
         $sql = "
             SELECT *

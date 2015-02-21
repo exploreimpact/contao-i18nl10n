@@ -24,24 +24,18 @@ if (TL_MODE == 'BE')
     // CSS files
     $strCss = 'system/modules/i18nl10n/assets/css/style.css';
 
-    if (is_array($GLOBALS['TL_CSS']))
-    {
+    if (is_array($GLOBALS['TL_CSS'])) {
         $GLOBALS['TL_CSS'][] = $strCss;
-    }
-    else
-    {
+    } else {
         $GLOBALS['TL_CSS'] = array($strCss);
     }
 
     // JS files
     $strJs = 'system/modules/i18nl10n/assets/js/i18nl10n.js';
 
-    if (is_array($GLOBALS['TL_JAVASCRIPT']))
-    {
+    if (is_array($GLOBALS['TL_JAVASCRIPT'])) {
         $GLOBALS['TL_JAVASCRIPT'][] = $strJs;
-    }
-    else
-    {
+    } else {
         $GLOBALS['TL_JAVASCRIPT'] = array($strJs);
     }
 }
@@ -76,10 +70,19 @@ $GLOBALS['TL_HOOKS']['getPageIdFromUrl'][] = array('\I18nl10n\Classes\I18nl10nHo
 $GLOBALS['TL_HOOKS']['generateBreadcrumb'][] = array('\I18nl10n\Classes\I18nl10nHook', 'generateBreadcrumb');
 $GLOBALS['TL_HOOKS']['executePostActions'][] = array('\I18nl10n\Classes\I18nl10nHook', 'executePostActions');
 $GLOBALS['TL_HOOKS']['isVisibleElement'][] = array('\I18nl10n\Classes\I18nl10nHook', 'isVisibleElement');
-$GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('\I18nl10n\Classes\I18nl10nHook', 'loadDataContainer');
+$GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('\I18nl10n\Classes\I18nl10nHook', 'appendLanguageSelectCallback');
+$GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('\I18nl10n\Classes\I18nl10nHook', 'appendButtonCallback');
+$GLOBALS['TL_HOOKS']['indexPage'][] = array('\I18nl10n\Classes\I18nl10nHook', 'indexPage');
+$GLOBALS['TL_HOOKS']['getSearchablePages'][] = array('\I18nl10n\Classes\I18nl10nHook', 'getSearchablePages');
+$GLOBALS['TL_HOOKS']['customizeSearch'][] = array('\I18nl10n\Classes\I18nl10nHook', 'customizeSearch');
 
 
 /**
  * PAGE TYPES
  */
 $GLOBALS['TL_PTY']['regular'] = '\I18nl10n\Pages\PageI18nl10nRegular';
+
+/**
+ * Inherit language permissions
+ */
+$GLOBALS['TL_PERMISSIONS'][] = 'i18nl10n_languages';

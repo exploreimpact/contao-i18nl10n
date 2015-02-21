@@ -37,8 +37,6 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['language'] = array_merge(
         'reference'        => &$GLOBALS['TL_LANG']['LNG'],
         'eval'             => array(
             'mandatory'          => false,
-            'includeBlankOption' => true,
-            'blankOptionLabel'   => $GLOBALS['TL_LANG']['tl_content']['i18nl10n_blankOptionLabel'],
             'rgxp'               => 'alpha',
             'maxlength'          => 2,
             'nospace'            => true,
@@ -82,7 +80,6 @@ class tl_content_l10n extends tl_content
         return $strElement;
     }
 
-
     /**
      * Onload callback for tl_content
      *
@@ -90,7 +87,7 @@ class tl_content_l10n extends tl_content
      *
      * @param DataContainer $dc
      */
-    public function onLoadCallback(DataContainer $dc = null)
+    public function appendLanguageInput(DataContainer $dc = null)
     {
         $this->loadLanguageFile('tl_content');
         $dc->loadDataContainer('tl_page');
@@ -132,6 +129,9 @@ class tl_content_l10n extends tl_content
     /**
      * Get available languages by content element id
      *
+     * - Filter by permission
+     * - Add a blank option (by permission)
+     *
      * @param $id
      *
      * @return array
@@ -144,9 +144,130 @@ class tl_content_l10n extends tl_content
             ->execute($id)
             ->fetchAssoc();
 
-        $i18nl10nLanguages = I18nl10n::getLanguagesByPageId($arrPageId['id'], 'tl_page');
+        $i18nl10nLanguages = I18nl10n::getInstance()->getLanguagesByPageId($arrPageId['id'], 'tl_page');
+        $strIdentifier = $i18nl10nLanguages['rootId'] . '::';
 
-        return $i18nl10nLanguages['languages'];
+        // Create base and add neutral (*) language if admin or has permission
+        $arrOptions = $this->User->isAdmin || in_array($strIdentifier . '*', (array) $this->User->i18nl10n_languages)
+              ? array('')
+              : array();
+
+        // Add languages based on permissions
+        if ($this->User->isAdmin) {
+            array_insert($arrOptions, 1, $i18nl10nLanguages['languages']);
+        } else {
+            foreach ($i18nl10nLanguages['languages'] as $language) {
+                if (in_array($strIdentifier . $language, (array) $this->User->i18nl10n_languages)) {
+                    $arrOptions[] = $language;
+                }
+            }
+        }
+
+        return $arrOptions;
+    }
+
+    /**
+     * Create buttons for languages with user/group permission with vendor module support
+     *
+     * @param   array   $strOperation      operation name of button
+     * @param   array   $arrVendorCallback
+     * @param   array   $arrArgs           {row, href, label, title, icon, attributes, table, rootIds, childRecordIds, circularReference, previous, next, dc}
+     *
+     * @return  string
+     */
+    public function createButton($strOperation, $arrVendorCallback = null, $arrArgs)
+    {
+        $return = '';
+
+        // If is allowed to edit language, create icon string
+        if ($this->User->isAdmin || $this->userHasPermissionToEditLanguage($arrArgs[0])) {
+            $strButton = $this->createVendorListButton($arrVendorCallback, $arrArgs);
+
+            switch ($strOperation) {
+                case 'delete':
+                    $return = $strButton === false
+                        ? call_user_func_array(array($this, 'deleteElement'), $arrArgs)
+                        : $strButton;
+                    break;
+
+                case 'toggle':
+                    $return = $strButton === false
+                        ? call_user_func_array(array($this, 'toggleIcon'), $arrArgs)
+                        : $strButton;
+                    break;
+
+                default:
+                    $return = $strButton === false
+                        ? call_user_func_array(array($this, 'createListButton'), $arrArgs)
+                        : $strButton;
+            }
+
+        }
+
+        return $return;
+    }
+
+    /**
+     * Create button
+     *
+     * @param $arrRow
+     * @param $strHref
+     * @param $strLabel
+     * @param $strTitle
+     * @param $strIcon
+     * @param $arrAttributes
+     *
+     * @return string
+     */
+    private function createListButton($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes)
+    {
+        return '<a href="' . $this->addToUrl($strHref . '&amp;id=' . $arrRow['id']) . '" title="' . specialchars($strTitle) . '"' . $arrAttributes . '>' . \Image::getHtml($strIcon, $strLabel) . '</a> ';
+    }
+
+    /**
+     * Call a the vendor callback backup
+     *
+     * @param   $arrVendorCallback
+     * @param   $arrArgs            {row, href, label, title, icon, attributes, table, rootIds, childRecordIds, circularReference, previous, next, dc}
+     *
+     * @return string|bool  If something went wrong, 'false' is returned
+     */
+    private function createVendorListButton($arrVendorCallback = null, $arrArgs)
+    {
+        $return = false;
+
+        // Call vendor callback
+        if (is_array($arrVendorCallback)) {
+            $vendorClass = new $arrVendorCallback[0];
+            $return = call_user_func_array(array($vendorClass, $arrVendorCallback[1]), $arrArgs);
+        } elseif (is_callable($arrVendorCallback)) {
+            $return = call_user_func_array($arrVendorCallback, $arrArgs);
+        }
+
+        return $return;
+    }
+
+    /**
+     * Create language identifier
+     *
+     * Get an identifier string of combined root page id and language
+     * based on content element
+     *
+     * @param $arrRow
+     *
+     * @return boolean
+     */
+    private function userHasPermissionToEditLanguage($arrRow)
+    {
+        $objArticle = \ArticleModel::findByPk($arrRow['pid']);
+        $objPage = \PageModel::findWithDetails($objArticle->pid);
+        $strLanguage = !empty($arrRow['language'])
+            ? $arrRow['language']
+            : '*';
+
+        $strLanguageIdentifier = $objPage->rootId . '::' . $strLanguage;
+
+        return in_array($strLanguageIdentifier, (array) $this->User->i18nl10n_languages);
     }
 
 }

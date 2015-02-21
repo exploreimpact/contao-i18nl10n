@@ -190,8 +190,8 @@ class tl_page_l10n extends tl_page
     public function displayDnsMessage()
     {
         // Only apply if multiple root pages
-        if (I18nl10n::countRootPages() > 1) {
-            $objRootPages = I18nl10n::getAllRootPages();
+        if (I18nl10n::getInstance()->countRootPages() > 1) {
+            $objRootPages = I18nl10n::getInstance()->getAllRootPages();
             $arrDns = array();
 
             while ($objRootPages->next()) {
@@ -225,7 +225,7 @@ class tl_page_l10n extends tl_page
         }
 
         if ($dc->activeRecord->type !== 'root') {
-            $arrI18nl10nLanguages = I18nl10n::getLanguagesByPageId($dc->activeRecord->pid, 'tl_page');
+            $arrI18nl10nLanguages = I18nl10n::getInstance()->getLanguagesByPageId($dc->activeRecord->pid, 'tl_page', true);
             $arrLocalizations = $arrI18nl10nLanguages['localizations'];
         } else {
             // Flatten localizations
@@ -250,7 +250,6 @@ class tl_page_l10n extends tl_page
             'sorting'        => 0,
             'tstamp'         => time(),
             'title'          => $dc->activeRecord->title,
-            'type'           => $dc->activeRecord->type,
             'pageTitle'      => $dc->activeRecord->pageTitle,
             'description'    => $dc->activeRecord->description,
             'cssClass'       => $dc->activeRecord->cssClass,
@@ -271,7 +270,7 @@ class tl_page_l10n extends tl_page
             // Create alias based on folder url setting
             if (Config::get('folderUrl')) {
                 // Get translation for parent page
-                $objL10nParentPage = I18nl10n::findL10nWithDetails($dc->activeRecord->pid, $language);
+                $objL10nParentPage = I18nl10n::getInstance()->findL10nWithDetails($dc->activeRecord->pid, $language);
 
                 if ($objL10nParentPage->type !== 'root') {
                     // Create folder url
@@ -461,7 +460,7 @@ class tl_page_l10n extends tl_page
      */
     public function setDnsMandatory()
     {
-        if (I18nl10n::countRootPages() > 1) {
+        if (I18nl10n::getInstance()->countRootPages() > 1) {
             // If there is already a root page, a domain name must be set
             $GLOBALS['TL_DCA']['tl_page']['fields']['dns']['eval']['mandatory'] = true;
         }
@@ -479,5 +478,101 @@ class tl_page_l10n extends tl_page
             'language,fallback;{module_i18nl10n},i18nl10n_localizations;',
             $GLOBALS['TL_DCA']['tl_page']['palettes']['root']
         );
+    }
+
+    /**
+     * Create list button on button_callback
+     *
+     * @param      $strOperation
+     * @param null $arrVendorCallback
+     * @param      $arrArgs
+     *
+     * @return string
+     */
+    public function createButton($strOperation, $arrVendorCallback = null, $arrArgs)
+    {
+        $return = '';
+
+        // If is allowed to edit language, create icon string
+        if ($this->User->isAdmin || $this->userHasPermissionToEditLanguage($arrArgs[0])) {
+            $strButton = $this->createVendorListButton($arrVendorCallback, $arrArgs);
+
+            switch ($strOperation) {
+                case 'delete':
+                    $return = $strButton === false
+                        ? call_user_func_array(array($this, 'deleteElement'), $arrArgs)
+                        : $strButton;
+                    break;
+
+                case 'toggle':
+                    $return = $strButton === false
+                        ? call_user_func_array(array($this, 'toggleIcon'), $arrArgs)
+                        : $strButton;
+                    break;
+
+                default:
+                    $return = $strButton === false
+                        ? call_user_func_array(array($this, 'createListButton'), $arrArgs)
+                        : $strButton;
+            }
+
+        }
+
+        return $return;
+    }
+
+    /**
+     * Create button
+     *
+     * @param $arrRow
+     * @param $strHref
+     * @param $strLabel
+     * @param $strTitle
+     * @param $strIcon
+     * @param $arrAttributes
+     *
+     * @return string
+     */
+    private function createListButton($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes)
+    {
+        return '<a href="' . $this->addToUrl($strHref . '&amp;id=' . $arrRow['id']) . '" title="' . specialchars($strTitle) . '"' . $arrAttributes . '>' . \Image::getHtml($strIcon, $strLabel) . '</a> ';
+    }
+
+    /**
+     * Call a the vendor callback backup
+     *
+     * @param   $arrVendorCallback
+     * @param   $arrArgs            {row, href, label, title, icon, attributes, table, rootIds, childRecordIds, circularReference, previous, next, dc}
+     *
+     * @return string|bool  If something went wrong, 'false' is returned
+     */
+    private function createVendorListButton($arrVendorCallback = null, $arrArgs)
+    {
+        $return = false;
+
+        // Call vendor callback
+        if (is_array($arrVendorCallback)) {
+            $vendorClass = new $arrVendorCallback[0];
+            $return = call_user_func_array(array($vendorClass, $arrVendorCallback[1]), $arrArgs);
+        } elseif (is_callable($arrVendorCallback)) {
+            $return = call_user_func_array($arrVendorCallback, $arrArgs);
+        }
+
+        return $return;
+    }
+
+    /**
+     * Check if current user has permission to edit given page
+     *
+     * @param $arrRow
+     *
+     * @return bool
+     */
+    private function userHasPermissionToEditLanguage($arrRow)
+    {
+        $objPage = \PageModel::findWithDetails($arrRow['id']);
+        $strLanguageIdentifier = $objPage->rootId . '::' . $arrRow['language'];
+
+        return in_array($strLanguageIdentifier, (array) $this->User->i18nl10n_languages);
     }
 }
