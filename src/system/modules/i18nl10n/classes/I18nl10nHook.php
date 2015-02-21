@@ -236,6 +236,26 @@ class I18nl10nHook extends \System
     }
 
     /**
+     * Handle ajax requests
+     *
+     * @param $strAction
+     *
+     * @return bool
+     */
+    public function executePostActions($strAction)
+    {
+        switch ($strAction) {
+            case 'toggleL10n':
+                $pageI18nl10n = new \tl_page_i18nl10n;
+                $pageI18nl10n->toggleL10n(
+                    \Input::post('id'),
+                    \Input::post('state') == 1
+                );
+                break;
+        }
+    }
+
+    /**
      * Breadcrumb callback to translate elements
      *
      * @param $arrItems  Array
