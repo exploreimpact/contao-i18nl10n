@@ -682,26 +682,6 @@ class tl_page_i18nl10n extends tl_page
         $objVersions->create();
     }
 
-
-    /**
-     * Execute ajax requests
-     *
-     * @param $strAction
-     *
-     * @return bool
-     */
-    public function executePostActions($strAction)
-    {
-        switch ($strAction) {
-            case 'toggleL10n':
-                tl_page_i18nl10n::toggleL10n(
-                    \Input::post('id'),
-                    \Input::post('state') == 1
-                );
-                break;
-        }
-    }
-
     /**
      * Auto-generate a page alias if it has not been set yet
      *

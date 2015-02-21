@@ -44,7 +44,7 @@ class I18nl10nHook extends \System
             throw new \Exception('not an associative array.');
         }
 
-        $language = !empty($arrRow['robots']) || empty($arrRow['language'])
+        $language = empty($arrRow['language'])
             ? $GLOBALS['TL_LANGUAGE']
             : $arrRow['language'];
 
@@ -237,6 +237,26 @@ class I18nl10nHook extends \System
     }
 
     /**
+     * Handle ajax requests
+     *
+     * @param $strAction
+     *
+     * @return bool
+     */
+    public function executePostActions($strAction)
+    {
+        switch ($strAction) {
+            case 'toggleL10n':
+                $pageI18nl10n = new \tl_page_i18nl10n;
+                $pageI18nl10n->toggleL10n(
+                    \Input::post('id'),
+                    \Input::post('state') == 1
+                );
+                break;
+        }
+    }
+
+    /**
      * Breadcrumb callback to translate elements
      *
      * @param $arrItems  Array
@@ -289,6 +309,80 @@ class I18nl10nHook extends \System
         }
 
         return $arrItems;
+    }
+
+    /**
+     * Add language selector to page indexing string
+     *
+     * @param $strContent
+     * @param $arrData
+     * @param $arrSet
+     */
+    public function indexPage(&$strContent, $arrData, $arrSet)
+    {
+        $strContent = $strContent . ' i18nl10n::' . $arrData['language'] . ' ';
+    }
+
+    /**
+     * Add localized urls to search indexing
+     *
+     * @param $arrPages
+     *
+     * @return array
+     */
+    public function getSearchablePages($arrPages)
+    {
+        $time = time();
+        $arrL10nPages = array();
+        $objPages = \Database::getInstance()
+            ->query("
+              SELECT p.*, i.alias as i18nl10n_alias, i.language as i18nl10n_language, i.title as i18nl10n_title
+              FROM tl_page as p
+              LEFT JOIN tl_page_i18nl10n as i ON p.id = i.pid
+              WHERE (p.start = '' OR p.start < $time)
+                AND (p.stop = '' OR p.stop > $time)
+                AND p.published = 1
+                AND i.i18nl10n_published
+                AND p.noSearch != 1
+                AND p.guests != 1
+                AND p.type = 'regular'
+              ORDER BY p.sorting;
+            ");
+
+        while ($objPages->next()) {
+
+            $objPageWithDetails = \PageModel::findWithDetails($objPages->id);
+
+            // Replace tl_page values with localized information
+            $objPages->language = $objPages->i18nl10n_language;
+            $objPages->alias = $objPages->i18nl10n_alias;
+            $objPages->title = $objPages->i18nl10n_title;
+
+            // Create url
+            $strUrl = \Controller::generateFrontendUrl($objPages->row());
+            $strUrl = ($objPageWithDetails->rootUseSSL ? 'https://' : 'http://') . ($objPageWithDetails->domain ?: \Environment::get('host')) . '/' . $strUrl;
+
+            // Append url
+            $arrL10nPages[] = $strUrl;
+        }
+
+        return array_merge($arrPages, $arrL10nPages);
+    }
+
+    /**
+     * Add current language selector to search keywords
+     *
+     * Contao 3.3.5 +
+     *
+     * @param $arrPages
+     * @param $strKeywords
+     * @param $strQueryType
+     * @param $blnFuzzy
+     */
+    public function customizeSearch($arrPages, &$strKeywords, $strQueryType, $blnFuzzy)
+    {
+        $strLanguage = $GLOBALS['TL_LANGUAGE'];
+        $strKeywords = $strKeywords . " i18nl10n::$strLanguage";
     }
 
     /**
