@@ -107,14 +107,14 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
                 'label' => &$GLOBALS['TL_LANG']['tl_page_i18nl10n']['edit'],
                 'href'  => 'act=edit',
                 'icon'  => 'edit.gif',
-                'button_callback' => array('tl_page_i18nl10n', 'createButton')
+                'button_callback' => array('tl_page_i18nl10n', 'createEditButton')
             ),
             'copy'        => array
             (
                 'label' => &$GLOBALS['TL_LANG']['tl_page_i18nl10n']['copy'],
                 'href'  => 'act=copy',
                 'icon'  => 'copy.gif',
-                'button_callback' => array('tl_page_i18nl10n', 'createButton')
+                'button_callback' => array('tl_page_i18nl10n', 'createCopyButton')
             ),
             'delete'      => array
             (
@@ -122,7 +122,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
                 'href'       => 'act=delete',
                 'icon'       => 'delete.gif',
                 'attributes' => 'onclick="if(!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['deleteConfirm'] . '\')) return false; Backend.getScrollOffset();"',
-                'button_callback' => array('tl_page_i18nl10n', 'createButton')
+                'button_callback' => array('tl_page_i18nl10n', 'createDeleteButton')
             ),
             'toggle_l10n' => array
             (
@@ -577,14 +577,10 @@ class tl_page_i18nl10n extends tl_page
             ->limit(1)
             ->execute($row['id']);
 
-        // only return image element for icon
-        if (!$this->User->isAdmin && !$this->User->isAllowed(2, $objPage->row())) {
-            return '';
-        }
-
-        // return linked image element for icon
-        return '<a href="' . $this->addToUrl($href) . '" title="' . specialchars($title) . '"' . $attributes . '>'
-               . \Image::getHtml($icon, $label) . '</a> ';
+        // return linked image element for icon OR empty string if no edit allowed
+        return $this->User->isAdmin || $this->User->isAllowed(\BackendUser::CAN_EDIT_PAGE_HIERARCHY, $objPage->row())
+            ? '<a href="' . $this->addToUrl($href) . '" title="' . specialchars($title) . '"' . $attributes . '>' . \Image::getHtml($icon, $label) . '</a> '
+            : '';
     }
 
     /**
@@ -808,6 +804,63 @@ class tl_page_i18nl10n extends tl_page
     }
 
     /**
+     * Create edit button for page row based on chmod
+     *
+     * @param $row
+     * @param $href
+     * @param $label
+     * @param $title
+     * @param $icon
+     * @param $attributes
+     *
+     * @return string
+     */
+    public function createEditButton($row, $href, $label, $title, $icon, $attributes)
+    {
+        return $this->User->isAllowed(\BackendUser::CAN_EDIT_PAGE, $row)
+            ? $this->createButton($row, $href, $label, $title, $icon, $attributes)
+            : '';
+    }
+
+    /**
+     * Create copy button for page row based on chmod
+     *
+     * @param $row
+     * @param $href
+     * @param $label
+     * @param $title
+     * @param $icon
+     * @param $attributes
+     *
+     * @return string
+     */
+    public function createCopyButton($row, $href, $label, $title, $icon, $attributes)
+    {
+        return $this->User->isAllowed(\BackendUser::CAN_EDIT_PAGE_HIERARCHY, $row)
+            ? $this->createButton($row, $href, $label, $title, $icon, $attributes)
+            : '';
+    }
+
+    /**
+     * Create delete button for page row based on chmod
+     *
+     * @param $row
+     * @param $href
+     * @param $label
+     * @param $title
+     * @param $icon
+     * @param $attributes
+     *
+     * @return string
+     */
+    public function createDeleteButton($row, $href, $label, $title, $icon, $attributes)
+    {
+        return $this->User->isAllowed(\BackendUser::CAN_DELETE_PAGE, $row)
+            ? $this->createButton($row, $href, $label, $title, $icon, $attributes)
+            : '';
+    }
+
+    /**
      * Create list button based on language and page type permissions
      *
      * @param $row
@@ -819,7 +872,8 @@ class tl_page_i18nl10n extends tl_page
      *
      * @return string
      */
-    public function createButton($row, $href, $label, $title, $icon, $attributes) {
+    public function createButton($row, $href, $label, $title, $icon, $attributes)
+    {
         return ($this->User->isAdmin || $this->userHasPermissionToEditPage($row))
             ? '<a href="' . $this->addToUrl($href . '&amp;id=' . $row['id']) . '" title="' . specialchars($title) . '"' . $attributes . '>' . \Image::getHtml($icon, $label) . '</a> '
             : '';
@@ -866,7 +920,8 @@ class tl_page_i18nl10n extends tl_page
      *
      * @return boolean
      */
-    private function userHasPermissionToEditPageType($arrRow, $strTable = 'tl_page_i18nl10n') {
+    private function userHasPermissionToEditPageType($arrRow, $strTable = 'tl_page_i18nl10n')
+    {
         $strType = $strTable === 'tl_page_i18nl10n'
             ? \PageModel::findByIdOrAlias($arrRow['pid'])->type
             : $arrRow['type'];
