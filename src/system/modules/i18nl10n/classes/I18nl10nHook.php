@@ -340,7 +340,7 @@ class I18nl10nHook extends \System
 
             // Create url
             $strUrl = \Controller::generateFrontendUrl($objPages->row());
-            $strUrl = ($objPageWithDetails->rootUseSSL ? 'https://' : 'http://') . $objPageWithDetails->domain . \Environment::get('host') . '/' . $strUrl;
+            $strUrl = ($objPageWithDetails->rootUseSSL ? 'https://' : 'http://') . ($objPageWithDetails->domain ?: \Environment::get('host')) . '/' . $strUrl;
 
             // Append url
             $arrL10nPages[] = $strUrl;
