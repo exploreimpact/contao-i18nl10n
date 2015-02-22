@@ -369,6 +369,7 @@ class tl_page_i18nl10n extends tl_page
     private function localizeAllAction()
     {
         $arrLanguages = I18nl10n::getInstance()->getAvailableLanguages(true);
+        $dataBase = \Database::getInstance();
 
         foreach ($arrLanguages as $domain) {
 
@@ -390,13 +391,23 @@ class tl_page_i18nl10n extends tl_page
                         $this->Database->getChildRecords($pageMount, 'tl_page')
                     );
                 }
+
+                // Get pages from DB
+                $objPages = $dataBase->prepare('SELECT * FROM tl_page WHERE ' . $dataBase->findInSet('id', $arrPageIds))->execute();
+
+                // Filter by chmod permission
+                while ($objPages->next()) {
+                    if (!$this->User->isAllowed(\BackendUser::CAN_EDIT_PAGE, $objPages->row())) {
+                        $arrPageIds = array_diff($arrPageIds, array($objPages->id));
+                    }
+                }
             }
 
             // Create strings for sql statement
             $strPageIds = implode($arrPageIds, ',');
             $strTypeCondition = !$this->User->isAdmin
-            ? 'AND p.type IN("' . implode((array) $this->User->alpty, '","') . '")'
-            : '';
+                ? 'AND p.type IN("' . implode((array) $this->User->alpty, '","') . '")'
+                : '';
 
             foreach ($domain['localizations'] as $localization) {
                 $sql = "
@@ -422,7 +433,7 @@ class tl_page_i18nl10n extends tl_page
                     $strTypeCondition
                 ";
 
-                \Database::getInstance()
+                $dataBase
                     ->prepare($sql)
                     ->execute($localization, $localization, $domain['default']);
             }
