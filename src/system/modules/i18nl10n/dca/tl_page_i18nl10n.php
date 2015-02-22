@@ -394,9 +394,13 @@ class tl_page_i18nl10n extends tl_page
                 // Get pages from DB
                 $objPages = $this->Database->prepare('SELECT * FROM tl_page WHERE ' . $this->Database->findInSet('id', $arrPageIds))->execute();
 
+                $intAction = property_exists(\BackendUser, 'CAN_EDIT_PAGE')
+                    ? \BackendUser::CAN_EDIT_PAGE
+                    : 1;
+
                 // Filter by chmod permission
                 while ($objPages->next()) {
-                    if (!$this->User->isAllowed(\BackendUser::CAN_EDIT_PAGE, $objPages->row())) {
+                    if (!$this->User->isAllowed($intAction, $objPages->row())) {
                         $arrPageIds = array_diff($arrPageIds, array($objPages->id));
                     }
                 }
@@ -587,8 +591,12 @@ class tl_page_i18nl10n extends tl_page
             ->limit(1)
             ->execute($row['id']);
 
+        $intAction = property_exists(\BackendUser, 'CAN_EDIT_PAGE_HIERARCHY')
+            ? \BackendUser::CAN_EDIT_PAGE_HIERARCHY
+            : 2;
+
         // return linked image element for icon OR empty string if no edit allowed
-        return $this->User->isAdmin || $this->User->isAllowed(\BackendUser::CAN_EDIT_PAGE_HIERARCHY, $objPage->row())
+        return $this->User->isAdmin || $this->User->isAllowed($intAction, $objPage->row())
             ? '<a href="' . $this->addToUrl($href) . '" title="' . specialchars($title) . '"' . $attributes . '>' . \Image::getHtml($icon, $label) . '</a> '
             : '';
     }
@@ -827,7 +835,11 @@ class tl_page_i18nl10n extends tl_page
      */
     public function createEditButton($row, $href, $label, $title, $icon, $attributes)
     {
-        return $this->User->isAllowed(\BackendUser::CAN_EDIT_PAGE, $row)
+        $intAction = property_exists(\BackendUser, 'CAN_EDIT_PAGE')
+            ? \BackendUser::CAN_EDIT_PAGE
+            : 1;
+
+        return $this->User->isAllowed($intAction, $row)
             ? $this->createButton($row, $href, $label, $title, $icon, $attributes)
             : '';
     }
@@ -846,7 +858,11 @@ class tl_page_i18nl10n extends tl_page
      */
     public function createCopyButton($row, $href, $label, $title, $icon, $attributes)
     {
-        return $this->User->isAllowed(\BackendUser::CAN_EDIT_PAGE_HIERARCHY, $row)
+        $intAction = property_exists(\BackendUser, 'CAN_EDIT_PAGE_HIERARCHY')
+            ? \BackendUser::CAN_EDIT_PAGE_HIERARCHY
+            : 2;
+
+        return $this->User->isAllowed($intAction, $row)
             ? $this->createButton($row, $href, $label, $title, $icon, $attributes)
             : '';
     }
@@ -865,7 +881,12 @@ class tl_page_i18nl10n extends tl_page
      */
     public function createDeleteButton($row, $href, $label, $title, $icon, $attributes)
     {
-        return $this->User->isAllowed(\BackendUser::CAN_DELETE_PAGE, $row)
+        //
+        $intAction = property_exists(\BackendUser, 'CAN_DELETE_PAGE')
+            ? \BackendUser::CAN_DELETE_PAGE
+            : 3;
+
+        return $this->User->isAllowed($intAction, $row)
             ? $this->createButton($row, $href, $label, $title, $icon, $attributes)
             : '';
     }
