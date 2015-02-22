@@ -827,7 +827,7 @@ class tl_page_i18nl10n extends tl_page
      */
     public function createEditButton($row, $href, $label, $title, $icon, $attributes)
     {
-        return $this->User->isAllowed(1, $row)
+        return $this->User->isAdmin || $this->User->isAllowed(1, $row)
             ? $this->createButton($row, $href, $label, $title, $icon, $attributes)
             : '';
     }
@@ -846,7 +846,7 @@ class tl_page_i18nl10n extends tl_page
      */
     public function createCopyButton($row, $href, $label, $title, $icon, $attributes)
     {
-        return $this->User->isAllowed(2, $row)
+        return $this->User->isAdmin || $this->User->isAllowed(2, $row)
             ? $this->createButton($row, $href, $label, $title, $icon, $attributes)
             : '';
     }
@@ -865,7 +865,7 @@ class tl_page_i18nl10n extends tl_page
      */
     public function createDeleteButton($row, $href, $label, $title, $icon, $attributes)
     {
-        return $this->User->isAllowed(3, $row)
+        return $this->User->isAdmin || $this->User->isAllowed(3, $row)
             ? $this->createButton($row, $href, $label, $title, $icon, $attributes)
             : '';
     }
