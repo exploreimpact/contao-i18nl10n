@@ -369,7 +369,6 @@ class tl_page_i18nl10n extends tl_page
     private function localizeAllAction()
     {
         $arrLanguages = I18nl10n::getInstance()->getAvailableLanguages(true);
-        $dataBase = \Database::getInstance();
 
         foreach ($arrLanguages as $domain) {
 
@@ -393,7 +392,7 @@ class tl_page_i18nl10n extends tl_page
                 }
 
                 // Get pages from DB
-                $objPages = $dataBase->prepare('SELECT * FROM tl_page WHERE ' . $dataBase->findInSet('id', $arrPageIds))->execute();
+                $objPages = $this->Database->prepare('SELECT * FROM tl_page WHERE ' . $this->Database->findInSet('id', $arrPageIds))->execute();
 
                 // Filter by chmod permission
                 while ($objPages->next()) {
@@ -433,7 +432,7 @@ class tl_page_i18nl10n extends tl_page
                     $strTypeCondition
                 ";
 
-                $dataBase
+                $this->Database
                     ->prepare($sql)
                     ->execute($localization, $localization, $domain['default']);
             }
