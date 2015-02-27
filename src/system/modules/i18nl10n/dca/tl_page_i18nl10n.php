@@ -262,15 +262,9 @@ class tl_page_i18nl10n extends tl_page
      */
     public function labelCallback($row, $label, DataContainer $dc = null, $imageAttribute = '', $blnReturnImage = false, $blnProtected = false)
     {
-        $src = 'system/modules/i18nl10n/assets/img/flag_icons/' . $row['language'];
-
-        $src .= $row['i18nl10n_published'] ? '.png' : '_invisible.png';
-
-        $label = '<span class="i18nl10n_page"><img class="i18nl10n_flag" src="%1$s"> %2$s [%3$s]</span>';
-
         return sprintf(
-            $label,
-            $src,
+            '<span class="i18nl10n_page"><img class="i18nl10n_flag" src="%1$s"> %2$s [%3$s]</span>',
+            'system/modules/i18nl10n/assets/img/flag_icons/' . $row['language'] . $row['i18nl10n_published'] ? '.png' : '_invisible.png',
             specialchars($row['title']),
             $GLOBALS['TL_LANG']['LNG'][$row['language']]
         );
@@ -357,7 +351,6 @@ class tl_page_i18nl10n extends tl_page
         );
 
         \Message::addRaw($rawMessage);
-
     }
 
 
@@ -390,13 +383,23 @@ class tl_page_i18nl10n extends tl_page
                         $this->Database->getChildRecords($pageMount, 'tl_page')
                     );
                 }
+
+                // Get pages from DB
+                $objPages = $this->Database->prepare('SELECT * FROM tl_page WHERE ' . $this->Database->findInSet('id', $arrPageIds))->execute();
+
+                // Filter by chmod permission
+                while ($objPages->next()) {
+                    if (!$this->User->isAllowed(1, $objPages->row())) {
+                        $arrPageIds = array_diff($arrPageIds, array($objPages->id));
+                    }
+                }
             }
 
-            // Create strings for sql statement
+            // Create strings for SQL statement
             $strPageIds = implode($arrPageIds, ',');
-            $strTypeCondition = !$this->User->isAdmin
-            ? 'AND p.type IN("' . implode((array) $this->User->alpty, '","') . '")'
-            : '';
+            $strTypeCondition = $this->User->isAdmin
+                ? ''
+                : 'AND p.type IN("' . implode((array) $this->User->alpty, '","') . '")';
 
             foreach ($domain['localizations'] as $localization) {
                 $sql = "
@@ -422,7 +425,7 @@ class tl_page_i18nl10n extends tl_page
                     $strTypeCondition
                 ";
 
-                \Database::getInstance()
+                $this->Database
                     ->prepare($sql)
                     ->execute($localization, $localization, $domain['default']);
             }
@@ -531,12 +534,12 @@ class tl_page_i18nl10n extends tl_page
     /**
      * Return 'toggle visibility' button on view create
      *
-     * @param array
-     * @param string
-     * @param string
-     * @param string
-     * @param string
-     * @param string
+     * @param array     $row
+     * @param string    $href
+     * @param string    $label
+     * @param string    $title
+     * @param string    $icon
+     * @param string    $attributes
      *
      * @return string
      */
@@ -549,7 +552,7 @@ class tl_page_i18nl10n extends tl_page
 
         // Check permissions AFTER checking the tid, so hacking attempts are logged
         if (!$this->User->isAdmin
-            && (!$this->User->hasAccess('tl_page_i18nl10n::i18nl10n_published', 'alexf')
+            && (!$this->User->hasAccess('tl_page_i18nl10n::i18nl10n_published', 'alexf')    // OMG. alexf = alpha lexical ???
                 || !$this->userHasPermissionToEditPage($row)))
         {
             return '';
@@ -578,7 +581,7 @@ class tl_page_i18nl10n extends tl_page
             ->execute($row['id']);
 
         // return linked image element for icon OR empty string if no edit allowed
-        return $this->User->isAdmin || $this->User->isAllowed(\BackendUser::CAN_EDIT_PAGE_HIERARCHY, $objPage->row())
+        return $this->User->isAdmin || $this->User->isAllowed(2, $objPage->row())
             ? '<a href="' . $this->addToUrl($href) . '" title="' . specialchars($title) . '"' . $attributes . '>' . \Image::getHtml($icon, $label) . '</a> '
             : '';
     }
@@ -817,7 +820,7 @@ class tl_page_i18nl10n extends tl_page
      */
     public function createEditButton($row, $href, $label, $title, $icon, $attributes)
     {
-        return $this->User->isAllowed(\BackendUser::CAN_EDIT_PAGE, $row)
+        return $this->User->isAdmin || $this->User->isAllowed(1, $row)
             ? $this->createButton($row, $href, $label, $title, $icon, $attributes)
             : '';
     }
@@ -836,7 +839,7 @@ class tl_page_i18nl10n extends tl_page
      */
     public function createCopyButton($row, $href, $label, $title, $icon, $attributes)
     {
-        return $this->User->isAllowed(\BackendUser::CAN_EDIT_PAGE_HIERARCHY, $row)
+        return $this->User->isAdmin || $this->User->isAllowed(2, $row)
             ? $this->createButton($row, $href, $label, $title, $icon, $attributes)
             : '';
     }
@@ -855,7 +858,7 @@ class tl_page_i18nl10n extends tl_page
      */
     public function createDeleteButton($row, $href, $label, $title, $icon, $attributes)
     {
-        return $this->User->isAllowed(\BackendUser::CAN_DELETE_PAGE, $row)
+        return $this->User->isAdmin || $this->User->isAllowed(3, $row)
             ? $this->createButton($row, $href, $label, $title, $icon, $attributes)
             : '';
     }
@@ -874,7 +877,7 @@ class tl_page_i18nl10n extends tl_page
      */
     public function createButton($row, $href, $label, $title, $icon, $attributes)
     {
-        return ($this->User->isAdmin || $this->userHasPermissionToEditPage($row))
+        return $this->User->isAdmin || $this->userHasPermissionToEditPage($row)
             ? '<a href="' . $this->addToUrl($href . '&amp;id=' . $row['id']) . '" title="' . specialchars($title) . '"' . $attributes . '>' . \Image::getHtml($icon, $label) . '</a> '
             : '';
     }

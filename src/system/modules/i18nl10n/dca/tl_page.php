@@ -491,34 +491,29 @@ class tl_page_l10n extends tl_page
      */
     public function createButton($strOperation, $arrVendorCallback = null, $arrArgs)
     {
-        $return = '';
-
         // If is allowed to edit language, create icon string
         if ($this->User->isAdmin || $this->userHasPermissionToEditLanguage($arrArgs[0])) {
             $strButton = $this->createVendorListButton($arrVendorCallback, $arrArgs);
 
+            if( $strButton !== false ) {
+                return $strButton;
+            }
+
             switch ($strOperation) {
                 case 'delete':
-                    $return = $strButton === false
-                        ? call_user_func_array(array($this, 'deleteElement'), $arrArgs)
-                        : $strButton;
+                    $callback = 'deleteElement';
                     break;
 
                 case 'toggle':
-                    $return = $strButton === false
-                        ? call_user_func_array(array($this, 'toggleIcon'), $arrArgs)
-                        : $strButton;
+                    $callback = 'toggleIcon';
                     break;
 
                 default:
-                    $return = $strButton === false
-                        ? call_user_func_array(array($this, 'createListButton'), $arrArgs)
-                        : $strButton;
+                    $callback = 'createListButton';
             }
-
         }
 
-        return $return;
+        return call_user_func_array(array($this, $callback), $arrArgs);
     }
 
     /**

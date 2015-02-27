@@ -44,12 +44,9 @@ class I18nl10nHook extends \System
             throw new \Exception('not an associative array.');
         }
 
-        $language = empty($arrRow['language'])
-            ? $GLOBALS['TL_LANGUAGE']
-            : $arrRow['language'];
-
-        $arrLanguages = I18nl10n::getInstance()->getLanguagesByDomain();
-        $arrL10nAlias = null;
+        $language       = empty($arrRow['language']) ? $GLOBALS['TL_LANGUAGE'] : $arrRow['language'];
+        $arrLanguages   = I18nl10n::getInstance()->getLanguagesByDomain();
+        $arrL10nAlias   = null;
 
         // try to get l10n alias by language and pid
         if ($language != $arrLanguages['default']) {
@@ -59,9 +56,7 @@ class I18nl10nHook extends \System
                 ->fetchAssoc();
         }
 
-        $alias = is_array($arrL10nAlias)
-            ? $arrL10nAlias['alias']
-            : $arrRow['alias'];
+        $alias = is_array($arrL10nAlias) ? $arrL10nAlias['alias'] : $arrRow['alias'];
 
         // regex to remove auto_item and language
         $regex = '@/auto_item|/language/[a-z]{2}|[\?&]language=[a-z]{2}@';
@@ -274,12 +269,11 @@ class I18nl10nHook extends \System
 
         $time = time();
 
-        $sqlPublishedCondition = !BE_USER_LOGGED_IN
-            ? " AND (start = '' OR start < $time) AND (stop = '' OR stop > $time) AND i18nl10n_published = 1 "
-            : '';
+        $sqlPublishedCondition = BE_USER_LOGGED_IN
+            ? ''
+            : " AND (start = '' OR start < $time) AND (stop = '' OR stop > $time) AND i18nl10n_published = 1 ";
 
-        $sql = "SELECT * FROM tl_page_i18nl10n WHERE pid IN ('" . implode(',', $arrPages)
-               . "') AND language = ? $sqlPublishedCondition";
+        $sql = "SELECT * FROM tl_page_i18nl10n WHERE pid IN ('" . implode(',', $arrPages) . "') AND language = ? $sqlPublishedCondition";
 
         $arrL10n = \Database::getInstance()
             ->prepare($sql)
@@ -320,7 +314,7 @@ class I18nl10nHook extends \System
      */
     public function indexPage(&$strContent, $arrData, $arrSet)
     {
-        $strContent = $strContent . ' i18nl10n::' . $arrData['language'] . ' ';
+        $strContent .= ' i18nl10n::' . $arrData['language'] . ' ';
     }
 
     /**
@@ -332,8 +326,9 @@ class I18nl10nHook extends \System
      */
     public function getSearchablePages($arrPages)
     {
-        $time = time();
-        $arrL10nPages = array();
+        $time           = time();
+        $arrL10nPages   = array();
+
         $objPages = \Database::getInstance()
             ->query("
               SELECT p.*, i.alias as i18nl10n_alias, i.language as i18nl10n_language, i.title as i18nl10n_title
@@ -358,11 +353,11 @@ class I18nl10nHook extends \System
             $objPages->alias = $objPages->i18nl10n_alias;
             $objPages->title = $objPages->i18nl10n_title;
 
-            // Create url
+            // Create URL
             $strUrl = \Controller::generateFrontendUrl($objPages->row());
             $strUrl = ($objPageWithDetails->rootUseSSL ? 'https://' : 'http://') . ($objPageWithDetails->domain ?: \Environment::get('host')) . '/' . $strUrl;
 
-            // Append url
+            // Append URL
             $arrL10nPages[] = $strUrl;
         }
 
@@ -374,15 +369,15 @@ class I18nl10nHook extends \System
      *
      * Contao 3.3.5 +
      *
-     * @param $arrPages
-     * @param $strKeywords
-     * @param $strQueryType
-     * @param $blnFuzzy
+     * @param   Array   $arrPages
+     * @param   String  $strKeywords
+     * @param   String  $strQueryType
+     * @param   Boolean $blnFuzzy
      */
     public function customizeSearch($arrPages, &$strKeywords, $strQueryType, $blnFuzzy)
     {
         $strLanguage = $GLOBALS['TL_LANGUAGE'];
-        $strKeywords = $strKeywords . " i18nl10n::$strLanguage";
+        $strKeywords .= " i18nl10n::$strLanguage";
     }
 
     /**
@@ -391,7 +386,7 @@ class I18nl10nHook extends \System
      * Add onload_callback definition when loadDataContainer hook is
      * called to define onload_callback as late as possible
      *
-     * @param $strName
+     * @param   String  $strName
      */
     public function appendLanguageSelectCallback($strName)
     {
@@ -407,80 +402,29 @@ class I18nl10nHook extends \System
      * Redefine button_callback for tl_content elements to allow permission
      * based display/hide.
      *
-     * @param $strName
+     * @param   String  $strName
      */
     public function appendButtonCallback($strName)
     {
         // Append tl_content callbacks
         if ($strName === 'tl_content' && \Input::get('do') === 'article') {
-            // Edit button
-            $this->setButtonCallback(
-                'tl_content',
-                'edit'
-            );
 
-            // Copy button
-            $this->setButtonCallback(
-                'tl_content',
-                'copy'
-            );
-
-            // Cut button
-            $this->setButtonCallback(
-                'tl_content',
-                'cut'
-            );
-
-            // Delete button
-            $this->setButtonCallback(
-                'tl_content',
-                'delete'
-            );
-
-            // Toggle button
-            $this->setButtonCallback(
-                'tl_content',
-                'toggle'
-            );
+            $this->setButtonCallback('tl_content', 'edit');
+            $this->setButtonCallback('tl_content', 'copy');
+            $this->setButtonCallback('tl_content', 'cut');
+            $this->setButtonCallback('tl_content', 'delete');
+            $this->setButtonCallback('tl_content', 'toggle');
         }
 
         // Append tl_page callbacks
         if ($strName === 'tl_page' && \Input::get('do') === 'page') {
-            // Edit button
-            $this->setButtonCallback(
-                'tl_page',
-                'edit'
-            );
 
-            // Copy button
-            $this->setButtonCallback(
-                'tl_page',
-                'copy'
-            );
-
-            // Copy children button
-            $this->setButtonCallback(
-                'tl_page',
-                'copyChilds'
-            );
-
-            // Cut button
-            $this->setButtonCallback(
-                'tl_page',
-                'cut'
-            );
-
-            // Delete button
-            $this->setButtonCallback(
-                'tl_page',
-                'delete'
-            );
-
-            // Toggle button
-            $this->setButtonCallback(
-                'tl_page',
-                'toggle'
-            );
+            $this->setButtonCallback('tl_page', 'edit');
+            $this->setButtonCallback('tl_page', 'copy');
+            $this->setButtonCallback('tl_page', 'copyChilds');  // Copy children button
+            $this->setButtonCallback('tl_page', 'cut');
+            $this->setButtonCallback('tl_page', 'delete');
+            $this->setButtonCallback('tl_page', 'toggle');
         }
     }
 

@@ -34,6 +34,8 @@ class ModuleI18nl10nLanguageSelection extends \Module
      */
     protected $strTemplate = 'mod_i18nl10n_nav';
 
+    /** @var  string */
+    protected $i18nl10n_langStyle;
 
     /**
      * Return a wildcard in the back end
@@ -45,8 +47,7 @@ class ModuleI18nl10nLanguageSelection extends \Module
         if (TL_MODE == 'BE') {
             $objTemplate = new \BackendTemplate('be_wildcard');
 
-            $objTemplate->wildcard =
-                '### ' . utf8_strtoupper($GLOBALS['TL_LANG']['FMD']['i18nl10n_languageSelection'][0]) . ' ###';
+            $objTemplate->wildcard = '### ' . utf8_strtoupper($GLOBALS['TL_LANG']['FMD']['i18nl10n_languageSelection'][0]) . ' ###';
             $objTemplate->title    = $this->headline;
             $objTemplate->id       = $this->id;
             $objTemplate->link     = $this->name;
@@ -55,11 +56,8 @@ class ModuleI18nl10nLanguageSelection extends \Module
             return $objTemplate->parse();
         }
 
-        $strBuffer = parent::generate();
-
-        return strlen($this->Template->items) ? $strBuffer : '';
+        return empty($this->Template->items) ? '' : parent::generate();
     }
-
 
     /**
      * Generate the module
@@ -74,9 +72,9 @@ class ModuleI18nl10nLanguageSelection extends \Module
         $items      = array();
         $langNative = I18nl10n::getInstance()->getNativeLanguageNames();
 
-        $sqlPublishedCondition = !BE_USER_LOGGED_IN
-            ? " AND (start = '' OR start < $time) AND (stop = '' OR stop > $time) AND i18nl10n_published = 1 "
-            : '';
+        $sqlPublishedCondition = BE_USER_LOGGED_IN
+            ? ''
+            : " AND (start = '' OR start < $time) AND (stop = '' OR stop > $time) AND i18nl10n_published = 1 ";
 
         // Get all possible languages for this page tree
         $arrLanguages = I18nl10n::getInstance()->getLanguagesByRootId($objPage->rootId);
@@ -87,8 +85,7 @@ class ModuleI18nl10nLanguageSelection extends \Module
             WHERE
                 pid = ?
                 AND language IN ( '" . implode("', '", $arrLanguages['languages']) . "' )
-                $sqlPublishedCondition
-        ";
+               " . $sqlPublishedCondition;
 
         $arrTranslations = \Database::getInstance()
             ->prepare($sql)
@@ -138,12 +135,12 @@ class ModuleI18nl10nLanguageSelection extends \Module
                         array_push(
                             $items,
                             array(
-                                'id'        => !empty($row['pid']) ? $row['pid'] : $objPage->id,
-                                'alias'     => !empty($row['alias']) ? $row['alias'] : $objPage->alias,
-                                'title'     => !empty($row['title']) ? $row['title'] : $objPage->title,
-                                'pageTitle' => !empty($row['pageTitle']) ? $row['pageTitle'] : $objPage->pageTitle,
+                                'id'        => empty($row['pid']) ? $objPage->id : $row['pid'],
+                                'alias'     => empty($row['alias']) ? $objPage->alias : $row['alias'],
+                                'title'     => empty($row['title']) ? $objPage->title : $row['title'],
+                                'pageTitle' => empty($row['pageTitle']) ? $objPage->pageTitle : $row['pageTitle'],
                                 'language'  => $language,
-                                'isActive'  => ($language === $GLOBALS['TL_LANGUAGE'])
+                                'isActive'  => $language === $GLOBALS['TL_LANGUAGE']
                             )
                         );
                         break;
@@ -152,7 +149,7 @@ class ModuleI18nl10nLanguageSelection extends \Module
             }
 
             // Add classes first and last
-            $last                  = (count($items) - 1);
+            $last                  = count($items) - 1;
             $items[0]['class']     = trim($items[0]['class'] . ' first');
             $items[$last]['class'] = trim($items[$last]['class'] . ' last');
 
@@ -170,16 +167,8 @@ class ModuleI18nl10nLanguageSelection extends \Module
             // global style
             $GLOBALS['TL_CSS'][] = $assetsUrl . 'css/i18nl10n_lang.css';
 
-            switch ($this->i18nl10n_langStyle) {
-                case 'text':
-                    $GLOBALS['TL_CSS'][] = $assetsUrl . 'css/i18nl10n_lang_text.css';
-                    break;
-                case 'image':
-                    $GLOBALS['TL_CSS'][] = $assetsUrl . 'css/i18nl10n_lang_image.css';
-                    break;
-                case 'iso':
-                    $GLOBALS['TL_CSS'][] = $assetsUrl . 'css/i18nl10n_lang_iso.css';
-                    break;
+            if( in_array($this->i18nl10n_langStyle, array('text', 'image', 'iso')) ) {
+                $GLOBALS['TL_CSS'][] = $assetsUrl . 'css/i18nl10n_lang_' . $this->i18nl10n_langStyle . '.css';
             }
         }
 

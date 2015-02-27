@@ -1,10 +1,10 @@
-<?php $this->extend('block_unsearchable'); ?>
+<?php
+  $this->extend('block_unsearchable');
+  $this->block('content');
 
-<?php $this->block('content'); ?>
+  echo $this->form;
 
-  <?php echo $this->form; ?>
-
-  <?php if ($this->header): ?>
+  if ($this->header): ?>
     <p class="header"><?php echo preg_replace('@ i18nl10n::.[A-z]@', '', $this->header); ?> (<?php echo $this->duration; ?>)</p>
   <?php endif; ?>
 
