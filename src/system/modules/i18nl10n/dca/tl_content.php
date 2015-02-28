@@ -20,9 +20,8 @@ $this->loadLanguageFile('tl_content');
 $this->loadDataContainer('tl_page');
 $this->loadDataContainer('tl_content');
 
-// set callback for dca load to add language selection to content elements IF module is article
-if (\Input::get('do') == 'article') {
-    // define callback to add language icons
+// Set callback for DCA load to add language icon to content elements if none of the given modules
+if ( !in_array(\Input::get('do'), I18nl10n::getInstance()->getUnsupportedModules()) ) {
     $GLOBALS['TL_DCA']['tl_content']['list']['sorting']['child_record_callback'] =
         array('tl_content_l10n', 'addCteType');
 }

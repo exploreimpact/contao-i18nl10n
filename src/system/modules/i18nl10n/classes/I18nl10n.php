@@ -24,6 +24,12 @@ namespace Verstaerker\I18nl10n\Classes;
  */
 class I18nl10n extends \Controller
 {
+    /**
+     * Known and unsupported Contao modules
+     *
+     * @var Array
+     */
+    protected $unsupportedModules = array('news', 'calendar');
 
     /**
      * Class instance
@@ -33,6 +39,8 @@ class I18nl10n extends \Controller
     protected static $instance = null;
 
     /**
+     * Current time
+     *
      * @var Integer
      */
     private $time;
@@ -57,6 +65,16 @@ class I18nl10n extends \Controller
         }
 
         return static::$instance;
+    }
+
+    /**
+     * Get unsupported Contao modules
+     *
+     * @return Array
+     */
+    public function getUnsupportedModules()
+    {
+        return $this->unsupportedModules;
     }
 
     /**

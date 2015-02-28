@@ -391,7 +391,7 @@ class I18nl10nHook extends \System
      */
     public function appendLanguageSelectCallback($strName)
     {
-        if ($strName == 'tl_content' && \Input::get('do') == 'article') {
+        if ( $strName == 'tl_content' && !in_array(\Input::get('do'), I18nl10n::getInstance()->getUnsupportedModules()) ) {
             $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] =
                 array('tl_content_l10n', 'appendLanguageInput');
         }
