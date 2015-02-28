@@ -30,15 +30,15 @@ class tl_article_l10n extends tl_article
     /**
      * Add summary of elements by language as tooltip
      *
-     * @param $row
-     * @param $label
+     * @param   Array   $row
+     * @param   String  $label
      *
      * @return string
      */
     public function labelCallback($row, $label)
     {
         $label = parent::addIcon($row, $label);
-        $sql = 'SELECT COUNT(id) items, language FROM tl_content WHERE pid =? GROUP BY language';
+        $sql   = 'SELECT COUNT(id) items, language FROM tl_content WHERE pid =? GROUP BY language';
 
         // count content elements in different languages and display them
         $items = \Database::getInstance()
@@ -51,9 +51,9 @@ class tl_article_l10n extends tl_article
         {
             foreach ($items as $l10nItem)
             {
-                $count = $l10nItem['items'];
-                $title = $GLOBALS['TL_LANG']['LNG'][$l10nItem['language']] . ": $count " . $GLOBALS['TL_LANG']['tl_article']['elements'];
-                $l10nItemIcon = 'system/modules/i18nl10n/assets/img/i18nl10n.png';
+                $count          = $l10nItem['items'];
+                $title          = $GLOBALS['TL_LANG']['LNG'][$l10nItem['language']] . ": $count " . $GLOBALS['TL_LANG']['tl_article']['elements'];
+                $l10nItemIcon   = 'system/modules/i18nl10n/assets/img/i18nl10n.png';
 
                 if ($l10nItem['language'])
                 {

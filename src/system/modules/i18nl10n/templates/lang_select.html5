@@ -1,7 +1,7 @@
 <?php
 $strParams = '';
 
-// get url parameters
+// get url parameters           @todo   move parameter handling into controller, check type validation(?)
 foreach ($_GET as $key => $value) {
     if ($key == 'id') continue;
     $strParams .= '/' . $key . '/' . $value;
@@ -9,12 +9,12 @@ foreach ($_GET as $key => $value) {
 ?>
 
 <form name="<?php echo $this->type; ?>">
-    <select name="i18nl10n_language" onchange="window.location.href = this.value;">
+    <select name="i18nl10n_language" onchange="window.location.href = this.value">
 
     <?php foreach ($this->items as $item): ?>
         <option
             value="<?php echo $this->generateFrontendUrl($item, $strParams); ?>" <?php echo $item['isActive'] ? ' class="active" selected="selected"' : ''; ?>>
-            <?php echo $this->languages[$item['language']]; ?>
+            <?= $this->languages[$item['language']] ?>
         </option>
     <?php endforeach; ?>
 
