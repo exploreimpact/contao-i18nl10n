@@ -36,5 +36,5 @@ $GLOBALS['TL_DCA']['tl_user_group']['fields']['i18nl10n_languages'] = array
     'eval'             => array(
         'multiple' => true
     ),
-    'sql'              => "blob NULL"
+    'sql'              => 'blob NULL'
 );

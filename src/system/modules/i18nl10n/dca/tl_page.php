@@ -483,42 +483,39 @@ class tl_page_l10n extends tl_page
     /**
      * Create list button on button_callback
      *
-     * @param      $strOperation
-     * @param null $arrVendorCallback
-     * @param      $arrArgs
+     * @param   String  $strOperation
+     * @param   Array   $arrArgs
+     * @param   Array   [$arrVendorCallback]
      *
-     * @return string
+     * @return  String
      */
-    public function createButton($strOperation, $arrVendorCallback = null, $arrArgs)
+    public function createButton($strOperation, $arrArgs, $arrVendorCallback = null)
     {
-        $return = '';
-
         // If is allowed to edit language, create icon string
         if ($this->User->isAdmin || $this->userHasPermissionToEditLanguage($arrArgs[0])) {
             $strButton = $this->createVendorListButton($arrVendorCallback, $arrArgs);
 
+            if( $strButton !== false ) {
+                return $strButton;
+            }
+
             switch ($strOperation) {
                 case 'delete':
-                    $return = $strButton === false
-                        ? call_user_func_array(array($this, 'deleteElement'), $arrArgs)
-                        : $strButton;
+                    $callback = 'deleteElement';
                     break;
 
                 case 'toggle':
-                    $return = $strButton === false
-                        ? call_user_func_array(array($this, 'toggleIcon'), $arrArgs)
-                        : $strButton;
+                    $callback = 'toggleIcon';
                     break;
 
                 default:
-                    $return = $strButton === false
-                        ? call_user_func_array(array($this, 'createListButton'), $arrArgs)
-                        : $strButton;
+                    $callback = 'createListButton';
             }
 
+            return call_user_func_array(array($this, $callback), $arrArgs);
         }
 
-        return $return;
+        return '';
     }
 
     /**

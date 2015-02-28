@@ -1,7 +1,5 @@
 <!-- indexer::stop -->
-<div
-    class="<?php echo $this->i18nl10n_langStyle ? $this->class . ' i18nl10n_lang_style i18nl10n_lang_style_' . $this->i18nl10n_langStyle : $this->class; ?> block"<?php echo $this->style ? 'style="' . $this->style . '"' : '';
-echo $this->cssID; ?>>
+<div class="<?php echo $this->i18nl10n_langStyle ? $this->class . ' i18nl10n_lang_style i18nl10n_lang_style_' . $this->i18nl10n_langStyle : $this->class; ?> block"<?php echo ($this->style ? 'style="' . $this->style . '"' : '') . $this->cssID; ?>>
     <?php echo $this->headline ? "<$this->hl>$this->headline</$this->hl>" : ''; ?>
     <?php echo $this->items; ?>
 </div>

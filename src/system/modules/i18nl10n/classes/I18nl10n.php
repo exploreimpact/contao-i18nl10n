@@ -28,9 +28,22 @@ class I18nl10n extends \Controller
     /**
      * Class instance
      *
-     * @var object
+     * @var I18nl10n
      */
     protected static $instance = null;
+
+    /**
+     * @var Integer
+     */
+    private $time;
+
+    /**
+     * Set default values
+     */
+    function __construct()
+    {
+        $this->time = time();
+    }
 
     /**
      * Create instance of i18nl10n class
@@ -39,7 +52,7 @@ class I18nl10n extends \Controller
      */
     public static function getInstance()
     {
-        if (empty(static::$instance)) {
+        if (is_null(static::$instance)) {
             static::$instance = new I18nl10n();
         }
 
@@ -49,17 +62,16 @@ class I18nl10n extends \Controller
     /**
      * Get first published sub page for given l10n id and language
      *
-     * @param $intId
-     * @param $strLang
+     * @param   Integer $intId
+     * @param   String  $strLang
      *
      * @return array|false
      */
     public function findFirstPublishedL10nRegularPageByPid($intId, $strLang)
     {
-        $time                  = time();
-        $sqlPublishedCondition = !BE_USER_LOGGED_IN
-            ? " AND (start='' OR start < $time) AND (stop='' OR stop > $time) AND published = 1 "
-            : '';
+        $sqlPublishedCondition = BE_USER_LOGGED_IN
+            ? ''
+            : " AND (start='' OR start < {$this->time}) AND (stop='' OR stop > {$this->time}) AND published = 1 ";
 
         $sql = "
             SELECT *
@@ -88,10 +100,10 @@ class I18nl10n extends \Controller
     /**
      * Get first published sub page for given l10n id and language
      *
-     * @param $intId
-     * @param $strLang
+     * @param   Integer $intId
+     * @param   String  $strLang
      *
-     * @return object|null
+     * @return \Contao\Page|null
      */
     public function findL10nWithDetails($intId, $strLang)
     {
@@ -105,26 +117,25 @@ class I18nl10n extends \Controller
     /**
      * Find localized page for given page object and replace string values
      *
-     * @param       $objPage
-     * @param bool  $blnTranslateOnly
+     * @param \PageModel    $objPage
+     * @param bool          [$blnTranslateOnly]
      *
      * @return object|null
      */
     public function findPublishedL10nPage($objPage, $blnTranslateOnly = true)
     {
         //get language specific page properties
-        $time   = time();
-        $fields = 'title,language,pageTitle,description,url,cssClass,dateFormat,timeFormat,datimFormat,start,stop';
+        $fields = array('title', 'language', 'pageTitle', 'description', 'url', 'cssClass', 'dateFormat', 'timeFormat', 'datimFormat', 'start', 'stop');
 
         if (!$blnTranslateOnly) {
-            $fields .= ',id,pid,sorting,tstamp,alias,i18nl10n_published';
+            $fields = array_merge($fields, array('id', 'pid', 'sorting', 'tstamp', 'alias', 'i18nl10n_published'));
         }
 
-        $sqlPublishedCondition = !BE_USER_LOGGED_IN
-            ? "AND (start='' OR start < $time) AND (stop='' OR stop > $time) AND i18nl10n_published = 1"
-            : '';
+        $sqlPublishedCondition = BE_USER_LOGGED_IN
+            ? '' :
+            "AND (start='' OR start < {$this->time}) AND (stop='' OR stop > {$this->time}) AND i18nl10n_published = 1";
 
-        $sql = "SELECT $fields FROM tl_page_i18nl10n WHERE pid = ? AND language = ? $sqlPublishedCondition";
+        $sql = 'SELECT ' . implode(',', $fields) . " FROM tl_page_i18nl10n WHERE pid = ? AND language = ? $sqlPublishedCondition";
 
         $objL10nPage = \Database::getInstance()
             ->prepare($sql)
@@ -138,7 +149,7 @@ class I18nl10n extends \Controller
 
         if ($objL10nPage->first()) {
             // Replace strings with localized content
-            foreach (explode(',', $fields) as $field) {
+            foreach ($fields as $field) {
                 if ($objL10nPage->$field) {
                     $objPage->$field = $objL10nPage->$field;
                 }
@@ -167,37 +178,30 @@ class I18nl10n extends \Controller
     /**
      * Get language definition for given page id and table
      *
-     * @param   $intId
-     * @param   $strTable
-     * @param   $blnForCurrentUserOnly  boolean Get only languages for current be users permission
+     * @param   Integer     $intId
+     * @param   String      $strTable
+     * @param   Boolean     [$blnForCurrentUserOnly]  Get only languages for current BE users permission
      *
      * @return array
      */
     public function getLanguagesByPageId($intId, $strTable, $blnForCurrentUserOnly = false)
     {
-        switch ($strTable) {
-            case 'tl_page_i18nl10n':
-                // fall through
+        $intId = intval($intId);
 
-            case 'tl_page':
-                $rootId = $this->getRootIdByPageId($intId, $strTable);
+        if ( in_array($strTable, array('tl_page_i18nl10n', 'tl_page')) ) {
+            $rootId = $this->getRootIdByPageId($intId, $strTable);
 
-                $arrLanguages = $this->getLanguagesByRootId($rootId, $blnForCurrentUserOnly);
-                break;
-
-            default:
-                $arrLanguages = array();
-                break;
+            return $this->getLanguagesByRootId($rootId, $blnForCurrentUserOnly);
         }
 
-        return $arrLanguages;
+        return array();
     }
 
     /**
      * Get root page by page id and table
      *
-     * @param $intId
-     * @param $strTable
+     * @param   Integer     $intId
+     * @param   Integer     $strTable
      *
      * @return mixed|null
      */
@@ -205,8 +209,7 @@ class I18nl10n extends \Controller
     {
         switch ($strTable) {
             case 'tl_page':
-                $rootId = \PageModel::findWithDetails($intId)->rootId;
-                break;
+                return \PageModel::findWithDetails($intId)->rootId;
 
             case 'tl_page_i18nl10n':
                 $arrPage = \Database::getInstance()
@@ -214,56 +217,53 @@ class I18nl10n extends \Controller
                     ->execute($intId)
                     ->fetchAssoc();
 
-                $rootId = \PageModel::findWithDetails($arrPage['pid'])->rootId;
-                break;
-
-            default:
-                $rootId = null;
-                break;
+                return \PageModel::findWithDetails($arrPage['pid'])->rootId;
         }
 
-        return $rootId;
+        return null;
     }
 
     /**
-     * Get language definition by root page id
+     * Get language definition by root page ID
      *
-     * @param   $intId                  integer
-     * @param   $blnForCurrentUserOnly  boolean     Get only languages based on current be user permissions
+     * @param   Integer $intId
+     * @param   Boolean $blnForCurrentUserOnly  Get only languages based on current be user permissions
      *
      * @return array
      */
     public function getLanguagesByRootId($intId, $blnForCurrentUserOnly = false)
     {
+        /** @var \Database\Mysqli\Result $objRootPage */
         $objRootPage = \Database::getInstance()
             ->prepare('SELECT * FROM tl_page WHERE id = ?')
             ->execute($intId);
 
-        $arrLanguage = $this->mapLanguagesFromDatabaseRootPageResult($objRootPage, $blnForCurrentUserOnly);
+        $arrLanguages = $this->mapLanguagesFromDatabaseRootPageResult($objRootPage, $blnForCurrentUserOnly);
 
-        return array_shift($arrLanguage);
+        return array_shift($arrLanguages);
     }
 
     /**
      * Get languages by given or actual domain
      *
-     * @param null $strDomain
+     * @param   String  [$strDomain]
      *
      * @return array
      */
     public function getLanguagesByDomain($strDomain = null)
     {
+        /** @var \Database\Mysqli\Result $objRootPage */
         $objRootPage = $this->getRootPageByDomain($strDomain);
 
-        $arrLanguage = $this->mapLanguagesFromDatabaseRootPageResult($objRootPage);
+        $arrLanguages = $this->mapLanguagesFromDatabaseRootPageResult($objRootPage);
 
-        return array_shift($arrLanguage);
+        return array_shift($arrLanguages);
     }
 
     /**
      * Get all available languages
      *
-     * @param bool $blnForCurrentUserOnly   Only languages for current logged in user will be returned
+     * @param bool [$blnForCurrentUserOnly]  Only languages for current logged in user will be returned
      *
      * @return array
      */
@@ -288,7 +288,7 @@ class I18nl10n extends \Controller
     /**
      * Get a root page by given or actual domain
      *
-     * @param null $strDomain
+     * @param String    [$strDomain]    Default: null
      *
      * @return \Database\Result
      */
@@ -298,9 +298,12 @@ class I18nl10n extends \Controller
             $strDomain = \Environment::get('host');
         }
 
-        // Find page with related dns or global dns
+        // Find page with related or global DNS
         return \Database::getInstance()
-            ->prepare('(SELECT * FROM tl_page WHERE type = "root" AND dns = ?) UNION (SELECT * FROM tl_page WHERE type = "root" AND dns = "")')
+            ->prepare('
+            (SELECT * FROM tl_page WHERE type = "root" AND dns = ?)
+            UNION
+            (SELECT * FROM tl_page WHERE type = "root" AND dns = "")')
             ->limit(1)
             ->execute($strDomain);
     }
@@ -314,13 +317,11 @@ class I18nl10n extends \Controller
      */
     public function getL10nRootPage($objPage)
     {
-        $time = time();
+        $sqlPublishedCondition = BE_USER_LOGGED_IN
+            ? ''
+            : " AND (start = '' OR start < {$this->time}) AND (stop = '' OR stop > {$this->time}) AND i18nl10n_published = 1 ";
 
-        $sqlPublishedCondition = !BE_USER_LOGGED_IN
-            ? " AND (start = '' OR start < $time) AND (stop = '' OR stop > $time) AND i18nl10n_published = 1 "
-            : '';
-
-        $sql = "SELECT title FROM tl_page_i18nl10n WHERE pid = ? AND language = ? $sqlPublishedCondition";
+        $sql = 'SELECT title FROM tl_page_i18nl10n WHERE pid = ? AND language = ? ' . $sqlPublishedCondition;
 
         $objL10nRootPage = \Database::getInstance()
             ->prepare($sql)
@@ -337,6 +338,7 @@ class I18nl10n extends \Controller
      */
     public function getNativeLanguageNames()
     {
+        // Var name defined by languages.php (Don't change!)
         $langsNative = array();
 
         // Include languages to get $langsNative
@@ -349,7 +351,7 @@ class I18nl10n extends \Controller
      * Map all default and localized languages from a database result and return as array
      *
      * @param \Database\Mysqli\Result $objRootPage
-     * @param bool                    $blnForCurrentUserOnly    Will only return languages for which the current user has permissions
+     * @param bool                    [$blnForCurrentUserOnly]    Will only return languages for which the current user has permissions
      *
      * @return array
      */
@@ -357,7 +359,7 @@ class I18nl10n extends \Controller
     {
         $arrLanguages = array();
 
-        if ($objRootPage->count()) {
+        if ( $objRootPage->count() ) {
             // Loop root pages and collect languages
             while ($objRootPage->next()) {
 
@@ -419,17 +421,18 @@ class I18nl10n extends \Controller
     /**
      * Create domain related language array for user and group permission
      *
-     * @param $arrLanguages
+     * @param   Array   $arrLanguages
      *
      * @return array
      */
-    private function mapLanguageOptionsForUserOrGroup($arrLanguages) {
+    private function mapLanguageOptionsForUserOrGroup(array $arrLanguages) {
         $arrMappedLanguages = array();
 
         // Loop Domains
         foreach ($arrLanguages as $domain => $config) {
 
-            $arrLanguages = array(
+            // Create Domain identifier
+            $arrDomainLanguages = array(
                 $config['rootId'] . '::*' => ''
             );
 
@@ -439,26 +442,27 @@ class I18nl10n extends \Controller
                 $strKey = $config['rootId'] . '::' . $language;
 
                 // Add rootId to make unique
-                $arrLanguages[$strKey] = $language;
+                $arrDomainLanguages[$strKey] = $language;
             }
 
-            $arrMappedLanguages[$domain] = $arrLanguages;
+            $arrMappedLanguages[$domain] = $arrDomainLanguages;
         }
 
         return $arrMappedLanguages;
     }
 
     /**
-     * Check if an user has permission to handle given language by root id
+     * Check if a user has permission to handle given language by root id
      *
-     * @param $intRootPageId
-     * @param $strLanguage
+     * @param   Integer $intRootPageId
+     * @param   String  $strLanguage
      *
      * @return bool
      */
     private function userHasLanguagePermission($intRootPageId, $strLanguage)
     {
         $arrUserData = \BackendUser::getInstance()->getData();
-        return (int) $arrUserData['admin'] === 1 || in_array($intRootPageId . '::' . $strLanguage, (array) $arrUserData['i18nl10n_languages']);
+
+        return intval($arrUserData['admin']) === 1 || in_array($intRootPageId . '::' . $strLanguage, (array) $arrUserData['i18nl10n_languages']);
     }
 }

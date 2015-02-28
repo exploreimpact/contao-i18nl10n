@@ -35,10 +35,10 @@ class I18nl10nFrontend extends \Controller
      * Replace title and pageTitle with translated equivalents
      * just before display them as menu. Also set visible elements.
      *
-     * @param array $items
-     * @return Array
+     * @param   Array   $items
+     * @return  Array
      */
-    public function l10nNavItems(Array $items)
+    public function l10nNavItems(array $items)
     {
         return self::i18nl10nNavItems($items, true);
     }
@@ -47,9 +47,9 @@ class I18nl10nFrontend extends \Controller
      * Replace title and pageTitle with translated equivalents
      * just before display them as menu.
      *
-     * @param   Array $items The menu items on the current menu level
-     * @param   Bool $blnUseFallback Keep original item if no translation found
-     * @return  Array $i18n_items
+     * @param   Array   $items              The menu items on the current menu level
+     * @param   Bool    [$blnUseFallback]   Keep original item if no translation found
+     * @return  Array   $i18n_items
      */
     public function i18nl10nNavItems(Array $items, $blnUseFallback = false)
     {
@@ -68,28 +68,26 @@ class I18nl10nFrontend extends \Controller
         //get item ids
         $item_ids = array();
 
-        foreach ($items as $row)
-        {
+        foreach ($items as $row) {
             $item_ids[] = $row['id'];
         }
 
         $arrI18nItems = array();
 
-        if ($GLOBALS['TL_LANGUAGE'] != $arrLanguages['default'])
-        {
+        if ($GLOBALS['TL_LANGUAGE'] != $arrLanguages['default']) {
             $time = time();
             $fields = 'alias,pid,title,pageTitle,description,url,language';
-            $sqlPublishedCondition = !$blnUseFallback && !BE_USER_LOGGED_IN
-                ? " AND (start='' OR start < $time) AND (stop='' OR stop > $time) AND i18nl10n_published = 1 "
-                : '';
+            $sqlPublishedCondition = $blnUseFallback || BE_USER_LOGGED_IN
+                ? ''
+                : " AND (start='' OR start < $time) AND (stop='' OR stop > $time) AND i18nl10n_published = 1 ";
 
             $sql = "
                 SELECT $fields
                 FROM tl_page_i18nl10n
                 WHERE
-                    pid IN (" . implode(', ', $item_ids) . ")
+                    pid IN (" . implode(', ', $item_ids) . ')
                     AND language = ?
-                    $sqlPublishedCondition";
+                    ' . $sqlPublishedCondition;
 
             $arrLocalizedPages = \Database::getInstance()
                 ->prepare($sql)
@@ -97,32 +95,25 @@ class I18nl10nFrontend extends \Controller
                 ->execute($GLOBALS['TL_LANGUAGE'])
                 ->fetchAllassoc();
 
-            foreach ($items as $item)
-            {
-
+            foreach ($items as $item) {
                 $foundItem = false;
 
-                foreach ($arrLocalizedPages as $row)
-                {
-
+                foreach ($arrLocalizedPages as $row) {
                     // Update navigation items with localization values
-                    if ($row['pid'] === $item['id'])
-                    {
-
+                    if ($row['pid'] === $item['id']) {
                         $foundItem = true;
-                        $alias = $row['alias'] ? : $item['alias'];
+                        $alias = $row['alias'] ?: $item['alias'];
 
-                        $item['alias'] = $alias;
-                        $row['alias'] = $alias;
+                        $item['alias']  = $alias;
+                        $row['alias']   = $alias;
                         $item['language'] = $row['language'];
 
-                        switch ($item['type'])
-                        {
+                        switch ($item['type']) {
                             case 'forward':
                                 // Get localized target identifier
-                                $forwardRow = self::getI18nForward($item, $item['language']);
-                                $forwardRow['alias'] = $item['alias'] = $forwardRow['alias'] ? : $item['alias'];
-                                $item['href'] = $this->generateFrontendUrl($forwardRow);
+                                $forwardRow         = self::getI18nForward($item, $item['language']);
+                                $forwardRow['alias']= $item['alias'] = $forwardRow['alias'] ? : $item['alias'];
+                                $item['href']       = $this->generateFrontendUrl($forwardRow);
                                 break;
 
                             case 'redirect';
@@ -140,29 +131,20 @@ class I18nl10nFrontend extends \Controller
                         $item['pageTitle'] = specialchars($row['pageTitle'], true);
                         $item['title'] = specialchars($row['title'], true);
                         $item['link'] = $item['title'];
-                        $item['description'] = str_replace(
-                            array('\n', '\r'),
-                            array(' ', ''),
-                            specialchars($row['description'])
-                        );
+                        $item['description'] = str_replace(array('\n', '\r'), array(' ', ''), specialchars($row['description']) );
 
                         array_push($arrI18nItems, $item);
-
                     }
 
                 }
 
-                if ($blnUseFallback && !$foundItem)
-                {
+                if ($blnUseFallback && !$foundItem) {
                     array_push($arrI18nItems, $item);
                 }
 
             }
-        }
-        else
-        {
-            foreach ($items as $item)
-            {
+        } else {
+            foreach ($items as $item) {
                 if (!$blnUseFallback && $item['i18nl10n_published'] == '') continue;
                 array_push($arrI18nItems, $item);
             }
@@ -180,8 +162,7 @@ class I18nl10nFrontend extends \Controller
      */
     private function getI18nForward(Array $item, $lang)
     {
-        if ($item['jumpTo'])
-        {
+        if ($item['jumpTo']) {
             // If jumpTo is set, get the target page
             $sql = '
               SELECT *
@@ -196,14 +177,12 @@ class I18nl10nFrontend extends \Controller
                 ->limit(1)
                 ->execute($item['jumpTo'], $lang);
 
-            $i18nl = $request->fetchAssoc();
-        }
-        else
-        {
+            $i18nl10nPage = $request->fetchAssoc();
+        } else {
             // If jumpTo is not set, get first published subpage
-            $i18nl = I18nl10n::getInstance()->findFirstPublishedL10nRegularPageByPid($item['id'], $lang);
+            $i18nl10nPage = I18nl10n::getInstance()->findFirstPublishedL10nRegularPageByPid($item['id'], $lang);
         }
 
-        return $i18nl;
+        return $i18nl10nPage;
     }
 }
