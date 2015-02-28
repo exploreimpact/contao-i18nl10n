@@ -483,13 +483,13 @@ class tl_page_l10n extends tl_page
     /**
      * Create list button on button_callback
      *
-     * @param      $strOperation
-     * @param null $arrVendorCallback
-     * @param      $arrArgs
+     * @param   String  $strOperation
+     * @param   Array   $arrArgs
+     * @param   Array   [$arrVendorCallback]
      *
-     * @return string
+     * @return  String
      */
-    public function createButton($strOperation, $arrVendorCallback = null, $arrArgs)
+    public function createButton($strOperation, $arrArgs, $arrVendorCallback = null)
     {
         // If is allowed to edit language, create icon string
         if ($this->User->isAdmin || $this->userHasPermissionToEditLanguage($arrArgs[0])) {
@@ -511,9 +511,11 @@ class tl_page_l10n extends tl_page
                 default:
                     $callback = 'createListButton';
             }
+
+            return call_user_func_array(array($this, $callback), $arrArgs);
         }
 
-        return call_user_func_array(array($this, $callback), $arrArgs);
+        return '';
     }
 
     /**

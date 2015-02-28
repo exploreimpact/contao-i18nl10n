@@ -56,7 +56,9 @@ class ModuleI18nl10nLanguageSelection extends \Module
             return $objTemplate->parse();
         }
 
-        return empty($this->Template->items) ? '' : parent::generate();
+        $result = parent::generate();
+
+        return empty($this->Template->items) ? '' : $result;
     }
 
     /**
@@ -135,12 +137,13 @@ class ModuleI18nl10nLanguageSelection extends \Module
                         array_push(
                             $items,
                             array(
-                                'id'        => empty($row['pid']) ? $objPage->id : $row['pid'],
-                                'alias'     => empty($row['alias']) ? $objPage->alias : $row['alias'],
-                                'title'     => empty($row['title']) ? $objPage->title : $row['title'],
-                                'pageTitle' => empty($row['pageTitle']) ? $objPage->pageTitle : $row['pageTitle'],
-                                'language'  => $language,
-                                'isActive'  => $language === $GLOBALS['TL_LANGUAGE']
+                                'id'               => empty($row['pid']) ? $objPage->id : $row['pid'],
+                                'alias'            => empty($row['alias']) ? $objPage->alias : $row['alias'],
+                                'title'            => empty($row['title']) ? $objPage->title : $row['title'],
+                                'pageTitle'        => empty($row['pageTitle']) ? $objPage->pageTitle : $row['pageTitle'],
+                                'language'         => $language,
+                                'isActive'         => $language === $GLOBALS['TL_LANGUAGE'],
+                                'forceRowLanguage' => true
                             )
                         );
                         break;
@@ -160,18 +163,24 @@ class ModuleI18nl10nLanguageSelection extends \Module
             $objTemplate->languages = $langNative;
         }
 
-        // add stylesheets
+        // Add stylesheets
         if ($this->i18nl10n_langStyle != 'disable') {
             $assetsUrl = 'system/modules/i18nl10n/assets/';
 
-            // global style
+            // Add global and selected style
             $GLOBALS['TL_CSS'][] = $assetsUrl . 'css/i18nl10n_lang.css';
+            $GLOBALS['TL_CSS'][] = $assetsUrl . 'css/i18nl10n_lang_' . $this->i18nl10n_langStyle . '.css';
+        }
 
-            if( in_array($this->i18nl10n_langStyle, array('text', 'image', 'iso')) ) {
-                $GLOBALS['TL_CSS'][] = $assetsUrl . 'css/i18nl10n_lang_' . $this->i18nl10n_langStyle . '.css';
-            }
+        // Create URI params
+        $strUriParams = '';
+
+        foreach ($_GET as $key => $value) {
+            if ($key === 'id') continue;
+            $strUriParams .= '/' . $key . '/' . \Input::get($key);
         }
 
         $this->Template->items = !empty($items) && isset($objTemplate) ? $objTemplate->parse() : '';
+        $this->Template->uriParams = $strUriParams;
     }
 }

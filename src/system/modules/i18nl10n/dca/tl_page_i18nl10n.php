@@ -264,7 +264,7 @@ class tl_page_i18nl10n extends tl_page
     {
         return sprintf(
             '<span class="i18nl10n_page"><img class="i18nl10n_flag" src="%1$s"> %2$s [%3$s]</span>',
-            'system/modules/i18nl10n/assets/img/flag_icons/' . $row['language'] . $row['i18nl10n_published'] ? '.png' : '_invisible.png',
+            'system/modules/i18nl10n/assets/img/flag_icons/' . $row['language'] . ($row['i18nl10n_published'] ? '.png' : '_invisible.png'),
             specialchars($row['title']),
             $GLOBALS['TL_LANG']['LNG'][$row['language']]
         );
@@ -491,8 +491,8 @@ class tl_page_i18nl10n extends tl_page
     public function toggleVisibility($intId, $blnVisible, DataContainer $dc = null)
     {
         // Check permissions to edit
-        Input::setGet('id', $intId);
-        Input::setGet('act', 'toggle');
+        \Input::setGet('id', $intId);
+        \Input::setGet('act', 'toggle');
         $this->checkPermission();
 
         // Check permissions to publish
@@ -523,7 +523,7 @@ class tl_page_i18nl10n extends tl_page
         ";
 
         // Update the database
-        \Database::getInstance()
+        $this->Database
             ->prepare($sql)
             ->execute($intId);
 
@@ -552,7 +552,7 @@ class tl_page_i18nl10n extends tl_page
 
         // Check permissions AFTER checking the tid, so hacking attempts are logged
         if (!$this->User->isAdmin
-            && (!$this->User->hasAccess('tl_page_i18nl10n::i18nl10n_published', 'alexf')    // OMG. alexf = alpha lexical ???
+            && (!$this->User->hasAccess('tl_page_i18nl10n::i18nl10n_published', 'alexf')
                 || !$this->userHasPermissionToEditPage($row)))
         {
             return '';
@@ -575,13 +575,13 @@ class tl_page_i18nl10n extends tl_page
               )
         ";
 
-        $objPage = \Database::getInstance()
+        $objPage = $this->Database
             ->prepare($sql)
             ->limit(1)
             ->execute($row['id']);
 
         // return linked image element for icon OR empty string if no edit allowed
-        return $this->User->isAdmin || $this->User->isAllowed(2, $objPage->row())
+        return $this->User->isAdmin || $this->User->isAllowed(\BackendUser::CAN_EDIT_PAGE_HIERARCHY ?: 2, $objPage->row())
             ? '<a href="' . $this->addToUrl($href) . '" title="' . specialchars($title) . '"' . $attributes . '>' . \Image::getHtml($icon, $label) . '</a> '
             : '';
     }
@@ -669,7 +669,7 @@ class tl_page_i18nl10n extends tl_page
         $sql = "UPDATE " . $strTable . " SET tstamp = ?, i18nl10n_published = ? WHERE id = ?";
 
         // Update the database
-        \Database::getInstance()
+        $this->Database
             ->prepare($sql)
             ->execute(
                 time(),
@@ -820,7 +820,7 @@ class tl_page_i18nl10n extends tl_page
      */
     public function createEditButton($row, $href, $label, $title, $icon, $attributes)
     {
-        return $this->User->isAdmin || $this->User->isAllowed(1, $row)
+        return $this->User->isAdmin || $this->User->isAllowed(\BackendUser::CAN_EDIT_PAGE ?: 1, $row)
             ? $this->createButton($row, $href, $label, $title, $icon, $attributes)
             : '';
     }
@@ -839,7 +839,7 @@ class tl_page_i18nl10n extends tl_page
      */
     public function createCopyButton($row, $href, $label, $title, $icon, $attributes)
     {
-        return $this->User->isAdmin || $this->User->isAllowed(2, $row)
+        return $this->User->isAdmin || $this->User->isAllowed(\BackendUser::CAN_EDIT_PAGE_HIERARCHY ?: 2, $row)
             ? $this->createButton($row, $href, $label, $title, $icon, $attributes)
             : '';
     }
@@ -858,7 +858,7 @@ class tl_page_i18nl10n extends tl_page
      */
     public function createDeleteButton($row, $href, $label, $title, $icon, $attributes)
     {
-        return $this->User->isAdmin || $this->User->isAllowed(3, $row)
+        return $this->User->isAdmin || $this->User->isAllowed(\BackendUser::CAN_DELETE_PAGE ?: 3, $row)
             ? $this->createButton($row, $href, $label, $title, $icon, $attributes)
             : '';
     }
@@ -895,9 +895,9 @@ class tl_page_i18nl10n extends tl_page
      */
     public function pastePage(DataContainer $dc, $row, $table, $cr, $arrClipboard = null)
     {
-        return $this->User->isAdmin || $this->userHasPermissionToEditPageType($row, $table)
-            ? parent::pastePage($dc, $row, $table, $cr, $arrClipboard)
-            : \Image::getHtml('pasteafter_.gif') . ' ' . \Image::getHtml('pasteinto_.gif');
+        return $table !== 'tl_page_i18nl10n' && $this->userHasPermissionToEditPageType($row, $table)
+            ? '<a href="'.$this->addToUrl('act='.$arrClipboard['mode'].'&amp;mode=2&amp;pid='.$row['id'].(!is_array($arrClipboard['id']) ? '&amp;id='.$arrClipboard['id'] : '')).'" title="'.specialchars(sprintf($GLOBALS['TL_LANG'][$table]['pasteinto'][1], $row['id'])).'" onclick="Backend.getScrollOffset()">'.\Image::getHtml('pasteinto.gif', sprintf($GLOBALS['TL_LANG'][$table]['pasteinto'][1], $row['id'])).'</a> '
+            : \Image::getHtml('pasteinto_.gif');
     }
 
     /**
@@ -925,11 +925,8 @@ class tl_page_i18nl10n extends tl_page
      */
     private function userHasPermissionToEditPageType($arrRow, $strTable = 'tl_page_i18nl10n')
     {
-        $strType = $strTable === 'tl_page_i18nl10n'
-            ? \PageModel::findByIdOrAlias($arrRow['pid'])->type
-            : $arrRow['type'];
-
-        return in_array($strType, (array) $this->User->alpty);
+        return $this->User->isAdmin
+                || in_array(($strTable === 'tl_page_i18nl10n' ? \PageModel::findByIdOrAlias($arrRow['pid'])->type : $arrRow['type']), (array) $this->User->alpty);
     }
 
     /**

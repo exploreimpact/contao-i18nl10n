@@ -1,13 +1,13 @@
-<?php
-  $this->extend('block_unsearchable');
-  $this->block('content');
+<?php $this->extend('block_unsearchable'); ?>
 
-  echo $this->form;
+<?php $this->block('content'); ?>
 
-  if ($this->header): ?>
-    <p class="header"><?php echo preg_replace('@ i18nl10n::.[A-z]@', '', $this->header); ?> (<?php echo $this->duration; ?>)</p>
-  <?php endif; ?>
+    <?php echo $this->form; ?>
 
-  <?php echo preg_replace('@<span class="highlight">i18nl10n::[A-z]{2}</span>@', '', $this->results) . $this->pagination; ?>
+    <?php if ($this->header): ?>
+        <p class="header"><?php echo preg_replace('@ i18nl10n::.[A-z]@', '', $this->header); ?> (<?php echo $this->duration; ?>)</p>
+    <?php endif; ?>
+
+    <?php echo preg_replace('@<span class="highlight">i18nl10n::[A-z]{2}</span>@', '', $this->results) . $this->pagination; ?>
 
 <?php $this->endblock(); ?>

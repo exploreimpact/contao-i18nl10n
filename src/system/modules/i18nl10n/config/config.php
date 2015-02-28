@@ -17,7 +17,6 @@
 /**
  * BACK END MODULES
  */
-
 // Extend header includes
 if (TL_MODE == 'BE')
 {
@@ -35,7 +34,6 @@ if (TL_MODE == 'BE')
     $GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/i18nl10n/assets/js/i18nl10n.js';
 }
 
-
 // Append be module to sidebar
 array_insert(
     $GLOBALS['BE_MOD']['design'],
@@ -50,27 +48,26 @@ array_insert(
     )
 );
 
-
 /**
  * FRONT END MODULES
  */
 $GLOBALS['FE_MOD']['i18nl10n']['i18nl10nLanguageSelection'] = '\I18nl10n\Modules\ModuleI18nl10nLanguageSelection';
 
-
 /**
  * HOOKS
  */
-$GLOBALS['TL_HOOKS']['generateFrontendUrl'][]= array('\I18nl10n\Classes\I18nl10nHook', 'generateFrontendUrl');
-$GLOBALS['TL_HOOKS']['getPageIdFromUrl'][] = array('\I18nl10n\Classes\I18nl10nHook', 'getPageIdFromUrl');
-$GLOBALS['TL_HOOKS']['generateBreadcrumb'][] = array('\I18nl10n\Classes\I18nl10nHook', 'generateBreadcrumb');
-$GLOBALS['TL_HOOKS']['executePostActions'][] = array('\I18nl10n\Classes\I18nl10nHook', 'executePostActions');
-$GLOBALS['TL_HOOKS']['isVisibleElement'][] = array('\I18nl10n\Classes\I18nl10nHook', 'isVisibleElement');
-$GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('\I18nl10n\Classes\I18nl10nHook', 'appendLanguageSelectCallback');
-$GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('\I18nl10n\Classes\I18nl10nHook', 'appendButtonCallback');
-$GLOBALS['TL_HOOKS']['indexPage'][] = array('\I18nl10n\Classes\I18nl10nHook', 'indexPage');
-$GLOBALS['TL_HOOKS']['getSearchablePages'][] = array('\I18nl10n\Classes\I18nl10nHook', 'getSearchablePages');
-$GLOBALS['TL_HOOKS']['customizeSearch'][] = array('\I18nl10n\Classes\I18nl10nHook', 'customizeSearch');
+$strClassName = '\I18nl10n\Classes\I18nl10nHook';
 
+$GLOBALS['TL_HOOKS']['generateFrontendUrl'][] = array($strClassName, 'generateFrontendUrl');
+$GLOBALS['TL_HOOKS']['getPageIdFromUrl'][]    = array($strClassName, 'getPageIdFromUrl');
+$GLOBALS['TL_HOOKS']['generateBreadcrumb'][]  = array($strClassName, 'generateBreadcrumb');
+$GLOBALS['TL_HOOKS']['executePostActions'][]  = array($strClassName, 'executePostActions');
+$GLOBALS['TL_HOOKS']['isVisibleElement'][]    = array($strClassName, 'isVisibleElement');
+$GLOBALS['TL_HOOKS']['loadDataContainer'][]   = array($strClassName, 'appendLanguageSelectCallback');
+$GLOBALS['TL_HOOKS']['loadDataContainer'][]   = array($strClassName, 'appendButtonCallback');
+$GLOBALS['TL_HOOKS']['indexPage'][]           = array($strClassName, 'indexPage');
+$GLOBALS['TL_HOOKS']['getSearchablePages'][]  = array($strClassName, 'getSearchablePages');
+$GLOBALS['TL_HOOKS']['customizeSearch'][]     = array($strClassName, 'customizeSearch');
 
 /**
  * PAGE TYPES

@@ -68,15 +68,13 @@ class I18nl10nFrontend extends \Controller
         //get item ids
         $item_ids = array();
 
-        foreach ($items as $row)
-        {
+        foreach ($items as $row) {
             $item_ids[] = $row['id'];
         }
 
         $arrI18nItems = array();
 
-        if ($GLOBALS['TL_LANGUAGE'] != $arrLanguages['default'])
-        {
+        if ($GLOBALS['TL_LANGUAGE'] != $arrLanguages['default']) {
             $time = time();
             $fields = 'alias,pid,title,pageTitle,description,url,language';
             $sqlPublishedCondition = $blnUseFallback || BE_USER_LOGGED_IN
@@ -97,24 +95,20 @@ class I18nl10nFrontend extends \Controller
                 ->execute($GLOBALS['TL_LANGUAGE'])
                 ->fetchAllassoc();
 
-            foreach ($items as $item)
-            {
+            foreach ($items as $item) {
                 $foundItem = false;
 
-                foreach ($arrLocalizedPages as $row)
-                {
+                foreach ($arrLocalizedPages as $row) {
                     // Update navigation items with localization values
-                    if ($row['pid'] === $item['id'])
-                    {
+                    if ($row['pid'] === $item['id']) {
                         $foundItem = true;
-                        $alias = $row['alias'] ? : $item['alias'];          // Strange ternary..?
+                        $alias = $row['alias'] ?: $item['alias'];
 
                         $item['alias']  = $alias;
                         $row['alias']   = $alias;
                         $item['language'] = $row['language'];
 
-                        switch ($item['type'])
-                        {
+                        switch ($item['type']) {
                             case 'forward':
                                 // Get localized target identifier
                                 $forwardRow         = self::getI18nForward($item, $item['language']);
@@ -144,17 +138,13 @@ class I18nl10nFrontend extends \Controller
 
                 }
 
-                if ($blnUseFallback && !$foundItem)
-                {
+                if ($blnUseFallback && !$foundItem) {
                     array_push($arrI18nItems, $item);
                 }
 
             }
-        }
-        else
-        {
-            foreach ($items as $item)
-            {
+        } else {
+            foreach ($items as $item) {
                 if (!$blnUseFallback && $item['i18nl10n_published'] == '') continue;
                 array_push($arrI18nItems, $item);
             }
@@ -172,8 +162,7 @@ class I18nl10nFrontend extends \Controller
      */
     private function getI18nForward(Array $item, $lang)
     {
-        if ($item['jumpTo'])
-        {
+        if ($item['jumpTo']) {
             // If jumpTo is set, get the target page
             $sql = '
               SELECT *
@@ -188,14 +177,12 @@ class I18nl10nFrontend extends \Controller
                 ->limit(1)
                 ->execute($item['jumpTo'], $lang);
 
-            $i18nl = $request->fetchAssoc();
-        }
-        else
-        {
+            $i18nl10nPage = $request->fetchAssoc();
+        } else {
             // If jumpTo is not set, get first published subpage
-            $i18nl = I18nl10n::getInstance()->findFirstPublishedL10nRegularPageByPid($item['id'], $lang);
+            $i18nl10nPage = I18nl10n::getInstance()->findFirstPublishedL10nRegularPageByPid($item['id'], $lang);
         }
 
-        return $i18nl;
+        return $i18nl10nPage;
     }
 }

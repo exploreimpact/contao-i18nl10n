@@ -37,11 +37,13 @@ class I18nl10n extends \Controller
      */
     private $time;
 
+    /**
+     * Set default values
+     */
     function __construct()
     {
         $this->time = time();
     }
-
 
     /**
      * Create instance of i18nl10n class
@@ -131,8 +133,7 @@ class I18nl10n extends \Controller
 
         $sqlPublishedCondition = BE_USER_LOGGED_IN
             ? '' :
-            "AND (start='' OR start < {$this->time}) AND (stop='' OR stop > {$this->time}) AND i18nl10n_published = 1"
-            ;
+            "AND (start='' OR start < {$this->time}) AND (stop='' OR stop > {$this->time}) AND i18nl10n_published = 1";
 
         $sql = 'SELECT ' . implode(',', $fields) . " FROM tl_page_i18nl10n WHERE pid = ? AND language = ? $sqlPublishedCondition";
 
@@ -187,7 +188,7 @@ class I18nl10n extends \Controller
     {
         $intId = intval($intId);
 
-        if ( in_array($strTable, array('tl_page_i18nl10n', 'tl_page') ) ) {
+        if ( in_array($strTable, array('tl_page_i18nl10n', 'tl_page')) ) {
             $rootId = $this->getRootIdByPageId($intId, $strTable);
 
             return $this->getLanguagesByRootId($rootId, $blnForCurrentUserOnly);
@@ -232,11 +233,14 @@ class I18nl10n extends \Controller
      */
     public function getLanguagesByRootId($intId, $blnForCurrentUserOnly = false)
     {
+        /** @var \Database\Mysqli\Result $objRootPage */
         $objRootPage = \Database::getInstance()
             ->prepare('SELECT * FROM tl_page WHERE id = ?')
             ->execute($intId);
 
-        return array_shift( $this->mapLanguagesFromDatabaseRootPageResult($objRootPage, $blnForCurrentUserOnly) );
+        $arrLanguages = $this->mapLanguagesFromDatabaseRootPageResult($objRootPage, $blnForCurrentUserOnly);
+
+        return array_shift($arrLanguages);
     }
 
     /**
@@ -248,9 +252,12 @@ class I18nl10n extends \Controller
      */
     public function getLanguagesByDomain($strDomain = null)
     {
+        /** @var \Database\Mysqli\Result $objRootPage */
         $objRootPage = $this->getRootPageByDomain($strDomain);
 
-        return array_shift( $this->mapLanguagesFromDatabaseRootPageResult($objRootPage) );
+        $arrLanguages = $this->mapLanguagesFromDatabaseRootPageResult($objRootPage);
+
+        return array_shift($arrLanguages);
     }
 
     /**
@@ -331,12 +338,13 @@ class I18nl10n extends \Controller
      */
     public function getNativeLanguageNames()
     {
-        $languagesNative = array();
+        // Var name defined by languages.php (Don't change!)
+        $langsNative = array();
 
         // Include languages to get $langsNative
         include(TL_ROOT . '/system/config/languages.php');
 
-        return $languagesNative;
+        return $langsNative;
     }
 
     /**
@@ -423,7 +431,8 @@ class I18nl10n extends \Controller
         // Loop Domains
         foreach ($arrLanguages as $domain => $config) {
 
-            $arrLanguages = array(                              // !!!!!!! @todo - dangerous - redeclaration of looped variable
+            // Create Domain identifier
+            $arrDomainLanguages = array(
                 $config['rootId'] . '::*' => ''
             );
 
@@ -433,10 +442,10 @@ class I18nl10n extends \Controller
                 $strKey = $config['rootId'] . '::' . $language;
 
                 // Add rootId to make unique
-                $arrLanguages[$strKey] = $language;
+                $arrDomainLanguages[$strKey] = $language;
             }
 
-            $arrMappedLanguages[$domain] = $arrLanguages;
+            $arrMappedLanguages[$domain] = $arrDomainLanguages;
         }
 
         return $arrMappedLanguages;

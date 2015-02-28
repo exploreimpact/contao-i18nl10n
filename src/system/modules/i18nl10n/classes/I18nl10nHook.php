@@ -44,9 +44,11 @@ class I18nl10nHook extends \System
             throw new \Exception('not an associative array.');
         }
 
-        $language       = empty($arrRow['language']) ? $GLOBALS['TL_LANGUAGE'] : $arrRow['language'];
-        $arrLanguages   = I18nl10n::getInstance()->getLanguagesByDomain();
-        $arrL10nAlias   = null;
+        $arrLanguages = I18nl10n::getInstance()->getLanguagesByDomain();
+        $arrL10nAlias = null;
+        $language     = empty($arrRow['language']) || empty($arrRow['forceRowLanguage'])
+            ? $GLOBALS['TL_LANGUAGE']
+            : $arrRow['language'];
 
         // try to get l10n alias by language and pid
         if ($language != $arrLanguages['default']) {
@@ -58,10 +60,8 @@ class I18nl10nHook extends \System
 
         $alias = is_array($arrL10nAlias) ? $arrL10nAlias['alias'] : $arrRow['alias'];
 
-        // regex to remove auto_item and language
+        // Remove auto_item and language
         $regex = '@/auto_item|/language/[a-z]{2}|[\?&]language=[a-z]{2}@';
-
-        // remove auto_item and language
         $strParams = preg_replace($regex, '', $strParams);
         $strUrl    = preg_replace($regex, '', $strUrl);
 
@@ -349,9 +349,10 @@ class I18nl10nHook extends \System
             $objPageWithDetails = \PageModel::findWithDetails($objPages->id);
 
             // Replace tl_page values with localized information
-            $objPages->language = $objPages->i18nl10n_language;
-            $objPages->alias = $objPages->i18nl10n_alias;
-            $objPages->title = $objPages->i18nl10n_title;
+            $objPages->language         = $objPages->i18nl10n_language;
+            $objPages->alias            = $objPages->i18nl10n_alias;
+            $objPages->title            = $objPages->i18nl10n_title;
+            $objPages->forceRowLanguage = true;
 
             // Create URL
             $strUrl = \Controller::generateFrontendUrl($objPages->row());
@@ -421,7 +422,7 @@ class I18nl10nHook extends \System
 
             $this->setButtonCallback('tl_page', 'edit');
             $this->setButtonCallback('tl_page', 'copy');
-            $this->setButtonCallback('tl_page', 'copyChilds');  // Copy children button
+            $this->setButtonCallback('tl_page', 'copyChilds');  // Copy with children button
             $this->setButtonCallback('tl_page', 'cut');
             $this->setButtonCallback('tl_page', 'delete');
             $this->setButtonCallback('tl_page', 'toggle');
@@ -460,7 +461,7 @@ class I18nl10nHook extends \System
 
                 return call_user_func_array(
                     array($objCallback, 'createButton'),
-                    array($strOperation, $arrVendorCallback, $arrArgs)
+                    array($strOperation, $arrArgs, $arrVendorCallback)
                 );
             };
     }

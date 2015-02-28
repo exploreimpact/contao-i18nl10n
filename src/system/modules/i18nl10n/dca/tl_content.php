@@ -167,13 +167,13 @@ class tl_content_l10n extends tl_content
     /**
      * Create buttons for languages with user/group permission with vendor module support
      *
-     * @param   array   $strOperation      operation name of button
-     * @param   array   [$arrVendorCallback]    //@todo move to end, otherwise the default param has no use
-     * @param   array   $arrArgs           {row, href, label, title, icon, attributes, table, rootIds, childRecordIds, circularReference, previous, next, dc}
+     * @param   array   $strOperation           operation name of button
+     * @param   array   $arrArgs                {row, href, label, title, icon, attributes, table, rootIds, childRecordIds, circularReference, previous, next, dc}
+     * @param   array   [$arrVendorCallback]
      *
      * @return  string
      */
-    public function createButton($strOperation, $arrVendorCallback = null, $arrArgs)
+    public function createButton($strOperation, $arrArgs, $arrVendorCallback = null)
     {
         // If is allowed to edit language, create icon string
         if ($this->User->isAdmin || $this->userHasPermissionToEditLanguage($arrArgs[0])) {
