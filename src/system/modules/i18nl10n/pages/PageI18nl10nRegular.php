@@ -81,11 +81,8 @@ class PageI18nl10nRegular extends \PageRegular
      */
     private function fixupCurrentLanguage()
     {
-        \FB::log('fixupCurrentLanguage');
         // Try to get language from post (committed by language select) or get
         $selectedLanguage = \Input::get('language');
-
-        \FB::log($selectedLanguage);
 
         // If selected language is found already, use it
         if ($selectedLanguage) {
@@ -101,13 +98,9 @@ class PageI18nl10nRegular extends \PageRegular
 
             $regex = "@.*?\.([a-z]{2})$strUrlSuffix@";
 
-            \FB::log($regex);
-
             // only set language if found in url
             if (preg_match($regex, $requestUri)) {
                 $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = preg_replace($regex, '$1', $requestUri);
-                \FB::log($_SESSION['TL_LANGUAGE']);
-                \FB::log($requestUri);
                 return;
             }
         }

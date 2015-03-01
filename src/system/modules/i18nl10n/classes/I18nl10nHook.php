@@ -51,7 +51,7 @@ class I18nl10nHook extends \System
             : $arrRow['language'];
 
         // try to get l10n alias by language and pid
-        if ($language != $arrLanguages['default']) {
+        if ($language !== $arrLanguages['default']) {
             $arrL10nAlias = \Database::getInstance()
                 ->prepare('SELECT alias FROM tl_page_i18nl10n WHERE pid = ? AND language = ?')
                 ->execute($arrRow['id'], $language)
@@ -65,7 +65,7 @@ class I18nl10nHook extends \System
         $strParams = preg_replace($regex, '', $strParams);
         $strUrl    = preg_replace($regex, '', $strUrl);
 
-        // if alias is disabled add language to get param end return
+        // If alias is disabled add language to get param end return
         if (\Config::get('disableAlias')) {
             $missingValueRegex = '@(.*\?[^&]*&)([^&]*)=(?=$|&)(&.*)?@';
 
@@ -107,23 +107,25 @@ class I18nl10nHook extends \System
             }
 
         } else {
-            // if get variables
-            if (strpos($strUrl, '?') !== false) {
-                if (strpos($strUrl, 'language=') !== false) {
+            $strL10nUrl = str_replace($arrRow['alias'], $alias, $strUrl);
+
+            // Check if params exist
+            if (strpos($strL10nUrl, '?') !== false) {
+                if (strpos($strL10nUrl, 'language=') !== false) {
                     // if variable 'language' replace it
                     $regex      = '@language=[a-z]{2}@';
                     $strL10nUrl = preg_replace(
                         $regex,
                         'language=' . $language,
-                        $strUrl
+                        $strL10nUrl
                     );
                 } else {
-                    // if no variable 'language' add it
-                    $strL10nUrl = $strUrl . '&language=' . $language;
+                    // If no variable 'language' add it
+                    $strL10nUrl .= '&language=' . $language;
                 }
             } else {
-                // if no variables define variable 'language'
-                $strL10nUrl = $strUrl . '?language=' . $language;
+                // If no variables define variable 'language'
+                $strL10nUrl .= '?language=' . $language;
             }
         }
 
