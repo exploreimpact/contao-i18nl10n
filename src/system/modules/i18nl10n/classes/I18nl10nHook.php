@@ -26,6 +26,14 @@ namespace Verstaerker\I18nl10n\Classes;
  */
 class I18nl10nHook extends \System
 {
+    /**
+     * Initialize class
+     */
+    function __construct()
+    {
+        // Import database handler
+        $this->import('Database');
+    }
 
     /**
      * Generates url for the site according to settings from the backend
@@ -52,7 +60,7 @@ class I18nl10nHook extends \System
 
         // try to get l10n alias by language and pid
         if ($language !== $arrLanguages['default']) {
-            $arrL10nAlias = \Database::getInstance()
+            $arrL10nAlias = $this->Database
                 ->prepare('SELECT alias FROM tl_page_i18nl10n WHERE pid = ? AND language = ?')
                 ->execute($arrRow['id'], $language)
                 ->fetchAssoc();
@@ -275,9 +283,9 @@ class I18nl10nHook extends \System
             ? ''
             : " AND (start = '' OR start < $time) AND (stop = '' OR stop > $time) AND i18nl10n_published = 1 ";
 
-        $sql = "SELECT * FROM tl_page_i18nl10n WHERE pid IN ('" . implode(',', $arrPages) . "') AND language = ? $sqlPublishedCondition";
+        $sql = 'SELECT * FROM tl_page_i18nl10n WHERE ' . $this->Database->findInSet('pid', $arrPages) . ' AND language = ? ' . $sqlPublishedCondition;
 
-        $arrL10n = \Database::getInstance()
+        $arrL10n = $this->Database
             ->prepare($sql)
             ->execute($GLOBALS['TL_LANGUAGE'])
             ->fetchAllAssoc();
@@ -331,7 +339,7 @@ class I18nl10nHook extends \System
         $time           = time();
         $arrL10nPages   = array();
 
-        $objPages = \Database::getInstance()
+        $objPages = $this->Database
             ->query("
               SELECT p.*, i.alias as i18nl10n_alias, i.language as i18nl10n_language, i.title as i18nl10n_title
               FROM tl_page as p
@@ -497,7 +505,6 @@ class I18nl10nHook extends \System
             'alias'     => $arrFragments[0],
             'l10nAlias' => ''
         );
-        $dataBase = \Database::getInstance();
 
         $arrAliasGuess = \Config::get('folderUrl')
             ? $this->createAliasGuessingArray($arrFragments)
@@ -516,10 +523,10 @@ class I18nl10nHook extends \System
                  FROM tl_page
                  WHERE alias IN('" . $strAlias . "'))
                 ORDER BY "
-                . $dataBase->findInSet('alias', $arrAliasGuess) . ", "
-                . $dataBase->findInSet('source', array('tl_page_i18nl10n', 'tl_page'));
+                . $this->Database->findInSet('alias', $arrAliasGuess) . ", "
+                . $this->Database->findInSet('source', array('tl_page_i18nl10n', 'tl_page'));
 
-        $objL10nPage = $dataBase
+        $objL10nPage = $this->Database
             ->prepare($sql)
             ->execute(
                 $strLanguage,

@@ -46,7 +46,7 @@ class I18nl10n extends \Controller
     private $time;
 
     /**
-     * Set default values
+     * Initialize class
      */
     function __construct()
     {
