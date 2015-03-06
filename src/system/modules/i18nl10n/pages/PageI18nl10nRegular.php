@@ -58,6 +58,7 @@ class PageI18nl10nRegular extends \PageRegular
         // If neither fallback nor localization are published and null
         // was given, give error 404
         if (!$objPage) {
+            /** @var  \Contao\PageError404  $objError */
             $objError = new $GLOBALS['TL_PTY']['error_404']();
             $objError->generate($objPage->id);
 
@@ -99,8 +100,7 @@ class PageI18nl10nRegular extends \PageRegular
 
             // only set language if found in url
             if (preg_match($regex, $requestUri)) {
-                $_SESSION['TL_LANGUAGE'] =
-                $GLOBALS['TL_LANGUAGE'] = preg_replace($regex, '$1', $requestUri);
+                $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = preg_replace($regex, '$1', $requestUri);
                 return;
             }
         }

@@ -20,9 +20,8 @@ $this->loadLanguageFile('tl_content');
 $this->loadDataContainer('tl_page');
 $this->loadDataContainer('tl_content');
 
-// set callback for dca load to add language selection to content elements IF module is article
-if (\Input::get('do') == 'article') {
-    // define callback to add language icons
+// Set callback for DCA load to add language icon to content elements if none of the given modules
+if ( !in_array(\Input::get('do'), I18nl10n::getInstance()->getUnsupportedModules()) ) {
     $GLOBALS['TL_DCA']['tl_content']['list']['sorting']['child_record_callback'] =
         array('tl_content_l10n', 'addCteType');
 }
@@ -63,18 +62,18 @@ class tl_content_l10n extends tl_content
             ? 'system/modules/i18nl10n/assets/img/flag_icons/' . $arrRow['language'] . '.png'
             : 'system/modules/i18nl10n/assets/img/i18nl10n.png';
 
-        // create l10n information insert
+        // create L10N information insert
         $strL10nInsert = sprintf(
             '<img class="i18nl10n_content_flag" src="%1$s" /> [%2$s] ',
             $langIcon,
             $GLOBALS['TL_LANG']['LNG'][$arrRow['language']]
         );
 
-        // get html string from Contao
+        // get HTML string from Contao
         $strElement = parent::addCteType($arrRow);
         $strRegex   = '@(.*?class="cte_type.*?>)(.*)@m';
 
-        // splice in l10n information
+        // splice in L10N information
         $strElement = preg_replace($strRegex, '${1}' . $strL10nInsert . '${2}', $strElement);
 
         return $strElement;
@@ -94,13 +93,13 @@ class tl_content_l10n extends tl_content
         $dc->loadDataContainer('tl_content');
 
         // add language section to all palettes
-        foreach ($GLOBALS['TL_DCA']['tl_content']['palettes'] as $k => $v) {
+        foreach ($GLOBALS['TL_DCA']['tl_content']['palettes'] as $key => $value) {
             // if element is '__selector__' OR 'default' OR the palette has already a language key
-            if ($k == '__selector__' || $k == 'default' || strpos($v, ',language(?=\{|,|;|$)') !== false) {
+            if ($key == '__selector__' || $key == 'default' || strpos($value, ',language(?=\{|,|;|$)') !== false) {
                 continue;
             }
 
-            $GLOBALS['TL_DCA']['tl_content']['palettes'][$k] = $v . ';{i18nl10n_legend:hide},language';
+            $GLOBALS['TL_DCA']['tl_content']['palettes'][$key] = $value . ';{i18nl10n_legend:hide},language';
         }
     }
 
@@ -113,14 +112,12 @@ class tl_content_l10n extends tl_content
      */
     public function languageOptions(DataContainer $dc)
     {
-        $arrLanguages = $GLOBALS['TL_LANG']['LNG'];
-        $arrOptions   = array();
-
-        $i18nl10nLanguages = $this->getLanguageOptionsByContentId($dc->activeRecord->id);
+        $arrOptions         = array();
+        $i18nl10nLanguages  = $this->getLanguageOptionsByContentId($dc->activeRecord->id);
 
         // Create options array base on root page languages
         foreach ($i18nl10nLanguages as $language) {
-            $arrOptions[$language] = $arrLanguages[$language];
+            $arrOptions[$language] = $GLOBALS['TL_LANG']['LNG'][$language];
         }
 
         return $arrOptions;
@@ -132,7 +129,7 @@ class tl_content_l10n extends tl_content
      * - Filter by permission
      * - Add a blank option (by permission)
      *
-     * @param $id
+     * @param   Integer $id
      *
      * @return array
      */
@@ -144,8 +141,8 @@ class tl_content_l10n extends tl_content
             ->execute($id)
             ->fetchAssoc();
 
-        $i18nl10nLanguages = I18nl10n::getInstance()->getLanguagesByPageId($arrPageId['id'], 'tl_page');
-        $strIdentifier = $i18nl10nLanguages['rootId'] . '::';
+        $i18nl10nLanguages  = I18nl10n::getInstance()->getLanguagesByPageId($arrPageId['id'], 'tl_page');
+        $strIdentifier      = $i18nl10nLanguages['rootId'] . '::';
 
         // Create base and add neutral (*) language if admin or has permission
         $arrOptions = $this->User->isAdmin || in_array($strIdentifier . '*', (array) $this->User->i18nl10n_languages)
@@ -169,42 +166,32 @@ class tl_content_l10n extends tl_content
     /**
      * Create buttons for languages with user/group permission with vendor module support
      *
-     * @param   array   $strOperation      operation name of button
-     * @param   array   $arrVendorCallback
-     * @param   array   $arrArgs           {row, href, label, title, icon, attributes, table, rootIds, childRecordIds, circularReference, previous, next, dc}
+     * @param   array   $strOperation           operation name of button
+     * @param   array   $arrArgs                {row, href, label, title, icon, attributes, table, rootIds, childRecordIds, circularReference, previous, next, dc}
+     * @param   array   [$arrVendorCallback]
      *
      * @return  string
      */
-    public function createButton($strOperation, $arrVendorCallback = null, $arrArgs)
+    public function createButton($strOperation, $arrArgs, $arrVendorCallback = null)
     {
-        $return = '';
-
         // If is allowed to edit language, create icon string
         if ($this->User->isAdmin || $this->userHasPermissionToEditLanguage($arrArgs[0])) {
             $strButton = $this->createVendorListButton($arrVendorCallback, $arrArgs);
 
-            switch ($strOperation) {
-                case 'delete':
-                    $return = $strButton === false
-                        ? call_user_func_array(array($this, 'deleteElement'), $arrArgs)
-                        : $strButton;
-                    break;
-
-                case 'toggle':
-                    $return = $strButton === false
-                        ? call_user_func_array(array($this, 'toggleIcon'), $arrArgs)
-                        : $strButton;
-                    break;
-
-                default:
-                    $return = $strButton === false
-                        ? call_user_func_array(array($this, 'createListButton'), $arrArgs)
-                        : $strButton;
+            if( $strButton !== false ) {
+                return $strButton;
             }
 
+            switch ($strOperation) {
+                case 'delete':
+                    return call_user_func_array(array($this, 'deleteElement'), $arrArgs);
+
+                case 'toggle':
+                    return call_user_func_array(array($this, 'toggleIcon'), $arrArgs);
+            }
         }
 
-        return $return;
+        return call_user_func_array(array($this, 'createListButton'), $arrArgs);
     }
 
     /**
@@ -261,9 +248,9 @@ class tl_content_l10n extends tl_content
     {
         $objArticle = \ArticleModel::findByPk($arrRow['pid']);
         $objPage = \PageModel::findWithDetails($objArticle->pid);
-        $strLanguage = !empty($arrRow['language'])
-            ? $arrRow['language']
-            : '*';
+        $strLanguage = empty($arrRow['language'])
+            ? '*'
+            : $arrRow['language'];
 
         $strLanguageIdentifier = $objPage->rootId . '::' . $strLanguage;
 
