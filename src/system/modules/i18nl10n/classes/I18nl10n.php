@@ -282,15 +282,16 @@ class I18nl10n extends \Controller
      * Get all available languages
      *
      * @param bool [$blnForCurrentUserOnly]  Only languages for current logged in user will be returned
+     * @param bool [$blnReturnFlat]         Return a flat language array
      *
      * @return array
      */
-    public function getAvailableLanguages($blnForCurrentUserOnly = false)
+    public function getAvailableLanguages($blnForCurrentUserOnly = false, $blnReturnFlat = false)
     {
         // Get root pages
         $objRootPages = $this->getAllRootPages();
 
-        return $this->mapLanguagesFromDatabaseRootPageResult($objRootPages, $blnForCurrentUserOnly);
+        return $this->mapLanguagesFromDatabaseRootPageResult($objRootPages, $blnForCurrentUserOnly, $blnReturnFlat);
     }
 
     /**
@@ -370,44 +371,74 @@ class I18nl10n extends \Controller
      *
      * @param \Database\Mysqli\Result $objRootPage
      * @param bool                    [$blnForCurrentUserOnly]    Will only return languages for which the current user has permissions
+     * @param bool                    [$blnReturnFlat]          Return a flat array with all languages
      *
      * @return array
      */
-    private function mapLanguagesFromDatabaseRootPageResult(\Database\Mysqli\Result $objRootPage, $blnForCurrentUserOnly = false)
+    private function mapLanguagesFromDatabaseRootPageResult(\Database\Mysqli\Result $objRootPage, $blnForCurrentUserOnly = false, $blnReturnFlat = false)
     {
         $arrLanguages = array();
 
         if ( $objRootPage->count() ) {
-            // Loop root pages and collect languages
-            while ($objRootPage->next()) {
 
-                $strDns = $objRootPage->dns ?: '*';
+            if ($blnReturnFlat) {
+                // Loop domains
+                while ($objRootPage->next()) {
+                    if (!$blnForCurrentUserOnly || $this->userHasLanguagePermission($objRootPage->id, '*')) {
+                        $arrLanguages[] = $objRootPage->language;
+                    }
 
-                $arrLanguages[$strDns] = array
-                (
-                    'rootId'        => $objRootPage->id,
-                    'default'       => $objRootPage->language,
-                    'localizations' => array(),
-                    'languages'     => array()
-                );
-
-                if (!$blnForCurrentUserOnly || $this->userHasLanguagePermission($objRootPage->id, '*')) {
-                    $arrLanguages[$strDns]['languages'][] = $objRootPage->language;
-                }
-
-                foreach ((array) deserialize($objRootPage->i18nl10n_localizations) as $localization) {
-
-                    if (!empty($localization['language'])) {
-                        if (!$blnForCurrentUserOnly || $this->userHasLanguagePermission($objRootPage->id, $localization['language'])) {
-                            $arrLanguages[$strDns]['localizations'][] = $localization['language'];
-                            $arrLanguages[$strDns]['languages'][]     = $localization['language'];
+                    // Loop localizations
+                    foreach ((array) deserialize($objRootPage->i18nl10n_localizations) as $localization) {
+                        if (!empty($localization['language'])) {
+                            if (!$blnForCurrentUserOnly || $this->userHasLanguagePermission($objRootPage->id, $localization['language'])) {
+                                $arrLanguages[] = $localization['language'];
+                            }
                         }
                     }
                 }
 
-                // Sort alphabetically
-                asort($arrLanguages[$strDns]['localizations']);
-                asort($arrLanguages[$strDns]['languages']);
+                // Make entries unique and sort
+                $arrLanguages = array_unique($arrLanguages);
+                asort($arrLanguages);
+
+            } else {
+                // Loop root pages and collect languages
+                while ($objRootPage->next()) {
+
+                    $strDns = $objRootPage->dns ?: '*';
+
+                    $arrLanguages[$strDns] = array
+                    (
+                        'rootId'        => $objRootPage->id,
+                        'default'       => $objRootPage->language,
+                        'localizations' => array(),
+                        'languages'     => array()
+                    );
+
+                    if (!$blnForCurrentUserOnly || $this->userHasLanguagePermission($objRootPage->id, '*')) {
+                        $arrLanguages[$strDns]['languages'][] = $objRootPage->language;
+                    }
+
+                    foreach ((array) deserialize($objRootPage->i18nl10n_localizations) as $localization) {
+
+                        if (!empty($localization['language'])) {
+                            if (!$blnForCurrentUserOnly
+                                || $this->userHasLanguagePermission(
+                                    $objRootPage->id,
+                                    $localization['language']
+                                )
+                            ) {
+                                $arrLanguages[$strDns]['localizations'][] = $localization['language'];
+                                $arrLanguages[$strDns]['languages'][]     = $localization['language'];
+                            }
+                        }
+                    }
+
+                    // Sort alphabetically
+                    asort($arrLanguages[$strDns]['localizations']);
+                    asort($arrLanguages[$strDns]['languages']);
+                }
             }
         }
 

@@ -469,6 +469,20 @@ class I18nl10nHook extends \System
     }
 
     /**
+     * Add support for Isotope
+     *
+     * Fake old tl_config entry for languages to support Isotope until a callback is available
+     * @todo: Replace this hook with a callback from Isotope
+     */
+    public function setIsotopeLanguages()
+    {
+        /**
+         * Isotope workaround
+         */
+        $GLOBALS['TL_CONFIG']['i18nl10n_languages'] = I18nl10n::getInstance()->getAvailableLanguages(true, true);
+    }
+
+    /**
      * Find alias for internationalized content or use fallback language alias
      *
      * @param $arrFragments
