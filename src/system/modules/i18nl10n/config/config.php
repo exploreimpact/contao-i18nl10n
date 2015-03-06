@@ -18,19 +18,11 @@
  * BACK END MODULES
  */
 // Extend header includes
-if (TL_MODE == 'BE')
-{
+if (TL_MODE == 'BE') {
     // CSS files
-    if (!is_array($GLOBALS['TL_CSS'])) {
-        $GLOBALS['TL_CSS'] = array();
-    }
     $GLOBALS['TL_CSS'][] = 'system/modules/i18nl10n/assets/css/style.css';
 
-
     // JS files
-    if (is_array($GLOBALS['TL_JAVASCRIPT'])) {
-        $GLOBALS['TL_JAVASCRIPT'][] = array();
-    }
     $GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/i18nl10n/assets/js/i18nl10n.js';
 }
 
