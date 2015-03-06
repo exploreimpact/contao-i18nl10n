@@ -140,7 +140,7 @@ class I18nl10n extends \Controller
      *
      * @return object|null
      */
-    public function findPublishedL10nPage($objPage, $blnTranslateOnly = true)
+    public function findPublishedL10nPage($objPage, $strLang = null, $blnTranslateOnly = true)
     {
         //get language specific page properties
         $fields = array('title', 'language', 'pageTitle', 'description', 'url', 'cssClass', 'dateFormat', 'timeFormat', 'datimFormat', 'start', 'stop');
@@ -158,7 +158,7 @@ class I18nl10n extends \Controller
         $objL10nPage = \Database::getInstance()
             ->prepare($sql)
             ->limit(1)
-            ->execute($objPage->id, $GLOBALS['TL_LANGUAGE']);
+            ->execute($objPage->id, $strLang ?: $GLOBALS['TL_LANGUAGE']);
 
         // If fallback and localization are not published, return null
         if (!$objPage->i18nl10n_published && !$objL10nPage->count()) {

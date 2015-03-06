@@ -164,12 +164,16 @@ class ModuleI18nl10nLanguageSelection extends \Module
         }
 
         // Add stylesheets
-        if ($this->i18nl10n_langStyle != 'disable') {
+        if ($this->i18nl10n_langStyle !== 'disable') {
             $assetsUrl = 'system/modules/i18nl10n/assets/';
 
             // Add global and selected style
             $GLOBALS['TL_CSS'][] = $assetsUrl . 'css/i18nl10n_lang.css';
-            $GLOBALS['TL_CSS'][] = $assetsUrl . 'css/i18nl10n_lang_' . $this->i18nl10n_langStyle . '.css';
+
+            // Add additional styles if needed
+            if( in_array($this->i18nl10n_langStyle, array('text', 'image', 'iso')) ) {
+                $GLOBALS['TL_CSS'][] = $assetsUrl . 'css/i18nl10n_lang_' . $this->i18nl10n_langStyle . '.css';
+            }
         }
 
         // Create URI params
