@@ -183,8 +183,9 @@ class I18nl10n extends \Controller
 
         if ($objL10nRootPage) {
             $objPage->rootTitle = $objL10nRootPage->title;
+            $objPage->rootPageTitle = $objL10nRootPage->title;
 
-            if ($objPage->pid == $objPage->rootId) {
+            if ($objPage->pid === $objPage->rootId) {
                 $objPage->parentTitle     = $objL10nRootPage->title;
                 $objPage->parentPageTitle = $objL10nRootPage->pageTitle;
             }

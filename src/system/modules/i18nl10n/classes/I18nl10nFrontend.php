@@ -28,6 +28,9 @@ class I18nl10nFrontend extends \Controller
      */
     protected function __construct()
     {
+        // Import database instance
+        $this->import('Database');
+
         parent::__construct();
     }
 
@@ -85,11 +88,11 @@ class I18nl10nFrontend extends \Controller
                 SELECT $fields
                 FROM tl_page_i18nl10n
                 WHERE
-                    pid IN (" . implode(', ', $item_ids) . ')
+                    " . $this->Database->findInSet('pid', $item_ids) . '
                     AND language = ?
                     ' . $sqlPublishedCondition;
 
-            $arrLocalizedPages = \Database::getInstance()
+            $arrLocalizedPages = $this->Database
                 ->prepare($sql)
                 ->limit(1000)
                 ->execute($GLOBALS['TL_LANGUAGE'])
@@ -172,12 +175,11 @@ class I18nl10nFrontend extends \Controller
                 AND language = ?
             ';
 
-            $request = \Database::getInstance()
+            $i18nl10nPage = $this->Database
                 ->prepare($sql)
                 ->limit(1)
-                ->execute($item['jumpTo'], $lang);
-
-            $i18nl10nPage = $request->fetchAssoc();
+                ->execute($item['jumpTo'], $lang)
+                ->fetchAssoc();
         } else {
             // If jumpTo is not set, get first published subpage
             $i18nl10nPage = I18nl10n::getInstance()->findFirstPublishedL10nRegularPageByPid($item['id'], $lang);
