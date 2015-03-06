@@ -121,7 +121,7 @@ class I18nl10n extends \Controller
      * @param   Integer $intId
      * @param   String  $strLang
      *
-     * @return \Contao\Page|null
+     * @return \Contao\PageModel|null
      */
     public function findL10nWithDetails($intId, $strLang)
     {
@@ -136,7 +136,8 @@ class I18nl10n extends \Controller
      * Find localized page for given page object and replace string values
      *
      * @param \PageModel    $objPage
-     * @param bool          [$blnTranslateOnly]
+     * @param String        [$strLang]              Search for a specific language
+     * @param bool          [$blnTranslateOnly]     Get only translation. If false meta data will also be modified.
      *
      * @return object|null
      */
