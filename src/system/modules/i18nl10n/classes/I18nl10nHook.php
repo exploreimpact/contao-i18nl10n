@@ -484,10 +484,12 @@ class I18nl10nHook extends \System
      */
     public function setIsotopeLanguages()
     {
-        /**
-         * Isotope workaround
-         */
-        $GLOBALS['TL_CONFIG']['i18nl10n_languages'] = I18nl10n::getInstance()->getAvailableLanguages(true, true);
+        if (TL_MODE === 'BE' && !isset($GLOBALS['TL_CONFIG']['i18nl10n_languages'])) {
+            /**
+             * Isotope workaround
+             */
+            $GLOBALS['TL_CONFIG']['i18nl10n_languages'] = I18nl10n::getInstance()->getAvailableLanguages(true, true);
+        }
     }
 
     /**

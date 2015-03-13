@@ -377,7 +377,7 @@ class I18nl10n extends \Controller
      *
      * @return array
      */
-    private function mapLanguagesFromDatabaseRootPageResult(\Database\Mysqli\Result $objRootPage, $blnForCurrentUserOnly = false, $blnReturnFlat = false)
+    private function mapLanguagesFromDatabaseRootPageResult($objRootPage, $blnForCurrentUserOnly = false, $blnReturnFlat = false)
     {
         $arrLanguages = array();
 
