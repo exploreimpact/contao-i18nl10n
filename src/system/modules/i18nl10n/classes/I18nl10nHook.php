@@ -484,7 +484,7 @@ class I18nl10nHook extends \System
      */
     public function setIsotopeLanguages()
     {
-        if (TL_MODE === 'BE' && !isset($GLOBALS['TL_CONFIG']['i18nl10n_languages'])) {
+        if (TL_MODE === 'BE' &&  empty($GLOBALS['TL_CONFIG']['i18nl10n_languages']) && !empty($_GET['do'])) {
             /**
              * Isotope workaround
              */

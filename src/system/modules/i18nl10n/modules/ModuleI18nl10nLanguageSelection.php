@@ -34,9 +34,6 @@ class ModuleI18nl10nLanguageSelection extends \Module
      */
     protected $strTemplate = 'mod_i18nl10n_nav';
 
-    /** @var  string */
-    protected $i18nl10n_langStyle;
-
     /**
      * Return a wildcard in the back end
      *
