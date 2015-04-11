@@ -9,7 +9,7 @@
  * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n config
- * @version     1.2.1
+ * @version     1.4.0
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
@@ -71,3 +71,8 @@ $GLOBALS['TL_PTY']['regular'] = '\I18nl10n\Pages\PageI18nl10nRegular';
  * Inherit language permissions
  */
 $GLOBALS['TL_PERMISSIONS'][] = 'i18nl10n_languages';
+
+/**
+ * Adding custom widgets
+ */
+$GLOBALS['BE_FFL']['i18nl10nMetaWizard'] = 'Verstaerker\i18nl10n\Widgets\I18nl10nMetaWizard';

@@ -5,9 +5,7 @@
  *
  * Copyright (c) 2005-2015 Leo Feyer
  *
- * @package I18nl10n
- * @link    https://contao.org
- * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
+ * @license LGPL-3.0+
  */
 
 
@@ -35,6 +33,9 @@ ClassLoader::addClasses(array
 
 	// Pages
 	'Verstaerker\I18nl10n\Pages\PageI18nl10nRegular'               => 'system/modules/i18nl10n/pages/PageI18nl10nRegular.php',
+
+	// Widgets
+	'Verstaerker\i18nl10n\Widgets\I18nl10nMetaWizard'              => 'system/modules/i18nl10n/widgets/I18nl10nMetaWizard.php',
 ));
 
 

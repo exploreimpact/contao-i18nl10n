@@ -9,7 +9,7 @@
  * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n classes
- * @version     1.2.1
+ * @version     1.4.0
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
@@ -401,7 +401,7 @@ class I18nl10nHook extends \System
      */
     public function appendLanguageSelectCallback($strName)
     {
-        if ( $strName == 'tl_content' && !in_array(\Input::get('do'), I18nl10n::getInstance()->getUnsupportedModules()) ) {
+        if ( $strName === 'tl_content' && !in_array(\Input::get('do'), I18nl10n::getInstance()->getUnsupportedModules()) ) {
             $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] =
                 array('tl_content_l10n', 'appendLanguageInput');
         }
