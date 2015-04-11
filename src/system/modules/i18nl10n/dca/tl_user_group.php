@@ -8,7 +8,7 @@
  * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n dca
- * @version     1.2.0.rc
+ * @version     1.3.4
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
@@ -31,7 +31,7 @@ $GLOBALS['TL_DCA']['tl_user_group']['fields']['i18nl10n_languages'] = array
     'label'            => &$GLOBALS['TL_LANG']['tl_user_group']['i18nl10n_languages'],
     'exclude'          => true,
     'inputType'        => 'checkbox',
-    'options_callback' => array('\I18nl10n\Classes\I18nl10n', 'getLanguageOptionsForUserOrGroup'),
+    'options_callback' => array('Verstaerker\I18nl10n\Classes\I18nl10n', 'getLanguageOptionsForUserOrGroup'),
     'reference'        => &$GLOBALS['TL_LANG']['LNG'],
     'eval'             => array(
         'multiple' => true

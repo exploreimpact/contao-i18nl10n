@@ -9,8 +9,8 @@
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
-$GLOBALS['TL_LANG']['tl_user_group']['i18nl10n_legend'] = 'Languages';
-$GLOBALS['TL_LANG']['tl_user_group']['i18nl10n_languages'] = array(
-    'Editable languages',
-    'Set the editable languages for content elements and pages.'
+$GLOBALS['TL_LANG']['tl_user']['i18nl10n_legend'] = 'Sprachen';
+$GLOBALS['TL_LANG']['tl_user']['i18nl10n_languages'] = array(
+    'Editierbare Sprachen',
+    'Definiert die editierbaren Sprachen für Seiten und Inhaltselemente.'
 );
