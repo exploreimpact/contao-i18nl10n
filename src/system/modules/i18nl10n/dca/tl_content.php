@@ -8,7 +8,7 @@
  * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n dca
- * @version     1.2.1
+ * @version     1.3.5
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
@@ -178,20 +178,27 @@ class tl_content_l10n extends tl_content
         if ($this->User->isAdmin || $this->userHasPermissionToEditLanguage($arrArgs[0])) {
             $strButton = $this->createVendorListButton($arrVendorCallback, $arrArgs);
 
-            if( $strButton !== false ) {
+            if ($strButton !== false) {
                 return $strButton;
             }
 
             switch ($strOperation) {
                 case 'delete':
-                    return call_user_func_array(array($this, 'deleteElement'), $arrArgs);
+                    $callback = 'deleteElement';
+                    break;
 
                 case 'toggle':
-                    return call_user_func_array(array($this, 'toggleIcon'), $arrArgs);
+                    $callback = 'toggleIcon';
+                    break;
+
+                default:
+                    $callback = 'createListButton';
             }
+
+            return call_user_func_array(array($this, $callback), $arrArgs);
         }
 
-        return call_user_func_array(array($this, 'createListButton'), $arrArgs);
+        return '';
     }
 
     /**
