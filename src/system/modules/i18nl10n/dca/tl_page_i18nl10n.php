@@ -8,7 +8,7 @@
  * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n dca
- * @version     1.2.1
+ * @version     1.3.5
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
@@ -389,7 +389,7 @@ class tl_page_i18nl10n extends tl_page
 
                 // Filter by chmod permission
                 while ($objPages->next()) {
-                    if (!$this->User->isAllowed(\BackendUser::CAN_EDIT_PAGE ?: 1, $objPages->row())) {
+                    if (!$this->User->isAllowed(1, $objPages->row())) { // \BackendUser::CAN_EDIT_PAGE
                         $arrPageIds = array_diff($arrPageIds, array($objPages->id));
                     }
                 }
@@ -581,7 +581,7 @@ class tl_page_i18nl10n extends tl_page
             ->execute($row['id']);
 
         // return linked image element for icon OR empty string if no edit allowed
-        return $this->User->isAdmin || $this->User->isAllowed(\BackendUser::CAN_EDIT_PAGE_HIERARCHY ?: 2, $objPage->row())
+        return $this->User->isAdmin || $this->User->isAllowed(2, $objPage->row()) // \BackendUser::CAN_EDIT_PAGE_HIERARCHY
             ? '<a href="' . $this->addToUrl($href) . '" title="' . specialchars($title) . '"' . $attributes . '>' . \Image::getHtml($icon, $label) . '</a> '
             : '';
     }
@@ -820,7 +820,7 @@ class tl_page_i18nl10n extends tl_page
      */
     public function createEditButton($row, $href, $label, $title, $icon, $attributes)
     {
-        return $this->User->isAdmin || $this->User->isAllowed(\BackendUser::CAN_EDIT_PAGE ?: 1, $row)
+        return $this->User->isAdmin || $this->User->isAllowed(1, $row) // \BackendUser::CAN_EDIT_PAGE
             ? $this->createButton($row, $href, $label, $title, $icon, $attributes)
             : '';
     }
@@ -839,7 +839,7 @@ class tl_page_i18nl10n extends tl_page
      */
     public function createCopyButton($row, $href, $label, $title, $icon, $attributes)
     {
-        return $this->User->isAdmin || $this->User->isAllowed(\BackendUser::CAN_EDIT_PAGE_HIERARCHY ?: 2, $row)
+        return $this->User->isAdmin || $this->User->isAllowed(2, $row) //\BackendUser::CAN_EDIT_PAGE_HIERARCHY
             ? $this->createButton($row, $href, $label, $title, $icon, $attributes)
             : '';
     }
@@ -858,7 +858,7 @@ class tl_page_i18nl10n extends tl_page
      */
     public function createDeleteButton($row, $href, $label, $title, $icon, $attributes)
     {
-        return $this->User->isAdmin || $this->User->isAllowed(\BackendUser::CAN_DELETE_PAGE ?: 3, $row)
+        return $this->User->isAdmin || $this->User->isAllowed(3, $row) // \BackendUser::CAN_DELETE_PAGE
             ? $this->createButton($row, $href, $label, $title, $icon, $attributes)
             : '';
     }
