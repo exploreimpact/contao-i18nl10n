@@ -895,7 +895,8 @@ class tl_page_i18nl10n extends tl_page
      */
     public function pastePage(DataContainer $dc, $row, $table, $cr, $arrClipboard = null)
     {
-        return $table !== 'tl_page_i18nl10n' && $this->userHasPermissionToEditPageType($row, $table)
+        // Check if parent entry AND user can edit page type AND user has access rights on parent page
+        return $table !== 'tl_page_i18nl10n' && $this->userHasPermissionToEditPageType($row, $table) && $this->User->isAllowed(2, $row) // \BackendUser::CAN_EDIT_PAGE_HIERARCHY
             ? '<a href="'.$this->addToUrl('act='.$arrClipboard['mode'].'&amp;mode=2&amp;pid='.$row['id'].(!is_array($arrClipboard['id']) ? '&amp;id='.$arrClipboard['id'] : '')).'" title="'.specialchars(sprintf($GLOBALS['TL_LANG'][$table]['pasteinto'][1], $row['id'])).'" onclick="Backend.getScrollOffset()">'.\Image::getHtml('pasteinto.gif', sprintf($GLOBALS['TL_LANG'][$table]['pasteinto'][1], $row['id'])).'</a> '
             : \Image::getHtml('pasteinto_.gif');
     }
