@@ -23,8 +23,6 @@
     "php": ">=5.3",
     "contao/core": ">=3.2-dev,<4-dev",
     "contao-community-alliance/composer-plugin": "*",
-    "contao/core": ">=3.2.5,<4.0.0-dev",
-    "contao-community-alliance/composer-installer": "*",
     "menatwork/contao-multicolumnwizard": ">=3.2.3,<4.0.0-dev"
   },
   "extra": {
