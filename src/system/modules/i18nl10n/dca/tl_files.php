@@ -15,4 +15,5 @@
 
 $GLOBALS['TL_DCA']['tl_files']['fields']['meta']['inputType'] ='i18nl10nMetaWizard';
 
-\FB::log($GLOBALS['BE_FFL']);
+// Class is not defined
+//\FB::log($GLOBALS['BE_FFL']);
