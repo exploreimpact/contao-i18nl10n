@@ -9,3 +9,7 @@ Thumbs.db
 .build/
 .idea/
 nbproject/
+
+### Composer template
+composer.phar
+vendor/
