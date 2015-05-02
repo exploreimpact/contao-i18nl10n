@@ -158,7 +158,7 @@ class tl_page_l10n extends tl_page
         $strImgName = $row['i18nl10n_published'] ? 'i18nl10n.png' : 'i18nl10n_invisible.png';
 
         return sprintf(
-            '<a href="%1$s" title="%2$s"><img src="system/modules/i18nl10n/assets/img/%3$s"></a>',
+            '<a href="%1$s" title="%2$s"><img src="assets/i18nl10n/img/%3$s"></a>',
             $strButtonUrl,
             specialchars($strTitle),
             $strImgName

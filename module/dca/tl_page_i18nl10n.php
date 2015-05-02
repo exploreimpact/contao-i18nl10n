@@ -264,7 +264,7 @@ class tl_page_i18nl10n extends tl_page
     {
         return sprintf(
             '<span class="i18nl10n_page"><img class="i18nl10n_flag" src="%1$s"> %2$s [%3$s]</span>',
-            'system/modules/i18nl10n/assets/img/flag_icons/' . $row['language'] . ($row['i18nl10n_published'] ? '.png' : '_invisible.png'),
+            'assets/i18nl10n/img/flag_icons/' . $row['language'] . ($row['i18nl10n_published'] ? '.png' : '_invisible.png'),
             specialchars($row['title']),
             $GLOBALS['TL_LANG']['LNG'][$row['language']]
         );
@@ -293,7 +293,7 @@ class tl_page_i18nl10n extends tl_page
     private function localizeAllMessage()
     {
         $arrLanguages       = I18nl10n::getInstance()->getAvailableLanguages(true);
-        $strFlagPath        = 'system/modules/i18nl10n/assets/img/flag_icons/';
+        $strFlagPath        = 'assets/i18nl10n/img/flag_icons/';
         $strMessage         = $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_localize_all'];
         $strDomainLanguages = '';
 

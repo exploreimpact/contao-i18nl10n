@@ -6,7 +6,7 @@
                title="<?php echo $item['title']; ?>">
                 <?php endif; ?>
                 <i class="i18nl10n_flag">
-                    <img src="system/modules/i18nl10n/assets/img/flag_icons/<?php echo $item['language']; ?>.png">
+                    <img src="assets/i18nl10n/img/flag_icons/<?php echo $item['language']; ?>.png">
                 </i>
             <span class="i18nl10n_label">
                 <?php echo $this->languages[$item['language']]; ?>
