@@ -28,6 +28,7 @@
   "extra": {
     "contao": {
       "sources": {
+        "assets": "assets/i18nl10n",
         "module": "system/modules/i18nl10n"
       }
     },
