@@ -20,10 +20,10 @@
 // Extend header includes
 if (TL_MODE == 'BE') {
     // CSS files
-    $GLOBALS['TL_CSS'][] = 'system/modules/i18nl10n/assets/css/style.css';
+    $GLOBALS['TL_CSS'][] = 'assets/i18nl10n/css/style.css';
 
     // JS files
-    $GLOBALS['TL_JAVASCRIPT'][] = 'system/modules/i18nl10n/assets/js/i18nl10n.js';
+    $GLOBALS['TL_JAVASCRIPT'][] = 'assets/i18nl10n/js/i18nl10n.js';
 }
 
 // Append be module to sidebar
@@ -35,7 +35,7 @@ array_insert(
         'i18nl10n' => array
         (
             'tables' => array('tl_page_i18nl10n'),
-            'icon'   => 'system/modules/i18nl10n/assets/img/i18nl10n.png'
+            'icon'   => 'assets/i18nl10n/img/i18nl10n.png'
         )
     )
 );
