@@ -9,7 +9,7 @@
  * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n pages
- * @version     1.3.6
+ * @version     1.4.0
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
