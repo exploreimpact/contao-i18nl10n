@@ -9,7 +9,7 @@
  * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n pages
- * @version     1.2.1
+ * @version     1.3.6
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
@@ -27,6 +27,22 @@ use Verstaerker\I18nl10n\Classes\I18nl10n;
  */
 class PageI18nl10nRegular extends \PageRegular
 {
+
+    /**
+     * Languages for current domain
+     *
+     * @var array
+     */
+    private $domainLanguages = null;
+
+    /**
+     * Construct object
+     */
+    function __construct() {
+        // Get domain languages
+        $this->domainLanguages = i18nl10n::getInstance()->getLanguagesByDomain();
+    }
+
     /**
      * Generate FE page
      * Override TL_PTY.regular
@@ -38,17 +54,17 @@ class PageI18nl10nRegular extends \PageRegular
     {
         self::fixupCurrentLanguage();
 
-        $arrLanguages = I18nl10n::getInstance()->getLanguagesByDomain();
-
         // Check if default language
-        if ($GLOBALS['TL_LANGUAGE'] === $arrLanguages['default']) {
+        if ($GLOBALS['TL_LANGUAGE'] === $this->domainLanguages['default']) {
+
             // if default language is not published, give error
-            if (!$objPage->i18nl10n_published) {
+            if (empty($objPage->i18nl10n_published)) {
+                /** @var  \Contao\PageError404  $objError */
                 $objError = new $GLOBALS['TL_PTY']['error_404']();
                 $objError->generate($objPage->id);
             }
-            parent::generate($objPage);
 
+            parent::generate($objPage, $blnCheckRequest);
             return;
         }
 
@@ -61,9 +77,6 @@ class PageI18nl10nRegular extends \PageRegular
             /** @var  \Contao\PageError404  $objError */
             $objError = new $GLOBALS['TL_PTY']['error_404']();
             $objError->generate($objPage->id);
-
-            parent::generate($objPage);
-            return;
         }
 
         parent::generate($objPage, $blnCheckRequest);
@@ -86,7 +99,7 @@ class PageI18nl10nRegular extends \PageRegular
 
         // If selected language is found already, use it
         if ($selectedLanguage) {
-            $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = $selectedLanguage;
+            $GLOBALS['TL_LANGUAGE'] = $_SESSION['TL_LANGUAGE'] = $selectedLanguage;
             return;
         }
 
@@ -105,7 +118,11 @@ class PageI18nl10nRegular extends \PageRegular
             }
         }
 
-        // If everything failed yet use session language
-        $GLOBALS['TL_LANGUAGE'] = $_SESSION['TL_LANGUAGE'];
+        // If everything failed yet use session language if part of domain languages, else use fallback
+        if (in_array($_SESSION['TL_LANGUAGE'], (array) $this->domainLanguages['languages'])) {
+            $GLOBALS['TL_LANGUAGE'] = $_SESSION['TL_LANGUAGE'];
+        } else {
+            $GLOBALS['TL_LANGUAGE'] = $_SESSION['TL_LANGUAGE'] = $this->domainLanguages['default']; // replace with fallback language of domain
+        }
     }
 }
