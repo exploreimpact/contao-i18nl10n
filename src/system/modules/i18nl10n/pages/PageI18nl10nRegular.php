@@ -79,6 +79,8 @@ class PageI18nl10nRegular extends \PageRegular
             $objError->generate($objPage->id);
         }
 
+        self::addAlternativeLanguageLinks($objPage);
+
         parent::generate($objPage, $blnCheckRequest);
     }
 
@@ -124,5 +126,26 @@ class PageI18nl10nRegular extends \PageRegular
         } else {
             $GLOBALS['TL_LANGUAGE'] = $_SESSION['TL_LANGUAGE'] = $this->domainLanguages['default']; // replace with fallback language of domain
         }
+    }
+
+    /**
+     * Add alternative language links to page head
+     */
+    private function addAlternativeLanguageLinks($objPage) {
+        $arrPages = I18nl10n::getInstance()->getLanguageAlternativesForPageByPid($objPage->id);
+        $links = array();
+
+        foreach($arrPages as $page) {
+            $page['forceRowLanguage'] = true;
+            $strUrl = \Controller::generateFrontendUrl($page);
+
+            $links[] = "<link rel=\"alternate\" href=\"/{$strUrl}\" hreflang=\"{$page['language']}\" title=\"{$page['title']}\" />";
+        }
+
+        // Append alternative links to page header
+        $GLOBALS['TL_HEAD'] = array_merge(
+            (array) $GLOBALS['TL_HEAD'],
+            $links
+        );
     }
 }

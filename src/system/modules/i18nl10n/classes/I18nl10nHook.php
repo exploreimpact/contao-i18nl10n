@@ -54,6 +54,8 @@ class I18nl10nHook extends \System
 
         $arrLanguages = I18nl10n::getInstance()->getLanguagesByDomain();
         $arrL10nAlias = null;
+
+        // Append language if existing and forced (by i18nl10n)
         $language     = empty($arrRow['language']) || empty($arrRow['forceRowLanguage'])
             ? $GLOBALS['TL_LANGUAGE']
             : $arrRow['language'];
@@ -66,7 +68,9 @@ class I18nl10nHook extends \System
                 ->fetchAssoc();
         }
 
-        $alias = is_array($arrL10nAlias) ? $arrL10nAlias['alias'] : $arrRow['alias'];
+        $alias = is_array($arrL10nAlias)
+            ? $arrL10nAlias['alias']
+            : $arrRow['alias'];
 
         // Remove auto_item and language
         $regex = '@/auto_item|/language/[a-z]{2}|[\?&]language=[a-z]{2}@';

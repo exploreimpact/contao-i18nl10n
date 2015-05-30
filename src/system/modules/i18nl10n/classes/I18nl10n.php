@@ -470,6 +470,20 @@ class I18nl10n extends \Controller
     }
 
     /**
+     * Get language alternatives from tl_
+     *
+     * @param $intPid                integer     Page id
+     *
+     * @return array
+     */
+    public function getLanguageAlternativesForPageByPid($intPid) {
+        return \Database::getInstance()
+            ->prepare('SELECT * FROM tl_page_i18nl10n WHERE pid = ?')
+            ->execute($intPid)
+            ->fetchAllAssoc();
+    }
+
+    /**
      * Create domain related language array for user and group permission
      *
      * @param   Array   $arrLanguages
