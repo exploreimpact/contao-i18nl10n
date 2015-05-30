@@ -476,7 +476,8 @@ class I18nl10n extends \Controller
      *
      * @return array
      */
-    public function getLanguageAlternativesForPageByPid($intPid) {
+    public function getLanguageAlternativesForPageByPid($intPid)
+    {
         return \Database::getInstance()
             ->prepare('SELECT * FROM tl_page_i18nl10n WHERE pid = ?')
             ->execute($intPid)
@@ -490,7 +491,8 @@ class I18nl10n extends \Controller
      *
      * @return array
      */
-    private function mapLanguageOptionsForUserOrGroup(array $arrLanguages) {
+    private function mapLanguageOptionsForUserOrGroup(array $arrLanguages)
+    {
         $arrMappedLanguages = array();
 
         // Loop Domains

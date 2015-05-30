@@ -332,7 +332,7 @@ class I18nl10nHook extends \System
     }
 
     /**
-     * Add localized urls to search indexing
+     * Add localized urls to search and sitemap indexing
      *
      * @param $arrPages
      *
