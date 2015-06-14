@@ -155,6 +155,11 @@ class I18nl10nHook extends \System
      */
     public function getPageIdFromUrl(Array $arrFragments)
     {
+        // Check if url fragments are available (see #66)
+        if (empty($arrFragments[0])) {
+            return $arrFragments;
+        }
+
         $arrFragments = array_map('urldecode', $arrFragments);
         $arrLanguages = I18nl10n::getInstance()->getLanguagesByDomain();
 
