@@ -160,9 +160,8 @@ class I18nl10n extends \Controller
         // Add identification fields and combine sql
         $sql = '
             SELECT
-                id AS pageId,
-                pid AS pagePid,
-                alias AS pageAlias, '
+                pid AS l10nPid,
+                alias AS l10nAlias, '
                 . implode(',', $fields) . "
             FROM
                 tl_page_i18nl10n
@@ -173,63 +172,63 @@ class I18nl10n extends \Controller
                . $this->Database->findInSet('pid', array($objPage->id, $objPage->pid, $objPage->rootId))
         ;
 
+        // Fetch related pages
         $arrL10nRelatedPages = $this->Database
             ->prepare($sql)
             ->execute($objPage->id, $objPage->pid, $objPage->rootId, $strLang ?: $GLOBALS['TL_LANGUAGE'])
             ->fetchAllassoc();
 
-        $arrPage = $arrL10nRelatedPages[0];
-        $arrParentPage = $arrL10nRelatedPages[1];
-        $arrRootPage = $arrL10nRelatedPages[2];
+        // Fetch main page of page branch
+        $arrL10nMainPage = $this->Database
+            ->prepare('SELECT pid AS l10nPid, alias AS l10nAlias, ' . implode(',', $fields) . ' FROM tl_page_i18nl10n WHERE pid = (SELECT id FROM tl_page WHERE pid = ? AND alias = ?) AND language = ?')
+            ->limit(1)
+            ->execute($objPage->rootId, $objPage->mainAlias, $strLang ?: $GLOBALS['TL_LANGUAGE'])
+            ->fetchAssoc();
+
+        $arrL10nPage = $arrL10nRelatedPages[0];
+        $arrL10nParentPage = $arrL10nRelatedPages[1];
+        $arrL10nRootPage = $arrL10nRelatedPages[2];
 
         // If fallback and localization are not published, return null
-        if (!$objPage->i18nl10n_published && $arrPage['pagePid'] !== $objPage->id) {
+        if (!$objPage->i18nl10n_published && $arrL10nPage['l10nPid'] !== $objPage->id) {
             return null;
         }
 
         // Replace page information only if current page exists
-        if ($arrPage['pagePid'] === $objPage->id) {
+        if ($arrL10nPage['l10nPid'] === $objPage->id) {
 
             // Replace current page information
             foreach ($fields as $field) {
-                if ($arrPage[$field]) {
-                    $objPage->$field = $arrPage[$field];
+                if ($arrL10nPage[$field]) {
+                    $objPage->$field = $arrL10nPage[$field];
                 }
             }
 
             // Replace parent page information
-            if ($arrParentPage['pagePid'] === $objPage->pid) {
-                $objPage->parentAlias = $arrParentPage['pageAlias'];
-                $objPage->parentTitle = $arrParentPage['pageTitle'] ?: $arrParentPage['title'];
-                $objPage->parentPageTitle = $arrParentPage['pageTitle'];
+            if ($arrL10nParentPage['l10nPid'] === $objPage->pid) {
+                $objPage->parentAlias = $arrL10nParentPage['l10nAlias'];
+                $objPage->parentTitle = $arrL10nParentPage['title'];
+                $objPage->parentPageTitle = $arrL10nParentPage['pageTitle'] ?: $arrL10nParentPage['title'];
             }
 
-            // @todo: add mainPage information (first non root page of a pages branch)
+            if (!empty($arrL10nMainPage)) {
+                $objPage->mainAlias = $arrL10nMainPage['l10nAlias'];
+                $objPage->mainTitle = $arrL10nParentPage['title'];
+                $objPage->mainPageTitle = $arrL10nParentPage['pageTitle'] ?: $arrL10nParentPage['title'];
+            }
 
             // replace root page information
-            if ($arrRootPage['pagePid'] === $objPage->rootId) {
-                $objPage->rootAlias = $arrRootPage['pageAlias'];
-                $objPage->rootTitle = $arrParentPage['pageTitle'] ?: $arrRootPage['title'];
-                $objPage->rootPageTitle = $arrRootPage['pageTitle'];
-                $objPage->rootLanguage = $arrRootPage['language'];
+            if ($arrL10nRootPage['l10nPid'] === $objPage->rootId) {
+                $objPage->rootAlias = $arrL10nRootPage['l10nAlias'];
+                $objPage->rootTitle = $arrL10nRootPage['title'];
+                $objPage->rootPageTitle = $arrL10nParentPage['pageTitle'] ?: $arrL10nRootPage['title'];
+
+                // Language was not replaced since this removes the options from language select
             }
         } else {
             // else at least keep current language to prevent language change and set flag
             $objPage->language            = $GLOBALS['TL_LANGUAGE'];
             $objPage->useFallbackLanguage = true;
-        }
-
-        // update root information
-        $objL10nRootPage = $this->getL10nRootPage($objPage);
-
-        if ($objL10nRootPage) {
-            $objPage->rootTitle = $objL10nRootPage->title;
-            $objPage->rootPageTitle = $objL10nRootPage->title;
-
-            if ($objPage->pid === $objPage->rootId) {
-                $objPage->parentTitle     = $objL10nRootPage->title;
-                $objPage->parentPageTitle = $objL10nRootPage->pageTitle;
-            }
         }
 
         return $objPage;
@@ -367,29 +366,6 @@ class I18nl10n extends \Controller
             (SELECT * FROM tl_page WHERE type = "root" AND dns = "")')
             ->limit(1)
             ->execute($strDomain);
-    }
-
-    /**
-     * Get localized root page by page object
-     *
-     * @param $objPage
-     *
-     * @return \Database\Result|null
-     */
-    public function getL10nRootPage($objPage)
-    {
-        $sqlPublishedCondition = BE_USER_LOGGED_IN
-            ? ''
-            : " AND (start = '' OR start < {$this->time}) AND (stop = '' OR stop > {$this->time}) AND i18nl10n_published = 1 ";
-
-        $sql = 'SELECT title FROM tl_page_i18nl10n WHERE pid = ? AND language = ? ' . $sqlPublishedCondition;
-
-        $objL10nRootPage = \Database::getInstance()
-            ->prepare($sql)
-            ->limit(1)
-            ->execute($objPage->rootId, $GLOBALS['TL_LANGUAGE']);
-
-        return $objL10nRootPage->row() ? $objL10nRootPage : null;
     }
 
     /**
