@@ -51,6 +51,9 @@ class I18nl10n extends \Controller
     function __construct()
     {
         $this->time = time();
+
+        // Import database handler
+        $this->import('Database');
     }
 
     /**
@@ -154,24 +157,61 @@ class I18nl10n extends \Controller
             ? '' :
             "AND (start='' OR start < {$this->time}) AND (stop='' OR stop > {$this->time}) AND i18nl10n_published = 1";
 
-        $sql = 'SELECT ' . implode(',', $fields) . " FROM tl_page_i18nl10n WHERE pid = ? AND language = ? $sqlPublishedCondition";
+        // Add identification fields and combine sql
+        $sql = '
+            SELECT
+                id AS pageId,
+                pid AS pagePid,
+                alias AS pageAlias, '
+                . implode(',', $fields) . "
+            FROM
+                tl_page_i18nl10n
+            WHERE
+                pid IN(?,?,?)
+                AND language = ? $sqlPublishedCondition
+            ORDER BY "
+               . $this->Database->findInSet('pid', array($objPage->id, $objPage->pid, $objPage->rootId))
+        ;
 
-        $objL10nPage = \Database::getInstance()
+        $arrL10nRelatedPages = $this->Database
             ->prepare($sql)
-            ->limit(1)
-            ->execute($objPage->id, $strLang ?: $GLOBALS['TL_LANGUAGE']);
+            ->execute($objPage->id, $objPage->pid, $objPage->rootId, $strLang ?: $GLOBALS['TL_LANGUAGE'])
+            ->fetchAllassoc();
+
+        $arrPage = $arrL10nRelatedPages[0];
+        $arrParentPage = $arrL10nRelatedPages[1];
+        $arrRootPage = $arrL10nRelatedPages[2];
 
         // If fallback and localization are not published, return null
-        if (!$objPage->i18nl10n_published && !$objL10nPage->count()) {
+        if (!$objPage->i18nl10n_published && $arrPage['pagePid'] !== $objPage->id) {
             return null;
         }
 
-        if ($objL10nPage->first()) {
-            // Replace strings with localized content
+        // Replace page information only if current page exists
+        if ($arrPage['pagePid'] === $objPage->id) {
+
+            // Replace current page information
             foreach ($fields as $field) {
-                if ($objL10nPage->$field) {
-                    $objPage->$field = $objL10nPage->$field;
+                if ($arrPage[$field]) {
+                    $objPage->$field = $arrPage[$field];
                 }
+            }
+
+            // Replace parent page information
+            if ($arrParentPage['pagePid'] === $objPage->pid) {
+                $objPage->parentAlias = $arrParentPage['pageAlias'];
+                $objPage->parentTitle = $arrParentPage['pageTitle'] ?: $arrParentPage['title'];
+                $objPage->parentPageTitle = $arrParentPage['pageTitle'];
+            }
+
+            // @todo: add mainPage information (first non root page of a pages branch)
+
+            // replace root page information
+            if ($arrRootPage['pagePid'] === $objPage->rootId) {
+                $objPage->rootAlias = $arrRootPage['pageAlias'];
+                $objPage->rootTitle = $arrParentPage['pageTitle'] ?: $arrRootPage['title'];
+                $objPage->rootPageTitle = $arrRootPage['pageTitle'];
+                $objPage->rootLanguage = $arrRootPage['language'];
             }
         } else {
             // else at least keep current language to prevent language change and set flag
