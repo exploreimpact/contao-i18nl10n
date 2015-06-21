@@ -64,6 +64,8 @@ class PageI18nl10nRegular extends \PageRegular
                 $objError->generate($objPage->id);
             }
 
+            self::addAlternativeLanguageLinks($objPage);
+
             parent::generate($objPage, $blnCheckRequest);
             return;
         }
