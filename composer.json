@@ -1,7 +1,7 @@
 {
   "name": "verstaerker/i18nl10n",
   "type": "contao-module",
-  "description": "The simplest way to make and manage multi-language sites with Contao.",
+  "description": "The simplest way to create and manage multi-language sites with Contao.",
   "keywords": [
     "Language",
     "Multilingual",
