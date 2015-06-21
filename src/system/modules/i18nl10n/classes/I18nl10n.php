@@ -495,7 +495,7 @@ class I18nl10n extends \Controller
     public function getLanguageAlternativesForPageByPid($intPid)
     {
         return \Database::getInstance()
-            ->prepare('SELECT * FROM tl_page_i18nl10n WHERE pid = ?')
+            ->prepare('SELECT * FROM tl_page_i18nl10n WHERE pid = ? AND i18nl10n_published = 1')
             ->execute($intPid)
             ->fetchAllAssoc();
     }
