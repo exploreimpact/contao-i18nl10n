@@ -174,7 +174,7 @@ class I18nl10n extends \Controller
      * @param \PageModel    $objPage
      * @param String        [$strLang]              Search for a specific language
      * @param bool          [$blnTranslateOnly]     Get only translation. If false meta data will also be modified.
-     *
+     *rev
      * @return object|null
      */
     public function findPublishedL10nPage($objPage, $strLang = null, $blnReplaceMetaFields = false)
