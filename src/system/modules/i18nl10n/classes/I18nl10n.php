@@ -43,17 +43,50 @@ class I18nl10n extends \Controller
      *
      * @var Integer
      */
-    private $time;
+    private $_time;
+
+    /**
+     * Shared text columns of tl_page and tl_page_i18nl10n
+     *
+     * @var array
+     */
+    private $_textTableFields = array('title', 'language', 'pageTitle', 'description', 'url', 'cssClass', 'dateFormat', 'timeFormat', 'datimFormat', 'start', 'stop');
+
+    /**
+     * Shared meta data columns of tl_page and tl_page_i18nl10n
+     *
+     * @var array
+     */
+    private $_metaTableFields = array('id', 'pid', 'sorting', 'tstamp', 'alias', 'i18nl10n_published');
 
     /**
      * Initialize class
      */
     function __construct()
     {
-        $this->time = time();
+        $this->_time = time();
 
         // Import database handler
         $this->import('Database');
+    }
+
+    /**
+     * Get table columns
+     *
+     * @param $blnIncludeMeta   boolean     Include meta data fields
+     *
+     * @return string|array
+     */
+    public function getTableFields($blnIncludeMeta = false)
+    {
+        // Get language specific page properties
+        $fields = $this->_textTableFields;
+
+        if ($blnIncludeMeta) {
+            $fields = array_merge($fields, $this->_metaTableFields);
+        }
+
+        return $fields;
     }
 
     /**
@@ -92,7 +125,7 @@ class I18nl10n extends \Controller
     {
         $sqlPublishedCondition = BE_USER_LOGGED_IN
             ? ''
-            : " AND (start='' OR start < {$this->time}) AND (stop='' OR stop > {$this->time}) AND published = 1 ";
+            : " AND (start='' OR start < {$this->_time}) AND (stop='' OR stop > {$this->_time}) AND published = 1 ";
 
         $sql = "
             SELECT *
@@ -144,18 +177,14 @@ class I18nl10n extends \Controller
      *
      * @return object|null
      */
-    public function findPublishedL10nPage($objPage, $strLang = null, $blnTranslateOnly = true)
+    public function findPublishedL10nPage($objPage, $strLang = null, $blnReplaceMetaFields = false)
     {
-        //get language specific page properties
-        $fields = array('title', 'language', 'pageTitle', 'description', 'url', 'cssClass', 'dateFormat', 'timeFormat', 'datimFormat', 'start', 'stop');
-
-        if (!$blnTranslateOnly) {
-            $fields = array_merge($fields, array('id', 'pid', 'sorting', 'tstamp', 'alias', 'i18nl10n_published'));
-        }
+        // Get to be replaced fields
+        $fields = $this->getTableFields($blnReplaceMetaFields);
 
         $sqlPublishedCondition = BE_USER_LOGGED_IN
             ? '' :
-            "AND (start='' OR start < {$this->time}) AND (stop='' OR stop > {$this->time}) AND i18nl10n_published = 1";
+            "AND (start='' OR start < {$this->_time}) AND (stop='' OR stop > {$this->_time}) AND i18nl10n_published = 1";
 
         // Add identification fields and combine sql
         $sql = '
@@ -486,17 +515,27 @@ class I18nl10n extends \Controller
     }
 
     /**
-     * Get language alternatives from tl_
+     * Get language alternatives for given tl_page id and current language
      *
-     * @param $intPid                integer     Page id
+     * @param \PageModel    $objPage
      *
      * @return array
      */
-    public function getLanguageAlternativesForPageByPid($intPid)
+    public function getLanguageAlternativesByPage($objPage)
     {
+        $fields = implode(',', $this->getTableFields());
+
         return \Database::getInstance()
-            ->prepare('SELECT * FROM tl_page_i18nl10n WHERE pid = ? AND i18nl10n_published = 1')
-            ->execute($intPid)
+            ->prepare("
+                SELECT $fields
+                FROM tl_page_i18nl10n
+                WHERE pid = ? AND i18nl10n_published = 1 AND language != ?
+                UNION
+                SELECT $fields
+                FROM tl_page
+                WHERE id = ? AND i18nl10n_published = 1 AND language != ?
+            ")
+            ->execute($objPage->id, $objPage->language, $objPage->id, $objPage->language)
             ->fetchAllAssoc();
     }
 
