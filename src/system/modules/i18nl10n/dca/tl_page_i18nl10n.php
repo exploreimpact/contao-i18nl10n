@@ -21,7 +21,6 @@ $this->loadLanguageFile('languages');
 $this->loadLanguageFile('tl_page');
 $this->loadDataContainer('tl_page');
 
-
 //determine if languages are available to endable/disable editing
 $enableCreate = false;
 
@@ -205,6 +204,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         'datimFormat'        => $GLOBALS['TL_DCA']['tl_page']['fields']['datimFormat'],
         'start'              => $GLOBALS['TL_DCA']['tl_page']['fields']['start'],
         'stop'               => $GLOBALS['TL_DCA']['tl_page']['fields']['stop'],
+        'type'               => $GLOBALS['TL_DCA']['tl_page']['fields']['type'], // Type is needed to show/hide sub palettes
         'i18nl10n_published' => $GLOBALS['TL_DCA']['tl_page']['fields']['i18nl10n_published']
     )
 );

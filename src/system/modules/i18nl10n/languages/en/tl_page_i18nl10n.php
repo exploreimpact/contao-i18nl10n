@@ -14,6 +14,7 @@
  * Legends & Fields
  */
 $GLOBALS['TL_LANG']['tl_page_i18nl10n']['i18nl10n_legend'] = 'L10N Settings';
+$GLOBALS['TL_LANG']['tl_page_i18nl10n']['redirect_legend'] = 'Redirect'; // For some unknown reason this is not taken form tl_page
 
 $GLOBALS['TL_LANG']['tl_page_i18nl10n'][''] = array
 (

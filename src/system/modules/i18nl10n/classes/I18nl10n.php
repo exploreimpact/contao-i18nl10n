@@ -43,28 +43,28 @@ class I18nl10n extends \Controller
      *
      * @var Integer
      */
-    private $_time;
+    private $time;
 
     /**
      * Shared text columns of tl_page and tl_page_i18nl10n
      *
      * @var array
      */
-    private $_textTableFields = array('title', 'language', 'pageTitle', 'description', 'url', 'cssClass', 'dateFormat', 'timeFormat', 'datimFormat', 'start', 'stop');
+    private $textTableFields = array('title', 'language', 'pageTitle', 'description', 'url', 'cssClass', 'dateFormat', 'timeFormat', 'datimFormat', 'start', 'stop');
 
     /**
      * Shared meta data columns of tl_page and tl_page_i18nl10n
      *
      * @var array
      */
-    private $_metaTableFields = array('id', 'pid', 'sorting', 'tstamp', 'alias', 'i18nl10n_published');
+    private $metaTableFields = array('id', 'pid', 'sorting', 'tstamp', 'alias', 'i18nl10n_published');
 
     /**
      * Initialize class
      */
     function __construct()
     {
-        $this->_time = time();
+        $this->time = time();
 
         // Import database handler
         $this->import('Database');
@@ -80,10 +80,10 @@ class I18nl10n extends \Controller
     public function getTableFields($blnIncludeMeta = false)
     {
         // Get language specific page properties
-        $fields = $this->_textTableFields;
+        $fields = $this->textTableFields;
 
         if ($blnIncludeMeta) {
-            $fields = array_merge($fields, $this->_metaTableFields);
+            $fields = array_merge($fields, $this->metaTableFields);
         }
 
         return $fields;
@@ -125,7 +125,7 @@ class I18nl10n extends \Controller
     {
         $sqlPublishedCondition = BE_USER_LOGGED_IN
             ? ''
-            : " AND (start='' OR start < {$this->_time}) AND (stop='' OR stop > {$this->_time}) AND published = 1 ";
+            : " AND (start='' OR start < {$this->time}) AND (stop='' OR stop > {$this->time}) AND published = 1 ";
 
         $sql = "
             SELECT *
@@ -184,7 +184,7 @@ class I18nl10n extends \Controller
 
         $sqlPublishedCondition = BE_USER_LOGGED_IN
             ? '' :
-            "AND (start='' OR start < {$this->_time}) AND (stop='' OR stop > {$this->_time}) AND i18nl10n_published = 1";
+            "AND (start='' OR start < {$this->time}) AND (stop='' OR stop > {$this->time}) AND i18nl10n_published = 1";
 
         // Add identification fields and combine sql
         $sql = '
