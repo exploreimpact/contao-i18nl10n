@@ -179,6 +179,11 @@ class I18nl10n extends \Controller
      */
     public function findPublishedL10nPage($objPage, $strLang = null, $blnReplaceMetaFields = false)
     {
+        // If no page alias is defined, don't continue
+        if (empty($objPage->mainAlias)) {
+            return $objPage;
+        }
+
         // Get to be replaced fields
         $fields = $this->getTableFields($blnReplaceMetaFields);
 
