@@ -50,14 +50,14 @@ class I18nl10n extends \Controller
      *
      * @var array
      */
-    private $textTableFields = array('title', 'language', 'pageTitle', 'description', 'url', 'cssClass', 'dateFormat', 'timeFormat', 'datimFormat', 'start', 'stop');
+    protected $textTableFields = array('title', 'language', 'pageTitle', 'description', 'url', 'cssClass', 'dateFormat', 'timeFormat', 'datimFormat', 'start', 'stop');
 
     /**
      * Shared meta data columns of tl_page and tl_page_i18nl10n
      *
      * @var array
      */
-    private $metaTableFields = array('id', 'pid', 'sorting', 'tstamp', 'alias', 'i18nl10n_published');
+    protected $metaTableFields = array('id', 'pid', 'sorting', 'tstamp', 'alias', 'i18nl10n_published');
 
     /**
      * Initialize class
