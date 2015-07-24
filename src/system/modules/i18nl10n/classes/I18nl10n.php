@@ -235,6 +235,8 @@ class I18nl10n extends \Controller
             foreach ($fields as $field) {
                 if ($arrL10nPage[$field]) {
                     $objPage->$field = $arrL10nPage[$field];
+                } elseif ($field === 'pageTitle') { // If empty pageTitle use title
+                    $objPage->$field = $arrL10nPage['title'];
                 }
             }
 
