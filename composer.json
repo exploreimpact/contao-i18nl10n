@@ -30,9 +30,6 @@
       "sources": {
         "src/system/modules/i18nl10n": "system/modules/i18nl10n"
       }
-    },
-    "branch-alias": {
-      "develop": "1.4.x-dev"
     }
   }
 }
