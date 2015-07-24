@@ -257,7 +257,7 @@ class I18nl10n extends \Controller
             if ($arrL10nRootPage['l10nPid'] === $objPage->rootId) {
                 $objPage->rootAlias = $arrL10nRootPage['l10nAlias'];
                 $objPage->rootTitle = $arrL10nRootPage['title'];
-                $objPage->rootPageTitle = $arrL10nParentPage['pageTitle'] ?: $arrL10nRootPage['title'];
+                $objPage->rootPageTitle = $arrL10nRootPage['pageTitle'] ?: $arrL10nRootPage['title'];
 
                 // Language was not replaced since this removes the options from language select
             }
