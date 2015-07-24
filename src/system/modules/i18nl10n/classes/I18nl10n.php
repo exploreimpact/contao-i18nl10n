@@ -221,7 +221,7 @@ class I18nl10n extends \Controller
 
         $arrL10nPage = $arrL10nRelatedPages[0];
         $arrL10nParentPage = $arrL10nRelatedPages[1];
-        $arrL10nRootPage = $arrL10nRelatedPages[2];
+        $arrL10nRootPage = $arrL10nRelatedPages[2] ?: $arrL10nRelatedPages[1]; // Use parent page as root if no root page
 
         // If fallback and localization are not published, return null
         if (!$objPage->i18nl10n_published && $arrL10nPage['l10nPid'] !== $objPage->id) {
