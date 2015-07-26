@@ -8,7 +8,7 @@
  * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n dca
- * @version     1.5.1
+ * @version     1.5.2
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
@@ -56,7 +56,8 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
             array('tl_page', 'addBreadcrumb'),
             array('tl_page_i18nl10n', 'displayLanguageMessage'),
             array('tl_page_i18nl10n', 'localizeAllHandler'),
-            array('tl_page_i18nl10n', 'checkPermission')
+            array('tl_page_i18nl10n', 'checkPermission'),
+            array('tl_page_i18nl10n', 'modifyPalettes'),
         ),
         'sql'              => array
         (
@@ -141,19 +142,13 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
     // Palettes
     'palettes' => array
     (
-        '__selector__' => array('type'),
-        'default'      => '{i18nl10n_menuLegend},title,alias;'
+        'default'      => '{i18nl10n_menuLegend},title,type,alias;'
                           . '{i18nl10n_metaLegend},pageTitle,description;'
                           . '{i18nl10n_timeLegend:hide},dateFormat,timeFormat,datimFormat;'
                           . '{i18nl10n_expertLegend:hide},cssClass;'
                           . '{publish_legend},start,stop;'
                           . '{i18nl10n_legend},language,i18nl10n_published',
-        'redirect'     => '{i18nl10n_menuLegend},title,alias;'
-                          . '{i18nl10n_metaLegend},pageTitle;'
-                          . '{redirect_legend},url;'
-                          . '{i18nl10n_expertLegend:hide},cssClass;'
-                          . '{publish_legend},start,stop;'
-                          . '{i18nl10n_legend},language,i18nl10n_published'
+        // Redirect palette is created by onload callback
     ),
     // Fields
     'fields'   => array
@@ -219,6 +214,11 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['url']['eval']['mandatory']    
 $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['url']['eval']['tl_class']            = 'long';
 $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['i18nl10n_published']['eval']['tl_class'] = 'w50 m12';
 
+// Update type field definition
+$GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['type']['eval']['disabled'] = true;
+$GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['type']['load_callback'][]  = array('tl_page_i18nl10n', 'getPageType');
+unset($GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['type']['sql']);
+
 // Splice in localize all in case languages are available
 if ($enableCreate) {
     $additionalFunctions = array(
@@ -247,6 +247,11 @@ if ($enableCreate) {
  */
 class tl_page_i18nl10n extends tl_page
 {
+
+    /**
+     * @var string
+     */
+    protected $pageType;
 
     /**
      * Generate a localization icon for treeview
@@ -942,5 +947,41 @@ class tl_page_i18nl10n extends tl_page
     {
         return $this->User->isAdmin
                || ($this->userHasPermissionToEditLanguage($arrRow) && $this->userHasPermissionToEditPageType($arrRow, $strTable));
+    }
+
+    /**
+     * Modify dca palette according to parent page type
+     *
+     * @param $dc
+     */
+    public function modifyPalettes($dc)
+    {
+        $arrPage = \Database::getInstance()
+            ->prepare('SELECT type FROM tl_page WHERE id = (SELECT pid FROM tl_page_i18nl10n WHERE id = ?)')
+            ->limit(1)
+            ->execute($dc->id)
+            ->fetchAssoc();
+
+        // Save type for later use
+        $this->pageType = $arrPage['type'];
+
+        if ($this->pageType === 'redirect') {
+            $GLOBALS['TL_DCA']['tl_page_i18nl10n']['palettes']['default'] = '{i18nl10n_menuLegend},title,type,alias;'
+                                                                            . '{i18nl10n_metaLegend},pageTitle;'
+                                                                            . '{redirect_legend},url;'
+                                                                            . '{i18nl10n_expertLegend:hide},cssClass;'
+                                                                            . '{publish_legend},start,stop;'
+                                                                            . '{i18nl10n_legend},language,i18nl10n_published';
+        }
+    }
+
+    /**
+     * Get page type for onload_callback of type field
+     *
+     * @return string
+     */
+    public function getPageType()
+    {
+        return $this->pageType;
     }
 }

@@ -8,7 +8,7 @@
  * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n dca
- * @version     1.2.1
+ * @version     1.5.2
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
@@ -246,19 +246,19 @@ class tl_page_l10n extends tl_page
         }
 
         $fields = array(
-            'pid'            => $dc->id,
-            'sorting'        => 0,
-            'tstamp'         => time(),
-            'title'          => $dc->activeRecord->title,
-            'pageTitle'      => $dc->activeRecord->pageTitle,
-            'description'    => $dc->activeRecord->description,
-            'cssClass'       => $dc->activeRecord->cssClass,
+            'pid'                => $dc->id,
+            'sorting'            => 0,
+            'tstamp'             => time(),
+            'title'              => $dc->activeRecord->title,
+            'pageTitle'          => $dc->activeRecord->pageTitle,
+            'description'        => $dc->activeRecord->description,
+            'cssClass'           => $dc->activeRecord->cssClass,
             'i18nl10n_published' => $dc->activeRecord->published,
-            'start'          => $dc->activeRecord->start,
-            'stop'           => $dc->activeRecord->stop,
-            'dateFormat'     => $dc->activeRecord->dateFormat,
-            'timeFormat'     => $dc->activeRecord->timeFormat,
-            'datimFormat'    => $dc->activeRecord->datimFormat
+            'start'              => $dc->activeRecord->start,
+            'stop'               => $dc->activeRecord->stop,
+            'dateFormat'         => $dc->activeRecord->dateFormat,
+            'timeFormat'         => $dc->activeRecord->timeFormat,
+            'datimFormat'        => $dc->activeRecord->datimFormat
         );
 
         // Now make copies in each language

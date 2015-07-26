@@ -9,7 +9,7 @@
  * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n config
- * @version     1.5.1
+ * @version     1.5.2
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
@@ -67,8 +67,6 @@ class I18nl10nRunOnceJob extends \Controller
         $this->removeDeprecatedSettings();
 
         $this->updateChildPageLanguage();
-
-        $this->recoverPageType();
     }
 
     /**
@@ -216,21 +214,6 @@ class I18nl10nRunOnceJob extends \Controller
                     ->execute($objRootPage->language);
             }
         }
-    }
-
-    /**
-     * Recover type field information
-     *
-     * The type field of tl_page_i18nl10n was removed a few version back. But
-     * it's needed as a DCA field selector.
-     */
-    private function recoverPageType()
-    {
-        // Create field if not existing
-        $this->Database->query('ALTER TABLE tl_page_i18nl10n ADD type varchar(32) NOT NULL default ""');
-
-        // Set field value if not existing
-        $this->Database->query('UPDATE tl_page_i18nl10n as pi SET type = (SELECT p.type FROM tl_page as p WHERE p.id = pi.pid) WHERE pi.type = "";');
     }
 }
 
