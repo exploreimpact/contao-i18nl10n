@@ -827,7 +827,7 @@ class tl_page_i18nl10n extends tl_page
     {
         return $this->User->isAdmin || $this->User->isAllowed(1, $row) // \BackendUser::CAN_EDIT_PAGE
             ? $this->createButton($row, $href, $label, $title, $icon, $attributes)
-            : '';
+            : \Image::getHtml(preg_replace('/\.gif$/i', '_.gif', $icon)) . ' ';
     }
 
     /**
@@ -846,7 +846,7 @@ class tl_page_i18nl10n extends tl_page
     {
         return $this->User->isAdmin || $this->User->isAllowed(2, $row) //\BackendUser::CAN_EDIT_PAGE_HIERARCHY
             ? $this->createButton($row, $href, $label, $title, $icon, $attributes)
-            : '';
+            : \Image::getHtml(preg_replace('/\.gif$/i', '_.gif', $icon)) . ' ';
     }
 
     /**
@@ -865,7 +865,7 @@ class tl_page_i18nl10n extends tl_page
     {
         return $this->User->isAdmin || $this->User->isAllowed(3, $row) // \BackendUser::CAN_DELETE_PAGE
             ? $this->createButton($row, $href, $label, $title, $icon, $attributes)
-            : '';
+            : \Image::getHtml(preg_replace('/\.gif$/i', '_.gif', $icon)) . ' ';
     }
 
     /**
@@ -884,7 +884,7 @@ class tl_page_i18nl10n extends tl_page
     {
         return $this->User->isAdmin || $this->userHasPermissionToEditPage($row)
             ? '<a href="' . $this->addToUrl($href . '&amp;id=' . $row['id']) . '" title="' . specialchars($title) . '"' . $attributes . '>' . \Image::getHtml($icon, $label) . '</a> '
-            : '';
+            : \Image::getHtml(preg_replace('/\.gif$/i', '_.gif', $icon)) . ' ';
     }
 
     /**
