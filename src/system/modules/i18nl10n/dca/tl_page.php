@@ -8,7 +8,7 @@
  * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n dca
- * @version     1.5.2
+ * @version     1.5.3
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
@@ -56,10 +56,18 @@ array_insert(
     $onSubmitCallback
 );
 
+// Extend ondelete_callback
 $GLOBALS['TL_DCA']['tl_page']['config']['ondelete_callback'][] = array
 (
     'tl_page_l10n',
     'onDelete'
+);
+
+// Extend oncopy_callback
+$GLOBALS['TL_DCA']['tl_page']['config']['oncopy_callback'][] = array
+(
+    'tl_page_l10n',
+    'onCopy'
 );
 
 /**
@@ -305,6 +313,23 @@ class tl_page_l10n extends tl_page
             ->prepare('DELETE FROM tl_page_i18nl10n WHERE pid IN(' . implode(',', $arrChildRecords) . ')')
             ->execute();
 
+    }
+
+    /**
+     * OnCopy callback function
+     *
+     * Set page language on copy
+     *
+     * @param $intId
+     * @param $dc
+     */
+    public function onCopy($intId, $dc)
+    {
+        $objPage = \PageModel::findWithDetails($intId);
+
+        $this->Database
+            ->prepare('UPDATE tl_page SET language = ? WHERE id = ?')
+            ->execute($objPage->language, $intId);
     }
 
     /**
