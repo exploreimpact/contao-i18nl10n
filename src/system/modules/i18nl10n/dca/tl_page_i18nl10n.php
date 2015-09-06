@@ -963,13 +963,44 @@ class tl_page_i18nl10n extends tl_page
         // Save type for later use
         $this->pageType = $arrPage['type'];
 
-        if ($this->pageType === 'redirect') {
-            $GLOBALS['TL_DCA']['tl_page_i18nl10n']['palettes']['default'] = '{i18nl10n_menuLegend},title,type,alias;'
-                                                                            . '{i18nl10n_metaLegend},pageTitle;'
-                                                                            . '{redirect_legend},url;'
-                                                                            . '{i18nl10n_expertLegend:hide},cssClass;'
-                                                                            . '{publish_legend},start,stop;'
-                                                                            . '{i18nl10n_legend},language,i18nl10n_published';
+        // Since type is callback generated, the palette is updated by parent page type
+        switch ($this->pageType) {
+            case 'redirect':
+                $GLOBALS['TL_DCA']['tl_page_i18nl10n']['palettes']['default'] =
+                    '{i18nl10n_menuLegend},title,type,alias;'
+                    . '{i18nl10n_metaLegend},pageTitle;'
+                    . '{redirect_legend},url;'
+                    . '{i18nl10n_expertLegend:hide},cssClass;'
+                    . '{publish_legend},start,stop;'
+                    . '{i18nl10n_legend},language,i18nl10n_published';
+                break;
+
+            case 'forward':
+                $GLOBALS['TL_DCA']['tl_page_i18nl10n']['palettes']['default'] =
+                    '{i18nl10n_menuLegend},title,type,alias;'
+                    . '{i18nl10n_metaLegend},pageTitle;'
+                    . '{i18nl10n_expertLegend:hide},cssClass;'
+                    . '{publish_legend},start,stop;'
+                    . '{i18nl10n_legend},language,i18nl10n_published';
+                break;
+
+            case 'root':
+                $GLOBALS['TL_DCA']['tl_page_i18nl10n']['palettes']['default'] =
+                    '{i18nl10n_menuLegend},title,type,alias;'
+                    . '{i18nl10n_metaLegend},pageTitle,description;'
+                    . '{i18nl10n_timeLegend:hide},dateFormat,timeFormat,datimFormat;'
+                    . '{i18nl10n_expertLegend:hide},cssClass;'
+                    . '{publish_legend},start,stop;'
+                    . '{i18nl10n_legend},language,i18nl10n_published';
+                break;
+
+            default:
+                $GLOBALS['TL_DCA']['tl_page_i18nl10n']['palettes']['default'] =
+                    '{i18nl10n_menuLegend},title,type,alias;'
+                    . '{i18nl10n_metaLegend},pageTitle,description;'
+                    . '{i18nl10n_expertLegend:hide},cssClass;'
+                    . '{publish_legend},start,stop;'
+                    . '{i18nl10n_legend},language,i18nl10n_published';
         }
     }
 
