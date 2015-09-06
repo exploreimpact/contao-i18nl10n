@@ -8,7 +8,7 @@
  * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n dca
- * @version     1.5.3
+ * @version     1.5.4
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
@@ -185,6 +185,10 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
             ),
             'sql'                     => "varchar(5) NOT NULL default ''"
         ),
+        'type' => array
+        (
+            'input_field_callback'  => array('tl_page_i18nl10n', 'typeFieldCallback')
+        ),
         // copy settings from tl_page dca
         'sorting'            => $GLOBALS['TL_DCA']['tl_page']['fields']['sorting'],
         'tstamp'             => $GLOBALS['TL_DCA']['tl_page']['fields']['tstamp'],
@@ -199,7 +203,6 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array
         'datimFormat'        => $GLOBALS['TL_DCA']['tl_page']['fields']['datimFormat'],
         'start'              => $GLOBALS['TL_DCA']['tl_page']['fields']['start'],
         'stop'               => $GLOBALS['TL_DCA']['tl_page']['fields']['stop'],
-        'type'               => $GLOBALS['TL_DCA']['tl_page']['fields']['type'], // Type is needed to show/hide sub palettes
         'i18nl10n_published' => $GLOBALS['TL_DCA']['tl_page']['fields']['i18nl10n_published']
     )
 );
@@ -213,11 +216,6 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['alias']['save_callback']      
 $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['url']['eval']['mandatory']           = false;
 $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['url']['eval']['tl_class']            = 'long';
 $GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['i18nl10n_published']['eval']['tl_class'] = 'w50 m12';
-
-// Update type field definition
-$GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['type']['eval']['disabled'] = true;
-$GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['type']['load_callback'][]  = array('tl_page_i18nl10n', 'getPageType');
-unset($GLOBALS['TL_DCA']['tl_page_i18nl10n']['fields']['type']['sql']);
 
 // Splice in localize all in case languages are available
 if ($enableCreate) {
@@ -983,5 +981,20 @@ class tl_page_i18nl10n extends tl_page
     public function getPageType()
     {
         return $this->pageType;
+    }
+
+    /**
+     * Fake user input for type field to prevent DB update
+     *
+     * @return null
+     */
+    public function typeFieldCallback($dc)
+    {
+        $strLabel = '<h3><label for="ctrl_title">' . $GLOBALS['TL_LANG']['tl_page']['type'][0] . '</label></h3>';
+        $strInput = '<input type="text" class="tl_text" value="' . $GLOBALS['TL_LANG']['PTY'][$this->pageType][0] . '" disabled>';
+        $strInfo = '<p class="tl_help tl_tip">' . $GLOBALS['TL_LANG']['tl_page']['type'][1] . '</p>';
+
+        // Get translation
+        return '<div class="w50">' . $strLabel . $strInput . $strInfo . '</div>';
     }
 }
