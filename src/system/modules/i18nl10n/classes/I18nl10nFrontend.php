@@ -9,7 +9,7 @@
  * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n classes
- * @version     1.2.1
+ * @version     1.5.4
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
@@ -77,7 +77,7 @@ class I18nl10nFrontend extends \Controller
 
         $arrI18nItems = array();
 
-        if ($GLOBALS['TL_LANGUAGE'] != $arrLanguages['default']) {
+        if ($GLOBALS['TL_LANGUAGE'] !== $arrLanguages['default']) {
             $time = time();
             $fields = 'alias,pid,title,pageTitle,description,url,language';
             $sqlPublishedCondition = $blnUseFallback || BE_USER_LOGGED_IN
@@ -114,9 +114,12 @@ class I18nl10nFrontend extends \Controller
                         switch ($item['type']) {
                             case 'forward':
                                 // Get localized target identifier
+                                // @todo: collecting the page data seems to have to many SQL request. Better solution?
                                 $forwardRow         = self::getI18nForward($item, $item['language']);
                                 $forwardRow['alias']= $item['alias'] = $forwardRow['alias'] ? : $item['alias'];
-                                $item['href']       = $this->generateFrontendUrl($forwardRow);
+                                $arrPage = \PageModel::findWithDetails($forwardRow['pid'])->row();
+
+                                $item['href']       = $this->generateFrontendUrl($arrPage);
                                 break;
 
                             case 'redirect';
