@@ -57,6 +57,7 @@ $GLOBALS['TL_HOOKS']['executePostActions'][]  = array($strClassName, 'executePos
 $GLOBALS['TL_HOOKS']['isVisibleElement'][]    = array($strClassName, 'isVisibleElement');
 $GLOBALS['TL_HOOKS']['loadDataContainer'][]   = array($strClassName, 'appendLanguageSelectCallback');
 $GLOBALS['TL_HOOKS']['loadDataContainer'][]   = array($strClassName, 'appendButtonCallback');
+$GLOBALS['TL_HOOKS']['loadDataContainer'][]   = array($strClassName, 'appendChildRecordCallback');
 $GLOBALS['TL_HOOKS']['loadDataContainer'][]   = array($strClassName, 'setIsotopeLanguages');
 $GLOBALS['TL_HOOKS']['indexPage'][]           = array($strClassName, 'indexPage');
 $GLOBALS['TL_HOOKS']['getSearchablePages'][]  = array($strClassName, 'getSearchablePages');

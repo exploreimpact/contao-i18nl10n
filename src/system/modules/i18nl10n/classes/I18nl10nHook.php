@@ -9,7 +9,7 @@
  * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n classes
- * @version     1.4.0
+ * @version     1.5.4
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
@@ -413,6 +413,34 @@ class I18nl10nHook extends \System
         if ( $strName === 'tl_content' && !in_array(\Input::get('do'), I18nl10n::getInstance()->getUnsupportedModules()) ) {
             $GLOBALS['TL_DCA']['tl_content']['config']['onload_callback'][] =
                 array('tl_content_l10n', 'appendLanguageInput');
+        }
+    }
+
+    /**
+     * Child record callback
+     *
+     * Appending child record callback for tl_content while keeping original callback
+     *
+     * @param $strName
+     */
+    public function appendChildRecordCallback($strName)
+    {
+        // Append tl_content callbacks
+        if ($strName === 'tl_content' && \Input::get('do') === 'article') {
+            $arrVendorCallback = $GLOBALS['TL_DCA']['tl_content']['list']['sorting']['child_record_callback'];
+            $objCallback = new \tl_content_l10n();
+
+            // Create an anonymous function to handle callback from different DCAs
+            $GLOBALS['TL_DCA']['tl_content']['list']['sorting']['child_record_callback'] =
+                function () use ($objCallback, $arrVendorCallback) {
+                    // Get callback arguments
+                    $arrArgs = func_get_args();
+
+                    return call_user_func_array(
+                        array($objCallback, 'childRecordCallback'),
+                        array(array($arrArgs), $arrVendorCallback)
+                    );
+                };
         }
     }
 

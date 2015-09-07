@@ -8,7 +8,7 @@
  * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n dca
- * @version     1.3.5
+ * @version     1.5.4
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
@@ -19,12 +19,6 @@ $this->loadLanguageFile('tl_page');
 $this->loadLanguageFile('tl_content');
 $this->loadDataContainer('tl_page');
 $this->loadDataContainer('tl_content');
-
-// Set callback for DCA load to add language icon to content elements if none of the given modules
-if ( !in_array(\Input::get('do'), I18nl10n::getInstance()->getUnsupportedModules()) ) {
-    $GLOBALS['TL_DCA']['tl_content']['list']['sorting']['child_record_callback'] =
-        array('tl_content_l10n', 'addCteType');
-}
 
 $GLOBALS['TL_DCA']['tl_content']['fields']['language'] = array_merge(
     $GLOBALS['TL_DCA']['tl_page']['fields']['language'],
@@ -47,15 +41,39 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['language'] = array_merge(
 
 class tl_content_l10n extends tl_content
 {
+    /**
+     * Call original child_record_callback before splicing in language
+     *
+     * @param      $arrArgs
+     * @param null $arrVendorCallback
+     *
+     * @return string
+     */
+    public function childRecordCallback($arrArgs, $arrVendorCallback = null)
+    {
+        $arrRow = $arrArgs[0];
+        $strElement = '';
+
+        // Callback should always be available, since it's part of the basic DCA
+        if (is_array($arrVendorCallback)) {
+            $vendorClass = new $arrVendorCallback[0];
+            $strElement = call_user_func_array(array($vendorClass, $arrVendorCallback[1]), $arrRow);
+        } elseif (is_callable($arrVendorCallback)) {
+            $strElement = call_user_func_array($arrVendorCallback, $arrRow);
+        }
+
+        return $this->extendCteType($arrRow, $strElement);
+    }
 
     /**
      * Add language icon to content element list entry
      *
      * @param $arrRow
+     * @param $strElement
      *
      * @return string
      */
-    public function addCteType($arrRow)
+    public function extendCteType($arrRow, $strElement)
     {
         // Prepare icon link
         $langIcon = $arrRow['language']
@@ -69,12 +87,12 @@ class tl_content_l10n extends tl_content
             $GLOBALS['TL_LANG']['LNG'][$arrRow['language']]
         );
 
-        // get HTML string from Contao
-        $strElement = parent::addCteType($arrRow);
-        $strRegex   = '@(.*?class="cte_type.*?>)(.*)@m';
-
         // splice in L10N information
-        $strElement = preg_replace($strRegex, '${1}' . $strL10nInsert . '${2}', $strElement);
+        $strElement = preg_replace(
+            '@(.*?class="cte_type.*?>)(.*)@m',
+            '${1}' . $strL10nInsert . '${2}',
+            $strElement
+        );
 
         return $strElement;
     }
