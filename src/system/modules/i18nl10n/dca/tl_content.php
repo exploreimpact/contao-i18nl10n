@@ -51,18 +51,17 @@ class tl_content_l10n extends tl_content
      */
     public function childRecordCallback($arrArgs, $arrVendorCallback = null)
     {
-        $arrRow = $arrArgs[0];
         $strElement = '';
 
         // Callback should always be available, since it's part of the basic DCA
         if (is_array($arrVendorCallback)) {
             $vendorClass = new $arrVendorCallback[0];
-            $strElement = call_user_func_array(array($vendorClass, $arrVendorCallback[1]), $arrRow);
+            $strElement = call_user_func_array(array($vendorClass, $arrVendorCallback[1]), $arrArgs);
         } elseif (is_callable($arrVendorCallback)) {
-            $strElement = call_user_func_array($arrVendorCallback, $arrRow);
+            $strElement = call_user_func_array($arrVendorCallback, $arrArgs);
         }
 
-        return $this->extendCteType($arrRow, $strElement);
+        return $this->extendCteType($arrArgs[0], $strElement);
     }
 
     /**

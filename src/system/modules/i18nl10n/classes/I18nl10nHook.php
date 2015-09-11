@@ -417,7 +417,7 @@ class I18nl10nHook extends \System
     }
 
     /**
-     * Child record callback
+     * Child record callback for loadDataContainer hook
      *
      * Appending child record callback for tl_content while keeping original callback
      *
@@ -438,7 +438,35 @@ class I18nl10nHook extends \System
 
                     return call_user_func_array(
                         array($objCallback, 'childRecordCallback'),
-                        array(array($arrArgs), $arrVendorCallback)
+                        array($arrArgs, $arrVendorCallback)
+                    );
+                };
+        }
+    }
+
+    /**
+     * List label callback for loadDataContainer hook
+     *
+     * Appending label callback for tl_article while keeping original callback
+     *
+     * @param $strName
+     */
+    public function appendLabelCallback($strName)
+    {
+        // Append tl_content callbacks
+        if ($strName === 'tl_article' && \Input::get('do') === 'article') {
+            $arrVendorCallback = $GLOBALS['TL_DCA']['tl_article']['list']['label']['label_callback'];
+            $objCallback = new \tl_article_l10n();
+
+            // Create an anonymous function to handle callback from different DCAs
+            $GLOBALS['TL_DCA']['tl_article']['list']['label']['label_callback'] =
+                function () use ($objCallback, $arrVendorCallback) {
+                    // Get callback arguments
+                    $arrArgs = func_get_args();
+
+                    return call_user_func_array(
+                        array($objCallback, 'labelCallback'),
+                        array($arrArgs, $arrVendorCallback)
                     );
                 };
         }

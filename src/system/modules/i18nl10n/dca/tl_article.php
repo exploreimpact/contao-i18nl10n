@@ -8,25 +8,41 @@
  * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n dca
- * @version     1.2.1
+ * @version     1.5.4
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
-
-/**
- * Table tl_article
- */
-$GLOBALS['TL_DCA']['tl_article']['list']['label']['label_callback'] = array
-(
-    'tl_article_l10n',
-    'labelCallback'
-);
 
 /**
  * Class tl_article_l10n
  */
 class tl_article_l10n extends tl_article
 {
+    /**
+     * Label callback for list view
+     *
+     * Append language flags to article entries
+     *
+     * @param      $arrArgs
+     * @param null $arrVendorCallback
+     *
+     * @return string
+     */
+    public function labelCallback($arrArgs, $arrVendorCallback = null)
+    {
+        $strElement = '';
+
+        // Callback should always be available, since it's part of the basic DCA
+        if (is_array($arrVendorCallback)) {
+            $vendorClass = new $arrVendorCallback[0];
+            $strElement = call_user_func_array(array($vendorClass, $arrVendorCallback[1]), $arrArgs);
+        } elseif (is_callable($arrVendorCallback)) {
+            $strElement = call_user_func_array($arrVendorCallback, $arrArgs);
+        }
+
+        return $this->addIcon($arrArgs[0], $strElement);
+    }
+
     /**
      * Add summary of elements by language as tooltip
      *
@@ -35,9 +51,9 @@ class tl_article_l10n extends tl_article
      *
      * @return string
      */
-    public function labelCallback($row, $label)
+    public function addIcon($row, $label)
     {
-        $label = parent::addIcon($row, $label);
+
         $sql   = 'SELECT COUNT(id) items, language FROM tl_content WHERE pid =? GROUP BY language';
 
         // count content elements in different languages and display them
