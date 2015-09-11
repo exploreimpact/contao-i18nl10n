@@ -9,7 +9,7 @@
  * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n config
- * @version     1.4.0
+ * @version     1.5.4
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
@@ -55,9 +55,17 @@ $GLOBALS['TL_HOOKS']['getPageIdFromUrl'][]    = array($strClassName, 'getPageIdF
 $GLOBALS['TL_HOOKS']['generateBreadcrumb'][]  = array($strClassName, 'generateBreadcrumb');
 $GLOBALS['TL_HOOKS']['executePostActions'][]  = array($strClassName, 'executePostActions');
 $GLOBALS['TL_HOOKS']['isVisibleElement'][]    = array($strClassName, 'isVisibleElement');
+
+// Append language selection for tl_content (3rd party module secure)
 $GLOBALS['TL_HOOKS']['loadDataContainer'][]   = array($strClassName, 'appendLanguageSelectCallback');
+
+// Append button callback for tl_content to introduce permission (3rd party module secure)
 $GLOBALS['TL_HOOKS']['loadDataContainer'][]   = array($strClassName, 'appendButtonCallback');
+
+// Append label callback for tl_article labels (3rd party module secure)
 $GLOBALS['TL_HOOKS']['loadDataContainer'][]   = array($strClassName, 'appendLabelCallback');
+
+// Append child record callback for tl_content labels (3rd party module secure)
 $GLOBALS['TL_HOOKS']['loadDataContainer'][]   = array($strClassName, 'appendChildRecordCallback');
 $GLOBALS['TL_HOOKS']['loadDataContainer'][]   = array($strClassName, 'setIsotopeLanguages');
 $GLOBALS['TL_HOOKS']['indexPage'][]           = array($strClassName, 'indexPage');
