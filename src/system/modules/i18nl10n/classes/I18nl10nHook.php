@@ -356,29 +356,28 @@ class I18nl10nHook extends \System
               WHERE (p.start = '' OR p.start < $time)
                 AND (p.stop = '' OR p.stop > $time)
                 AND p.published = 1
-                AND i.i18nl10n_published
-                AND p.noSearch != 1
-                AND p.guests != 1
-                AND p.type = 'regular'
+                AND i.i18nl10n_published = 1
+                AND p.type != 'root'
               ORDER BY p.sorting;
             ");
 
         while ($objPages->next()) {
+            if (!$objPages->protected || \Config::get('indexProtected')) {
+                $objPageWithDetails = \PageModel::findWithDetails($objPages->id);
 
-            $objPageWithDetails = \PageModel::findWithDetails($objPages->id);
+                // Replace tl_page values with localized information
+                $objPages->language         = $objPages->i18nl10n_language;
+                $objPages->alias            = $objPages->i18nl10n_alias;
+                $objPages->title            = $objPages->i18nl10n_title;
+                $objPages->forceRowLanguage = true;
 
-            // Replace tl_page values with localized information
-            $objPages->language         = $objPages->i18nl10n_language;
-            $objPages->alias            = $objPages->i18nl10n_alias;
-            $objPages->title            = $objPages->i18nl10n_title;
-            $objPages->forceRowLanguage = true;
+                // Create URL
+                $strUrl = \Controller::generateFrontendUrl($objPages->row());
+                $strUrl = ($objPageWithDetails->rootUseSSL ? 'https://' : 'http://') . ($objPageWithDetails->domain ?: \Environment::get('host')) . '/' . $strUrl;
 
-            // Create URL
-            $strUrl = \Controller::generateFrontendUrl($objPages->row());
-            $strUrl = ($objPageWithDetails->rootUseSSL ? 'https://' : 'http://') . ($objPageWithDetails->domain ?: \Environment::get('host')) . '/' . $strUrl;
-
-            // Append URL
-            $arrL10nPages[] = $strUrl;
+                // Append URL
+                $arrL10nPages[] = $strUrl;
+            }
         }
 
         return array_merge($arrPages, $arrL10nPages);
