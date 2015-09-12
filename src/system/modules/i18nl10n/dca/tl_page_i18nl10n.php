@@ -464,8 +464,6 @@ class tl_page_i18nl10n extends tl_page
      */
     public function displayLanguageMessage($dc)
     {
-        \FB::log($dc->id);
-
         $arrLanguages = I18nl10n::getInstance()->getAvailableLanguages();
         $info         = false;
         $error        = false;
