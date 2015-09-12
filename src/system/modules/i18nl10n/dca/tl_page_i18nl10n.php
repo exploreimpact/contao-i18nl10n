@@ -1061,7 +1061,6 @@ class tl_page_i18nl10n extends tl_page
         return $this->pageType;
     }
 
-
     /**
      * Return empty value for field 'type' to prevent saving to db
      *

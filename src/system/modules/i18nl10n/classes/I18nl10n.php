@@ -9,7 +9,7 @@
  * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n classes
- * @version     1.5.1
+ * @version     1.5.4
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
@@ -111,44 +111,6 @@ class I18nl10n extends \Controller
     public function getUnsupportedModules()
     {
         return $this->unsupportedModules;
-    }
-
-    /**
-     * Get first published sub page for given l10n id and language
-     *
-     * @param   Integer $intId
-     * @param   String  $strLang
-     *
-     * @return array|false
-     */
-    public function findFirstPublishedL10nRegularPageByPid($intId, $strLang)
-    {
-        $sqlPublishedCondition = BE_USER_LOGGED_IN
-            ? ''
-            : " AND (start='' OR start < {$this->time}) AND (stop='' OR stop > {$this->time}) AND published = 1 ";
-
-        $sql = "
-            SELECT *
-            FROM tl_page_i18nl10n
-            WHERE
-              pid = (
-                SELECT id
-                FROM tl_page
-                WHERE
-                  pid = ?
-                  AND type = 'regular'
-                  $sqlPublishedCondition
-                ORDER BY sorting
-                LIMIT 0,1
-              )
-            AND language = ?";
-
-        $request = \Database::getInstance()
-            ->prepare($sql)
-            ->limit(1)
-            ->execute($intId, $strLang);
-
-        return $request->fetchAssoc();
     }
 
     /**

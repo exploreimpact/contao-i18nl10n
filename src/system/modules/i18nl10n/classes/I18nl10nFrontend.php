@@ -113,18 +113,15 @@ class I18nl10nFrontend extends \Controller
 
                         switch ($item['type']) {
                             case 'forward':
-                                // Get localized target identifier
-                                // @todo: collecting the page data seems to have to many SQL request. Better solution?
-                                $forwardRow         = self::getI18nForward($item, $item['language']);
-                                $forwardRow['alias']= $item['alias'] = $forwardRow['alias'] ? : $item['alias'];
-                                $arrPage = \PageModel::findWithDetails($forwardRow['pid'])->row();
+                                $intForwardId = $item['jumpTo'] ?: \PageModel::findFirstPublishedByPid($item['id'])->current()->id;
+
+                                $arrPage = \PageModel::findWithDetails($intForwardId)->row();
 
                                 $item['href']       = $this->generateFrontendUrl($arrPage);
                                 break;
 
                             case 'redirect';
-                                if($row['url'])
-                                {
+                                if($row['url']) {
                                     $item['href'] = $row['url'];
                                 }
                                 break;
@@ -137,7 +134,11 @@ class I18nl10nFrontend extends \Controller
                         $item['pageTitle'] = specialchars($row['pageTitle'], true);
                         $item['title'] = specialchars($row['title'], true);
                         $item['link'] = $item['title'];
-                        $item['description'] = str_replace(array('\n', '\r'), array(' ', ''), specialchars($row['description']) );
+                        $item['description'] = str_replace(
+                            array('\n', '\r'),
+                            array(' ', ''),
+                            specialchars($row['description'])
+                        );
 
                         array_push($arrI18nItems, $item);
                     }
@@ -157,37 +158,5 @@ class I18nl10nFrontend extends \Controller
         }
 
         return $arrI18nItems;
-    }
-
-    /**
-     * Get forward items
-     *
-     * @param array $item
-     * @param string $lang
-     * @return array|false
-     */
-    private function getI18nForward(Array $item, $lang)
-    {
-        if ($item['jumpTo']) {
-            // If jumpTo is set, get the target page
-            $sql = '
-              SELECT *
-              FROM tl_page_i18nl10n
-              WHERE
-                pid = ?
-                AND language = ?
-            ';
-
-            $i18nl10nPage = $this->Database
-                ->prepare($sql)
-                ->limit(1)
-                ->execute($item['jumpTo'], $lang)
-                ->fetchAssoc();
-        } else {
-            // If jumpTo is not set, get first published subpage
-            $i18nl10nPage = I18nl10n::getInstance()->findFirstPublishedL10nRegularPageByPid($item['id'], $lang);
-        }
-
-        return $i18nl10nPage;
     }
 }
