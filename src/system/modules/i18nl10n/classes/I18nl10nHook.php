@@ -52,6 +52,10 @@ class I18nl10nHook extends \System
             throw new \Exception('not an associative array.');
         }
 
+        // @todo: don't use TL_LANGUAGE in backend
+        // @todo: get language by domain
+        // @todo: I18nl10n::getInstance()->getLanguagesByDomain() not valid in BE, since the domain is taken from url
+
         $arrLanguages = I18nl10n::getInstance()->getLanguagesByDomain();
         $arrL10nAlias = null;
 
