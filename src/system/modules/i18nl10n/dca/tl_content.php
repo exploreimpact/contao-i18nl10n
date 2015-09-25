@@ -130,7 +130,7 @@ class tl_content_l10n extends tl_content
     public function languageOptions(DataContainer $dc)
     {
         $arrOptions         = array();
-        $i18nl10nLanguages  = $this->getLanguageOptionsByContentId($dc->activeRecord->id);
+        $i18nl10nLanguages  = $this->getLanguageOptionsByContentId($dc->activeRecord->id, $dc->activeRecord->ptable);
 
         // Create options array base on root page languages
         foreach ($i18nl10nLanguages as $language) {
@@ -146,34 +146,45 @@ class tl_content_l10n extends tl_content
      * - Filter by permission
      * - Add a blank option (by permission)
      *
-     * @param   Integer $id
+     * @param   integer     $id
+     * @param   string      $strParentTable
      *
-     * @return array
+     * @return  array
      */
-    private function getLanguageOptionsByContentId($id)
+    private function getLanguageOptionsByContentId($id, $strParentTable = 'tl_article')
     {
-        $arrPageId = $this->Database
-            ->prepare("SELECT pid as id FROM tl_article WHERE id = (SELECT pid FROM tl_content WHERE id = ?)")
-            ->limit(1)
-            ->execute($id)
-            ->fetchAssoc();
 
-        $i18nl10nLanguages  = I18nl10n::getInstance()->getLanguagesByPageId($arrPageId['id'], 'tl_page');
-        $strIdentifier      = $i18nl10nLanguages['rootId'] . '::';
+        if ($strParentTable === 'tl_article') {
+            $arrPageId = $this->Database
+                ->prepare("SELECT pid as id FROM tl_article WHERE id = (SELECT pid FROM tl_content WHERE id = ?)")
+                ->limit(1)
+                ->execute($id)
+                ->fetchAssoc();
 
-        // Create base and add neutral (*) language if admin or has permission
-        $arrOptions = $this->User->isAdmin || in_array($strIdentifier . '*', (array) $this->User->i18nl10n_languages)
-              ? array('')
-              : array();
+            $i18nl10nLanguages  = I18nl10n::getInstance()->getLanguagesByPageId($arrPageId['id'], 'tl_page');
+            $strIdentifier      = $i18nl10nLanguages['rootId'] . '::';
 
-        // Add languages based on permissions
-        if ($this->User->isAdmin) {
-            array_insert($arrOptions, 1, $i18nl10nLanguages['languages']);
-        } else {
-            foreach ($i18nl10nLanguages['languages'] as $language) {
-                if (in_array($strIdentifier . $language, (array) $this->User->i18nl10n_languages)) {
-                    $arrOptions[] = $language;
+            // Create base and add neutral (*) language if admin or has permission
+            $arrOptions = $this->User->isAdmin || in_array($strIdentifier . '*', (array) $this->User->i18nl10n_languages)
+                ? array('')
+                : array();
+
+            // Add languages based on permissions
+            if ($this->User->isAdmin) {
+                array_insert($arrOptions, 1, $i18nl10nLanguages['languages']);
+            } else {
+                foreach ($i18nl10nLanguages['languages'] as $language) {
+                    if (in_array($strIdentifier . $language, (array) $this->User->i18nl10n_languages)) {
+                        $arrOptions[] = $language;
+                    }
                 }
+            }
+        } else {
+            $arrOptions = I18nl10n::getInstance()->getAvailableLanguages(true, true);
+
+            // Add neutral option if available
+            if ($this->User->isAdmin || strpos(implode((array) $this->User->i18nl10n_languages), '::*') !== false) {
+                array_unshift($arrOptions, '*');
             }
         }
 

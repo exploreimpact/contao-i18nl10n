@@ -429,7 +429,7 @@ class I18nl10nHook extends \System
     public function appendChildRecordCallback($strName)
     {
         // Append tl_content callbacks
-        if ($strName === 'tl_content' && \Input::get('do') === 'article') {
+        if ($strName === 'tl_content' && !in_array(\Input::get('do'), I18nl10n::getInstance()->getUnsupportedModules())) {
             $arrVendorCallback = $GLOBALS['TL_DCA']['tl_content']['list']['sorting']['child_record_callback'];
             $objCallback = new \tl_content_l10n();
 
