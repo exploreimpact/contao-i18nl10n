@@ -55,6 +55,7 @@ $GLOBALS['TL_HOOKS']['getPageIdFromUrl'][]    = array($strClassName, 'getPageIdF
 $GLOBALS['TL_HOOKS']['generateBreadcrumb'][]  = array($strClassName, 'generateBreadcrumb');
 $GLOBALS['TL_HOOKS']['executePostActions'][]  = array($strClassName, 'executePostActions');
 $GLOBALS['TL_HOOKS']['isVisibleElement'][]    = array($strClassName, 'isVisibleElement');
+$GLOBALS['TL_HOOKS']['replaceInsertTags'][]   = array($strClassName, 'replaceInsertTags');
 
 // Append language selection for tl_content (3rd party module secure)
 $GLOBALS['TL_HOOKS']['loadDataContainer'][]   = array($strClassName, 'appendLanguageSelectCallback');

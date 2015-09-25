@@ -15,6 +15,8 @@
 
 namespace Verstaerker\I18nl10n\Classes;
 
+use Verstaerker\I18nl10n\Classes\I18nl10n;
+
 
 /**
  * Class I18nl10nHook
@@ -692,5 +694,17 @@ class I18nl10nHook extends \System
         }
 
         return $arrFragments;
+    }
+
+    /**
+     * replaceInsertTags hook
+     *
+     * @param $strTag
+     *
+     * @return bool|string
+     */
+    public function replaceInsertTags($strTag)
+    {
+        return I18nl10n::getInstance()->replaceInsertTags($strTag);
     }
 }

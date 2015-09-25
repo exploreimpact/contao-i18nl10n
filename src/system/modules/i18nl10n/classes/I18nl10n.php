@@ -556,4 +556,62 @@ class I18nl10n extends \Controller
 
         return intval($arrUserData['admin']) === 1 || in_array($intRootPageId . '::' . $strLanguage, (array) $arrUserData['i18nl10n_languages']);
     }
+
+    /**
+     * Replace i18nl10n insert tags
+     *
+     * @param string $strTag
+     * @param bool   $blnCache
+     *
+     * @return bool|string
+     */
+    public function replaceInsertTags($strTag, $blnCache = true)
+    {
+        global $objPage;
+
+        $arrArguments = explode('::', $strTag);
+
+        if ($arrArguments[0] === 'i18nl10n' && $arrArguments[1] === 'link') {
+            $objNextPage = I18nl10n::getInstance()->findL10nWithDetails($arrArguments[2], $GLOBALS['TL_LANGUAGE']);
+
+            if ($objNextPage === null) {
+                return false;
+            }
+
+            switch ($objNextPage->type) {
+                case 'redirect':
+
+                    $strUrl = parent::replaceInsertTags($objNextPage->url);
+
+                    if (strncasecmp($strUrl, 'mailto:', 7) === 0) {
+                        $strUrl = \String::encodeEmail($strUrl);
+                    }
+                    break;
+
+                case 'forward':
+
+                    $intForwardId = $objNextPage->jumpTo ?: \PageModel::findFirstPublishedByPid($objNextPage->id)->current()->id;
+
+                    $objNext = \PageModel::findWithDetails($intForwardId);
+
+                    if ($objNext !== null) {
+                        $strUrl = $this->generateFrontendUrl($objNext->row(), null, '');
+                        break;
+                    }
+
+                // no break
+                default:
+                    $strUrl = $this->generateFrontendUrl($objNextPage->row(), null, '');
+                    break;
+            }
+
+            $strName = $objNextPage->title;
+            $strTarget = $objNextPage->target ? (($objPage->outputFormat == 'xhtml') ? LINK_NEW_WINDOW : ' target="_blank"') : '';
+            $strTitle = $objNextPage->pageTitle ?: $objNextPage->title;
+
+            return sprintf('<a href="%s" title="%s"%s>%s</a>', $strUrl, specialchars($strTitle), $strTarget, specialchars($strName));
+        }
+
+        return false;
+    }
 }
