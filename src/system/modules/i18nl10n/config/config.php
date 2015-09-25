@@ -9,10 +9,14 @@
  * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n config
- * @version     1.5.4
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
+
+/**
+ * Constants
+ */
+define('I18NL10N', '1.5.5');
 
 /**
  * BACK END MODULES
