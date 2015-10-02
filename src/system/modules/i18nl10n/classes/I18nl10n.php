@@ -320,7 +320,7 @@ class I18nl10n extends \Controller
      * Get all available languages
      *
      * @param bool [$blnForCurrentUserOnly]  Only languages for current logged in user will be returned
-     * @param bool [$blnReturnFlat]         Return a flat language array
+     * @param bool [$blnReturnFlat]          Return a flat language array
      *
      * @return array
      */
@@ -328,6 +328,10 @@ class I18nl10n extends \Controller
     {
         // Get root pages
         $objRootPages = $this->getAllRootPages();
+
+        // @todo: add neutral
+
+        // @todo: cache result
 
         return $this->mapLanguagesFromDatabaseRootPageResult($objRootPages, $blnForCurrentUserOnly, $blnReturnFlat);
     }
@@ -565,7 +569,7 @@ class I18nl10n extends \Controller
      *
      * @return bool|string
      */
-    public function replaceInsertTags($strTag, $blnCache = true)
+    public static function replaceI18nl10nInsertTags($strTag, $blnCache = true)
     {
         global $objPage;
 
@@ -595,13 +599,13 @@ class I18nl10n extends \Controller
                     $objNext = \PageModel::findWithDetails($intForwardId);
 
                     if ($objNext !== null) {
-                        $strUrl = $this->generateFrontendUrl($objNext->row(), null, '');
+                        $strUrl = self::generateFrontendUrl($objNext->row(), null, '');
                         break;
                     }
 
                 // no break
                 default:
-                    $strUrl = $this->generateFrontendUrl($objNextPage->row(), null, '');
+                    $strUrl = self::generateFrontendUrl($objNextPage->row(), null, '');
                     break;
             }
 

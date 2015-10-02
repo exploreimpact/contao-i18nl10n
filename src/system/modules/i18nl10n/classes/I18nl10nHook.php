@@ -448,6 +448,20 @@ class I18nl10nHook extends \System
         }
     }
 
+    public function setLanguages($strName)
+    {
+        $arrLanguages = I18nl10n::getInstance()->getAvailableLanguages(true, true);
+
+        // Add neutral option if available
+        // @todo: move to method
+        if ($this->User->isAdmin || strpos(implode((array) $this->User->i18nl10n_languages), '::*') !== false) {
+            array_unshift($arrLanguages, '*');
+        }
+
+        // @todo: refactor modules to get languages from config too
+        $GLOBALS['TL_DCA'][$strName]['config']['languages'] = $arrLanguages;
+    }
+
     /**
      * List label callback for loadDataContainer hook
      *
@@ -549,14 +563,12 @@ class I18nl10nHook extends \System
      * Add support for Isotope
      *
      * Fake old tl_config entry for languages to support Isotope until a callback is available
-     * @todo: Replace this hook with a callback from Isotope
+     *
+     * @deprecated  Language is now defined as part of DCA config
      */
     public function setIsotopeLanguages()
     {
         if (TL_MODE === 'BE' &&  empty($GLOBALS['TL_CONFIG']['i18nl10n_languages']) && !empty($_GET['do'])) {
-            /**
-             * Isotope workaround
-             */
             $GLOBALS['TL_CONFIG']['i18nl10n_languages'] = I18nl10n::getInstance()->getAvailableLanguages(true, true);
         }
     }
@@ -704,6 +716,6 @@ class I18nl10nHook extends \System
      */
     public function replaceInsertTags($strTag)
     {
-        return I18nl10n::getInstance()->replaceInsertTags($strTag);
+        return I18nl10n::replaceI18nl10nInsertTags($strTag);
     }
 }
