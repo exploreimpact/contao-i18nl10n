@@ -399,11 +399,12 @@ class I18nl10n extends \Controller
             if ($blnReturnFlat) {
                 // Loop domains
                 while ($objRootPage->next()) {
-                    if (!$blnForCurrentUserOnly || $this->userHasLanguagePermission($objRootPage->id, '*')) {
+                    // Add fallback language
+                    if (!$blnForCurrentUserOnly || $this->userHasLanguagePermission($objRootPage->id, $objRootPage->language)) {
                         $arrLanguages[] = $objRootPage->language;
                     }
 
-                    // Loop localizations
+                    // Add localizations
                     foreach ((array) deserialize($objRootPage->i18nl10n_localizations) as $localization) {
                         if (!empty($localization['language'])) {
                             if (!$blnForCurrentUserOnly || $this->userHasLanguagePermission($objRootPage->id, $localization['language'])) {
