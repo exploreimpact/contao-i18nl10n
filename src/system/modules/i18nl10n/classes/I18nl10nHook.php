@@ -14,8 +14,6 @@
 
 namespace Verstaerker\I18nl10n\Classes;
 
-use Verstaerker\I18nl10n\Classes\I18nl10n;
-
 
 /**
  * Class I18nl10nHook
@@ -450,13 +448,10 @@ class I18nl10nHook extends \System
 
     public function setLanguages($strName)
     {
-        $arrLanguages = I18nl10n::getInstance()->getAvailableLanguages(true, true);
+        // Some modules are not able to support user permission base languages, so get all
+        $arrLanguages = I18nl10n::getInstance()->getAvailableLanguages(false, true);
 
-        // Add neutral option if available
-        // @todo: move to method
-        if ($this->User->isAdmin || strpos(implode((array) $this->User->i18nl10n_languages), '::*') !== false) {
-            array_unshift($arrLanguages, '*');
-        }
+        // @todo: add neutral?
 
         // @todo: refactor modules to get languages from config too
         $GLOBALS['TL_DCA'][$strName]['config']['languages'] = $arrLanguages;
