@@ -184,7 +184,7 @@ class tl_content_l10n extends tl_content
             // Add neutral option if available
             // @todo: move to method
             if ($this->User->isAdmin || strpos(implode((array) $this->User->i18nl10n_languages), '::*') !== false) {
-                array_unshift($arrOptions, '*');
+                array_unshift($arrOptions, '');
             }
         }
 
