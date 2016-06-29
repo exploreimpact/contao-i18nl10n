@@ -575,13 +575,20 @@ class I18nl10n extends \Controller
 
         $arrArguments = explode('::', $strTag);
 
-        if ($arrArguments[0] === 'i18nl10n' && $arrArguments[1] === 'link') {
-            $objNextPage = I18nl10n::getInstance()->findL10nWithDetails($arrArguments[2], $GLOBALS['TL_LANGUAGE']);
+        if ($arrArguments[0] === 'i18nl10n')
+        {
+	        $objNextPage = I18nl10n::getInstance()->findL10nWithDetails($arrArguments[2], $GLOBALS['TL_LANGUAGE']);
+        }
+        else
+        {
+	        return false;
+        }
 
-            if ($objNextPage === null) {
-                return false;
-            }
+		if ($objNextPage === null) {
+            return false;
+        }
 
+        if ($arrArguments[1] === 'link') {
             switch ($objNextPage->type) {
                 case 'redirect':
 
@@ -614,6 +621,10 @@ class I18nl10n extends \Controller
             $strTitle = $objNextPage->pageTitle ?: $objNextPage->title;
 
             return sprintf('<a href="%s" title="%s"%s>%s</a>', $strUrl, specialchars($strTitle), $strTarget, specialchars($strName));
+        }
+        elseif ($arrArguments[1] === 'link_name')
+        {
+	        return $objNextPage->title;
         }
 
         return false;
