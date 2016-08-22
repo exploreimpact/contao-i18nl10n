@@ -494,9 +494,9 @@ class I18nl10n extends \Controller
      *
      * @return array
      */
-    public function getLanguageAlternativesByPage($objPage)
+    public function getLanguageAlternativesByPage($objPage, $blnIncludeMeta = false)
     {
-        $fields = implode(',', $this->getTableFields());
+        $fields = implode(',', $this->getTableFields($blnIncludeMeta));
 
         return \Database::getInstance()
             ->prepare("
