@@ -6,8 +6,9 @@
  * on the element level rather than with page trees.
  *
  *
- * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
+ * @copyright   Copyright (c) 2014-2016 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
+ * @author      Sven Baumann <baumann.sv@gmail.com>
  * @package     i18nl10n pages
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
@@ -20,7 +21,7 @@ use Verstaerker\I18nl10n\Classes\I18nl10n;
 /**
  * Class I18nPageRegular
  *
- * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
+ * @copyright   Copyright (c) 2014-2016 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
  * @package     i18nl10n
  */
@@ -135,7 +136,7 @@ class PageI18nl10nRegular extends \PageRegular
      * @param   \PageModel  $objPage
      */
     private function addAlternativeLanguageLinks($objPage) {
-        $arrPages = I18nl10n::getInstance()->getLanguageAlternativesByPage($objPage);
+        $arrPages = I18nl10n::getInstance()->getLanguageAlternativesByPage($objPage, true);
         $links = array();
 
         foreach($arrPages as $page) {
