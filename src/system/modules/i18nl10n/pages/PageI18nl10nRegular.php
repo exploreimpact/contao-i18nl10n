@@ -135,7 +135,7 @@ class PageI18nl10nRegular extends \PageRegular
      * @param   \PageModel  $objPage
      */
     private function addAlternativeLanguageLinks($objPage) {
-        $arrPages = I18nl10n::getInstance()->getLanguageAlternativesByPage($objPage);
+        $arrPages = I18nl10n::getInstance()->getLanguageAlternativesByPage($objPage, true);
         $links = array();
 
         foreach($arrPages as $page) {

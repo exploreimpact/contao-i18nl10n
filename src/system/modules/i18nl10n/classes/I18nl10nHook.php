@@ -6,8 +6,9 @@
  * on the element level rather than with page trees.
  *
  *
- * @copyright   Copyright (c) 2014-2015 Verstärker, Patric Eberle
+ * @copyright   Copyright (c) 2014-2016 Verstärker, Patric Eberle
  * @author      Patric Eberle <line-in@derverstaerker.ch>
+ * @author      Sven Baumann <baumann.sv@gmail.com>
  * @package     i18nl10n classes
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
@@ -239,6 +240,10 @@ class I18nl10nHook extends \System
      */
     public function isVisibleElement($objElement, $blnIsVisible)
     {
+        if (TL_MODE === 'BE') {
+            return $blnIsVisible;
+        }
+
         global $objPage;
 
         if ($blnIsVisible && $objElement->language) {
