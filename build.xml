@@ -1,0 +1,22 @@
+<?xml version="1.0"  encoding="UTF-8" ?>
+
+<project name="i18nl10n" basedir="." default="main">
+
+    <!-- Configuration: -->
+    <property name="projectDir" value="." />
+
+
+    <!-- Package -->
+    <target name="package" description="Package">
+
+    </target>
+
+
+    <!-- ============================================  -->
+    <!-- (DEFAULT) Target: main                        -->
+    <!-- ============================================  -->
+    <target name="main" depends="package" description="Build">
+        <echo msg="Build" />
+    </target>
+
+</project>

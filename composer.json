@@ -1,17 +1,30 @@
 {
-  "name": "verstaerker/i18nl10n",
-  "type": "contao-module",
+  "name": "exploreimpact/contao-i18nl10n",
+  "type":"contao-bundle",
   "description": "The simplest way to create and manage multi-language sites with Contao.",
   "keywords": [
     "Language",
     "Multilingual",
     "I18N",
     "L10N",
-    "Isotope"
+    "Isotope",
+    "Translation"
   ],
-  "homepage": "http://www.derverstaerker.ch",
+  "homepage": "http://www.exploreimpact.de",
   "license": "LGPLv3",
   "authors": [
+    {
+      "name": "Claudio De Facci",
+      "email": "claudio@exploreimpact.de",
+      "homepage": "http://exploreimpact.de",
+      "role": "Developer"
+    },
+    {
+      "name": "Tim Wedemann",
+      "email": "timwedemann@internetinnovations.de",
+      "homepage": "http://www.internetinnovations.de",
+      "role": "Project Management"
+    },
     {
       "name": "Patric Eberle",
       "email": "line-in@derverstaerker.ch",
@@ -19,17 +32,44 @@
       "role": "Developer"
     }
   ],
-  "require": {
-    "php": ">=5.3",
-    "contao/core": ">=3.2-dev,<4-dev",
-    "contao-community-alliance/composer-plugin": "*",
-    "menatwork/contao-multicolumnwizard": ">=3.2.3,<4.0.0-dev"
-  },
-  "extra": {
-    "contao": {
-      "sources": {
-        "src/system/modules/i18nl10n": "system/modules/i18nl10n"
-      }
+  "repositories": {
+    "exim/svg-build-image": {
+      "type": "vcs",
+      "url": "git@bitbucket.org:exploreimpact/svg-build-image.git"
     }
+  },
+  "require": {
+    "php": "^7.0",
+    "contao/core-bundle": "^4.4",
+    "contao-community-alliance/composer-plugin": "*",
+    "menatwork/contao-multicolumnwizard": "^3.3.12"
+  },
+  "require-dev": {
+    "contao/manager-plugin": "^2.0",
+    "exim/svg-build-image": "dev-master",
+    "codeception/codeception": "*",
+    "phpmd/phpmd": "^2.2",
+    "squizlabs/php_codesniffer": "^2.3",
+    "sebastian/phpcpd": "^2.0",
+    "phploc/phploc": "^4.0",
+    "pdepend/pdepend": "^2.1",
+    "theseer/phpdox": "0.8.1.1"
+  },
+  "autoload":{
+    "psr-4": {
+      "Verstaerker\\I18nl10nBundle\\": "src/"
+    },
+    "classmap": [
+      "src/Resources/contao/"
+    ],
+    "exclude-from-classmap": [
+      "src/Resources/contao/config/",
+      "src/Resources/contao/dca/",
+      "src/Resources/contao/languages/",
+      "src/Resources/contao/templates/"
+    ]
+  },
+  "extra":{
+    "contao-manager-plugin": "Verstaerker\\I18nl10nBundle\\ContaoManager\\Plugin"
   }
 }

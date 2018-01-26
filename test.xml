@@ -1,0 +1,174 @@
+<?xml version="1.0"  encoding="UTF-8" ?>
+
+<project name="i18nl10n - Tests" basedir="." default="main">
+
+    <!-- Configuration: -->
+    <property name="basedir" value="." />
+
+    <!-- Use this when the tools are managed by Composer in ${basedir}/vendor/bin -->
+    <property name="pdepend" value="${basedir}/vendor/bin/pdepend"/>
+    <property name="phpcpd"  value="${basedir}/vendor/bin/phpcpd"/>
+    <property name="phpcs"   value="${basedir}/vendor/bin/phpcs"/>
+    <property name="phpdox"  value="${basedir}/vendor/bin/phpdox"/>
+    <property name="phploc"  value="${basedir}/vendor/bin/phploc"/>
+    <property name="phpmd"   value="${basedir}/vendor/bin/phpmd"/>
+
+
+    <!-- Helpers: -->
+    <target name="buildimage-failing" description="Create Build State Image (failing)">
+        <echo msg="- Create Build State Image (failing)" />
+        <exec command="php vendor/bin/buildstatus failing ${basedir}" passthru="true" checkreturn="true" dir="." />
+    </target>
+
+    <target name="buildimage-passing" description="Create Build State Image (passing)">
+        <echo msg="- Create Build State Image (passing)" />
+        <exec command="php vendor/bin/buildstatus passing ${basedir}" passthru="true" checkreturn="true" dir="." />
+    </target>
+
+
+    <!-- Tests: -->
+    <target name="functional" description="Functional Tests">
+        <echo msg="- Codeception Functional Tests" />
+        <exec command="php vendor/bin/codecept run functional" passthru="true" checkreturn="true" dir="." />
+    </target>
+
+
+    <!-- Lints and Checks: -->
+    <target name="clean"
+            unless="clean.done"
+            description="Cleanup build artifacts">
+        <delete dir="${basedir}/build/api"/>
+        <delete dir="${basedir}/build/coverage"/>
+        <delete dir="${basedir}/build/logs"/>
+        <delete dir="${basedir}/build/pdepend"/>
+        <delete dir="${basedir}/build/phpdox"/>
+        <property name="clean.done" value="true"/>
+    </target>
+
+    <target name="prepare"
+            unless="prepare.done"
+            depends="clean"
+            description="Prepare for build">
+        <mkdir dir="${basedir}/build/api"/>
+        <mkdir dir="${basedir}/build/coverage"/>
+        <mkdir dir="${basedir}/build/logs"/>
+        <mkdir dir="${basedir}/build/pdepend"/>
+        <mkdir dir="${basedir}/build/phpdox"/>
+        <property name="prepare.done" value="true"/>
+    </target>
+
+
+    <target name="lint"
+            unless="lint.done"
+            description="Perform syntax check of sourcecode files">
+        <apply executable="php" taskname="lint" passthru="true" checkreturn="true">
+            <arg value="-l" />
+
+            <fileset dir="${basedir}/src">
+                <include name="**/*.php" />
+            </fileset>
+
+            <fileset dir="${basedir}/tests">
+                <include name="**/*.php" />
+            </fileset>
+        </apply>
+
+        <property name="lint.done" value="true"/>
+    </target>
+
+    <target name="phploc"
+            unless="phploc.done"
+            description="Measure project size using PHPLOC and print human readable output. Intended for usage on the command line.">
+        <exec executable="${phploc}" taskname="phploc" passthru="true" checkreturn="true">
+            <arg value="--log-xml" />
+            <arg path="${basedir}/build/logs/phploc.xml" />
+            <arg value="--count-tests" />
+            <arg path="${basedir}/src" />
+            <arg path="${basedir}/tests" />
+        </exec>
+
+        <property name="phploc.done" value="true"/>
+    </target>
+
+    <target name="pdepend"
+            unless="pdepend.done"
+            depends="prepare"
+            description="Calculate software metrics using PHP_Depend and log result in XML format. Intended for usage within a continuous integration environment.">
+        <exec executable="${pdepend}" taskname="pdepend" passthru="true" checkreturn="true">
+            <arg value="--jdepend-xml=${basedir}/build/logs/jdepend.xml" />
+            <arg value="--jdepend-chart=${basedir}/build/pdepend/dependencies.svg" />
+            <arg value="--overview-pyramid=${basedir}/build/pdepend/overview-pyramid.svg" />
+            <arg path="${basedir}/src" />
+        </exec>
+
+        <property name="pdepend.done" value="true"/>
+    </target>
+
+    <target name="phpmd"
+            unless="phpmd.done"
+            description="Perform project mess detection using PHPMD and print human readable output. Intended for usage on the command line before committing.">
+        <exec executable="${phpmd}" taskname="phpmd" passthru="true" checkreturn="true">
+            <arg path="${basedir}/src" />
+            <arg value="text" />
+            <arg path="${basedir}/build/phpmd.xml" />
+        </exec>
+
+        <property name="phpmd.done" value="true"/>
+    </target>
+
+    <target name="phpcs"
+            unless="phpcs.done"
+            description="Find coding standard violations using PHP_CodeSniffer and print human readable output. Intended for usage on the command line before committing.">
+        <exec executable="${phpcs}" taskname="phpcs" passthru="true" checkreturn="true">
+            <arg value="--standard=PSR2" />
+            <arg value="--extensions=php" />
+            <arg value="--ignore=autoload.php" />
+            <arg value="--ignore=/src/Resources/contao/config/*" />
+            <arg value="--ignore=/src/Resources/contao/dca/*" />
+            <arg value="--ignore=/src/Resources/contao/languages/*" />
+            <arg value="--ignore=/tests/*" />
+            <arg path="${basedir}/src" />
+            <arg path="${basedir}/tests" />
+        </exec>
+
+        <property name="phpcs.done" value="true"/>
+    </target>
+
+    <target name="phpcpd"
+            unless="phpcpd.done"
+            description="Find duplicate code using PHPCPD and print human readable output. Intended for usage on the command line before committing.">
+        <exec executable="${phpcpd}" taskname="phpcpd" passthru="true" checkreturn="true">
+            <arg path="--names-exclude=tl_content.php" />
+            <arg path="--names-exclude=tl_page.php" />
+            <arg path="${basedir}/src" />
+        </exec>
+
+        <property name="phpcpd.done" value="true"/>
+    </target>
+
+    <target name="phpdox"
+            unless="phpdox.done"
+            depends="phploc,phpcs,phpmd"
+            description="Generate project documentation using phpDox">
+        <exec executable="${phpdox}" taskname="phpdox" passthru="true" checkreturn="true">
+            <arg value="--file"/>
+            <arg path="${basedir}/build/phpdox.xml"/>
+        </exec>
+
+        <property name="phpdox.done" value="true"/>
+    </target>
+
+    <target name="all-lints-and-checks"
+            depends="prepare,lint,phploc,pdepend,phpmd,phpcs,phpcpd,phpdox"
+            description=""/>
+
+
+
+    <!-- ============================================  -->
+    <!-- (DEFAULT) Target: main                        -->
+    <!-- ============================================  -->
+    <target name="main" depends="buildimage-failing,functional,all-lints-and-checks,buildimage-passing" description="Run all tests">
+        <echo msg="Run all tests" />
+    </target>
+
+</project>

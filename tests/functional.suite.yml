@@ -1,0 +1,9 @@
+
+actor: FunctionalTester
+modules:
+    enabled:
+        - \Helper\Functional
+        - PhpBrowser:
+            url: http://i18nl10n.dev
+            curl:
+                CURLOPT_HTTPHEADER: ['Accept-Language: de']
