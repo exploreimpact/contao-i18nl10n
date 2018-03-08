@@ -11,7 +11,7 @@
     "Translation"
   ],
   "homepage": "http://www.exploreimpact.de",
-  "license": "LGPLv3",
+  "license": "MIT",
   "authors": [
     {
       "name": "Claudio De Facci",
