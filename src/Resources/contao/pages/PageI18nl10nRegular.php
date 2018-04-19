@@ -40,6 +40,8 @@ class PageI18nl10nRegular extends \PageRegular
      */
     public function __construct()
     {
+        parent::__construct();
+
         // Get domain languages
         $this->domainLanguages = i18nl10n::getInstance()->getLanguagesByDomain();
     }
@@ -54,6 +56,8 @@ class PageI18nl10nRegular extends \PageRegular
     public function generate($objPage, $blnCheckRequest = false)
     {
         $this->preparei18nl10n($objPage, $blnCheckRequest);
+
+        parent::generate($objPage, $blnCheckRequest);
     }
 
     /**
@@ -67,6 +71,8 @@ class PageI18nl10nRegular extends \PageRegular
     public function getResponse($objPage, $blnCheckRequest = false)
     {
         $this->preparei18nl10n($objPage, $blnCheckRequest);
+
+        return parent::getResponse($objPage, $blnCheckRequest);
     }
 
 
@@ -78,8 +84,6 @@ class PageI18nl10nRegular extends \PageRegular
      * @param bool $blnCheckRequest
      *
      * @return mixed
-     *
-     * @todo    Refactor - make the whole code more slim and less repetitive
      */
     protected function preparei18nl10n($objPage, $blnCheckRequest = false)
     {
@@ -99,8 +103,6 @@ class PageI18nl10nRegular extends \PageRegular
             }
 
             self::addAlternativeLanguageLinks($objPage);
-
-            parent::generate($objPage, $blnCheckRequest);
             return;
         }
 
@@ -120,8 +122,6 @@ class PageI18nl10nRegular extends \PageRegular
         }
 
         self::addAlternativeLanguageLinks($objPage);
-
-        parent::generate($objPage, $blnCheckRequest);
     }
 
     /**
