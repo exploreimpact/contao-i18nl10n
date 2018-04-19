@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Fixed bug in PageI18nl10nRegular.php that prevented ESI tags from getting rendered when cache is active.
+- Fixed from asset path for extension's CSS files.
 
 ## [2.0.0-beta] - 2018-01-27
 ### Added
