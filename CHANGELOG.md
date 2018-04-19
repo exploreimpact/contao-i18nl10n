@@ -8,12 +8,15 @@ All notable changes to this project will be documented in this file.
 - Define keywords on Multilingual Pages
 - Update for set of flags
 
-## [2.0.0-beta2] - 2018-04-20
+## [2.0.0-beta2] - 2018-04-19
 ### Added
 - Added more detailed installation instructions including configuration step.
 
 ### Changed
 - Moved replaceInsertTags hook to its own class.
+
+### Fixed
+- Fixed bug in PageI18nl10nRegular.php that prevented ESI tags from getting rendered when cache is active.
 
 ## [2.0.0-beta] - 2018-01-27
 ### Added
