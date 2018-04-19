@@ -29,6 +29,8 @@ This extension is for you!
 
 
 ## Installation
+
+### 1. Install package
 ```sh
 $ composer require exploreimpact/contao-i18nl10n:2.0.0-beta
 
@@ -36,7 +38,13 @@ $ composer require exploreimpact/contao-i18nl10n:2.0.0-beta
 
 $ composer require exploreimpact/contao-i18nl10n
 ```
+
+### 2. Update database
 Run a database update via the Installtool afterwards.
+
+### 3. Set URL settings
+Open the Contao backend and go to "Settings".
+Under "Add language to URL*" select the way the language should be added to your URL.
 
 
 ## Documentation:

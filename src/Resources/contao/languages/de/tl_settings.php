@@ -20,7 +20,7 @@ $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_urlParam'][1] =
     'Definiert wie die Sprache in den URLs der Website verwendet wird.';
 
 $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_urlParamLabels']['parameter'] = 'als Parameter (z.B. ?language=en)';
-$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_urlParamLabels']['alias'] = 'als Teil des Alias (z.B. home.en.html)';
+$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_urlParamLabels']['alias'] = 'als Teil des Alias (z.B. home.en.html) [Funktioniert aktuell nicht]';
 $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_urlParamLabels']['url'] = 'als Teil der URL (z.B. mypage.com/en/index.html)';
 
 $GLOBALS['TL_LANG']['tl_settings']['i18nl10n_aliasSuffixError'] =
