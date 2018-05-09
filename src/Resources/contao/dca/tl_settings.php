@@ -59,9 +59,6 @@ class tl_settings_i18nl10n
 {
     public function setDefaultUrlParam($varValue)
     {
-        //var_dump($varValue);
-        //die("Huh");
-
         if (
             $varValue === null ||
             $varValue == ""
@@ -74,6 +71,5 @@ class tl_settings_i18nl10n
         } else {
             return $varValue;
         }
-
     }
 }

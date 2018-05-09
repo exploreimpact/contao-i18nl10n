@@ -70,11 +70,6 @@
     ]
   },
   "extra":{
-    "contao-manager-plugin": "Verstaerker\\I18nl10nBundle\\ContaoManager\\Plugin",
-    "contao": {
-      "sources": {
-        "src/Resouces/contao/config/runonce_template.php": "vendor/exploreimpact/contao-i18nl10n/src/Resouces/contao/config/runonce.php"
-      }
-    }
+    "contao-manager-plugin": "Verstaerker\\I18nl10nBundle\\ContaoManager\\Plugin"
   }
 }
