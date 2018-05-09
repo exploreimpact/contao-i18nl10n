@@ -41,7 +41,10 @@ $i18nl10nSettings = array
             'mandatory' => true,
             'tl_class' => 'w50 autoheight'
         ),
-        'sql'       => "varchar(64) NOT NULL default ''"
+        'load_callback' => array
+        (
+            array('tl_settings_i18nl10n', 'setDefaultUrlParam')
+        ),
     )
 );
 
@@ -51,3 +54,26 @@ array_insert(
     count($GLOBALS['TL_DCA']['tl_settings']['fields']),
     $i18nl10nSettings
 );
+
+class tl_settings_i18nl10n
+{
+    public function setDefaultUrlParam($varValue)
+    {
+        //var_dump($varValue);
+        //die("Huh");
+
+        if (
+            $varValue === null ||
+            $varValue == ""
+        ) {
+            \Config::getInstance()->update(
+                "\$GLOBALS['TL_DCA']['tl_settings']['i18nl10n_urlParam']",
+                "url"
+            );
+            return "url";
+        } else {
+            return $varValue;
+        }
+
+    }
+}
