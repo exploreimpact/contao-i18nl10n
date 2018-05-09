@@ -33,7 +33,6 @@ $i18nl10nSettings = array
         'label'     => &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_urlParam'],
         'exclude'   => true,
         'inputType' => 'radio',
-        'default'   => 'parameter',
         'options'   => array('parameter', 'alias', 'url'),
         'reference' => &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_urlParamLabels'],
         'eval'      => array
@@ -41,7 +40,7 @@ $i18nl10nSettings = array
             'mandatory' => true,
             'tl_class' => 'w50 autoheight'
         ),
-        'sql'       => "varchar(64) NOT NULL default ''"
+        'sql'       => "varchar(64) NOT NULL default 'url'"
     )
 );
 
