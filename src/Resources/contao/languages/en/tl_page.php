@@ -38,4 +38,4 @@ $GLOBALS['TL_LANG']['tl_page']['msg_multiple_root'] =
 $GLOBALS['TL_LANG']['tl_page']['msg_missing_dns']  =
     'When using more than one root page with i18nl10n, every root page needs a unique domain name! One or more roots are missing this value!';
 $GLOBALS['TL_LANG']['tl_page']['msg_duplicated_dns']  =
-    'Some root pages us the same domain value. When using the i18nl10n module only one root page is allowed for a domain.';
+    'Some root pages use the same domain value. When using the i18nl10n module only one root page is allowed for a domain.';
