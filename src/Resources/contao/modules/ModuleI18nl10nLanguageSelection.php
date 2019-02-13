@@ -122,7 +122,7 @@ class ModuleI18nl10nLanguageSelection extends \Module
             // only if page translation is found in database
             foreach ($arrLanguages['languages'] as $language) {
                 // check if current language has not to be shown
-                if ($language === $GLOBALS['TL_LANGUAGE'] && $this->i18nl10n_langHide === 1) {
+                if ($language === $GLOBALS['TL_LANGUAGE'] && $this->i18nl10n_langHide) {
                     continue;
                 }
 
