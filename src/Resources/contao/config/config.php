@@ -51,6 +51,7 @@ $GLOBALS['FE_MOD']['i18nl10n']['i18nl10nLanguageSelection'] = 'Verstaerker\I18nl
 /**
  * HOOKS
  */
+$GLOBALS['TL_HOOKS']['initializeSystem'][]    = array('Verstaerker\I18nl10nBundle\Hook\InitializeSystemHook', 'initializeSystem');
 $GLOBALS['TL_HOOKS']['generateFrontendUrl'][] = array('Verstaerker\I18nl10nBundle\Hook\GenerateFrontendUrlHook', 'generateFrontendUrl');
 $GLOBALS['TL_HOOKS']['getPageIdFromUrl'][]    = array('Verstaerker\I18nl10nBundle\Hook\GetPageIdFromUrlHook', 'getPageIdFromUrl');
 $GLOBALS['TL_HOOKS']['getRootPageFromUrl'][]   = array('Verstaerker\I18nl10nBundle\Hook\GetRootPageFromUrlHook', 'getRootPageFromUrl');
