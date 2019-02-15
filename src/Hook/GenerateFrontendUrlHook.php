@@ -119,6 +119,11 @@ class GenerateFrontendUrlHook
             }
         }
 
+        // Catch "/" page aliases and do not add suffix to them (as they are considered as base request)
+        if ($strL10nUrl == $language."//".\Config::get('urlSuffix')) {
+            $strL10nUrl = $language."/";
+        }
+
         return $strL10nUrl;
     }
 }
