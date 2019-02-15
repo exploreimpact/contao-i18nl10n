@@ -10,13 +10,13 @@ use Verstaerker\I18nl10nBundle\Classes\I18nl10n;
  *
  * Implementation of i18nl10n search logic.
  */
-class InitializeSystemHook extends \Controller
+class InitializeSystemHook
 {
     public function initializeSystem()
     {
         // If there is no request, add the current language
         if ("" === \Environment::get('request')) {
-            $this->redirect($GLOBALS['TL_LANGUAGE']."/");
+            \Contao\Controller::redirect($GLOBALS['TL_LANGUAGE']."/");
         }
 
         // If we are on the homepage, remove the urlSuffix
