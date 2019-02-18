@@ -253,7 +253,7 @@ class tl_page_i18nl10n extends tl_page
      *
      * @return string
      */
-    public function labelCallback($row, $label, Contao\DataContainer $dc = null, $imageAttribute = '', $blnReturnImage = false, $blnProtected = false)
+    public function labelCallback($row, $label, DataContainer $dc = null, $imageAttribute = '', $blnReturnImage = false, $blnProtected = false)
     {
         return sprintf(
             '<span class="i18nl10n_page"><img class="i18nl10n_flag" src="%1$s"> %2$s [%3$s]</span>',
@@ -483,7 +483,7 @@ class tl_page_i18nl10n extends tl_page
      * @param boolean       $blnVisible
      * @param DataContainer $dc
      */
-    public function toggleVisibility($intId, $blnVisible, Contao\DataContainer $dc = null)
+    public function toggleVisibility($intId, $blnVisible, DataContainer $dc = null)
     {
         // Check permissions to edit
         \Input::setGet('id', $intId);
@@ -688,7 +688,7 @@ class tl_page_i18nl10n extends tl_page
      * @return string
      * @throws \Exception
      */
-    public function generateAlias($varValue, Contao\DataContainer $dc)
+    public function generateAlias($varValue, DataContainer $dc)
     {
         $autoAlias   = false;
         $strLanguage = $dc->activeRecord->language;
@@ -765,7 +765,7 @@ class tl_page_i18nl10n extends tl_page
      *
      * @return array
      */
-    public function languageOptions(Contao\DataContainer $dc)
+    public function languageOptions(DataContainer $dc)
     {
         // Create identifier string for permission test
         $objFallbackPage = \PageModel::findWithDetails($dc->activeRecord->pid);
@@ -904,7 +904,7 @@ class tl_page_i18nl10n extends tl_page
      *
      * @return string
      */
-    public function pastePage(Contao\DataContainer $dc, $row, $table, $cr, $arrClipboard = null)
+    public function pastePage(DataContainer $dc, $row, $table, $cr, $arrClipboard = null)
     {
         // Check if parent entry AND user can edit page type AND user has access rights on parent page
         return $table !== 'tl_page_i18nl10n' && $this->userHasPermissionToEditPageType($row, $table)
