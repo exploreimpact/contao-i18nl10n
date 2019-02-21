@@ -68,7 +68,7 @@ class tl_article_l10n extends tl_article
             {
                 $count          = $l10nItem['items'];
                 $title          = $GLOBALS['TL_LANG']['LNG'][$l10nItem['language']] . ": $count " . $GLOBALS['TL_LANG']['tl_article']['elements'];
-                $l10nItemIcon   = 'system/modules/i18nl10n/assets/img/i18nl10n.png';
+                $l10nItemIcon   = 'bundles/verstaerkeri18nl10n/img/i18nl10n.png';
 
                 if ($l10nItem['language'])
                 {
