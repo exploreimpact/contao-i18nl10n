@@ -14,9 +14,19 @@ class InitializeSystemHook
 {
     public function initializeSystem()
     {
-        // If there is no request, add the current language
+        // If there is no request, add the browser language
         if ("" === \Environment::get('request')) {
-            \Contao\Controller::redirect($GLOBALS['TL_LANGUAGE']."/");
+            // check if the browser language is available
+            $arrLanguages = I18nl10n::getInstance()->getAvailableLanguages();
+            $userLanguage = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+
+            if (in_array($userLanguage, $arrLanguages['*']['languages'])) {
+                $strRedirect = $userLanguage."/";
+            } else {
+                $strRedirect = $arrLanguages['*']['default']."/";
+            }
+
+            \Contao\Controller::redirect($strRedirect);
         }
 
         // If we are on the homepage, remove the urlSuffix
