@@ -2,6 +2,7 @@
 
 namespace Verstaerker\I18nl10nBundle\Hook;
 
+use Contao\Controller;
 use Verstaerker\I18nl10nBundle\Classes\I18nl10n;
 
 /**
@@ -20,13 +21,15 @@ class InitializeSystemHook
             $arrLanguages = I18nl10n::getInstance()->getAvailableLanguages();
             $userLanguage = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
 
-            if (in_array($userLanguage, $arrLanguages['*']['languages'])) {
+            $languages = $arrLanguages[$_SERVER['HTTP_HOST']] ?: $arrLanguages['*'];
+
+            if (in_array($userLanguage, $languages['languages'])) {
                 $strRedirect = $userLanguage."/";
             } else {
-                $strRedirect = $arrLanguages['*']['default']."/";
+                $strRedirect = $languages['default']."/";
             }
 
-            \Contao\Controller::redirect($strRedirect);
+            Controller::redirect($strRedirect);
         }
 
         // If we are on the homepage, remove the urlSuffix

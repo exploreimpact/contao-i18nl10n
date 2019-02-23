@@ -14,6 +14,8 @@
 
 namespace Verstaerker\I18nl10nBundle\Classes;
 
+use Contao\Controller;
+
 /**
  * Class I18nl10n
  *
@@ -21,7 +23,7 @@ namespace Verstaerker\I18nl10nBundle\Classes;
  *
  * @package Verstaerker\I18nl10n\Classes
  */
-class I18nl10n extends \Controller
+class I18nl10n extends Controller
 {
     /**
      * Known and unsupported Contao modules
