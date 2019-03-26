@@ -34,10 +34,8 @@ if (TL_MODE == 'BE') {
 array_insert(
     $GLOBALS['BE_MOD']['design'],
     array_search('page', array_keys($GLOBALS['BE_MOD']['design'])) + 1,
-    array
-    (
-        'i18nl10n' => array
-        (
+    array(
+        'i18nl10n' => array(
             'tables' => array('tl_page_i18nl10n'),
             'icon'   => 'bundles/verstaerkeri18nl10n/img/i18nl10n.png'
         )
@@ -53,6 +51,7 @@ $GLOBALS['FE_MOD']['i18nl10n']['i18nl10nLanguageSelection'] = 'Verstaerker\I18nl
 /**
  * HOOKS
  */
+$GLOBALS['TL_HOOKS']['initializeSystem'][]    = array('Verstaerker\I18nl10nBundle\Hook\InitializeSystemHook', 'initializeSystem');
 $GLOBALS['TL_HOOKS']['generateFrontendUrl'][] = array('Verstaerker\I18nl10nBundle\Hook\GenerateFrontendUrlHook', 'generateFrontendUrl');
 $GLOBALS['TL_HOOKS']['getPageIdFromUrl'][]    = array('Verstaerker\I18nl10nBundle\Hook\GetPageIdFromUrlHook', 'getPageIdFromUrl');
 $GLOBALS['TL_HOOKS']['generateBreadcrumb'][]  = array('Verstaerker\I18nl10nBundle\Hook\GenerateBreadcrumbHook', 'generateBreadcrumb');
@@ -60,6 +59,7 @@ $GLOBALS['TL_HOOKS']['executePostActions'][]  = array('Verstaerker\I18nl10nBundl
 $GLOBALS['TL_HOOKS']['isVisibleElement'][]    = array('Verstaerker\I18nl10nBundle\Hook\IsVisibleElementHook', 'isVisibleElement');
 $GLOBALS['TL_HOOKS']['replaceInsertTags'][]   = array('Verstaerker\I18nl10nBundle\Hook\ReplaceInsertTagsHook', 'replaceInsertTags');
 $GLOBALS['TL_HOOKS']['loadDataContainer'][]   = array('Verstaerker\I18nl10nBundle\Hook\LoadDataContainerHook', 'setLanguages');
+$GLOBALS['TL_HOOKS']['getArticle'][]          = array('Verstaerker\I18nl10nBundle\Hook\GetArticleHook', 'checkIfEmpty');
 
 // Append language selection for tl_content
 $GLOBALS['TL_HOOKS']['loadDataContainer'][]   = array('Verstaerker\I18nl10nBundle\Hook\LoadDataContainerHook', 'appendLanguageSelectCallback');

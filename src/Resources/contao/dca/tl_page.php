@@ -103,7 +103,7 @@ $i18nl10nFields = array(
                     'options_callback' => array('tl_page_l10n', 'languageOptions'),
                     'eval'      => array
                     (
-                        'style'  => 'width:250px',
+                        'style'  => 'width:100%',
                         'chosen' => true,
                         'includeBlankOption' => true
                     )
@@ -176,7 +176,7 @@ class tl_page_l10n extends tl_page
         $strImgName = $row['i18nl10n_published'] ? 'i18nl10n.png' : 'i18nl10n_invisible.png';
 
         return sprintf(
-            '<a href="%1$s" title="%2$s"><img src="system/modules/i18nl10n/assets/img/%3$s"></a>',
+            '<a href="%1$s" title="%2$s"><img src="bundles/verstaerkeri18nl10n/img/%3$s"></a>',
             $strButtonUrl,
             specialchars($strTitle),
             $strImgName
@@ -509,8 +509,8 @@ class tl_page_l10n extends tl_page
     public function extendRootPalettes()
     {
         $GLOBALS['TL_DCA']['tl_page']['palettes']['root'] = str_replace(
-            'language,fallback,staticFiles,staticPlugins;',
-            'language,fallback,staticFiles,staticPlugins;{module_i18nl10n},i18nl10n_localizations;',
+            'language,fallback;',
+            'language,fallback;{module_i18nl10n},i18nl10n_localizations;',
             $GLOBALS['TL_DCA']['tl_page']['palettes']['root']
         );
     }

@@ -103,6 +103,17 @@ class GetPageIdFromUrlHook
             array_insert($arrMappedFragments, 1, array('auto_item'));
         }
 
+        // Restore the urlSuffix config if it has been removed in initializeSystem hook
+        if (\Config::has('tmpUrlSuffix')) {
+            \Config::set('urlSuffix', \Config::get('tmpUrlSuffix'));
+            \Config::set('tmpUrlSuffix', '');
+        }
+
+        // Consider that - as Contao native does - if we don't have a fragment, make it / to find homepage.
+        if ($arrMappedFragments[0] === "") {
+            $arrMappedFragments[0] = "/";
+        }
+
         return $arrMappedFragments;
     }
 
@@ -147,8 +158,7 @@ class GetPageIdFromUrlHook
      */
     private function findAliasByLocalizedAliases($arrFragments, $strLanguage)
     {
-        $arrAlias = array
-        (
+        $arrAlias = array(
             'alias'     => $arrFragments[0],
             'l10nAlias' => ''
         );

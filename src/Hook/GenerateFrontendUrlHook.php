@@ -38,6 +38,14 @@ class GenerateFrontendUrlHook
             ? $GLOBALS['TL_LANGUAGE']
             : $arrRow['language'];
 
+        // Do not look for a translation page if there is an alias given already existing in the language we want
+        if ($arrRow['alias']) {
+            $objAlias = \Database::getInstance()
+                ->prepare('SELECT alias FROM tl_page_i18nl10n WHERE alias = ? AND language = ?')
+                ->limit(1)
+                ->execute($arrRow['alias'], $language);
+        }
+
         // Try to get l10n alias by language and pid
         if ($language !== $arrLanguages['default']) {
             $database = \Database::getInstance();
@@ -117,6 +125,11 @@ class GenerateFrontendUrlHook
                 // If no variables define variable 'language'
                 $strL10nUrl .= '?language=' . $language;
             }
+        }
+
+        // Catch "/" page aliases and do not add suffix to them (as they are considered as base request)
+        if ($strL10nUrl == $language."//".\Config::get('urlSuffix')) {
+            $strL10nUrl = $language."/";
         }
 
         return $strL10nUrl;
