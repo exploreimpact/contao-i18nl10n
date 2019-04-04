@@ -132,6 +132,14 @@ class GenerateFrontendUrlHook
             $strL10nUrl = $language."/";
         }
 
+        // Finally, if the basic url contains the domain, it means we want an absolute URL, so keep it this way
+        if (false !== strpos($strUrl, \Environment::get('base'))) {
+            $strL10nUrl = ($arrRow['rootUseSSL'] ? 'https://' : 'http://')
+                    . ($arrRow['domain'] ?: \Environment::get('host'))
+                    . '/'
+                    . $strL10nUrl;
+        }
+
         return $strL10nUrl;
     }
 }
