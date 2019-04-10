@@ -509,8 +509,8 @@ class tl_page_l10n extends tl_page
     public function extendRootPalettes()
     {
         $GLOBALS['TL_DCA']['tl_page']['palettes']['root'] = str_replace(
-            'language,fallback;',
-            'language,fallback;{module_i18nl10n},i18nl10n_localizations;',
+            '{global_legend',
+            '{module_i18nl10n},i18nl10n_localizations;{global_legend',
             $GLOBALS['TL_DCA']['tl_page']['palettes']['root']
         );
     }
