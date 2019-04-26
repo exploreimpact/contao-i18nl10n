@@ -128,21 +128,34 @@ class ModuleI18nl10nLanguageSelection extends \Module
 
                 // loop translations
                 foreach ($arrTranslations as $row) {
+                    // Prepare the translation item
+                    $item = array(
+                        'id'               => empty($row['pid']) ? $objPage->id : $row['pid'],
+                        'alias'            => empty($row['alias']) ? $objPage->alias : $row['alias'],
+                        'title'            => empty($row['title']) ? $objPage->title : $row['title'],
+                        'pageTitle'        => empty($row['pageTitle'])
+                            ? $objPage->pageTitle
+                            : $row['pageTitle'],
+                        'language'         => $language,
+                        'isActive'         => $language === $GLOBALS['TL_LANGUAGE'],
+                        'forceRowLanguage' => true
+                    );
+
+                    // HOOK: add custom logic
+                    if (isset($GLOBALS['TL_HOOKS']['i18nl10nUpdateLanguageSelectionItem'])
+                        && is_array($GLOBALS['TL_HOOKS']['i18nl10nUpdateLanguageSelectionItem'])
+                    ) {
+                        foreach ($GLOBALS['TL_HOOKS']['i18nl10nUpdateLanguageSelectionItem'] as $callback) {
+                            $stdClass = \System::importStatic($callback[0]);
+                            $item = $stdClass::{$callback[1]}($item);
+                        }
+                    }
+
                     // check if language is needed
                     if ($row['language'] === $language) {
                         array_push(
                             $items,
-                            array(
-                                'id'               => empty($row['pid']) ? $objPage->id : $row['pid'],
-                                'alias'            => empty($row['alias']) ? $objPage->alias : $row['alias'],
-                                'title'            => empty($row['title']) ? $objPage->title : $row['title'],
-                                'pageTitle'        => empty($row['pageTitle'])
-                                    ? $objPage->pageTitle
-                                    : $row['pageTitle'],
-                                'language'         => $language,
-                                'isActive'         => $language === $GLOBALS['TL_LANGUAGE'],
-                                'forceRowLanguage' => true
-                            )
+                            $item
                         );
                         break;
                     }
