@@ -55,13 +55,7 @@ Note: Most configuration instructions still match for Contao 4 intallations.
 For changes made in the past please look into [CHANGELOG.md](CHANGELOG.md).
 
 
-## Team
-**Entwicklung**:  
+## Support
 Claudio De Facci  
 <http://exploreimpact.de>  
 <claudio@exploreimpact.de>  
-  
-**Projekt Management**:  
-internetinnovations GmbH  
-<http://internetinnovations.de>  
-<info@internetinnovations.de>  

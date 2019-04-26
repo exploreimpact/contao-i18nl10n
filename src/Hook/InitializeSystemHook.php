@@ -4,6 +4,7 @@ namespace Verstaerker\I18nl10nBundle\Hook;
 
 use Contao\Controller;
 use Verstaerker\I18nl10nBundle\Classes\I18nl10n;
+use Verstaerker\I18nl10nBundle\Exception\NoRootPageException;
 
 /**
  * Class InitializeSystemHook
@@ -15,11 +16,20 @@ class InitializeSystemHook
 {
     public function initializeSystem()
     {
+        // Catch Facebook token fbclid and redirect without him (trigger 404 errors)...
+        if (strpos(\Environment::get('request'), '?fbclid')) {
+            \Controller::redirect(strtok(\Environment::get('request'), '?'));
+        }
+        
         // If there is no request, add the browser language
         if ("" === \Environment::get('request')) {
             // check if the browser language is available
             $arrLanguages = I18nl10n::getInstance()->getAvailableLanguages();
             $userLanguage = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+
+            if (count($arrLanguages) === 0) {
+                throw new NoRootPageException();
+            }
 
             $languages = $arrLanguages[$_SERVER['HTTP_HOST']] ?: $arrLanguages['*'];
 
