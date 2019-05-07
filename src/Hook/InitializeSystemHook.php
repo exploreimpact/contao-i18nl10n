@@ -39,7 +39,7 @@ class InitializeSystemHook
                 $strRedirect = $languages['default']."/";
             }
 
-            Controller::redirect($strRedirect);
+            //Controller::redirect($strRedirect);
         }
 
         // If we are on the homepage, remove the urlSuffix

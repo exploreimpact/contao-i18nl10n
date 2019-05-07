@@ -33,8 +33,8 @@ $i18nl10nSettings = array
         'label'     => &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_urlParam'],
         'exclude'   => true,
         'inputType' => 'radio',
-        'default'   => 'parameter',
-        'options'   => array('parameter', 'alias', 'url'),
+        'default'   => 'url',
+        'options'   => array(/*'parameter', 'alias', */'url'),
         'reference' => &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_urlParamLabels'],
         'eval'      => array
         (
