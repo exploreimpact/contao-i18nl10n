@@ -14,13 +14,18 @@ use Verstaerker\I18nl10nBundle\Exception\NoRootPageException;
  */
 class InitializeSystemHook
 {
+    /**
+     * @todo:   Refactor entirely as this approach does not work.
+     *
+     * @throws NoRootPageException
+     */
     public function initializeSystem()
     {
         // Catch Facebook token fbclid and redirect without him (trigger 404 errors)...
         if (strpos(\Environment::get('request'), '?fbclid')) {
             \Controller::redirect(strtok(\Environment::get('request'), '?'));
         }
-        
+
         // If there is no request, add the browser language
         if ("" === \Environment::get('request')) {
             // check if the browser language is available
@@ -39,7 +44,8 @@ class InitializeSystemHook
                 $strRedirect = $languages['default']."/";
             }
 
-            Controller::redirect($strRedirect);
+            // @todo:   Replace with other logic as this does not work as intendet.
+            //Controller::redirect($strRedirect);
         }
 
         // If we are on the homepage, remove the urlSuffix

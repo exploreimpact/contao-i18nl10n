@@ -25,6 +25,7 @@ $GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] = str_replace(
 
 /**
  * i18nl10n settings fields
+ * @todo:   Remove this option entirely and only allow language as a part of the URL (i.e. "/en/...").
  */
 $i18nl10nSettings = array
 (
@@ -33,8 +34,8 @@ $i18nl10nSettings = array
         'label'     => &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_urlParam'],
         'exclude'   => true,
         'inputType' => 'radio',
-        'default'   => 'parameter',
-        'options'   => array('parameter', 'alias', 'url'),
+        'default'   => 'url',
+        'options'   => array(/*'parameter', 'alias', */'url'),
         'reference' => &$GLOBALS['TL_LANG']['tl_settings']['i18nl10n_urlParamLabels'],
         'eval'      => array
         (
