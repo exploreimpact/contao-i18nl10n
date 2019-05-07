@@ -14,6 +14,11 @@ use Verstaerker\I18nl10nBundle\Exception\NoRootPageException;
  */
 class InitializeSystemHook
 {
+    /**
+     * @todo:   Refactor entirely as this approach does not work.
+     *
+     * @throws NoRootPageException
+     */
     public function initializeSystem()
     {
         // Catch Facebook token fbclid and redirect without him (trigger 404 errors)...
@@ -39,6 +44,7 @@ class InitializeSystemHook
                 $strRedirect = $languages['default']."/";
             }
 
+            // @todo:   Replace with other logic as this does not work as intendet.
             //Controller::redirect($strRedirect);
         }
 
