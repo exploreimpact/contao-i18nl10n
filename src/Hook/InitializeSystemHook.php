@@ -25,7 +25,7 @@ class InitializeSystemHook
         if (strpos(\Environment::get('request'), '?fbclid')) {
             \Controller::redirect(strtok(\Environment::get('request'), '?'));
         }
-        
+
         // If there is no request, add the browser language
         if ("" === \Environment::get('request')) {
             // check if the browser language is available
