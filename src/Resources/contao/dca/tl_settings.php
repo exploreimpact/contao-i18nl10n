@@ -25,6 +25,7 @@ $GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] = str_replace(
 
 /**
  * i18nl10n settings fields
+ * @todo:   Remove this option entirely and only allow language as a part of the URL (i.e. "/en/...").
  */
 $i18nl10nSettings = array
 (
