@@ -508,11 +508,19 @@ class tl_page_l10n extends tl_page
      */
     public function extendRootPalettes()
     {
-        $GLOBALS['TL_DCA']['tl_page']['palettes']['root'] = str_replace(
-            '{global_legend',
-            '{module_i18nl10n},i18nl10n_localizations;{global_legend',
-            $GLOBALS['TL_DCA']['tl_page']['palettes']['root']
-        );
+        if(version_compare(VERSION, '4.5','>=')) {
+            $GLOBALS['TL_DCA']['tl_page']['palettes']['root'] = str_replace(
+                'language,fallback;',
+                'language,fallback;{module_i18nl10n},i18nl10n_localizations;',
+                $GLOBALS['TL_DCA']['tl_page']['palettes']['root']
+            );
+        } else {
+            $GLOBALS['TL_DCA']['tl_page']['palettes']['root'] = str_replace(
+                'language,fallback,staticFiles,staticPlugins;',
+                'language,fallback,staticFiles,staticPlugins;{module_i18nl10n},i18nl10n_localizations;',
+                $GLOBALS['TL_DCA']['tl_page']['palettes']['root']
+            );
+        }
     }
 
     /**
