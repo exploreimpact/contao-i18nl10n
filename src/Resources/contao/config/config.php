@@ -19,6 +19,11 @@
 define('I18NL10N', '2.0.0');
 
 /**
+ * Config
+ */
+$GLOBALS['TL_CONFIG']['i18nl10n_urlParam']   = 'url';
+
+/**
  * BACK END MODULES
  */
 // Extend header includes
