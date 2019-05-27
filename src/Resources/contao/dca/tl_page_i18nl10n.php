@@ -11,6 +11,7 @@
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
+use Contao\DataContainer;
 use Verstaerker\I18nl10nBundle\Classes\I18nl10n;
 
 // load language translations
