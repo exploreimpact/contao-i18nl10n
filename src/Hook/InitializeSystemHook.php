@@ -36,13 +36,13 @@ class InitializeSystemHook
                 throw new NoRootPageException();
             }
 
-            $languages = $arrLanguages[$_SERVER['HTTP_HOST']] ?: $arrLanguages['*'];
+            /*$languages = $arrLanguages[$_SERVER['HTTP_HOST']] ?: $arrLanguages['*'];
 
             if (in_array($userLanguage, $languages['languages'])) {
                 $strRedirect = $userLanguage."/";
             } else {
                 $strRedirect = $languages['default']."/";
-            }
+            }*/
 
             // @todo:   Replace with other logic as this does not work as intendet.
             //Controller::redirect($strRedirect);
