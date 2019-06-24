@@ -140,6 +140,14 @@ class GenerateFrontendUrlHook
                     . $strL10nUrl;
         }
 
+        // Add a way to keep the auto item exactly how it is
+        // Because when hook find a new page, he doesn't keep it and it send us into 404 pages
+        // It's a quickfix, harmless to existing codes, but works very well with i18nl10nUpdateLanguageSelectionItem hook
+        // You can add a hook to edit the $arrRow array and set $arrRow["keepAutoitem"] to true before return $arrRow
+        if ($arrRow["keepAutoitem"] && \Input::get('auto_item') && false == strpos($strL10nUrl, \Input::get('auto_item'))) {
+            $strL10nUrl = str_replace(\Config::get('urlSuffix'), "/".\Input::get('auto_item').\Config::get('urlSuffix'), $strL10nUrl);
+        }
+
         return $strL10nUrl;
     }
 }
