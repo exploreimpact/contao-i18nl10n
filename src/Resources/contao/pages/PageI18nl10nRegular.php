@@ -130,34 +130,19 @@ class PageI18nl10nRegular extends \PageRegular
      * Strangely $GLOBALS['TL_LANGUAGE'] is switched to the current user language if user is just
      * authenticating and has the language property set.
      * See system/libraries/User.php:202
-     * We override this behavior and let the user temporarily use the selected by him language.
+     * We override this behavior and let the user temporarily use the language selected by him.
      * One workaround would be to not let the members have a language property.
      * Then this method will not be needed any more.
      */
     private function fixupCurrentLanguage()
     {
-        // Try to get language from post (committed by language select) or get
+        // Try to get language from POST (committed by language select) or GET
         $selectedLanguage = \Input::get('language');
 
         // If selected language is found already, use it
         if ($selectedLanguage) {
             $GLOBALS['TL_LANGUAGE'] = $_SESSION['TL_LANGUAGE'] = $selectedLanguage;
             return;
-        }
-
-        // if language is part of alias
-        if (\Config::get('i18nl10n_urlParam') === 'alias') {
-            $this->import('Environment');
-            $requestUri  = $this->Environment->requestUri;
-            $strUrlSuffix = preg_quote(\Config::get('urlSuffix'));
-
-            $regex = "@.*?\.([a-z]{2})$strUrlSuffix@";
-
-            // only set language if found in url
-            if (preg_match($regex, $requestUri)) {
-                $_SESSION['TL_LANGUAGE'] = $GLOBALS['TL_LANGUAGE'] = preg_replace($regex, '$1', $requestUri);
-                return;
-            }
         }
 
         // If everything failed yet use session language if part of domain languages, else use fallback

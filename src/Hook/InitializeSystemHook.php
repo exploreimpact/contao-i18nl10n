@@ -44,7 +44,7 @@ class InitializeSystemHook
                 $strRedirect = $languages['default']."/";
             }
 
-            // @todo:   Replace with other logic as this does not work as intendet.
+            // @todo:   Replace with other logic as this does not work as intended.
             //Controller::redirect($strRedirect);
         }
 

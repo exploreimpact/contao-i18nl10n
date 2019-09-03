@@ -34,7 +34,7 @@ class GenerateFrontendUrlHook
         $arrL10nAlias = null;
 
         // Append language if existing and forced (by i18nl10n)
-        $language     = empty($arrRow['language']) || empty($arrRow['forceRowLanguage'])
+        $language = empty($arrRow['language']) || empty($arrRow['forceRowLanguage'])
             ? $GLOBALS['TL_LANGUAGE']
             : $arrRow['language'];
 
@@ -75,57 +75,8 @@ class GenerateFrontendUrlHook
             return $strUrl . '&language=' . $language;
         }
 
-        if (\Config::get('i18nl10n_urlParam') === 'alias' && !\Config::get('disableAlias')) {
-            $strL10nUrl = $alias . $strParams . '.' . $language . \Config::get('urlSuffix');
-
-            // if rewrite is off, add environment
-            if (!\Config::get('rewriteURL')) {
-                $strL10nUrl = 'index.php/' . $strL10nUrl;
-            }
-        } elseif (\Config::get('i18nl10n_urlParam') === 'url') {
-            $strL10nUrl = $language . '/' . $alias . $strParams . \Config::get('urlSuffix');
-
-            /*
-            // if rewrite is off, add environment
-            if (!\Config::get('rewriteURL')) {
-                $strL10nUrl = 'index.php/' . $strL10nUrl;
-            }
-            */
-
-            // if alias is missing (f.ex. index.html), add it (exclude news!)
-            // search for
-            // www.domain.com/
-            // www.domain.com/foo/
-            if (!\Config::get('disableAlias')
-                && preg_match(
-                    '@' . $arrRow['alias'] . '(?=\\' . \Config::get('urlSuffix') . '|/)@',
-                    $strL10nUrl
-                ) === false
-            ) {
-                $strL10nUrl .= $alias . \Config::get('urlSuffix');
-            }
-        } else {
-            $strL10nUrl = str_replace($arrRow['alias'], $alias, $strUrl);
-
-            // Check if params exist
-            if (strpos($strL10nUrl, '?') !== false) {
-                if (strpos($strL10nUrl, 'language=') !== false) {
-                    // if variable 'language' replace it
-                    $regex      = '@language=[a-z]{2}@';
-                    $strL10nUrl = preg_replace(
-                        $regex,
-                        'language=' . $language,
-                        $strL10nUrl
-                    );
-                } else {
-                    // If no variable 'language' add it
-                    $strL10nUrl .= '&language=' . $language;
-                }
-            } else {
-                // If no variables define variable 'language'
-                $strL10nUrl .= '?language=' . $language;
-            }
-        }
+        // Create i18n URL
+        $strL10nUrl = $language . '/' . $alias . $strParams . \Config::get('urlSuffix');
 
         // Catch "/" page aliases and do not add suffix to them (as they are considered as base request)
         if ($strL10nUrl == $language."//".\Config::get('urlSuffix')) {
