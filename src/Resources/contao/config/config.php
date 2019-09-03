@@ -16,12 +16,7 @@
 /**
  * Constants
  */
-define('I18NL10N', '2.0.0');
-
-/**
- * Config
- */
-$GLOBALS['TL_CONFIG']['i18nl10n_urlParam']   = 'url';
+\define('I18NL10N', '2.0.0');
 
 /**
  * BACK END MODULES
@@ -36,15 +31,15 @@ if (TL_MODE == 'BE') {
 }
 
 // Append be module to sidebar
-array_insert(
+\array_insert(
     $GLOBALS['BE_MOD']['design'],
-    array_search('page', array_keys($GLOBALS['BE_MOD']['design'])) + 1,
-    array(
-        'i18nl10n' => array(
-            'tables' => array('tl_page_i18nl10n'),
+    \array_search('page', array_keys($GLOBALS['BE_MOD']['design'])) + 1,
+    [
+        'i18nl10n' => [
+            'tables' => ['tl_page_i18nl10n'],
             'icon'   => 'bundles/verstaerkeri18nl10n/img/i18nl10n.png'
-        )
-    )
+        ]
+    ]
 );
 
 /**

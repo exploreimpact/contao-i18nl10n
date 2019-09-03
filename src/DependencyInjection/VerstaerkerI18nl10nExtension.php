@@ -18,7 +18,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 /**
  * Adds the bundle services to the container.
  *
- * @author Claudio De Facci <http://exploreimpact.de>
+ * @author Claudio De Facci <https://exploreimpact.de>
  */
 class VerstaerkerI18nl10nExtension extends Extension
 {

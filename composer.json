@@ -7,7 +7,6 @@
     "Multilingual",
     "I18N",
     "L10N",
-    "Isotope",
     "Translation"
   ],
   "homepage": "http://www.exploreimpact.de",
@@ -16,7 +15,7 @@
     {
       "name": "Claudio De Facci",
       "email": "claudio@exploreimpact.de",
-      "homepage": "http://exploreimpact.de",
+      "homepage": "https://exploreimpact.de",
       "role": "Developer"
     },
     {

@@ -316,7 +316,7 @@ class I18nl10n extends Controller
      */
     public function getLanguagesByDomain($strDomain = null)
     {
-        /** @var \Database\Mysqli\Result $objRootPage */
+        /** @var \Database\Result $objRootPage */
         $objRootPage = $this->getRootPageByDomain($strDomain);
 
         $arrLanguages = $this->mapLanguagesFromDatabaseRootPageResult($objRootPage);
@@ -396,7 +396,7 @@ class I18nl10n extends Controller
     /**
      * Map all default and localized languages from a database result and return as array
      *
-     * @param \Database\Mysqli\Result $objRootPage
+     * @param \Database\Result $objRootPage
      * @param bool  [$blnForCurrentUserOnly]    Will only return languages for which the current user has permissions
      * @param bool  [$blnReturnFlat]            Return a flat array with all languages
      *
