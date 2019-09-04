@@ -51,24 +51,40 @@ class I18nl10n extends Controller
      *
      * @var array
      */
-    protected $textTableFields = array(
-        'title', 'language', 'pageTitle', 'description', 'url', 'cssClass',
-        'dateFormat', 'timeFormat', 'datimFormat', 'start', 'stop'
-    );
+    protected $textTableFields = [
+        'title',
+        'language',
+        'pageTitle',
+        'description',
+        'url',
+        'cssClass',
+        'dateFormat',
+        'timeFormat',
+        'datimFormat',
+        'start',
+        'stop'
+    ];
 
     /**
      * Shared meta data columns of tl_page and tl_page_i18nl10n
      *
      * @var array
      */
-    protected $metaTableFields = array('id', 'pid', 'sorting', 'tstamp', 'alias', 'i18nl10n_published');
+    protected $metaTableFields = [
+        'id',
+        'pid',
+        'sorting',
+        'tstamp',
+        'alias',
+        'i18nl10n_published'
+    ];
 
     /**
      * Initialize class
      */
     public function __construct()
     {
-        $this->time = time();
+        $this->time = \time();
 
         // Import database handler
         $this->import('Database');
@@ -87,7 +103,7 @@ class I18nl10n extends Controller
         $fields = $this->textTableFields;
 
         if ($blnIncludeMeta) {
-            $fields = array_merge($fields, $this->metaTableFields);
+            $fields = \array_merge($fields, $this->metaTableFields);
         }
 
         return $fields;
@@ -100,7 +116,7 @@ class I18nl10n extends Controller
      */
     public static function getInstance()
     {
-        if (is_null(static::$instance)) {
+        if (\is_null(static::$instance)) {
             static::$instance = new I18nl10n();
         }
 
@@ -128,7 +144,7 @@ class I18nl10n extends Controller
     public function findL10nWithDetails($intId, $strLang)
     {
         // Get page by id
-        $objCurrentPage = \PageModel::findWithDetails($intId);
+        $objCurrentPage = \Contao\PageModel::findWithDetails($intId);
 
         // Get localization
         return $this->findPublishedL10nPage($objCurrentPage, $strLang, false);
@@ -137,11 +153,11 @@ class I18nl10n extends Controller
     /**
      * Find localized page for given page object and replace string values
      *
-     * @param \PageModel    $objPage
+     * @param \Contao\PageModel    $objPage
      * @param String        [$strLang]              Search for a specific language
      * @param bool          [$blnTranslateOnly]     Get only translation. If false meta data will also be modified.
      *
-     * @return object|null
+     * @return \Contao\PageModel|null
      */
     public function findPublishedL10nPage($objPage, $strLang = null, $blnReplaceMetaFields = false)
     {
