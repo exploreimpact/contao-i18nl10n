@@ -33,7 +33,7 @@ if (TL_MODE == 'BE') {
 // Append be module to sidebar
 \array_insert(
     $GLOBALS['BE_MOD']['design'],
-    \array_search('page', array_keys($GLOBALS['BE_MOD']['design'])) + 1,
+    \array_search('page', \array_keys($GLOBALS['BE_MOD']['design'])) + 1,
     [
         'i18nl10n' => [
             'tables' => ['tl_page_i18nl10n'],
@@ -62,36 +62,36 @@ $GLOBALS['TL_HOOKS']['loadDataContainer'][]     = ['Verstaerker\I18nl10nBundle\H
 $GLOBALS['TL_HOOKS']['getArticle'][]            = ['Verstaerker\I18nl10nBundle\Hook\GetArticleHook', 'checkIfEmpty'];
 
 // Append language selection for tl_content
-$GLOBALS['TL_HOOKS']['loadDataContainer'][]     = array('Verstaerker\I18nl10nBundle\Hook\LoadDataContainerHook', 'appendLanguageSelectCallback');
+$GLOBALS['TL_HOOKS']['loadDataContainer'][]     = ['Verstaerker\I18nl10nBundle\Hook\LoadDataContainerHook', 'appendLanguageSelectCallback'];
 
 // Append button callback for tl_content to introduce permission
-$GLOBALS['TL_HOOKS']['loadDataContainer'][]     = array('Verstaerker\I18nl10nBundle\Hook\LoadDataContainerHook', 'appendButtonCallback');
+$GLOBALS['TL_HOOKS']['loadDataContainer'][]     = ['Verstaerker\I18nl10nBundle\Hook\LoadDataContainerHook', 'appendButtonCallback'];
 
 // Append label callback for tl_article labels
-$GLOBALS['TL_HOOKS']['loadDataContainer'][]     = array('Verstaerker\I18nl10nBundle\Hook\LoadDataContainerHook', 'appendLabelCallback');
+$GLOBALS['TL_HOOKS']['loadDataContainer'][]     = ['Verstaerker\I18nl10nBundle\Hook\LoadDataContainerHook', 'appendLabelCallback'];
 
 // Append child record callback for tl_content labels
-$GLOBALS['TL_HOOKS']['loadDataContainer'][]     = array('Verstaerker\I18nl10nBundle\Hook\LoadDataContainerHook', 'appendChildRecordCallback');
+$GLOBALS['TL_HOOKS']['loadDataContainer'][]     = ['Verstaerker\I18nl10nBundle\Hook\LoadDataContainerHook', 'appendChildRecordCallback'];
 
 // Search indexation
-$GLOBALS['TL_HOOKS']['indexPage'][]             = array('Verstaerker\I18nl10nBundle\Hook\IndexPageHook', 'indexPage');
-$GLOBALS['TL_HOOKS']['getSearchablePages'][]    = array('Verstaerker\I18nl10nBundle\Hook\GetSearchablePagesHook', 'getSearchablePages');
-$GLOBALS['TL_HOOKS']['customizeSearch'][]       = array('Verstaerker\I18nl10nBundle\Hook\CustomizeSearchHook', 'customizeSearch');
+$GLOBALS['TL_HOOKS']['indexPage'][]             = ['Verstaerker\I18nl10nBundle\Hook\IndexPageHook', 'indexPage'];
+$GLOBALS['TL_HOOKS']['getSearchablePages'][]    = ['Verstaerker\I18nl10nBundle\Hook\GetSearchablePagesHook', 'getSearchablePages'];
+$GLOBALS['TL_HOOKS']['customizeSearch'][]       = ['Verstaerker\I18nl10nBundle\Hook\CustomizeSearchHook', 'customizeSearch'];
 
 
 /**
  * PAGE TYPES
  */
-$GLOBALS['TL_PTY']['regular'] = 'Verstaerker\I18nl10nBundle\Pages\PageI18nl10nRegular';
+$GLOBALS['TL_PTY']['regular']                   = 'Verstaerker\I18nl10nBundle\Pages\PageI18nl10nRegular';
 
 
 /**
  * Inherit language permissions
  */
-$GLOBALS['TL_PERMISSIONS'][] = 'i18nl10n_languages';
+$GLOBALS['TL_PERMISSIONS'][]                    = 'i18nl10n_languages';
 
 
 /**
  * Adding custom widgets
  */
-$GLOBALS['BE_FFL']['i18nl10nMetaWizard'] = 'Verstaerker\I18nl10nBundle\Widgets\I18nl10nMetaWizard';
+$GLOBALS['BE_FFL']['i18nl10nMetaWizard']        = 'Verstaerker\I18nl10nBundle\Widgets\I18nl10nMetaWizard';
