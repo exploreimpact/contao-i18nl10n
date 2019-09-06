@@ -34,7 +34,8 @@ var I18nl10n =
         if (publish) {
             // set visible
             icon.src = icon.src.replace('invisible.', 'visible.');
-            flag.src = flag.src.replace(/_invisible\.(gif|png|jpe?g)/, '.$1');
+            //flag.src = flag.src.replace(/_invisible\.(gif|png|jpe?g)/, '.$1');
+            flag.removeClass('is--invisible');
 
             new Request.Contao().post({
                 action: 'toggleL10n',
@@ -46,7 +47,8 @@ var I18nl10n =
         } else {
             // set invisible
             icon.src = icon.src.replace('visible.', 'invisible.');
-            flag.src = flag.src.replace(/\.(gif|png|jpe?g)/, '_invisible.$1');
+            //flag.src = flag.src.replace(/\.(gif|png|jpe?g)/, '_invisible.$1');
+            flag.addClass('is--invisible');
 
             new Request.Contao().post({
                 action: 'toggleL10n',

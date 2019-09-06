@@ -364,6 +364,16 @@ class tl_page_l10n extends tl_page
         // Remove 'all' entry
         unset($arrLanguages['']);
 
+        // Change format from underscores to hyphens
+        foreach ($arrLanguages as $short => $name) {
+            if (\strpos($short, '_')) {
+                unset($arrLanguages[$short]);
+                $arrLanguages[
+                    \str_replace('_', '-', $short)
+                ] = $name;
+            }
+        }
+
         // Sort by value (a-z)
         \asort($arrLanguages);
 

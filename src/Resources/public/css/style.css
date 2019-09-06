@@ -81,6 +81,10 @@ ul.level_5 .tl_left {
     vertical-align: middle;
 }
 
+.i18nl10n_flag.is--invisible {
+    opacity: 0.25;
+}
+
 .i18nl10n_page {
     color: #b3b3b3;
     padding-left: 3px;
