@@ -8,6 +8,10 @@ All notable changes to this project will be documented in this file.
 - Define keywords on Multilingual Pages
 - Update for set of flags
 
+## [2.1.0] - t.b.r.
+### Fixed
+- Fixed issue where alias of default language was picked for alternative languages when site was entered on root (/).
+
 ## [2.0.0-beta2] - 2018-04-19
 ### Added
 - Added more detailed installation instructions including configuration step.

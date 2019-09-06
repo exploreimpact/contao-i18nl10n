@@ -12,12 +12,6 @@
  * @license     LGPLv3 http://www.gnu.org/licenses/lgpl-3.0.html
  */
 
-
-/**
- * Constants
- */
-\define('I18NL10N', '2.1.0');
-
 /**
  * BACK END MODULES
  */
