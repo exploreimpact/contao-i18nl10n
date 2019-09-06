@@ -24,7 +24,7 @@ $this->loadDataContainer('tl_page');
 $enableCreate = false;
 
 // Check if backend mode to prevent install issue
-if (\Input::get('do') === 'i18nl10n') {
+if (\Contao\Input::get('do') === 'i18nl10n') {
     $arrLanguages = I18nl10n::getInstance()->getAvailableLanguages();
 
     // Check if localizations are available, else the create option for the DCA will be disabled
@@ -154,14 +154,14 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array(
             'reference'        => &$GLOBALS['TL_LANG']['LNG'],
             'eval'             => array(
                 'mandatory'          => true,
-                'rgxp'               => 'language',
-                'maxlength'          => 5,
+                'rgxp'               => 'locale',
+                'maxlength'          => 20,
                 'nospace'            => true,
                 'doNotCopy'          => true,
                 'tl_class'           => 'w50 clr',
                 'includeBlankOption' => true
             ),
-            'sql'              => "varchar(5) NOT NULL default ''"
+            'sql'              => "varchar(20) NOT NULL default ''"
         ),
         'type'               => array(
             'label'         => &$GLOBALS['TL_LANG']['tl_page']['type'],
@@ -272,10 +272,11 @@ class tl_page_i18nl10n extends tl_page
     public function localizeAllHandler()
     {
         // Decide if message is shown or action is executed
-        if (\Input::get('localize_all') && !\Input::post('localize_all')) {
+        if (\Contao\Input::get('localize_all') && !\Contao\Input::post('localize_all')) {
             self::localizeAllMessage();
-        } elseif (\Input::post('localize_all_')) {
+        } elseif (\Contao\Input::post('localize_all_')) {
             self::localizeAllAction();
+            $this->redirect('contao?do=i18nl10n');
         }
     }
 
@@ -336,7 +337,7 @@ class tl_page_i18nl10n extends tl_page
 
         $rawMessage = sprintf(
             $html,
-            \Input::get('do'),
+            \Contao\Input::get('do'),
             $strMessage,
             $strDomainList,
             utf8_ucfirst($GLOBALS['TL_LANG']['MSC']['no']),
@@ -344,7 +345,7 @@ class tl_page_i18nl10n extends tl_page
             REQUEST_TOKEN
         );
 
-        \Message::addRaw($rawMessage);
+        \Contao\Message::addRaw($rawMessage);
     }
 
 
@@ -469,9 +470,9 @@ class tl_page_i18nl10n extends tl_page
 
         // Show error or info if needed
         if ($error) {
-            \Message::addError($error);
+            \Contao\Message::addError($error);
         } elseif ($info) {
-            \Message::addInfo($info);
+            \Contao\Message::addInfo($info);
         }
     }
 
@@ -486,8 +487,8 @@ class tl_page_i18nl10n extends tl_page
     public function toggleVisibility($intId, $blnVisible, \Contao\DataContainer $dc = null)
     {
         // Check permissions to edit
-        \Input::setGet('id', $intId);
-        \Input::setGet('act', 'toggle');
+        \Contao\Input::setGet('id', $intId);
+        \Contao\Input::setGet('act', 'toggle');
         $this->checkPermission();
 
         // Check permissions to publish
@@ -500,7 +501,7 @@ class tl_page_i18nl10n extends tl_page
             $this->redirect('contao/main.php?act=error');
         }
 
-        $objVersions = new \Versions('tl_page_i18nl10n', $intId);
+        $objVersions = new \Contao\Versions('tl_page_i18nl10n', $intId);
         $objVersions->initialize();
 
         // Trigger the save_callback
@@ -541,8 +542,8 @@ class tl_page_i18nl10n extends tl_page
      */
     public function toggleIcon($row, $href, $label, $title, $icon, $attributes)
     {
-        if (strlen(\Input::get('tid'))) {
-            $this->toggleVisibility(\Input::get('tid'), (\Input::get('state') == 1));
+        if (strlen(\Contao\Input::get('tid'))) {
+            $this->toggleVisibility(\Contao\Input::get('tid'), (\Contao\Input::get('state') == 1));
             $this->redirect($this->getReferer());
         }
 
@@ -580,7 +581,7 @@ class tl_page_i18nl10n extends tl_page
         return
             $this->User->isAdmin || $this->User->isAllowed(2, $objPage->row()) // \BackendUser::CAN_EDIT_PAGE_HIERARCHY
                 ? '<a href="' . $this->addToUrl($href) . '" title="' . specialchars($title) . '"' . $attributes . '>'
-                  . \Image::getHtml($icon, $label) . '</a> '
+                  . \Contao\Image::getHtml($icon, $label) . '</a> '
                 : '';
     }
 
@@ -589,7 +590,7 @@ class tl_page_i18nl10n extends tl_page
      */
     public function displayAddLanguageToUrlMessage()
     {
-        if (\Config::get('addLanguageToUrl')) {
+        if (\Contao\Config::get('addLanguageToUrl')) {
             $message = $GLOBALS['TL_LANG']['tl_page_i18nl10n']['msg_add_language_to_url'];
             $GLOBALS['TL_DCA']['tl_page']['list']['sorting']['breadcrumb'] .=
                 '<div class="i18nl10n_message">' . $message . '</div>';
@@ -612,8 +613,8 @@ class tl_page_i18nl10n extends tl_page
     {
         $this->import('BackendUser', 'User');
 
-        if (strlen(\Input::get('tid'))) {
-            self::toggleL10n(\Input::get('tid'), (\Input::get('state') == 0), 'tl_page');
+        if (strlen(\Contao\Input::get('tid'))) {
+            self::toggleL10n(\Contao\Input::get('tid'), (\Contao\Input::get('state') == 0), 'tl_page');
             $this->redirect($this->getReferer());
         }
 
@@ -622,14 +623,14 @@ class tl_page_i18nl10n extends tl_page
             return '';
         }
 
-        $href .= '&amp;id=' . \Input::get('id') . '&amp;tid=' . $row['id'] . '&amp;state=' . $row[''];
+        $href .= '&amp;id=' . \Contao\Input::get('id') . '&amp;tid=' . $row['id'] . '&amp;state=' . $row[''];
 
         if (!$row['i18nl10n_published']) {
             $icon = 'invisible.gif';
         }
 
         return '<a href="' . $this->addToUrl($href) . '" title="' . specialchars($title) . '"' . $attributes . '>'
-               . \Image::getHtml($icon, $label) . '</a> ';
+               . \Contao\Image::getHtml($icon, $label) . '</a> ';
     }
 
     /**
@@ -653,7 +654,7 @@ class tl_page_i18nl10n extends tl_page
         }
 
         // prepare versions
-        $objVersions = new \Versions($strTable, $intId);
+        $objVersions = new \Contao\Versions($strTable, $intId);
         $objVersions->initialize();
 
         // Trigger the save_callback
@@ -699,16 +700,16 @@ class tl_page_i18nl10n extends tl_page
             $slugOptions = array();
 
             // Read the slug options from the associated page
-            if (($objPage = PageModel::findWithDetails($dc->activeRecord->pid)) !== null) {
+            if (($objPage = \Contao\PageModel::findWithDetails($dc->activeRecord->pid)) !== null) {
                 $slugOptions = $objPage->getSlugOptions();
             }
 
-            $varValue = System::getContainer()->get('contao.slug.generator')->generate(StringUtil::prepareSlug($dc->activeRecord->title), $slugOptions);
+            $varValue = \Contao\System::getContainer()->get('contao.slug.generator')->generate(\Contao\StringUtil::prepareSlug($dc->activeRecord->title), $slugOptions);
 
             // Generate folder URL aliases (see #4933)
-            if (Config::get('folderUrl')) {
+            if (\Contao\Config::get('folderUrl')) {
                 // Get parent page
-                $objBaseLangPage = \PageModel::findWithDetails($dc->activeRecord->pid);
+                $objBaseLangPage = \Contao\PageModel::findWithDetails($dc->activeRecord->pid);
 
                 // Get translation for parent page
                 $objL10nParentPage = I18nl10n::getInstance()->findL10nWithDetails($objBaseLangPage->pid, $strLanguage);
@@ -732,13 +733,13 @@ class tl_page_i18nl10n extends tl_page
 
             // Build domain array based on pages
             while ($objAlias->next()) {
-                $objCurrentPage = \PageModel::findWithDetails($objAlias->pid);
+                $objCurrentPage = \Contao\PageModel::findWithDetails($objAlias->pid);
                 $domain         = $objCurrentPage->domain ?: '*';
 
                 // Store the current page's data
                 if ($objCurrentPage->id === $dc->activeRecord->pid) {
                     $strDomain = ($objCurrentPage->type === 'root')
-                        ? \Input::post('dns')
+                        ? \Contao\Input::post('dns')
                         : $domain;
                 } else {
                     $arrPages[$domain][] = $objAlias->pid;
@@ -761,14 +762,14 @@ class tl_page_i18nl10n extends tl_page
     /**
      * Create language options based on root page, already used languages and user permissions
      *
-     * @param \DataContainer $dc
+     * @param \Contao\DataContainer $dc
      *
      * @return array
      */
-    public function languageOptions(\DataContainer $dc)
+    public function languageOptions(\Contao\DataContainer $dc)
     {
         // Create identifier string for permission test
-        $objFallbackPage = \PageModel::findWithDetails($dc->activeRecord->pid);
+        $objFallbackPage = \Contao\PageModel::findWithDetails($dc->activeRecord->pid);
         $rootId          = $objFallbackPage->rootId;
         $strIdentifier   = $rootId . '::';
 
@@ -832,7 +833,7 @@ class tl_page_i18nl10n extends tl_page
     {
         return $this->User->isAdmin || $this->User->isAllowed(1, $row) // \BackendUser::CAN_EDIT_PAGE
             ? $this->createButton($row, $href, $label, $title, $icon, $attributes)
-            : \Image::getHtml(preg_replace('/\.gif$/i', '_.gif', $icon)) . ' ';
+            : \Contao\Image::getHtml(preg_replace('/\.gif$/i', '_.gif', $icon)) . ' ';
     }
 
     /**
@@ -851,7 +852,7 @@ class tl_page_i18nl10n extends tl_page
     {
         return $this->User->isAdmin || $this->User->isAllowed(2, $row) //\BackendUser::CAN_EDIT_PAGE_HIERARCHY
             ? $this->createButton($row, $href, $label, $title, $icon, $attributes)
-            : \Image::getHtml(preg_replace('/\.gif$/i', '_.gif', $icon)) . ' ';
+            : \Contao\Image::getHtml(preg_replace('/\.gif$/i', '_.gif', $icon)) . ' ';
     }
 
     /**
@@ -870,7 +871,7 @@ class tl_page_i18nl10n extends tl_page
     {
         return $this->User->isAdmin || $this->User->isAllowed(3, $row) // \BackendUser::CAN_DELETE_PAGE
             ? $this->createButton($row, $href, $label, $title, $icon, $attributes)
-            : \Image::getHtml(preg_replace('/\.gif$/i', '_.gif', $icon)) . ' ';
+            : \Contao\Image::getHtml(preg_replace('/\.gif$/i', '_.gif', $icon)) . ' ';
     }
 
     /**
@@ -889,14 +890,14 @@ class tl_page_i18nl10n extends tl_page
     {
         return $this->User->isAdmin || $this->userHasPermissionToEditPage($row)
             ? '<a href="' . $this->addToUrl($href . '&amp;id=' . $row['id']) . '" title="' . specialchars($title) . '"'
-              . $attributes . '>' . \Image::getHtml($icon, $label) . '</a> '
-            : \Image::getHtml(preg_replace('/\.gif$/i', '_.gif', $icon)) . ' ';
+              . $attributes . '>' . \Contao\Image::getHtml($icon, $label) . '</a> '
+            : \Contao\Image::getHtml(preg_replace('/\.gif$/i', '_.gif', $icon)) . ' ';
     }
 
     /**
      * Create based button based on language and page type permissions
      *
-     * @param \DataContainer $dc
+     * @param \Contao\DataContainer $dc
      * @param               $row
      * @param               $table
      * @param               $cr
@@ -913,26 +914,26 @@ class tl_page_i18nl10n extends tl_page
                 'act=' . $arrClipboard['mode'] . '&amp;mode=2&amp;pid=' . $row['id'] . (!is_array($arrClipboard['id']) ?
                     '&amp;id=' . $arrClipboard['id'] : '')
             ) . '" title="' . specialchars(sprintf($GLOBALS['TL_LANG'][$table]['pasteinto'][1], $row['id']))
-              . '" onclick="Backend.getScrollOffset()">' . \Image::getHtml(
+              . '" onclick="Backend.getScrollOffset()">' . \Contao\Image::getHtml(
                   'pasteinto.gif',
                   sprintf(
                       $GLOBALS['TL_LANG'][$table]['pasteinto'][1],
                       $row['id']
                   )
               ) . '</a> '
-            : \Image::getHtml('pasteinto_.gif');
+            : \Contao\Image::getHtml('pasteinto_.gif');
     }
 
     /**
      * Check if user has permission to edit language of given row
      *
-     * @param $arrRow
+     * @param array $arrRow
      *
      * @return boolean
      */
     private function userHasPermissionToEditLanguage($arrRow)
     {
-        $objPage               = \PageModel::findWithDetails($arrRow['pid']);
+        $objPage               = \Contao\PageModel::findWithDetails($arrRow['pid']);
         $strLanguageIdentifier = $objPage->rootId . '::' . $arrRow['language'];
 
         return in_array($strLanguageIdentifier, (array) $this->User->i18nl10n_languages);
@@ -950,7 +951,7 @@ class tl_page_i18nl10n extends tl_page
     {
         return $this->User->isAdmin
            || in_array(
-               ($strTable === 'tl_page_i18nl10n' ? \PageModel::findByIdOrAlias($arrRow['pid'])->type : $arrRow['type']),
+               ($strTable === 'tl_page_i18nl10n' ? \Contao\PageModel::findByIdOrAlias($arrRow['pid'])->type : $arrRow['type']),
                (array) $this->User->alpty
            );
     }
@@ -976,11 +977,11 @@ class tl_page_i18nl10n extends tl_page
     /**
      * Modify dca palette according to parent page type
      *
-     * @param $dc
+     * @param \Contao\DataContainer $dc
      */
     public function modifyPalettes($dc)
     {
-        $arrPage = \Database::getInstance()
+        $arrPage = \Contao\Database::getInstance()
             ->prepare('SELECT type FROM tl_page WHERE id = (SELECT pid FROM tl_page_i18nl10n WHERE id = ?)')
             ->limit(1)
             ->execute($dc->id)

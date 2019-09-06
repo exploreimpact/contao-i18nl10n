@@ -27,116 +27,77 @@ $GLOBALS['TL_DCA']['tl_page']['list']['operations']['page_i18nl10n'] = array
 );
 
 // Extend onload_callback
-$onLoadCallback = array
-(
-    array('tl_page_l10n', 'setDefaultLanguage'),
-    array('tl_page_l10n', 'displayDnsMessage'),
-    array('tl_page_l10n', 'addI18nl10nPublishedField'),
-    array('tl_page_l10n', 'setDnsMandatory'),
-    array('tl_page_l10n', 'extendRootPalettes')
-);
-
-array_insert(
+\array_insert(
     $GLOBALS['TL_DCA']['tl_page']['config']['onload_callback'],
     count($GLOBALS['TL_DCA']['tl_page']['config']['onload_callback']) - 1,
-    $onLoadCallback
+    [
+        ['tl_page_l10n', 'setDefaultLanguage'],
+        ['tl_page_l10n', 'displayDnsMessage'],
+        ['tl_page_l10n', 'addI18nl10nPublishedField'],
+        ['tl_page_l10n', 'setDnsMandatory'],
+        ['tl_page_l10n', 'extendRootPalettes'],
+    ]
 );
 
 // Extend onsubmit_callback
-$onSubmitCallback = array
-(
-    array('tl_page_l10n', 'generatePageL10n'),
-    array('tl_page_l10n', 'updateDefaultLanguage')
-);
-
-array_insert(
+\array_insert(
     $GLOBALS['TL_DCA']['tl_page']['config']['onsubmit_callback'],
     count($GLOBALS['TL_DCA']['tl_page']['config']['onsubmit_callback']) - 1,
-    $onSubmitCallback
+    [
+        array('tl_page_l10n', 'generatePageL10n'),
+        array('tl_page_l10n', 'updateDefaultLanguage'),
+    ]
 );
 
 // Extend ondelete_callback
-$GLOBALS['TL_DCA']['tl_page']['config']['ondelete_callback'][] = array
-(
-    'tl_page_l10n',
-    'onDelete'
-);
+$GLOBALS['TL_DCA']['tl_page']['config']['ondelete_callback'][] = ['tl_page_l10n', 'onDelete'];
 
 // Extend oncopy_callback
-$GLOBALS['TL_DCA']['tl_page']['config']['oncopy_callback'][] = array
-(
-    'tl_page_l10n',
-    'onCopy'
-);
+$GLOBALS['TL_DCA']['tl_page']['config']['oncopy_callback'][] = ['tl_page_l10n', 'onCopy'];
 
-/**
- * Define i18nl10n fields
- */
-$i18nl10nFields = array(
-    'i18nl10n_published'     => array
-    (
-        'label'     => &$GLOBALS['TL_LANG']['tl_page']['i18nl10n_published'],
-        'default'   => true,
-        'exclude'   => true,
-        'inputType' => 'checkbox',
-        'eval'      => array(
-            'doNotCopy' => true,
-            'tl_class'  => 'w50'
-        ),
-        'sql'       => "char(1) NOT NULL default '1'"
-    ),
-    'i18nl10n_localizations' => array
-    (
-        'label'     => &$GLOBALS['TL_LANG']['tl_page']['i18nl10n_localizations'],
-        'exclude'   => true,
-        'inputType' => 'multiColumnWizard',
-        'eval'      => array
-        (
-            'tl_class'     => 'w50 autoheight',
-            'columnFields' => array
-            (
-                'language' => array
-                (
-                    'label'     => &$GLOBALS['TL_LANG']['tl_page']['i18nl10n_language'],
-                    'exclude'   => true,
-                    'inputType' => 'select',
-                    'options_callback' => array('tl_page_l10n', 'languageOptions'),
-                    'eval'      => array
-                    (
-                        'style'  => 'width:100%',
-                        'chosen' => true,
-                        'includeBlankOption' => true
-                    )
-                )
-            )
-        ),
-        'save_callback' => array
-        (
-            array('tl_page_l10n', 'validateLocalizations')
-        ),
-        'sql'       => "blob NULL"
-    )
-);
-
-/**
- * Insert i18nl10n fields
- */
-array_insert(
+// Insert i18nl10n fields
+\array_insert(
     $GLOBALS['TL_DCA']['tl_page']['fields'],
-    count($GLOBALS['TL_DCA']['tl_page']['fields']),
-    $i18nl10nFields
+    \count($GLOBALS['TL_DCA']['tl_page']['fields']),
+    [
+        'i18nl10n_published' => [
+            'label'             => &$GLOBALS['TL_LANG']['tl_page']['i18nl10n_published'],
+            'default'           => true,
+            'exclude'           => true,
+            'inputType'         => 'checkbox',
+            'eval' => [
+                'doNotCopy'     => true,
+                'tl_class'      => 'w50',
+            ],
+            'sql'               => "char(1) NOT NULL default '1'",
+        ],
+        'i18nl10n_localizations' => [
+            'label'     => &$GLOBALS['TL_LANG']['tl_page']['i18nl10n_localizations'],
+            'exclude'   => true,
+            'inputType' => 'multiColumnWizard',
+            'eval'      => [
+                'tl_class'     => 'w50 autoheight',
+                'columnFields' => [
+                    'language' => [
+                        'label'     => &$GLOBALS['TL_LANG']['tl_page']['i18nl10n_language'],
+                        'exclude'   => true,
+                        'inputType' => 'select',
+                        'options_callback' => ['tl_page_l10n', 'languageOptions'],
+                        'eval'      => [
+                            'style'  => 'width:100%',
+                            'chosen' => true,
+                            'includeBlankOption' => true,
+                        ],
+                    ],
+                ],
+            ],
+            'save_callback' => [
+                ['tl_page_l10n', 'validateLocalizations'],
+            ],
+            'sql'       => "blob NULL",
+        ],
+    ]
 );
-
-
-/*
-echo "<pre>";
-//print_r($GLOBALS['TL_DCA']['tl_page']['fields']);
-print_r($GLOBALS['TL_DCA']['tl_page']['palettes']);
-print_r($GLOBALS['TL_DCA']['tl_page']['subpalettes']);
-print_r($GLOBALS['TL_DCA']['tl_page']['config']['onload_callback']);
-die();
-*/
-
 
 
 /**
@@ -149,7 +110,6 @@ die();
  */
 class tl_page_l10n extends tl_page
 {
-
     protected $i18nl10nLocalizations;
 
     /**
@@ -178,7 +138,7 @@ class tl_page_l10n extends tl_page
         return sprintf(
             '<a href="%1$s" title="%2$s"><img src="bundles/verstaerkeri18nl10n/img/%3$s"></a>',
             $strButtonUrl,
-            specialchars($strTitle),
+            \Contao\StringUtil::specialchars($strTitle),
             $strImgName
         );
     }
@@ -190,12 +150,12 @@ class tl_page_l10n extends tl_page
      */
     public function setDefaultLanguage()
     {
-        if (\Input::get('act') != 'create') {
+        if (\Contao\Input::get('act') != 'create') {
             return;
         }
 
-        if (\Input::get('pid') != 0) {
-            $objPage = \PageModel::findWithDetails(\Input::get('pid'));
+        if (\Contao\Input::get('pid') != 0) {
+            $objPage = \Contao\PageModel::findWithDetails(\Contao\Input::get('pid'));
             $GLOBALS['TL_DCA']['tl_page']['fields']['language']['default'] = $objPage->rootLanguage;
         }
     }
@@ -209,6 +169,7 @@ class tl_page_l10n extends tl_page
     {
         // Only apply if multiple root pages
         if (I18nl10n::getInstance()->countRootPages() > 1) {
+            /** @var \Contao\Database\Result $objRootPages */
             $objRootPages = I18nl10n::getInstance()->getAllRootPages();
             $arrDns = array();
 
@@ -216,7 +177,7 @@ class tl_page_l10n extends tl_page
 
                 // Check if dns value is missing
                 if ($objRootPages->dns === '') {
-                    \Message::addError($GLOBALS['TL_LANG']['tl_page']['msg_missing_dns']);
+                    \Contao\Message::addError($GLOBALS['TL_LANG']['tl_page']['msg_missing_dns']);
                 } else {
                     $arrDns[] = $objRootPages->dns;
                 }
@@ -224,7 +185,7 @@ class tl_page_l10n extends tl_page
 
             // Check if duplicated dns values
             if(count(array_unique($arrDns)) < count($arrDns)) {
-                \Message::addError($GLOBALS['TL_LANG']['tl_page']['msg_duplicated_dns']);
+                \Contao\Message::addError($GLOBALS['TL_LANG']['tl_page']['msg_duplicated_dns']);
             }
         }
     }
@@ -233,9 +194,9 @@ class tl_page_l10n extends tl_page
      * Automatically create a new localization upon page creation
      * (triggered by on submit callback)
      *
-     * @param DataContainer $dc
+     * @param \Contao\DataContainer $dc
      */
-    public function generatePageL10n(DataContainer $dc)
+    public function generatePageL10n(\Contao\DataContainer $dc)
     {
         // Only continue if new entry
         if (!$this->isNewEntry($dc)) {
@@ -251,12 +212,12 @@ class tl_page_l10n extends tl_page
                 function($value) {
                     return $value['language'];
                 },
-                \StringUtil::deserialize($dc->activeRecord->i18nl10n_localizations)
+                \Contao\StringUtil::deserialize($dc->activeRecord->i18nl10n_localizations)
             );
         }
 
         // If folder urls are enabled, get only last part from alias
-        if (Config::get('folderUrl')) {
+        if (\Contao\Config::get('folderUrl')) {
             $arrAlias = explode('/', $dc->activeRecord->alias);
             $strAlias = array_pop($arrAlias);
         } else {
@@ -286,7 +247,7 @@ class tl_page_l10n extends tl_page
             $fields['language'] = $language;
 
             // Create alias based on folder url setting
-            if (Config::get('folderUrl')) {
+            if (\Contao\Config::get('folderUrl')) {
                 // Get translation for parent page
                 $objL10nParentPage = I18nl10n::getInstance()->findL10nWithDetails($dc->activeRecord->pid, $language);
 
@@ -299,7 +260,7 @@ class tl_page_l10n extends tl_page
 
             $fields['alias'] = $strFolderUrl . $strAlias . '-' . $dc->activeRecord->pid . $dc->id;
 
-            \Database::getInstance()
+            \Contao\Database::getInstance()
                 ->prepare('INSERT INTO tl_page_i18nl10n %s')
                 ->set($fields)
                 ->execute();
@@ -309,9 +270,9 @@ class tl_page_l10n extends tl_page
     /**
      * Delete localizations for deleted page
      *
-     * @param DataContainer $dc
+     * @param \Contao\DataContainer $dc
      */
-    public function onDelete(DataContainer $dc)
+    public function onDelete(\Contao\DataContainer $dc)
     {
         $arrChildRecords = $this->Database->getChildRecords(array($dc->id), 'tl_page');
 
@@ -322,7 +283,6 @@ class tl_page_l10n extends tl_page
         $this->Database
             ->prepare('DELETE FROM tl_page_i18nl10n WHERE pid IN(' . implode(',', $arrChildRecords) . ')')
             ->execute();
-
     }
 
     /**
@@ -331,11 +291,11 @@ class tl_page_l10n extends tl_page
      * Set page language on copy
      *
      * @param $intId
-     * @param $dc
+     * @param \Contao\DataContainer $dc
      */
-    public function onCopy($intId, $dc)
+    public function onCopy($intId, \Contao\DataContainer $dc)
     {
-        $objPage = \PageModel::findWithDetails($intId);
+        $objPage = \Contao\PageModel::findWithDetails($intId);
 
         $this->Database
             ->prepare('UPDATE tl_page SET language = ? WHERE id = ?')
@@ -345,9 +305,9 @@ class tl_page_l10n extends tl_page
     /**
      * Update child pages of saved root with default language
      *
-     * @param DataContainer $dc
+     * @param \Contao\DataContainer $dc
      */
-    public function updateDefaultLanguage(DataContainer $dc)
+    public function updateDefaultLanguage(\Contao\DataContainer $dc)
     {
 
         if ($dc->activeRecord->type != 'root') {
@@ -367,23 +327,23 @@ class tl_page_l10n extends tl_page
     /**
      * Check if given language code is valid and available
      *
-     * @param $strLanguage
+     * @param string $strLanguage
      *
      * @return bool
      */
     public function isValidLanguageCode($strLanguage)
     {
-        return array_key_exists($strLanguage, $GLOBALS['TL_LANG']['LNG']);
+        return \array_key_exists($strLanguage, $GLOBALS['TL_LANG']['LNG']);
     }
 
     /**
      * Check if the given data container is a new entry
      *
-     * @param DataContainer $dc
+     * @param \Contao\DataContainer $dc
      *
      * @return bool
      */
-    public function isNewEntry(DataContainer $dc)
+    public function isNewEntry(\Contao\DataContainer $dc)
     {
         $objPage = $this->Database
             ->prepare('SELECT * FROM tl_page WHERE id = ?')
@@ -404,16 +364,8 @@ class tl_page_l10n extends tl_page
         // Remove 'all' entry
         unset($arrLanguages['']);
 
-        // @todo: refactor to allow sublanguages (f.ex. de-CH)
-        // Keep only 2 letter languages
-        foreach ($arrLanguages as $key => $language) {
-            if (strlen($key) > 2) {
-                unset($arrLanguages[$key]);
-            }
-        }
-
         // Sort by value (a-z)
-        asort($arrLanguages);
+        \asort($arrLanguages);
 
         return $arrLanguages;
     }
@@ -424,15 +376,15 @@ class tl_page_l10n extends tl_page
      * Remove duplicates
      * Remove root language
      *
-     * @param               $strValue
-     * @param DataContainer $dc
+     * @param string                $strValue
+     * @param \Contao\DataContainer $dc
      *
      * @return string
      */
-    public function validateLocalizations($strValue, DataContainer $dc)
+    public function validateLocalizations($strValue, \Contao\DataContainer $dc)
     {
         $arrLanguages = array();
-        $arrValues = \StringUtil::deserialize($strValue);
+        $arrValues = \Contao\StringUtil::deserialize($strValue);
         $strRootLanguage = $dc->activeRecord->language;
 
         foreach ($arrValues as $key => $value) {
@@ -440,7 +392,7 @@ class tl_page_l10n extends tl_page
             if (empty($value['language'])
                 || in_array($value['language'], $arrLanguages)
                 || $value['language'] === $strRootLanguage) {
-                array_splice($arrValues, $key, 1);
+                \array_splice($arrValues, $key, 1);
                 continue;
             }
 
@@ -459,10 +411,10 @@ class tl_page_l10n extends tl_page
      */
     public function addI18nl10nPublishedField()
     {
-        $intId = \Input::get('id');
+        $intId = \Contao\Input::get('id');
 
         if ($intId) {
-            $arrResult = \Database::getInstance()
+            $arrResult = \Contao\Database::getInstance()
                 ->prepare('SELECT pid FROM tl_page WHERE id = ?')
                 ->limit(1)
                 ->execute($intId)
@@ -478,11 +430,11 @@ class tl_page_l10n extends tl_page
                 } else {
                     // is before Contao 3.4
                     foreach ($GLOBALS['TL_DCA']['tl_page']['palettes'] as $k => $v) {
-                        $GLOBALS['TL_DCA']['tl_page']['palettes'][$k] = str_replace('published,', 'published,i18nl10n_published,', $v);
+                        $GLOBALS['TL_DCA']['tl_page']['palettes'][$k] = \str_replace('published,', 'published,i18nl10n_published,', $v);
                     }
                 }
 
-                // update field class
+                // Update field class
                 $GLOBALS['TL_DCA']['tl_page']['fields']['published']['eval']['tl_class'] = 'w50';
             }
         }
@@ -526,11 +478,11 @@ class tl_page_l10n extends tl_page
     /**
      * Create list button on button_callback
      *
-     * @param   String  $strOperation
-     * @param   Array   $arrArgs
-     * @param   Array   [$arrVendorCallback]
+     * @param   string  $strOperation
+     * @param   array   $arrArgs
+     * @param   array|null   $arrVendorCallback
      *
-     * @return  String
+     * @return  string
      */
     public function createButton($strOperation, $arrArgs, $arrVendorCallback = null)
     {
@@ -575,7 +527,7 @@ class tl_page_l10n extends tl_page
      */
     private function createListButton($arrRow, $strHref, $strLabel, $strTitle, $strIcon, $arrAttributes)
     {
-        return '<a href="' . $this->addToUrl($strHref . '&amp;id=' . $arrRow['id']) . '" title="' . specialchars($strTitle) . '"' . $arrAttributes . '>' . \Image::getHtml($strIcon, $strLabel) . '</a> ';
+        return '<a href="' . $this->addToUrl($strHref . '&amp;id=' . $arrRow['id']) . '" title="' . \Contao\StringUtil::specialchars($strTitle) . '" ' . $arrAttributes . '>' . \Contao\Image::getHtml($strIcon, $strLabel) . '</a> ';
     }
 
     /**
@@ -593,9 +545,9 @@ class tl_page_l10n extends tl_page
         // Call vendor callback
         if (is_array($arrVendorCallback)) {
             $vendorClass = new $arrVendorCallback[0];
-            $return = call_user_func_array(array($vendorClass, $arrVendorCallback[1]), $arrArgs);
+            $return = \call_user_func_array(array($vendorClass, $arrVendorCallback[1]), $arrArgs);
         } elseif (is_callable($arrVendorCallback)) {
-            $return = call_user_func_array($arrVendorCallback, $arrArgs);
+            $return = \call_user_func_array($arrVendorCallback, $arrArgs);
         }
 
         return $return;
@@ -610,7 +562,7 @@ class tl_page_l10n extends tl_page
      */
     private function userHasPermissionToEditLanguage($arrRow)
     {
-        $objPage = \PageModel::findWithDetails($arrRow['id']);
+        $objPage = \Contao\PageModel::findWithDetails($arrRow['id']);
         $strLanguageIdentifier = $objPage->rootId . '::' . $arrRow['language'];
 
         return in_array($strLanguageIdentifier, (array) $this->User->i18nl10n_languages);
