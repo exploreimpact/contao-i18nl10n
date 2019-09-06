@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ## [2.1.0] - t.b.r.
 ### Added
-- Added support for regional language codes (e.g. de_CH).
+- Added support for regional language codes (e.g. de-CH).
 
 ### Fixed
 - Fixed issue where alias of default language was picked for alternative languages when site was entered on root (/).

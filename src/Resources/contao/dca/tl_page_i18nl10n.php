@@ -154,7 +154,7 @@ $GLOBALS['TL_DCA']['tl_page_i18nl10n'] = array(
             'reference'        => &$GLOBALS['TL_LANG']['LNG'],
             'eval'             => array(
                 'mandatory'          => true,
-                'rgxp'               => 'locale',
+                'rgxp'               => 'language',
                 'maxlength'          => 20,
                 'nospace'            => true,
                 'doNotCopy'          => true,
@@ -242,11 +242,11 @@ class tl_page_i18nl10n extends tl_page
     protected $pageType;
 
     /**
-     * Generate a localization icon for treeview
+     * Generate a localization icon for tree view.
      *
      * @param               $row
      * @param               $label
-     * @param \DataContainer $dc
+     * @param \Contao\DataContainer $dc
      * @param string        $imageAttribute
      * @param bool          $blnReturnImage
      * @param bool          $blnProtected
@@ -255,12 +255,14 @@ class tl_page_i18nl10n extends tl_page
      */
     public function labelCallback($row, $label, \DataContainer $dc = null, $imageAttribute = '', $blnReturnImage = false, $blnProtected = false)
     {
-        return sprintf(
-            '<span class="i18nl10n_page"><img class="i18nl10n_flag" src="%1$s"> %2$s [%3$s]</span>',
-            'bundles/verstaerkeri18nl10n/img/flag_icons/' . $row['language']
-            . ($row['i18nl10n_published'] ? '.png' : '_invisible.png'),
-            specialchars($row['title']),
-            $GLOBALS['TL_LANG']['LNG'][$row['language']]
+        return \sprintf(
+            '<span class="i18nl10n_page"><img class="i18nl10n_flag%1$s" src="%2$s"> %3$s [%4$s]</span>',
+            $row['i18nl10n_published'] ? '' : ' is--invisible',
+            'bundles/verstaerkeri18nl10n/img/flag_icons/' . \str_replace('-', '_', $row['language']) . '.png',
+            \Contao\StringUtil::specialchars($row['title']),
+            $GLOBALS['TL_LANG']['LNG'][
+                \str_replace('-', '_', $row['language'])
+            ]
         );
     }
 
@@ -299,8 +301,10 @@ class tl_page_i18nl10n extends tl_page
                 foreach ($domain['localizations'] as $localization) {
                     $strDomainLocalization .= sprintf(
                         '<li><img class="i18nl10n_flag" src="%1$s.png" /> %2$s</li>',
-                        $strFlagPath . $localization,
-                        $GLOBALS['TL_LANG']['LNG'][$localization]
+                        $strFlagPath . \str_replace('-', '_', $localization),
+                        $GLOBALS['TL_LANG']['LNG'][
+                            \str_replace('-', '_', $localization)
+                        ]
                     );
                 }
             } else {
@@ -312,7 +316,7 @@ class tl_page_i18nl10n extends tl_page
 
             $strDomainLanguages .= sprintf(
                 '<li class="i18nl10n_localize_domain"><img class="i18nl10n_flag" src="%1$s.png" /> %2$s<ul>%3$s</ul></li>',
-                $strFlagPath . $domain['default'],
+                $strFlagPath . \str_replace('-', '_', $domain['default']),
                 $key ?: '*',
                 $strDomainLocalization
             );
@@ -797,7 +801,9 @@ class tl_page_i18nl10n extends tl_page
                         (array) $this->User->i18nl10n_languages
                     ))
             ) {
-                $arrOptions[$language] = $arrLanguages[$language];
+                $arrOptions[$language] = $arrLanguages[
+                    \str_replace('-', '_', $language)
+                ];
             }
         }
 

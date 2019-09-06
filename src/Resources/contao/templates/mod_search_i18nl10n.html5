@@ -2,12 +2,12 @@
 
 <?php $this->block('content'); ?>
 
-    <?php echo $this->form; ?>
+    <?= $this->form; ?>
 
     <?php if ($this->header): ?>
-        <p class="header"><?php echo preg_replace('@ i18nl10n::.[A-z]@', '', $this->header); ?> (<?php echo $this->duration; ?>)</p>
+        <p class="header"><?= \preg_replace('@ i18nl10n::.[A-z]@', '', $this->header); ?> (<?= $this->duration; ?>)</p>
     <?php endif; ?>
 
-    <?php echo preg_replace('@<span class="highlight">i18nl10n::[A-z]{2}</span>@', '', $this->results) . $this->pagination; ?>
+    <?= \preg_replace('@<span class="highlight">i18nl10n::[A-z]{2}</span>@', '', $this->results) . $this->pagination; ?>
 
 <?php $this->endblock(); ?>
