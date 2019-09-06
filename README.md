@@ -31,19 +31,28 @@ This extension is for you!
 
 ### 1. Install package
 ```sh
-$ composer require exploreimpact/contao-i18nl10n:2.0.2
+$ composer require exploreimpact/contao-i18nl10n
 
-# or for latest state of development (not recommended):
+# or for latest state of development:
 
 $ composer require exploreimpact/contao-i18nl10n:dev-master
 ```
 
 ### 2. Update database
-Run a database update via the Installtool afterwards.
+- Run a database update via the Installtool afterwards.
 
 ### 3. Set URL settings
-Open the Contao backend and go to "Settings".
-Under "Add language to URL*" select the way the language should be added to your URL.
+- Open the Contao backend.
+- Go to "Site structure".
+- Edit your website's root page:
+    - Under "DNS settings":
+        - Enter the default language to the "Language" field.
+        - Set the page as "language fallback".
+    - Under "i18nl10n settings":
+        - Add the additional languages you want to make available.
+
+### Note:
+- The extension is **not** compatible with the parameter `prepend_locale: true`!
 
 
 ## Documentation:
