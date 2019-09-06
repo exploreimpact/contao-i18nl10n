@@ -2,13 +2,15 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
-- Switch to "ISO 3166-1 alpha-2" (regional language codes, e.g. de_AT)
+- Update for set of flags
 - New Sitemap Module
 - Do not define page title by page name, when title field is empty
 - Define keywords on Multilingual Pages
-- Update for set of flags
 
 ## [2.1.0] - t.b.r.
+### Added
+- Added support for regional language codes (e.g. de_CH).
+
 ### Fixed
 - Fixed issue where alias of default language was picked for alternative languages when site was entered on root (/).
 
