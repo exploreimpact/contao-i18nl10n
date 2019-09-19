@@ -9,7 +9,7 @@
     "L10N",
     "Translation"
   ],
-  "homepage": "http://www.exploreimpact.de",
+  "homepage": "https://exploreimpact.de",
   "license": "MIT",
   "authors": [
     {
@@ -19,24 +19,12 @@
       "role": "Developer"
     },
     {
-      "name": "Tim Wedemann",
-      "email": "timwedemann@internetinnovations.de",
-      "homepage": "http://www.internetinnovations.de",
-      "role": "Project Management"
-    },
-    {
       "name": "Patric Eberle",
       "email": "line-in@derverstaerker.ch",
       "homepage": "http://www.derverstaerker.ch",
       "role": "Developer"
     }
   ],
-  "repositories": {
-    "exim/svg-build-image": {
-      "type": "vcs",
-      "url": "git@bitbucket.org:exploreimpact/svg-build-image.git"
-    }
-  },
   "require": {
     "php": "^5.6|^7.0",
     "contao/core-bundle": "^4.4",
@@ -45,7 +33,6 @@
   },
   "require-dev": {
     "contao/manager-plugin": "^2.0",
-    "exim/svg-build-image": "dev-master",
     "codeception/codeception": "*",
     "phpmd/phpmd": "^2.2",
     "squizlabs/php_codesniffer": "^2.3",

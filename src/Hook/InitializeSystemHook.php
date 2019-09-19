@@ -33,6 +33,11 @@ class InitializeSystemHook extends System
      */
     public function initializeSystem()
     {
+        // Show all contents in Backend
+        if (TL_MODE !== 'FE') {
+            return true;
+        }
+
         // Catch Facebook token fbclid and redirect without him (trigger 404 errors)...
         if (strpos(\Contao\Environment::get('request'), '?fbclid')) {
             \Contao\Controller::redirect(\strtok(\Contao\Environment::get('request'), '?'));
