@@ -470,19 +470,11 @@ class tl_page_l10n extends tl_page
      */
     public function extendRootPalettes()
     {
-        if(version_compare(VERSION, '4.5','>=')) {
-            $GLOBALS['TL_DCA']['tl_page']['palettes']['root'] = str_replace(
-                'language,fallback;',
-                'language,fallback;{module_i18nl10n},i18nl10n_localizations;',
-                $GLOBALS['TL_DCA']['tl_page']['palettes']['root']
-            );
-        } else {
-            $GLOBALS['TL_DCA']['tl_page']['palettes']['root'] = str_replace(
-                'language,fallback,staticFiles,staticPlugins;',
-                'language,fallback,staticFiles,staticPlugins;{module_i18nl10n},i18nl10n_localizations;',
-                $GLOBALS['TL_DCA']['tl_page']['palettes']['root']
-            );
-        }
+        PaletteManipulator::create()
+            ->addLegend('module_i18nl10n', 'dns_legend', PaletteManipulator::POSITION_AFTER)
+            ->addField('i18nl10n_localizations', 'module_i18nl10n', PaletteManipulator::POSITION_APPEND)
+            ->applyToPalette('root', 'tl_page')
+            ->applyToPalette('rootfallback', 'tl_page');
     }
 
     /**
