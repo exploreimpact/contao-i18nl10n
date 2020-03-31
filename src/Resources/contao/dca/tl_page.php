@@ -12,6 +12,7 @@
  */
 
 use Verstaerker\I18nl10nBundle\Classes\I18nl10n;
+use Contao\CoreBundle\DataContainer\PaletteManipulator;
 
 // load language translations
 $this->loadLanguageFile('languages');
@@ -432,16 +433,15 @@ class tl_page_l10n extends tl_page
 
             // Check if element has parent and therefore is no root page
             if (!empty($arrResult) && intval($arrResult['pid']) !== 0) {
-                // switch field splicing based on Contao version
-                if (isset($GLOBALS['TL_DCA']['tl_page']['subpalettes']['published'])) {
-                    // is Contao 3.4+
-                    $GLOBALS['TL_DCA']['tl_page']['subpalettes']['published'] =
-                        'i18nl10n_published,' . $GLOBALS['TL_DCA']['tl_page']['subpalettes']['published'];
-                } else {
-                    // is before Contao 3.4
-                    foreach ($GLOBALS['TL_DCA']['tl_page']['palettes'] as $k => $v) {
-                        $GLOBALS['TL_DCA']['tl_page']['palettes'][$k] = \str_replace('published,', 'published,i18nl10n_published,', $v);
+                // Add i18nl10n_published field
+                foreach ($GLOBALS['TL_DCA']['tl_page']['palettes'] as $k => $v) {
+                    if ('__selector__' == $k) {
+                        continue;
                     }
+
+                    PaletteManipulator::create()
+                        ->addField('i18nl10n_published', 'published')
+                        ->applyToPalette($k, 'tl_page');
                 }
 
                 // Update field class
