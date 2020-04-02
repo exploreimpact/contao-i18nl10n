@@ -13,6 +13,7 @@
 
 use Verstaerker\I18nl10nBundle\Classes\I18nl10n;
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
+use Contao\DataContainer;
 
 // load language translations
 $this->loadLanguageFile('languages');
@@ -195,9 +196,9 @@ class tl_page_l10n extends tl_page
      * Automatically create a new localization upon page creation
      * (triggered by on submit callback)
      *
-     * @param \Contao\DataContainer $dc
+     * @param DataContainer $dc
      */
-    public function generatePageL10n(\Contao\DataContainer $dc)
+    public function generatePageL10n(DataContainer $dc)
     {
         // Only continue if new entry
         if (!$this->isNewEntry($dc)) {
@@ -271,9 +272,9 @@ class tl_page_l10n extends tl_page
     /**
      * Delete localizations for deleted page
      *
-     * @param \Contao\DataContainer $dc
+     * @param DataContainer $dc
      */
-    public function onDelete(\Contao\DataContainer $dc)
+    public function onDelete(DataContainer $dc)
     {
         $arrChildRecords = $this->Database->getChildRecords(array($dc->id), 'tl_page');
 
@@ -292,9 +293,9 @@ class tl_page_l10n extends tl_page
      * Set page language on copy
      *
      * @param $intId
-     * @param \Contao\DataContainer $dc
+     * @param DataContainer $dc
      */
-    public function onCopy($intId, \Contao\DataContainer $dc)
+    public function onCopy($intId, DataContainer $dc)
     {
         $objPage = \Contao\PageModel::findWithDetails($intId);
 
@@ -306,9 +307,9 @@ class tl_page_l10n extends tl_page
     /**
      * Update child pages of saved root with default language
      *
-     * @param \Contao\DataContainer $dc
+     * @param DataContainer $dc
      */
-    public function updateDefaultLanguage(\Contao\DataContainer $dc)
+    public function updateDefaultLanguage(DataContainer $dc)
     {
 
         if ($dc->activeRecord->type != 'root') {
@@ -340,11 +341,11 @@ class tl_page_l10n extends tl_page
     /**
      * Check if the given data container is a new entry
      *
-     * @param \Contao\DataContainer $dc
+     * @param DataContainer $dc
      *
      * @return bool
      */
-    public function isNewEntry(\Contao\DataContainer $dc)
+    public function isNewEntry(DataContainer $dc)
     {
         $objPage = $this->Database
             ->prepare('SELECT * FROM tl_page WHERE id = ?')
@@ -388,11 +389,11 @@ class tl_page_l10n extends tl_page
      * Remove root language
      *
      * @param string                $strValue
-     * @param \Contao\DataContainer $dc
+     * @param DataContainer $dc
      *
      * @return string
      */
-    public function validateLocalizations($strValue, \Contao\DataContainer $dc)
+    public function validateLocalizations($strValue, DataContainer $dc)
     {
         $arrLanguages = array();
         $arrValues = \Contao\StringUtil::deserialize($strValue);

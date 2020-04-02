@@ -12,6 +12,7 @@
  */
 
 use Verstaerker\I18nl10nBundle\Classes\I18nl10n;
+//use Contao\DataContainer as DataContainer;
 
 // load language translations
 $this->loadLanguageFile('languages');
@@ -246,14 +247,14 @@ class tl_page_i18nl10n extends tl_page
      *
      * @param               $row
      * @param               $label
-     * @param \Contao\DataContainer $dc
+     * @param DataContainer $dc
      * @param string        $imageAttribute
      * @param bool          $blnReturnImage
      * @param bool          $blnProtected
      *
      * @return string
      */
-    public function labelCallback($row, $label, \DataContainer $dc = null, $imageAttribute = '', $blnReturnImage = false, $blnProtected = false)
+    public function labelCallback($row, $label, DataContainer $dc = null, $imageAttribute = '', $blnReturnImage = false, $blnProtected = false)
     {
         return \sprintf(
             '<span class="i18nl10n_page"><img class="i18nl10n_flag%1$s" src="%2$s"> %3$s [%4$s]</span>',
@@ -488,7 +489,7 @@ class tl_page_i18nl10n extends tl_page
      * @param boolean       $blnVisible
      * @param \DataContainer $dc
      */
-    public function toggleVisibility($intId, $blnVisible, \Contao\DataContainer $dc = null)
+    public function toggleVisibility($intId, $blnVisible, DataContainer $dc = null)
     {
         // Check permissions to edit
         \Contao\Input::setGet('id', $intId);
@@ -693,7 +694,7 @@ class tl_page_i18nl10n extends tl_page
      * @return string
      * @throws \Exception
      */
-    public function generateAlias($varValue, \Contao\DataContainer $dc)
+    public function generateAlias($varValue, DataContainer $dc)
     {
         $autoAlias   = false;
         $strLanguage = $dc->activeRecord->language;
@@ -766,11 +767,11 @@ class tl_page_i18nl10n extends tl_page
     /**
      * Create language options based on root page, already used languages and user permissions
      *
-     * @param \Contao\DataContainer $dc
+     * @param DataContainer $dc
      *
      * @return array
      */
-    public function languageOptions(\Contao\DataContainer $dc)
+    public function languageOptions(DataContainer $dc)
     {
         // Create identifier string for permission test
         $objFallbackPage = \Contao\PageModel::findWithDetails($dc->activeRecord->pid);
@@ -903,7 +904,7 @@ class tl_page_i18nl10n extends tl_page
     /**
      * Create based button based on language and page type permissions
      *
-     * @param \Contao\DataContainer $dc
+     * @param DataContainer $dc
      * @param               $row
      * @param               $table
      * @param               $cr
@@ -911,7 +912,7 @@ class tl_page_i18nl10n extends tl_page
      *
      * @return string
      */
-    public function pastePage(\Contao\DataContainer $dc, $row, $table, $cr, $arrClipboard = null)
+    public function pastePage(DataContainer $dc, $row, $table, $cr, $arrClipboard = null)
     {
         // Check if parent entry AND user can edit page type AND user has access rights on parent page
         return $table !== 'tl_page_i18nl10n' && $this->userHasPermissionToEditPageType($row, $table)
@@ -983,7 +984,7 @@ class tl_page_i18nl10n extends tl_page
     /**
      * Modify dca palette according to parent page type
      *
-     * @param \Contao\DataContainer $dc
+     * @param DataContainer $dc
      */
     public function modifyPalettes($dc)
     {
