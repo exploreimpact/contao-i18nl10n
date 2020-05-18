@@ -8,6 +8,8 @@
 
 **Warning: This Extension is in beta status. DO NOT USE IT ON ANY PRODUCTIVE ENVIRONMENT!**
 
+**ATTENTION: I stopped the active development of this extension. This is due to several circumstances. First of all it became increasingly harder to impossible to fix existing routing related bugs. A refactoring of this extension would take an unreasonable amount of time. Several features of the extension would even require a total overwrite of the Contao routing. From my personal perspective this extension is dead - at least until someone is able and willing to invest a lot of energy to give it another try. Maybe Contao 5 will introduce ways to revive the project.**
+
 
 ![i18nl10n Logo](i18nl10n-logo_v2.png)
 
