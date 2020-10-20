@@ -12,6 +12,8 @@
  */
 
 use Verstaerker\I18nl10nBundle\Classes\I18nl10n;
+use Contao\CoreBundle\DataContainer\PaletteManipulator;
+use Contao\DataContainer;
 
 // load language translations
 $this->loadLanguageFile('languages');
@@ -194,9 +196,9 @@ class tl_page_l10n extends tl_page
      * Automatically create a new localization upon page creation
      * (triggered by on submit callback)
      *
-     * @param \Contao\DataContainer $dc
+     * @param DataContainer $dc
      */
-    public function generatePageL10n(\Contao\DataContainer $dc)
+    public function generatePageL10n(DataContainer $dc)
     {
         // Only continue if new entry
         if (!$this->isNewEntry($dc)) {
@@ -270,9 +272,9 @@ class tl_page_l10n extends tl_page
     /**
      * Delete localizations for deleted page
      *
-     * @param \Contao\DataContainer $dc
+     * @param DataContainer $dc
      */
-    public function onDelete(\Contao\DataContainer $dc)
+    public function onDelete(DataContainer $dc)
     {
         $arrChildRecords = $this->Database->getChildRecords(array($dc->id), 'tl_page');
 
@@ -291,9 +293,9 @@ class tl_page_l10n extends tl_page
      * Set page language on copy
      *
      * @param $intId
-     * @param \Contao\DataContainer $dc
+     * @param DataContainer $dc
      */
-    public function onCopy($intId, \Contao\DataContainer $dc)
+    public function onCopy($intId, DataContainer $dc)
     {
         $objPage = \Contao\PageModel::findWithDetails($intId);
 
@@ -305,9 +307,9 @@ class tl_page_l10n extends tl_page
     /**
      * Update child pages of saved root with default language
      *
-     * @param \Contao\DataContainer $dc
+     * @param DataContainer $dc
      */
-    public function updateDefaultLanguage(\Contao\DataContainer $dc)
+    public function updateDefaultLanguage(DataContainer $dc)
     {
 
         if ($dc->activeRecord->type != 'root') {
@@ -339,11 +341,11 @@ class tl_page_l10n extends tl_page
     /**
      * Check if the given data container is a new entry
      *
-     * @param \Contao\DataContainer $dc
+     * @param DataContainer $dc
      *
      * @return bool
      */
-    public function isNewEntry(\Contao\DataContainer $dc)
+    public function isNewEntry(DataContainer $dc)
     {
         $objPage = $this->Database
             ->prepare('SELECT * FROM tl_page WHERE id = ?')
@@ -387,11 +389,11 @@ class tl_page_l10n extends tl_page
      * Remove root language
      *
      * @param string                $strValue
-     * @param \Contao\DataContainer $dc
+     * @param DataContainer $dc
      *
      * @return string
      */
-    public function validateLocalizations($strValue, \Contao\DataContainer $dc)
+    public function validateLocalizations($strValue, DataContainer $dc)
     {
         $arrLanguages = array();
         $arrValues = \Contao\StringUtil::deserialize($strValue);
@@ -432,16 +434,15 @@ class tl_page_l10n extends tl_page
 
             // Check if element has parent and therefore is no root page
             if (!empty($arrResult) && intval($arrResult['pid']) !== 0) {
-                // switch field splicing based on Contao version
-                if (isset($GLOBALS['TL_DCA']['tl_page']['subpalettes']['published'])) {
-                    // is Contao 3.4+
-                    $GLOBALS['TL_DCA']['tl_page']['subpalettes']['published'] =
-                        'i18nl10n_published,' . $GLOBALS['TL_DCA']['tl_page']['subpalettes']['published'];
-                } else {
-                    // is before Contao 3.4
-                    foreach ($GLOBALS['TL_DCA']['tl_page']['palettes'] as $k => $v) {
-                        $GLOBALS['TL_DCA']['tl_page']['palettes'][$k] = \str_replace('published,', 'published,i18nl10n_published,', $v);
+                // Add i18nl10n_published field
+                foreach ($GLOBALS['TL_DCA']['tl_page']['palettes'] as $k => $v) {
+                    if ('__selector__' == $k) {
+                        continue;
                     }
+
+                    PaletteManipulator::create()
+                        ->addField('i18nl10n_published', 'published')
+                        ->applyToPalette($k, 'tl_page');
                 }
 
                 // Update field class
@@ -470,18 +471,13 @@ class tl_page_l10n extends tl_page
      */
     public function extendRootPalettes()
     {
-        if(version_compare(VERSION, '4.5','>=')) {
-            $GLOBALS['TL_DCA']['tl_page']['palettes']['root'] = str_replace(
-                'language,fallback;',
-                'language,fallback;{module_i18nl10n},i18nl10n_localizations;',
-                $GLOBALS['TL_DCA']['tl_page']['palettes']['root']
-            );
-        } else {
-            $GLOBALS['TL_DCA']['tl_page']['palettes']['root'] = str_replace(
-                'language,fallback,staticFiles,staticPlugins;',
-                'language,fallback,staticFiles,staticPlugins;{module_i18nl10n},i18nl10n_localizations;',
-                $GLOBALS['TL_DCA']['tl_page']['palettes']['root']
-            );
+        $objPalette = PaletteManipulator::create()
+            ->addLegend('module_i18nl10n', 'dns_legend', PaletteManipulator::POSITION_AFTER)
+            ->addField('i18nl10n_localizations', 'module_i18nl10n', PaletteManipulator::POSITION_APPEND)
+            ->applyToPalette('root', 'tl_page');
+        
+        if (array_key_exists('rootfallback', $GLOBALS['TL_DCA']['tl_page']['palettes'])) {
+            $objPalette->applyToPalette('rootfallback', 'tl_page');
         }
     }
 
